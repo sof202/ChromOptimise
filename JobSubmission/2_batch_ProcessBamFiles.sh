@@ -125,7 +125,7 @@ if [ -z "${MINIMUM_TOLERATED_PHRED_SCORE}" ]; then
     echo "No Phred score threshold was given, using default value of 20."
 fi
 echo -n "Processing .bam files using Phred score threshold of: "
-echo "${MINIMUM_TOLERATED_PHRED_SCORE} for epigenetic mark: ${BLUEPRINT_MARK_NAME}"
+echo "${MINIMUM_TOLERATED_PHRED_SCORE} for epigenetic mark: ${BLUEPRINT_MARK_NAME}."
 
 
 ## ============================= ##
@@ -143,9 +143,9 @@ list_of_files=$(find . -type f -name "*.bam" | cut -d "/" -f 2 | sed 's/.bam//')
 mkdir -p "${BLUEPRINT_PROCESSED_FULL_FILE_PATH}"
 
 
-## ------------------------------- ##
+## =============================== ##
 ##    PARALLEL PROCESSING LOGIC    ##
-## ------------------------------- ##
+## =============================== ##
 
 
 # Split the directory into chunks which are determined by the array id.
@@ -179,12 +179,11 @@ fi
 echo "Processing the following files:"
 echo "${files_to_process}"
 
-
 ## ====================== ##
 ##    PROCESSING STAGE    ##
 ## ====================== ##
 
-# The processing is characterised into 4 stages
+# The processing is characterised into 4 stages:
 # 1) Create an index file, an index stats file and a stats file for the original files
 # 2) Sort the .bam files, remove reads with a phred score that is below:
 #     $MINIMUM_TOLERATED_PHRED_SCORE
@@ -192,6 +191,7 @@ echo "${files_to_process}"
 #      remove reads with phred score below 15]
 # 3) Delete intermediate files
 # 4) Create an index file, an index stats file and a stats file for the processed files
+
 for file in ${files_to_process}; do
     cd "${BLUEPRINT_FULL_FILE_PATH}" || exit 1
     # 1)
@@ -227,9 +227,9 @@ for file in ${files_to_process}; do
 done
 
 
-## ----------------------- ##
+## ======================= ##
 ##   LOG FILE MANAGEMENT   ##
-## ----------------------- ##
+## ======================= ##
 
 # Finishing message
 echo "Job completed at:"
