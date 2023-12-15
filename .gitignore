@@ -1,0 +1,3 @@
+# Ignore all log files and config files
+LogFiles/*
+config/*
