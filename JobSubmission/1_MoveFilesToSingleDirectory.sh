@@ -69,7 +69,7 @@ date -u
 start_time=$(date +%s)
 
 # Activate config.txt to access all file paths
-# CHANGE THIS TO YOUR OWN CONFIG 
+# CHANGE THIS TO YOUR OWN CONFIG FILE
 echo "Loading config file..."
 source "/lustre/projects/Research_Project-MRC190311\
 /scripts/integrative/blueprint/config/config.txt"
