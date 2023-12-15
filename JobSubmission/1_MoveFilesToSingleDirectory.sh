@@ -45,15 +45,15 @@
 ## ======================== ##
 
 if [[ "$1" == "--help" || "$1" == "-h" ]]; then
-    echo "==============================================================="
-    echo -n "Purpose: Moves .bam files that include the epigenetic mark."
+    echo "=========================================================="
+    echo "Purpose: Moves .bam files that include the epigenetic mark"
     echo "into a single folder."
     echo "Author: Sam Fletcher"
     echo "Contact: s.o.fletcher@exeter.ac.uk"
     echo "Dependencies: NONE"
     echo "Inputs:"
     echo "\$1 -> Epigenetic mark name"
-    echo "==============================================================="
+    echo "=========================================================="
     exit 0
 fi
 
@@ -100,17 +100,17 @@ cd "${BLUEPRINT_MAIN_DIR}" || \
 make sure config.txt is pointing to the correct directory"; exit 1; }
 
 # Find all of the bam files with the mark name given by the user
-List_Of_Files_With_Mark_Name=\
+list_of_files_with_mark_name=\
 $(find . -type f -name "*${BLUEPRINT_MARK_NAME}*.bam")
 
 # If the above list is empty then the epigenetic mark must not exist.
-Number_Of_Files_To_Move=\
+number_of_files_to_move=\
 $(find . -type f -name "*${BLUEPRINT_MARK_NAME}*.bam" | wc -l)
-echo "Number of .bam files to be moved is: ${Number_Of_Files_To_Move}"
+echo "Number of .bam files to be moved is: ${number_of_files_to_move}"
 
 # Exit here if there are no files 
 # There is no point in generating a folder if the mark doesn't exist
-if [ "${Number_Of_Files_To_Move}" -eq 0 ]; then
+if [ "${number_of_files_to_move}" -eq 0 ]; then
     echo "No files were found."
     echo "Please input a epigenetic mark name that exists (case sensitive)." 
     echo "Aborting..."
@@ -126,7 +126,7 @@ mkdir -p "${RAW_DIR}/${BLUEPRINT_MARK_NAME}"
 
 echo "Moving bam files to ${RAW_DIR}/${BLUEPRINT_MARK_NAME}"
 
-for file in ${List_Of_Files_With_Mark_Name}; do
+for file in ${list_of_files_with_mark_name}; do
     echo "Moving file ${file}..."
     mv "${file}" "${RAW_DIR}/${BLUEPRINT_MARK_NAME}"
 done
