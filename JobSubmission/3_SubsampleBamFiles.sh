@@ -7,8 +7,10 @@
 #SBATCH --ntasks-per-node=16 
 #SBATCH --mem=100G # specify bytes memory to reserve, lots is required for this script as the merging process opens up every file at the same time piece by piece
 #SBATCH --mail-type=END # Send an email after the job is done
-#SBATCH --output=/lustre/projects/Research_Project-MRC190311/scripts/integrative/blueprint/LogFiles/Merging_and_Subsampling/temp%j.o #Put output file in log files with with temporary name
-#SBATCH --error=/lustre/projects/Research_Project-MRC190311/scripts/integrative/blueprint/LogFiles/Merging_and_Subsampling/temp%j.e #Put error file in log files with with temporary name
+# Temporary log file, later to be removed
+#SBATCH --output=temp%j.log
+# Temporary error file, later to be removed
+#SBATCH --error=temp%j.err
 #SBATCH --job-name=Merging_and_Subsampling
 
 ## -------------------------------------------------------------------------------------------- ##
@@ -63,24 +65,30 @@ fi
 ##    SET UP    ##
 ## ------------ ##
 
-# Rename the output and error files to have format: [Epigenetic mark]~[Sample size]~[job id]~[array id]~[date]-[time]
-# This requires a hard link as you cannot rename log files whilst running the script without a wrapper function
-LOG_FILE_PATH=/lustre/projects/Research_Project-MRC190311/scripts/integrative/blueprint/LogFiles/$SLURM_JOB_NAME/
-cd "${LOG_FILE_PATH}" || exit 1
-timestamp=$(date -u +%Y.%m.%d-%H:%M)
-ln "temp${SLURM_JOB_ID}.e" "$1~$2~${SLURM_JOB_ID}~$timestamp.e"
-ln "temp${SLURM_JOB_ID}.o" "$1~$2~${SLURM_JOB_ID}~$timestamp.o"
-
 # Print start date/time
-echo "Job '$SLURM_JOB_NAME' started at..."
+echo "Job '$SLURM_JOB_NAME' started at:"
 date -u
 
 # Get the start time for the program
 start_time=$(date +%s)
 
 # Activate config.txt to access all file paths
-echo "Loading config file:"
-source /lustre/projects/Research_Project-MRC190311/scripts/integrative/blueprint/config/config.txt
+# CHANGE THIS TO YOUR OWN CONFIG FILE
+echo "Loading config file..."
+source "/lustre/projects/Research_Project-MRC190311\
+/scripts/integrative/blueprint/config/config.txt"
+
+# Rename the output and error files to have format:
+# [epigenetic mark name]~[Sample size]~[job id]~[date]-[time]
+# This requires a hard link as you cannot rename log files
+# whilst running the script without a wrapper function
+LOG_FILE_PATH="${LOG_DIR}/$USER/$SLURM_JOB_NAME/"
+mkdir -p "${LOG_FILE_PATH}"
+timestamp=$(date -u +%Y.%m.%d-%H:%M)
+ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" \
+"${LOG_FILE_PATH}/$1~$2~${SLURM_JOB_ID}~$timestamp.log"
+ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
+"${LOG_FILE_PATH}/$1~$2~${SLURM_JOB_ID}~$timestamp.err"
 
 # Initialise variables
 BLUEPRINT_MARK_NAME=$1
@@ -94,9 +102,8 @@ if [ -z "${BLUEPRINT_MARK_NAME}" ]; then
     echo "Aborting..."
 
     # Remove temporary log files
-    cd "${LOG_FILE_PATH}" || exit 1
-    rm "temp${SLURM_JOB_ID}.e"
-    rm "temp${SLURM_JOB_ID}.o"
+    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log"
+    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err"
     exit 1
 fi
     
@@ -117,9 +124,8 @@ else
     echo "Aborting..."
 
     # Remove temporary log files
-    cd "${LOG_FILE_PATH}" || exit 1
-    rm "temp${SLURM_JOB_ID}.e"
-    rm "temp${SLURM_JOB_ID}.o"
+    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log"
+    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err"
     exit 1
 fi
 
@@ -170,6 +176,5 @@ time_taken=$((end_time-start_time))
 echo "Job took a total of: ${time_taken} seconds to complete"
 
 # Removing temporary log files
-cd "${LOG_FILE_PATH}" || exit 1
-rm "temp${SLURM_JOB_ID}.e"
-rm "temp${SLURM_JOB_ID}.o"
+rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log"
+rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err"
