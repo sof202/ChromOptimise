@@ -1,7 +1,7 @@
 #!/bin/bash
-# export all environment variables to the batch job
+# Export all environment variables to the batch job
 #SBATCH --export=ALL
-# submit to the mrc queue for faster queue times
+# Submit to the mrc queue for faster queue times
 #SBATCH -p mrcq
 # Job is unlikely to take a long time unless moving lots of very large files
 #SBATCH --time=01:00:00
