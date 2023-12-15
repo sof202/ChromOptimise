@@ -139,7 +139,7 @@ module load SAMtools
 # 1) Find all of the .bam files in the mark directory
 # 2) Remove the "./" at the start of these file paths
 # 3) Remove the .bam found at the end of these file names using substition
-List_Of_Files=$(find . -type f -name "*.bam" | cut -d "/" -f 2 | sed 's/.bam//')
+list_of_files=$(find . -type f -name "*.bam" | cut -d "/" -f 2 | sed 's/.bam//')
 mkdir -p "${BLUEPRINT_PROCESSED_FULL_FILE_PATH}"
 
 
@@ -149,35 +149,35 @@ mkdir -p "${BLUEPRINT_PROCESSED_FULL_FILE_PATH}"
 
 
 # Split the directory into chunks which are determined by the array id.
-Total_Number_Of_Files=$(echo "${List_Of_Files}" | wc -w)
+total_number_of_files=$(echo "${list_of_files}" | wc -w)
 
 # In the event that the number of files is not a multiple of the array size some
 # files won't be processed if each array element processes the same number of files.
 # The remainder files are processed in the highest indexed array using logic below
 
-Number_Of_Files_For_Each_Array=$((Total_Number_Of_Files / SLURM_ARRAY_TASK_COUNT))
-Start_File_Index=$((SLURM_ARRAY_TASK_ID * Number_Of_Files_For_Each_Array))
+number_of_files_for_each_array=$((total_number_of_files / SLURM_ARRAY_TASK_COUNT))
+start_file_index=$((SLURM_ARRAY_TASK_ID * number_of_files_for_each_array))
 
-Remainder=$((Total_Number_Of_Files % SLURM_ARRAY_TASK_COUNT)) 
-Left_Over_Files=$((Remainder + Number_Of_Files_For_Each_Array))
+remainder=$((total_number_of_files % SLURM_ARRAY_TASK_COUNT)) 
+left_over_files=$((remainder + number_of_files_for_each_array))
 
 
 if [ "${SLURM_ARRAY_TASK_ID}" -eq "${SLURM_ARRAY_TASK_COUNT}" ]; then
-    Files_To_Process=$(find . -type f -name "*.bam" | \
+    files_to_process=$(find . -type f -name "*.bam" | \
     cut -d "/" -f 2 | \
     sed 's/.bam//' | \
-    tail -$Left_Over_Files)
+    tail -$left_over_files)
 else
-    Files_To_Process=$(find . -type f -name "*.bam" | \
+    files_to_process=$(find . -type f -name "*.bam" | \
     cut -d "/" -f 2 | \
     sed 's/.bam//' | \
-    head -$Start_File_Index | \
-    tail -$Number_Of_Files_For_Each_Array )
+    head -$start_file_index | \
+    tail -$number_of_files_for_each_array )
 fi
 
 # Debugging
 echo "Processing the following files:"
-echo "${Files_To_Process}"
+echo "${files_to_process}"
 
 
 ## ====================== ##
@@ -192,7 +192,7 @@ echo "${Files_To_Process}"
 #      remove reads with phred score below 15]
 # 3) Delete intermediate files
 # 4) Create an index file, an index stats file and a stats file for the processed files
-for file in ${Files_To_Process}; do
+for file in ${files_to_process}; do
     cd "${BLUEPRINT_FULL_FILE_PATH}" || exit 1
     # 1)
     samtools index "${file}.bam" 
