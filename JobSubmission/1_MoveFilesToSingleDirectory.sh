@@ -40,20 +40,20 @@
 ## NONE                                                                             ||
 ## =================================================================================##
 
-## ------------------------ ##
+## ======================== ##
 ##    HELP FUNCTIONALITY    ##
-## ------------------------ ##
+## ======================== ##
 
 if [[ "$1" == "--help" || "$1" == "-h" ]]; then
-    echo "=============================================================="
-    echo -n "Purpose: Moves .bam files that include the epigenetic mark"
+    echo "==============================================================="
+    echo -n "Purpose: Moves .bam files that include the epigenetic mark."
     echo "into a single folder."
     echo "Author: Sam Fletcher"
     echo "Contact: s.o.fletcher@exeter.ac.uk"
     echo "Dependencies: NONE"
     echo "Inputs:"
     echo "\$1 -> Epigenetic mark name"
-    echo "=============================================================="
+    echo "==============================================================="
     exit 0
 fi
 
