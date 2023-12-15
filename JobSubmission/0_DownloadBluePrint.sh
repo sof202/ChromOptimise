@@ -6,8 +6,8 @@
 #SBATCH --nodes=1 #specify number of nodes
 #SBATCH --ntasks-per-node=16 # specify number of processors per node
 #SBATCH --mail-type=END # send email at job completion
-#SBATCH --output=/lustre/projects/Research_Project-MRC190311/scripts/integrative/blueprint/LogFiles/Download_Files/temp.o #Put output file in log files with temporary name
-#SBATCH --error=/lustre/projects/Research_Project-MRC190311/scripts/integrative/blueprint/LogFiles/Download_Files/temp.e #Put error file in log files with temporary name
+#SBATCH --output=temp%j.log #Put output file in log files with temporary name
+#SBATCH --error=temp%j.err #Put error file in log files with temporary name
 #SBATCH --job-name=Download_Files
 
 ## -------------------------------------------------------------------------------------------- ##
@@ -56,20 +56,29 @@ fi
 ##    SET UP    ##
 ## ------------ ##
 
-# Rename the output and error files to have format: [job related feature]~[job id]~([array id])~[date]-[time]
-# This requires a hard link as you cannot rename log files whilst running the script without a wrapper function
-LOG_FILE_PATH=/lustre/projects/Research_Project-MRC190311/scripts/integrative/blueprint/LogFiles/$SLURM_JOB_NAME/
-cd "${LOG_FILE_PATH}" || exit
-timestamp=$(date -u +%Y.%m.%d-%H:%M)
-ln temp.e "$1~${SLURM_JOB_ID}~$timestamp.e"
-ln temp.o "$1~${SLURM_JOB_ID}~$timestamp.o"
-
 # Print start date/time
 echo "Job '$SLURM_JOB_NAME' started at:"
 date -u
 
 # Get the start time for the program
 start_time=$(date +%s)
+
+# Activate config.txt to access all file paths
+# CHANGE THIS TO YOUR OWN CONFIG 
+echo "Loading config file..."
+source "/lustre/projects/Research_Project-MRC190311\
+/scripts/integrative/blueprint/config/config.txt"
+
+# Rename the output and error files to have format:
+# [job id]~[date]-[time]
+# This requires a hard link as you cannot rename log files
+# whilst running the script without a wrapper function
+LOG_FILE_PATH="${LOG_DIR}/$USER/$SLURM_JOB_NAME/"
+timestamp=$(date -u +%Y.%m.%d-%H:%M)
+ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" \
+"${LOG_FILE_PATH}/${SLURM_JOB_ID}~$timestamp.log"
+ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
+"${LOG_FILE_PATH}/${SLURM_JOB_ID}~$timestamp.err"
 
 
 ## ---------- ##
@@ -117,6 +126,5 @@ time_taken=$((end_time-start_time))
 echo "Job took a total of: ${time_taken} seconds to complete"
 
 # Remove temporary log files
-cd "${LOG_FILE_PATH}" || exit 1
-rm temp.e
-rm temp.o
+rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log"
+rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err"
