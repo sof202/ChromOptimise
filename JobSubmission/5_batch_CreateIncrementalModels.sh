@@ -199,24 +199,24 @@ cd "Likelihood_Values" || exit 1
 ##   PARALLELISATION SET UP   ##
 ## ========================== ##
 
-Number_Of_Models_Per_Array=$((NUMBER_OF_MODELS_TO_GENERATE / SLURM_ARRAY_TASK_COUNT))
-Remainder=$((NUMBER_OF_MODELS_TO_GENERATE % SLURM_ARRAY_TASK_COUNT))
+number_of_models_per_array=$((NUMBER_OF_MODELS_TO_GENERATE / SLURM_ARRAY_TASK_COUNT))
+remainder=$((NUMBER_OF_MODELS_TO_GENERATE % SLURM_ARRAY_TASK_COUNT))
 
 # If the number of models to be generated isn't a multiple of the size of the array,
 # the array with the smallest id will learn the left over smaller models
 # (spreading the larger models evenly across the other array elements).
 if [ "${SLURM_ARRAY_TASK_ID}" -eq 1 ]; then
-    Starting_Number_Of_States=2
-    Ending_Number_Of_States=$(( \
-    2 + STATE_INCREMENT*(Remainder+Number_Of_Models_Per_Array-1) \
+    starting_number_of_states=2
+    ending_number_of_states=$(( \
+    2 + STATE_INCREMENT*(remainder+number_of_models_per_array-1) \
     ))
 else
-    Starting_Number_Of_States=$(( \
-    (((SLURM_ARRAY_TASK_ID-1)*Number_Of_Models_Per_Array) + Remainder)*\
+    starting_number_of_states=$(( \
+    (((SLURM_ARRAY_TASK_ID-1)*number_of_models_per_array) + remainder)*\
     STATE_INCREMENT + 2 \
     )) 
-    Ending_Number_Of_States=$(( \
-    (((SLURM_ARRAY_TASK_ID)*Number_Of_Models_Per_Array) + Remainder -1 )*\
+    ending_number_of_states=$(( \
+    (((SLURM_ARRAY_TASK_ID)*number_of_models_per_array) + remainder -1 )*\
     STATE_INCREMENT + 2 \
     ))
 fi
@@ -236,25 +236,25 @@ if [[ "${SLURM_ARRAY_TASK_ID}" -eq 1 ]]; then
 fi
 
 sequence=$(\
-seq "$Starting_Number_Of_States" "$STATE_INCREMENT" "$Ending_Number_Of_States"\
+seq "$starting_number_of_states" "$STATE_INCREMENT" "$ending_number_of_states"\
 )
 
 for numstates in ${sequence}; do
     echo "Learning model with: ${numstates} states..."
     # The -nobrowser option is here as we have no need for the genome browser files
-    java -mx10G -jar "${CHROMHMM_MAIN_DIR}/ChromHMM.jar" LearnModel \
+    java -mx10G \
+    -jar "${CHROMHMM_MAIN_DIR}/ChromHMM.jar" LearnModel \
     -nobrowser \
     -b "${BIN_SIZE}" \
     "${BINARY_DIR}" "${MODEL_DIR}" "${numstates}" hg19 > \
     "ChromHMM.Output.BinSize.${BIN_SIZE}.numstates.${numstates}.txt"
 
-    # Get the estimated log likelihood value from ChromHMM's output
     echo -n "Writing estimated log likelihood to: "
     echo "likelihood.BinSize.${BIN_SIZE}.SampleSize.${SAMPLE_SIZE}.txt"
     echo -n "Estimated Log Likelihood for ${numstates} states: " >> \
     "likelihood.BinSize.${BIN_SIZE}.SampleSize.${SAMPLE_SIZE}.txt"
 
-    # grep removes the lines associated with writing to files. 
+    # grep removes the terminal logs associated with writing to files. 
     # The tail and awk locate the final estimated log likelihood.
     grep "       " "ChromHMM.Output.BinSize.${BIN_SIZE}.numstates.${numstates}.txt" | \
     tail -1 | \
@@ -270,23 +270,23 @@ done
 
 cd "${MODEL_DIR}" || { echo "Model directory doesn't exist, \
 make sure config.txt is pointing to the correct directory"; exit 1; }
-Emission_Files_To_Rename=$(find . -type f -name "emissions*")
-for file in $Emission_Files_To_Rename; do
+emission_files_to_rename=$(find . -type f -name "emissions*")
+for file in $emission_files_to_rename; do
     # obtains number of states and file extension name
     file_ending=$(echo "$file" | cut -d "_" -f 2) 
     mv "$file" \
     "Emissions_BinSize_${BIN_SIZE}_SampleSize_${SAMPLE_SIZE}_NumberOfStates_${file_ending}" 
 done
 
-Transistion_Files_To_Rename=$(find . -type f -name "transitions*")
-for file in $Transistion_Files_To_Rename; do
+transistion_files_to_rename=$(find . -type f -name "transitions*")
+for file in $transistion_files_to_rename; do
     file_ending=$(echo "$file" | cut -d "_" -f 2)
     mv "$file" \
     "Transitions_BinSize_${BIN_SIZE}_SampleSize_${SAMPLE_SIZE}_NumberOfStates_${file_ending}" 
 done
 
-Model_Files_To_Rename=$(find . -type f -name "model*")
-for file in $Model_Files_To_Rename; do
+model_files_to_rename=$(find . -type f -name "model*")
+for file in $model_files_to_rename; do
     file_ending=$(echo "$file" | cut -d "_" -f 2)
     mv "$file" \
     "Model_BinSize_${BIN_SIZE}_SampleSize_${SAMPLE_SIZE}_NumberOfStates_${file_ending}" 
