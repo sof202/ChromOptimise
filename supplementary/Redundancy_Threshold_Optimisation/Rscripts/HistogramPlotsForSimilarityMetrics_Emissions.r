@@ -35,8 +35,11 @@
 ##    SETUP   ##
 ## ========== ##
 
-rm(list=ls())
-setwd("/lustre/projects/Research_Project-MRC190311/blueprint/Big_Model_Files")
+rm(list = ls())
+
+setwd("/lustre/projects/Research_Project-MRC190311/scripts")
+source("integrative/blueprint/config/config.R")
+setwd(big_models_dir)
 
 if (!require("pracma", quietly = TRUE))
   install.packages("pracma")
@@ -44,16 +47,16 @@ library("pracma")
 library("ggplot2")
 library("stringr")
 
-Model.Size <- commandArgs(trailingOnly = TRUE)
-Model.Size <- as.numeric(Model.Size)
-Bin.Size <- 0.025
+model_size <- commandArgs(trailingOnly = TRUE)
+model_size <- as.numeric(model_size)
+bin_size <- 0.025
 
-File.Name <- paste0("emissions_",Model.Size,"_1.txt")
-Emission.Data <- read.table(File.Name, skip=1)
-Emission.Data <- subset(Emission.Data, select= -V1)
+file_name <- paste0("emissions_", model_size, "_1.txt")
+emission_data <- read.table(file_name, skip = 1)
+emission_data <- subset(emission_data, select = -V1)
 
-Euclidean.Distance <- function(Vector.a,Vector.b) {
-  sqrt(sum((Vector.a-Vector.b)^2))
+euclidean_distance <- function(vector_a, vector_b) {
+  sqrt(sum((vector_a - vector_b) ^ 2))
 }
 
 
@@ -61,24 +64,32 @@ Euclidean.Distance <- function(Vector.a,Vector.b) {
 ##   SIMILARITY METRIC CALCULATIONS   ##
 ## ================================== ##
 
-# Calculate the cosine similarity score and Euclidean distance for each disjoint pair of vectors in the emissions text file
-Cosine.Similarity.Scores <- data.frame(Score=double(), stringsAsFactors=FALSE)
-Euclidean.Distance.Scores <- data.frame(Score=double(), stringsAsFactors=FALSE)
+# Calculate the cosine similarity score and Euclidean distance for each
+# disjoint pair of vectors in the emissions text file
+cosine_similarity_scores <-
+  data.frame(Score = double(), stringsAsFactors = FALSE)
+euclidean_distance_scores <-
+  data.frame(Score = double(), stringsAsFactors = FALSE)
 
-for (Reference.State.Index in 1:(Model.Size-1)){
-  for (Comparison.State.Index in (Reference.State.Index+1):Model.Size){
-    Reference.State <- as.numeric(Emission.Data[Reference.State.Index,])
-    Comparison.State <- as.numeric(Emission.Data[Comparison.State.Index,])
-    
-    Dot.Product.Of.States <- dot(Reference.State, Comparison.State)
-    Reference.State.Magnitude <- norm(Reference.State, type="2")
-    Comparison.State.Magnitude <- norm(Comparison.State, type="2")
-    
-    Cosine.Similarity.Score <- Dot.Product.Of.States / (Reference.State.Magnitude * Comparison.State.Magnitude)
-    Distance.Between.Vectors <- Euclidean.Distance(Reference.State,Comparison.State)
-    
-    Cosine.Similarity.Scores[nrow(Cosine.Similarity.Scores)+1,] <- Cosine.Similarity.Score
-    Euclidean.Distance.Scores[nrow(Euclidean.Distance.Scores)+1,] <- Distance.Between.Vectors
+for (reference_state_index in 1:(model_size - 1)){
+  for (comparison_state_index in (reference_state_index + 1):model_size){
+    reference_state <- as.numeric(emission_data[reference_state_index, ])
+    comparison_state <- as.numeric(emission_data[comparison_state_index, ])
+
+    dot_product_of_states <- dot(reference_state, comparison_state)
+    reference_state_magnitude <- norm(reference_state, type = "2")
+    comparison_state_magnitude <- norm(comparison_state, type = "2")
+
+    cosine_similarity_score <-
+      dot_product_of_states /
+      (reference_state_magnitude * comparison_state_magnitude)
+    distance_between_vectors <-
+      euclidean_distance(reference_state, comparison_state)
+
+    cosine_similarity_scores[nrow(cosine_similarity_scores) + 1, ] <-
+      cosine_similarity_score
+    euclidean_distance_scores[nrow(euclidean_distance_scores) + 1, ] <-
+      distance_between_vectors
   }
 }
 
@@ -87,52 +98,68 @@ for (Reference.State.Index in 1:(Model.Size-1)){
 ##    SUGGESTED THRESHOLDS    ##
 ## ========================== ##
 
-Bins.For.Euclidean.Distance <- cut(Euclidean.Distance.Scores[,1], breaks=seq(min(Euclidean.Distance.Scores[,1]),max(Euclidean.Distance.Scores[,1]),by=Bin.Size))
-Frequency.Counts.For.Bins.Euclidean.Distance <- table(Bins.For.Euclidean.Distance)
-Min.Count.Euclidean.Distance <- min(Frequency.Counts.For.Bins.Euclidean.Distance)
-Max.Count.Euclidean.Distance <- max(Frequency.Counts.For.Bins.Euclidean.Distance) #Purely for segment in ggplot
-Frequency.Counts.For.Bins.Euclidean.Distance <- as.matrix(Frequency.Counts.For.Bins.Euclidean.Distance)
-First.Gap.In.Euclidean.Distances.Index <- min(which(Frequency.Counts.For.Bins.Euclidean.Distance == Min.Count.Euclidean.Distance))
-First.Gap.Interval.In.Euclidean.Distances <- row.names(Frequency.Counts.For.Bins.Euclidean.Distance)[First.Gap.In.Euclidean.Distances.Index]
+bins_for_distance <-
+  cut(euclidean_distance_scores[, 1],
+      breaks = seq(min(euclidean_distance_scores[, 1]),
+                   max(euclidean_distance_scores[, 1]), by = bin_size))
+frequency_counts_for_bins <-
+  table(bins_for_distance)
+min_count <- min(frequency_counts_for_bins)
+# For segment in ggplot
+max_count <- max(frequency_counts_for_bins)
+frequency_counts_for_bins <- as.matrix(frequency_counts_for_bins)
+first_gap_index <- min(which(frequency_counts_for_bins == min_count))
+first_gap_interval <- row.names(frequency_counts_for_bins)[first_gap_index]
 
 # Use regular expression to obtain the upper bound of the bin interval
-Euclidean.Distances.Threshold.Suggestion <- as.numeric(str_extract_all(First.Gap.Interval.In.Euclidean.Distances,"\\d+\\.\\d+")[[1]][2])
-Euclidean.Distances.Threshold.Suggestion.Label <- paste0("Suggested Threshold Value: ", Euclidean.Distances.Threshold.Suggestion)
+threshold_suggestion <-
+  as.numeric(str_extract_all(first_gap_interval, "\\d+\\.\\d+")[[1]][2])
+threshold_suggestion_label <-
+  paste0("Suggested Threshold Value: ", threshold_suggestion)
 
 ## ============ ##
 ##   Plotting   ##
-## ============ ##  
+## ============ ##
 
-Euclidean.Distance.Histogram <- ggplot(Euclidean.Distance.Scores, aes(x=Score)) + 
+euclidean_distance_histogram <- ggplot(euclidean_distance_scores,
+                                       aes(x = Score)) +
   theme_minimal() +
-  geom_histogram(binwidth=Bin.Size, color="black", fill="white") +
-  geom_segment(aes(x=Euclidean.Distances.Threshold.Suggestion, xend=Euclidean.Distances.Threshold.Suggestion, y=0, yend=Max.Count.Euclidean.Distance), linetype="dotted") +
-  labs(title="Histogram of Euclidean distances", x="Euclidean Distance", y="Frequency") +
-  theme(plot.title=element_text(hjust=0.5)) +
-  annotate("text",x=Euclidean.Distances.Threshold.Suggestion+12*Bin.Size, y=Max.Count.Euclidean.Distance/5, label=Euclidean.Distances.Threshold.Suggestion.Label)
+  geom_histogram(binwidth = bin_size, color = "black", fill = "white") +
+  geom_segment(aes(x = threshold_suggestion,
+                   xend = threshold_suggestion, y = 0, yend = max_count),
+               linetype = "dotted") +
+  labs(title = "Histogram of Euclidean distances",
+       x = "Euclidean Distance", y = "Frequency") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  annotate("text", x = threshold_suggestion + 12 * bin_size, y = max_count / 5,
+           label = threshold_suggestion_label)
 
-Cosine.Similarity.Histogram <- ggplot(Cosine.Similarity.Scores, aes(x=Score)) + 
+cosine_similarity_histogram <-
+  ggplot(cosine_similarity_scores, aes(x = Score)) +
   theme_minimal() +
-  geom_histogram(binwidth=Bin.Size, color="black", fill="white") +
-  labs(title="Histogram of cosine similarity Scores", x="Cosine Similarity", y="Frequency") +
-  theme(plot.title=element_text(hjust=0.5))
+  geom_histogram(binwidth = bin_size, color = "black", fill = "white") +
+  labs(title = "Histogram of cosine similarity Scores",
+       x = "Cosine Similarity", y = "Frequency") +
+  theme(plot.title = element_text(hjust = 0.5))
 
 
 ## ============== ##
 ##   SAVE PLOTS   ##
 ## ============== ##
 
-Euclidean.Distance.Histogram.Plot.Name <- paste0("Euclidean.Distance.Histogram.Model.Size.",Model.Size,".pdf")
-Cosine.Similarity.Histogram.Plot.Name <- paste0("Cosine.Similarity.Histogram.Model.Size.",Model.Size,".pdf")
+euclidean_distance_plot_name <-
+  paste0("euclidean_distance_histogram.model_size.", model_size, ".pdf")
+cosin_similarity_plot_name <-
+  paste0("cosine_similarity_histogram.model_size.", model_size, ".pdf")
 
 ggsave(
-  Euclidean.Distance.Histogram.Plot.Name,
-  plot=Euclidean.Distance.Histogram,
-  path="/lustre/projects/Research_Project-MRC190311/blueprint/Plots/Emission_Parameter_Big_Model_Plots"
+  euclidean_distance_plot_name,
+  plot = euclidean_distance_histogram,
+  path = emissions_plotting_dir
 )
 
 ggsave(
-  Cosine.Similarity.Histogram.Plot.Name,
-  plot=Cosine.Similarity.Histogram,
-  path="/lustre/projects/Research_Project-MRC190311/blueprint/Plots/Emission_Parameter_Big_Model_Plots"
+  cosin_similarity_plot_name,
+  plot = cosine_similarity_histogram,
+  path = emissions_plotting_dir
 )
