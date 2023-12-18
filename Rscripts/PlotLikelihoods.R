@@ -1,80 +1,72 @@
-## -------------------------------------------------------------- ##
-##                                                                ##
-##                            PREAMBLE                            ##
-##                                                                ##
-## -------------------------------------------------------------- ##
-##                            PURPOSE:                            ##
-##    Plots the estimated log  likelihood values obtained from    ##
-##   ChromHMM's LearnModel command against the number of states   ##
-##                       used in the model.                       ##
-## -------------------------------------------------------------- ##
-##        AUTHOR: Sam Fletcher s.o.fletcher@exeter.ac.uk          ##
-##                     CREATED: November 2023                     ##
-## -------------------------------------------------------------- ##
-##                          PREREQUISITES:                        ##
-##                     Run 6_CompareModels.sh                     ##
-## -------------------------------------------------------------- ##
-##                             INPUTS:                            ##
-##                         $2 -> Bin size                         ##
-##                        $3 -> Sample size                       ##
-##           $4 -> Directory to place output files into           ##
-## -------------------------------------------------------------- ##
-##                            OUTPUTS:                            ##
-##   Line plot of estimated log likelihoods against the number    ##
-##                        of states used.                         ##
-## -------------------------------------------------------------- ##
+## ============================================================== ##
+##                                                                ||
+##                            PREAMBLE                            ||
+##                                                                ||
+## ============================================================== ##
+## PURPOSE:                                                       ||
+## Plots the estimated log  likelihood values obtained from       ||
+## ChromHMM's LearnModel command against the number of states     ||
+## used in the model.                                             ||
+## ============================================================== ##
+## AUTHOR: Sam Fletcher s.o.fletcher@exeter.ac.uk                 ||
+## CREATED: November 2023                                         ||
+## ============================================================== ##
+## PREREQUISITES:                                                 ||
+## Run 6_CompareModels.sh                                         ||
+## ============================================================== ##
+## INPUTS:                                                        ||
+## $1 -> Bin size                                                 ||
+## $2 -> Sample size                                              ||
+## $3 -> Directory to place output files into                     ||
+## ============================================================== ##
+## OUTPUTS:                                                       ||
+## Line plot of estimated log likelihoods against the number      ||
+## of states used.                                                ||
+## ============================================================== ##
 
 
-## ---------- ##
+## ========== ##
 ##   SET UP   ##
-## ---------- ##
+## ========== ##
 
-# Clear the R environment
 rm(list = ls())
 
-# Set the working directory
 setwd("/lustre/projects/Research_Project-MRC190311/scripts")
 source("integrative/blueprint/config/config.R")
 setwd(likelihood_dir)
 
-# Remove unecessary file paths
 rm(list = ls())
 
-# Install packages (if they are required)
 if (!require("wrapr", quietly = TRUE))
   install.packages("wrapr")
 
-# Load packages
 library("ggplot2")
 library("wrapr")
 
-# Load arguments
 arguments <- commandArgs(trailingOnly = TRUE)
 bin_size <- arguments[1]
 sample_size <- arguments[2]
 output_file_path <- arguments[3]
 
 
-## -------------- ##
+## ============== ##
 ##   PROCESSING   ##
-## -------------- ##
+## ============== ##
 
 file_name <- paste0(
   "likelihood.BinSize.", bin_size, ".SampleSize.", sample_size, ".txt"
 )
 likelihood_data <- read.table(file_name)
 
-# Process the data frame
 likelihood_data <- subset(likelihood_data, select = c(V5, V7))
 names(likelihood_data) <- c("Number_Of_States", "Estimated_Log_Likelihood")
 likelihood_data <- likelihood_data[orderv(likelihood_data), , drop = FALSE]
 
 
-## -------------- ##
+## ============== ##
 ##    PLOTTING    ##
-## -------------- ##
+## ============== ##
 
-# Generate Plot
 likelihood_plot <- ggplot(likelihood_data,
                           aes(x = Number_Of_States,
                               y = Estimated_Log_Likelihood))
@@ -85,7 +77,6 @@ likelihood_plot +
   geom_point(shape = "square", color = "black")
 
 setwd(output_file_path)
-# Save plot
 ggsave(
   "LikelihoodPlot.png"
 )
