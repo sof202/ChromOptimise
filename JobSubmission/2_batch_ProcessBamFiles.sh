@@ -103,7 +103,20 @@ MINIMUM_TOLERATED_PHRED_SCORE=$2
 BLUEPRINT_FULL_FILE_PATH="${RAW_DIR}/${BLUEPRINT_MARK_NAME}"
 BLUEPRINT_PROCESSED_FULL_FILE_PATH="${PROCESSED_DIR}/${BLUEPRINT_MARK_NAME}"
 
-# Check if the directory with the epigenetic mark actually exists
+
+
+if [ -z "${MINIMUM_TOLERATED_PHRED_SCORE}" ]; then
+    MINIMUM_TOLERATED_PHRED_SCORE=20
+    echo "No Phred score threshold was given, using default value of 20."
+fi
+echo -n "Processing .bam files using Phred score threshold of: "
+echo "${MINIMUM_TOLERATED_PHRED_SCORE} for epigenetic mark: ${BLUEPRINT_MARK_NAME}."
+
+
+## ===================== ##
+##    FILE MANAGEMENT    ##
+## ===================== ##
+
 if [ -d "${BLUEPRINT_FULL_FILE_PATH}" ]; then
     echo "Changing directory to: ${BLUEPRINT_FULL_FILE_PATH}" 
     cd "${BLUEPRINT_FULL_FILE_PATH}" || exit 1
@@ -113,27 +126,10 @@ else
     echo "you have ran 1_MoveFilesToSingleDirectory.sh first"
     echo "Aborting..."
 
-    # Remove temporary log files
     rm "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_TASK_ID}.log"
     rm "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_TASK_ID}.err"
     exit 1
 fi
-
-# Set a default value for minimum phred score in case one is not given
-if [ -z "${MINIMUM_TOLERATED_PHRED_SCORE}" ]; then
-    MINIMUM_TOLERATED_PHRED_SCORE=20
-    echo "No Phred score threshold was given, using default value of 20."
-fi
-echo -n "Processing .bam files using Phred score threshold of: "
-echo "${MINIMUM_TOLERATED_PHRED_SCORE} for epigenetic mark: ${BLUEPRINT_MARK_NAME}."
-
-
-## ============================= ##
-##    PROCESSING OF BAM FILES    ##
-## ============================= ##
-
-module purge
-module load SAMtools
 
 # Get base name of the files in 3 steps
 # 1) Find all of the .bam files in the mark directory
@@ -147,13 +143,12 @@ mkdir -p "${BLUEPRINT_PROCESSED_FULL_FILE_PATH}"
 ##    PARALLEL PROCESSING LOGIC    ##
 ## =============================== ##
 
-
 # Split the directory into chunks which are determined by the array id.
 total_number_of_files=$(echo "${list_of_files}" | wc -w)
 
 # In the event that the number of files is not a multiple of the array size some
 # files won't be processed if each array element processes the same number of files.
-# The remainder files are processed in the highest indexed array using logic below
+# The remaining files are processed in the highest indexed array using logic below.
 
 number_of_files_for_each_array=$((total_number_of_files / SLURM_ARRAY_TASK_COUNT))
 start_file_index=$((SLURM_ARRAY_TASK_ID * number_of_files_for_each_array))
@@ -183,6 +178,9 @@ echo "${files_to_process}"
 ##    PROCESSING STAGE    ##
 ## ====================== ##
 
+module purge
+module load SAMtools
+
 # The processing is characterised into 4 stages:
 # 1) Create an index file, an index stats file and a stats file for the original files
 # 2) Sort the .bam files, remove reads with a phred score that is below:
@@ -203,16 +201,18 @@ for file in ${files_to_process}; do
     samtools sort "${file}.bam" > \
     "${BLUEPRINT_PROCESSED_FULL_FILE_PATH}/${file}.sorted.bam"
     cd "${BLUEPRINT_PROCESSED_FULL_FILE_PATH}" || exit 1
-    samtools view -q "${MINIMUM_TOLERATED_PHRED_SCORE}" -h "${file}.sorted.bam" | \
-    samtools sort /dev/stdin -o "${file}.sorted.filtered.bam"
+
     # Need to use the -h option here to keep the headers 
     # so that the next samtools view can function properly
+    samtools view -q "${MINIMUM_TOLERATED_PHRED_SCORE}" -h "${file}.sorted.bam" | \
+    samtools sort /dev/stdin -o "${file}.sorted.filtered.bam"
+
+    # The -h option here it to ensure the idxstats can be completed in step 4.  
+    # The -F 1796 exludes reads with the following flags: 
+    # a) unmapped reads b) non-primary alignment reads 
+    # c) Reads that fail PCR/vendor checks d) Reads that are PCR/optical duplicates
     samtools view -F 1796 -h "${file}.sorted.filtered.bam" > \
     "${file}.sorted.filtered.noDuplicates.bam"
-    # The -h option here it to ensure the idxstats can be completed in step 4.  
-    # The -F 1796 exludes the following flags: 
-    # 1) unmapped reads 2) non-primary alignment reads 
-    # 3) Reads that fail PCR/vendor checks 4) Reads that are PCR/optical duplicates
 
     # 3)
     rm "${file}.sorted.bam"
@@ -231,14 +231,12 @@ done
 ##   LOG FILE MANAGEMENT   ##
 ## ======================= ##
 
-# Finishing message
 echo "Job completed at:"
 date -u
 end_time=$(date +%s)
 time_taken=$((end_time-start_time))
 echo "Job took a total of: ${time_taken} seconds to complete"
 
-# Removing temporary log files
 rm "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_TASK_ID}.log"
 rm "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_TASK_ID}.err"
 

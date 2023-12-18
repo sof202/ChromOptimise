@@ -64,11 +64,9 @@ fi
 ##    SET UP    ##
 ## ============ ##
 
-# Print start date/time
 echo "Job '$SLURM_JOB_NAME' started at:"
 date -u
 
-# Get the start time for the program
 start_time=$(date +%s)
 
 # Activate config.txt to access all file paths
@@ -111,18 +109,11 @@ source /lustre/home/sof202/miniconda3/etc/profile.d/conda.sh
 # CHANGE THIS TO YOUR CONDA ENVIRONMENT NAME
 conda activate pyega
 
-# Currently configured to download into a specific directory
-# change this if you want a different one.
 while IFS= read -r line; do
-    # mkdir -p "${DOWNLOAD_DIR}"
-    # pyega3 -c 5 -cf ~/pyegaDownloading/egaConfig.json fetch \
-    # "$line" --output-dir "${DOWNLOAD_DIR}" 
-
-    mkdir -p \
-    "/lustre/projects/Research_Project-MRC190311/blueprint/EGAD00001002670/$line"
     # CHANGE egaConfig.json TO FILE WITH EGA LOGIN CREDENTIALS
-    pyega3 -c 5 -cf ~/pyegaDownloading/egaConfig.json fetch "$line" --output-dir \
-    "/lustre/projects/Research_Project-MRC190311/blueprint/EGAD00001002670/" 
+    mkdir -p "${DOWNLOAD_DIR}"
+    pyega3 -c 5 -cf ~/pyegaDownloading/egaConfig.json fetch \
+    "$line" --output-dir "${DOWNLOAD_DIR}" 
 done < "${Text_File_Containing_Inodes}"
 
 
@@ -130,14 +121,11 @@ done < "${Text_File_Containing_Inodes}"
 ##   LOG FILE MANAGEMENT   ##
 ## ======================= ##
 
-
-#Finish message and time
 echo "Job completed at:"
 date -u
 end_time=$(date +%s)
 time_taken=$((end_time-start_time))
 echo "Job took a total of: ${time_taken} seconds to complete."
 
-# Remove temporary log files
 rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log"
 rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err"

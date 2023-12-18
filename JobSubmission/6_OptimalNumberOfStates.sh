@@ -123,7 +123,6 @@ if [ -z "$(ls -A)" ]; then
     echo "Please run 5_CreateIncrementalModels.sh before this script."
     echo "Aborting..."
 
-    # Remove temporary log files
     rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log"
     rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err"
 
@@ -135,6 +134,7 @@ if [ -z "$BIN_SIZE" ]; then
     BIN_SIZE=$(find . -type f -name "Emissions*.txt" | head -1 | cut -d "_" -f 3)
     echo "No bin size was given, assuming a default value of ${BIN_SIZE}..."
 fi
+
 if [ -z "$SAMPLE_SIZE" ]; then
     SAMPLE_SIZE=$(find . -type f -name "Emissions*.txt" | head -1 | cut -d "_" -f 5)
     echo "No sample size was given, assuming a default value of ${SAMPLE_SIZE}..."
@@ -144,7 +144,6 @@ fi
 ##   FILE MANAGEMENT   ##
 ## =================== ##
 
-# Remove any contents of temporary folder
 mkdir -p "${OPTIMUM_STATES_DIR}/temp"
 cd "${OPTIMUM_STATES_DIR}/temp" || exit 1
 rm -f ./*
@@ -219,14 +218,12 @@ Rscript PlotLikelihoods.R "${BIN_SIZE}" "${SAMPLE_SIZE}" "${Output_Directory}"
 ##   LOG FILE MANAGEMENT   ##
 ## ======================= ##
 
-# Finishing message
 echo "Job completed at:"
 date -u
 end_time=$(date +%s)
 time_taken=$((end_time-start_time))
 echo "Job took a total of: ${time_taken} seconds to complete"
 
-# Removing temporary log files
 rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log"
 rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err"
 

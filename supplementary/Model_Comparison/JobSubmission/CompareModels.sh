@@ -100,7 +100,6 @@ if [ -z "$(ls -A)" ]; then
     echo "Ensure that 5_CreateIncrementalModels.sh has been ran before this script."
     echo "Aborting..."
 
-    # Remove temporary log files
     rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log"
     rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err"
 
@@ -170,14 +169,12 @@ rm -rf temp
 ##   LOG FILE MANAGEMENT   ##
 ## ======================= ##
 
-#Finish message and time
 echo "Job completed at:"
 date -u
 end_time=$(date +%s)
 time_taken=$((end_time-start_time))
 echo "Job took a total of: ${time_taken} seconds to complete"
 
-# Remove temporary log files
 rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log"
 rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err"
 

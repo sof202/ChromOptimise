@@ -102,7 +102,6 @@ if [ -z "$(ls -A)" ]; then
     echo "Ensure that 4_BinarizeBamFiles.sh has been ran before this script."
     echo "Aborting..."
 
-    # Remove temporary log files
     rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" 
     rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" 
 
@@ -145,10 +144,9 @@ java -mx30G \
 "${BINARY_DIR}" "${BLUEPRINT_MAIN_DIR}/Big_Model_Files" "${MODEL_SIZE}" hg19 > \
 "ChromHMM.Output.ModelSize.${MODEL_SIZE}.txt"
 
-## Find the estimated log likelihood from this file
 echo "Model Learning finished"
 echo "Writing estimated log likelihood to file"
-# grep removes the lines associated with writing to files. 
+# grep removes the terminal logs associated with writing to files.
 # The tail and awk locate the final estimated log likelihood
 grep "       " "ChromHMM.Output.ModelSize.${MODEL_SIZE}.txt" | \
 tail -1 | \
@@ -159,13 +157,11 @@ awk '{print $2}' >> \
 ##   LOG FILE MANAGEMENT   ##
 ## ======================= ##
 
-# Finishing message
 echo "Job completed at:"
 date -u
 end_time=$(date +%s)
 time_taken=$((end_time - start_time))
 echo "Job took a total of: ${time_taken} seconds to complete."
 
-# Removing temporary log files
 rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" 
 rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" 

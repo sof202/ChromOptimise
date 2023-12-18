@@ -107,7 +107,6 @@ if [ -z "$(ls -A)" ]; then
     echo "Ensure that 3_SubsampleBamFiles.sh has been ran before this script."
     echo "Aborting..."
 
-    # Remove temporary log files
     rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log"
     rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err"
 
@@ -142,25 +141,19 @@ echo "sample size: ${SAMPLE_SIZE} using a bin size of: ${BIN_SIZE}."
 
 rm -f "cellmarkfiletable.txt" 
 for file in *.bam; do
-    # echo -ne is used here to ensure that no newline is inserted and instead a tab is
-    # inserted after the cell name (as this file is supposed to be tsv).
     echo -ne "Mature_Neutorphil_SampleSize_${SAMPLE_SIZE}_BinSize_${BIN_SIZE}\t" >>\
     "cellmarkfiletable.txt"
     # The subsampled files are named: subsampled.[SampleSize].[mark_name].bam. 
-    # Below extracts mark_name
+    # Below extracts the mark name
     mark_name=$(echo "$file" | cut -d "." -f 3) 
     echo -ne "${mark_name}\t" >> "cellmarkfiletable.txt"
     echo "$file" >> "cellmarkfiletable.txt"
 done
 
-
-
-
 ## ================================= ##
 ##    BINARIZATION USING CHROMHMM    ##
 ## ================================= ##
 
-# Delete any binary files that have been created in previous run throughs
 cd "${BINARY_DIR}" || { echo "Binary directory doesn't exist, \
 make sure config.txt is pointing to the correct directory"; exit 1; }
 rm ./*.txt*
@@ -168,30 +161,25 @@ rm ./*.txt*
 module purge
 module load Java
 
-# Binarize the files in the subsampled directory using the user specified (or default)
-#  bin size. The blueprint data is using GChr37 (which is equivalent to UCSC's hg19).
+# Binarize the files in the subsampled directory.
+# The blueprint data uses GChr37 assembly (which is equivalent to UCSC's hg19).
 java -mx30G -jar "${CHROMHMM_MAIN_DIR}/ChromHMM.jar" BinarizeBam -b "${BIN_SIZE}" \
 -gzip "${CHROMHMM_CHROM_SIZES}/hg19.txt" "${SUBSAMPLED_DIR}" \
 "${SUBSAMPLED_DIR}/cellmarkfiletable.txt" "${BINARY_DIR}"
 
-# Delete Mitochondrial DNA binary file
-rm "${BINARY_DIR}\
-/Mature_Neutorphil_SampleSize_${SAMPLE_SIZE}_BinSize_${BIN_SIZE}_chrM_binary.txt.gz"
-
-
+# Optional: One may not want to keep the mitochondrial DNA in the analysis
+# rm "${BINARY_DIR}\
+# /Mature_Neutorphil_SampleSize_${SAMPLE_SIZE}_BinSize_${BIN_SIZE}_chrM_binary.txt.gz"
 
 ## ======================= ##
 ##   LOG FILE MANAGEMENT   ##
 ## ======================= ##
 
-
-# Finishing message
 echo "Job completed at:"
 date -u
 end_time=$(date +%s)
 time_taken=$(("$end_time"-"$start_time"))
 echo "Job took a total of: ${time_taken} seconds to complete"
 
-# Removing temporary log files
 rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log"
 rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err"

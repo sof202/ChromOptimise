@@ -103,20 +103,16 @@ BLUEPRINT_MARK_NAME=$1
 SAMPLE_SIZE=$2
 BLUEPRINT_PROCESSED_FILE_PATH="${PROCESSED_DIR}/${BLUEPRINT_MARK_NAME}"
 
-# If no Mark name is given, abort the process
 if [ -z "${BLUEPRINT_MARK_NAME}" ]; then
     echo "No Blueprint epigenetic mark name given."
     echo "Ensure first argument is the name of the epigenetic mark."
     echo "Aborting..."
 
-    # Remove temporary log files
     rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log"
     rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err"
     exit 1
 fi
-    
 
-# Default sample size used if not defined by user
 if [ -z "${SAMPLE_SIZE}" ]; then
     SAMPLE_SIZE=50
     echo "No sample size was given, using default value of 50 percent."
@@ -124,40 +120,34 @@ fi
 echo -n "Subsampling processed .bam files using sample size of: "
 echo "${SAMPLE_SIZE} percent for epigenetic mark: ${BLUEPRINT_MARK_NAME}"
 
-# Check if the directory with the epigenetic mark actually exists
+## ========================= ##
+##   MERGING OF .BAM FILES   ##
+## ========================= ##
+
 if [ -d "${BLUEPRINT_PROCESSED_FILE_PATH}" ]; then
     echo "Changing directory to: ${BLUEPRINT_PROCESSED_FILE_PATH}" 
     cd "${BLUEPRINT_PROCESSED_FILE_PATH}" || exit 1
 else
     echo "Directory does not exist yet." 
     echo -n "Make sure you typed the epigenetic mark correctly "
-    echo "and that you have ran 2_ProcessBamFiles.sh first"
+    echo "and that you have ran 2_ProcessBamFiles.sh first."
     echo "Aborting..."
 
-    # Remove temporary log files
     rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log"
     rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err"
     exit 1
 fi
 
-## ========================= ##
-##   MERGING OF .BAM FILES   ##
-## ========================= ##
-
-# Use find to obtain all of the .bam files that were the output of the processing stage
 echo "Finding suitable .bam files to merge..."
 find . -type f -name "*.sorted.filtered.noDuplicates.bam" \
 > List_Of_Bam_Files_To_Merge.txt
 
-
-# Merge all of the processed bam files into one large file 
 module purge
 module load SAMtools
 output_file_path="${SUBSAMPLED_DIR}/FullMerged.${BLUEPRINT_MARK_NAME}.bam"
 
 echo "Merging..."
 samtools merge -b List_Of_Bam_Files_To_Merge.txt "${output_file_path}"
-
 
 ## ===================================== ##
 ##    SUBSAMPLING OF MERGED .BAM FILE    ##
@@ -166,31 +156,27 @@ samtools merge -b List_Of_Bam_Files_To_Merge.txt "${output_file_path}"
 cd "${SUBSAMPLED_DIR}" || { echo "Subsampled directory doesn't exist, \
 make sure config.txt is pointing to the correct directory"; exit 1; }
 
-SAMPLE_SIZE_DECIMAL=$(echo "scale=2; $SAMPLE_SIZE /100" | bc)
+sample_size_decimal=$(echo "scale=2; $SAMPLE_SIZE /100" | bc)
 echo "Subsampling..."
 # Ensure headers are kept in subsampled file to avoid errors later in pipeline
 samtools view -H "${output_file_path}" \
 > "Subsampled.${SAMPLE_SIZE}.${BLUEPRINT_MARK_NAME}.bam"
-samtools view -s "${SAMPLE_SIZE_DECIMAL}" "${output_file_path}" \
+samtools view -s "${sample_size_decimal}" "${output_file_path}" \
 >> "Subsampled.${SAMPLE_SIZE}.${BLUEPRINT_MARK_NAME}.bam"
 
-# Delete the full merged file and the 'List_Of_Bam_Files_To_Merge.txt' file
 rm "FullMerged.${BLUEPRINT_MARK_NAME}.bam"
 cd "${BLUEPRINT_PROCESSED_FILE_PATH}" || exit 1
 rm List_Of_Bam_Files_To_Merge.txt
-
 
 ## ======================= ##
 ##   LOG FILE MANAGEMENT   ##
 ## ======================= ##
 
-# Finishing message
 echo "Job completed at:"
 date -u
 end_time=$(date +%s)
 time_taken=$((end_time-start_time))
 echo "Job took a total of: ${time_taken} seconds to complete"
 
-# Removing temporary log files
 rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log"
 rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err"

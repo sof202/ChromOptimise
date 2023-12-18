@@ -61,11 +61,9 @@ fi
 ##    SET UP    ##
 ## ============ ##
 
-# Print start date/time
 echo "Job '$SLURM_JOB_NAME' started at:"
 date -u
 
-# Get the start time for the program
 start_time=$(date +%s)
 
 # Activate config.txt to access all file paths
@@ -100,7 +98,6 @@ cd "${BLUEPRINT_MAIN_DIR}" || \
 { echo "Main directory doesn't exist, \
 make sure config.txt is pointing to the correct directory"; exit 1; }
 
-# Find all of the bam files with the mark name given by the user
 list_of_files_with_mark_name=\
 $(find . -type f -name "*${BLUEPRINT_MARK_NAME}*.bam")
 
@@ -116,7 +113,6 @@ if [ "${number_of_files_to_move}" -eq 0 ]; then
     echo "Please input a epigenetic mark name that exists (case sensitive)." 
     echo "Aborting..."
 
-    # Remove temporary log files
     rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log"
     rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err"
 
@@ -137,13 +133,11 @@ done
 ##   LOG FILE MANAGEMENT   ##
 ## ----------------------- ##
 
-#Finish message and time
 echo "Job completed at:"
 date -u
 end_time=$(date +%s)
 time_taken=$((end_time-start_time))
 echo "Job took a total of: ${time_taken} seconds to complete"
 
-# Remove temporary log files
 rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log"
 rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err"

@@ -124,7 +124,6 @@ if [ -z "$(ls -A)" ]; then
     echo "Ensure that 4_BinarizeBamFiles.sh has been ran before this script."
     echo "Aborting..."
 
-    # Remove temporary log files
     rm "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_TASK_ID}.log"
     rm "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_TASK_ID}.err"
 
@@ -271,7 +270,6 @@ cd "${MODEL_DIR}" || { echo "Model directory doesn't exist, \
 make sure config.txt is pointing to the correct directory"; exit 1; }
 emission_files_to_rename=$(find . -type f -name "emissions*")
 for file in $emission_files_to_rename; do
-    # obtains number of states and file extension name
     file_ending=$(echo "$file" | cut -d "_" -f 2) 
     mv "$file" \
     "Emissions_BinSize_${BIN_SIZE}_SampleSize_${SAMPLE_SIZE}_NumberOfStates_${file_ending}" 
@@ -296,13 +294,11 @@ done
 ##   LOG FILE MANAGEMENT   ##
 ## ======================= ##
 
-# Finishing message
 echo "Job completed at:"
 date -u
 end_time=$(date +%s)
 time_taken=$((end_time-start_time))
 echo "Job took a total of: ${time_taken} seconds to complete"
 
-# Removing temporary log files
 rm "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_TASK_ID}.log"
 rm "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_TASK_ID}.err"
