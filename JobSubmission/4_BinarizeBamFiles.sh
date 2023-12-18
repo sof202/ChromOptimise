@@ -1,7 +1,7 @@
 #!/bin/bash
 # Export all environment variables to the batch job
 #SBATCH --export=ALL
-# submit to the mrc queue for faster queue times
+# Submit to the mrc queue for faster queue times
 #SBATCH -p mrcq 
 # From tests, binarizing 6 files (total size: 8GB), took a total of 22 mjnutes
 #SBATCH --time=01:00:00 
