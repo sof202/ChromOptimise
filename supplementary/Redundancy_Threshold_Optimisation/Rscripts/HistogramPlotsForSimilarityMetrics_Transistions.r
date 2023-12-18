@@ -1,35 +1,35 @@
-## -------------------------------------------------------------- ##
-##                                                                ##
-##                            PREAMBLE                            ##
-##                                                                ##
-## -------------------------------------------------------------- ##
-##                            PURPOSE:                            ##
-##     This R script is in place to find and plot the maximum     ##
-##      transistion parameter seen in each row/column of the      ##
-##     transition matrix produced as an output from ChromHMM.     ##
-##   These can then be used to identify the relative stability    ##
-##       of the states in the model. By stability, we mean:       ##
-##    likely to follow onto / from at leaset one specific state   ##
-##                 more often than random chance.                 ##
-## -------------------------------------------------------------- ##
-##        AUTHOR: Sam Fletcher s.o.fletcher@exeter.ac.uk          ##
-##                     CREATED: December 2023                     ##
-## -------------------------------------------------------------- ##
-##                          PREREQUISITES:                        ##
-##                   Run: Generate_Big_Model.sh                   ##
-## -------------------------------------------------------------- ##
-##                             INPUTS:                            ##
-##                        $1 -> Model size                        ##
-## -------------------------------------------------------------- ##
-##                            OUTPUTS:                            ##
-##   2 histograms and 2 scatter plots displaying the maxima for   ##
-##      the rows and columns seen in the transition parameter     ##
-##                    matrix that is loaded.                      ##
-## -------------------------------------------------------------- ##
+## ============================================================== ##
+##                                                                ||
+##                            PREAMBLE                            ||
+##                                                                ||
+## ============================================================== ##
+## PURPOSE:                                                       ||
+## This R script is in place to find and plot the maximum         ||
+## transistion parameter seen in each row/column of the           ||
+## transition matrix produced as an output from ChromHMM.         ||
+## These can then be used to identify the relative stability      ||
+## of the states in the model. By stability, we mean:             ||
+## likely to follow onto / from at leaset one specific state      ||
+## more often than random chance.                                 ||
+## ============================================================== ##
+## AUTHOR: Sam Fletcher s.o.fletcher@exeter.ac.uk                 ||
+## CREATED: December 2023                                         ||
+## ============================================================== ##
+## PREREQUISITES:                                                 ||
+## Run: Generate_Big_Model.sh                                     ||
+## ============================================================== ##
+## INPUTS:                                                        ||
+## $1 -> Model size                                               ||
+## ============================================================== ##
+## OUTPUTS:                                                       ||
+## 2 histograms and 2 scatter plots displaying the maxima for     ||
+## the rows and columns seen in the transition parameter          ||
+## matrix that is loaded.                                         ||
+## ============================================================== ##
 
-## ---------- ##
+## ========== ##
 ##    SETUP   ##
-## ---------- ##
+## ========== ##
 
 rm(list = ls())
 
@@ -39,13 +39,10 @@ setwd("/lustre/projects/Research_Project-MRC190311/scripts")
 source("integrative/blueprint/config/config.R")
 setwd(big_models_dir)
 
-
-# Arguments and variables
 arguments <- commandArgs(trailingOnly = TRUE)
 model_size <- as.numeric(arguments[1])
 seed <- arguments[2]
 
-# Open emissions file and extract the emission parameters from this
 file_name <- paste0("transitions_", model_size, "_", seed, ".txt")
 transition_data <- read.table(file_name, skip = 1)
 transition_data <- subset(transition_data, select = -V1)
@@ -57,9 +54,9 @@ for (column in 1:model_size){
 }
 
 
-## ---------------- ##
+## ================ ##
 ##   CALCULATIONS   ##
-## ---------------- ##
+## ================ ##
 
 transition_state_to_maxima <- data.frame(State = integer(), Maxima = double())
 transition_state_from_maxima <- data.frame(State = integer(), Maxima = double())
@@ -80,12 +77,10 @@ for (state in 1:model_size){
 }
 
 
-## ------------ ##
+## ============ ##
 ##   PLOTTING   ##
-## ------------ ##
+## ============ ##
 
-
-## 'Traveling to a state' plots
 transition_to_histogram <-
   ggplot(transition_state_to_maxima, aes(x = Maxima)) +
   geom_histogram(binwidth = baseline_probability / 2,
@@ -96,9 +91,6 @@ transition_to_histogram <-
            label = "Random chance", color = "red") +
   labs(title = "Histogram for maximum probabilities of 
        transitioning towards states")
-
-#transition_to_histogram
-
 
 transition_to_scatter <-
   ggplot(transition_state_to_maxima, aes(x = State, y = Maxima)) +
@@ -115,9 +107,6 @@ transition_to_scatter <-
   theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5))
 
-#transition_to_scatter
-
-## 'Traveling from a state' plots
 transition_from_histogram <-
   ggplot(transition_state_from_maxima, aes(x = Maxima)) +
   geom_histogram(binwidth = baseline_probability / 2,
@@ -128,8 +117,6 @@ transition_from_histogram <-
            label = "Random chance", color = "red") +
   labs(title = "Histogram for maximum probabilities 
        of transitioning away from states")
-
-#transition_from_histogram
 
 transition_from_scatter <-
   ggplot(transition_state_from_maxima,
@@ -147,13 +134,10 @@ transition_from_scatter <-
   theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5))
 
-#transition_from_scatter
-
-## ---------------- ##
+## ================ ##
 ##   SAVING PLOTS   ##
-## ---------------- ##
+## ================ ##
 
-# Names of Plots
 transition_to_histogram_name <-
   paste0("Histogram.Maximum.Probability.Transition.Away.model_size",
          model_size, ".pdf")
@@ -168,7 +152,6 @@ transition_from_scatter_name <-
   paste0("Scatter.Plot.Maximum.Probability.Transition.Away.model_size",
          model_size, ".pdf")
 
-# Save the plots to "Plots" folder
 ggsave(
   transition_to_histogram_name,
   plot = transition_to_histogram,
