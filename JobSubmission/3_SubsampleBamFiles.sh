@@ -91,6 +91,7 @@ source "/lustre/projects/Research_Project-MRC190311\
 LOG_FILE_PATH="${LOG_DIR}/$USER/$SLURM_JOB_NAME/"
 mkdir -p "${LOG_FILE_PATH}"
 timestamp=$(date -u +%Y.%m.%d-%H:%M)
+
 ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" \
 "${LOG_FILE_PATH}/$1~$2~${SLURM_JOB_ID}~$timestamp.log"
 ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
