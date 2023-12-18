@@ -117,16 +117,6 @@ ln "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_TASK_ID}.err" \
 "${LOG_FILE_PATH}/${SLURM_ARRAY_JOB_ID}~${SLURM_ARRAY_TASK_ID}~$timestamp.err"
 
 
-## ========================= ##
-##    VARIABLE ASSIGNMENT    ##
-## ========================= ##
-
-NUMBER_OF_MODELS_TO_GENERATE=$1
-STATE_INCREMENT=$2
-BIN_SIZE=$3
-SAMPLE_SIZE=$4
-
-# Check for existence of files in the binarized directory
 cd "${BINARY_DIR}" || { echo "Binary directory doesn't exist, \
 make sure config.txt is pointing to the correct directory"; exit 1; }
 if [ -z "$(ls -A)" ]; then
@@ -140,6 +130,15 @@ if [ -z "$(ls -A)" ]; then
 
     exit 1
 fi
+
+## ========================= ##
+##    VARIABLE ASSIGNMENT    ##
+## ========================= ##
+
+NUMBER_OF_MODELS_TO_GENERATE=$1
+STATE_INCREMENT=$2
+BIN_SIZE=$3
+SAMPLE_SIZE=$4
 
 if [ -z "${NUMBER_OF_MODELS_TO_GENERATE}" ]; then
     echo "Number of models to generate was not given."
