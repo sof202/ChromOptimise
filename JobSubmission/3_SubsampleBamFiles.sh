@@ -71,11 +71,9 @@ fi
 ##    SET UP    ##
 ## ============ ##
 
-# Print start date/time
 echo "Job '$SLURM_JOB_NAME' started at:"
 date -u
 
-# Get the start time for the program
 start_time=$(date +%s)
 
 # Activate config.txt to access all file paths
