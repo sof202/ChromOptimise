@@ -1,7 +1,7 @@
 #!/bin/bash
-# export all enviroment variables to the batch job
+# Export all enviroment variables to the batch job
 #SBATCH --export=ALL
-# submit to the mrcq for faster queue times
+# Submit to the mrcq for faster queue times
 #SBATCH -p mrcq
 # Downloading can take a long time if files are large/abundant
 #SBATCH --time=150:00:00
