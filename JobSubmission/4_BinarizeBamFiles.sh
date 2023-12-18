@@ -7,8 +7,10 @@
 #SBATCH --ntasks-per-node=16 
 #SBATCH --mem=100G # specify bytes memory to reserve, lots is required for this script as the binarization process stores a lot of data in memory
 #SBATCH --mail-type=END # Send an email after the job is done
-#SBATCH --output=/lustre/projects/Research_Project-MRC190311/scripts/integrative/blueprint/LogFiles/Binarization/temp.o #Put output file in log files with with temporary name
-#SBATCH --error=/lustre/projects/Research_Project-MRC190311/scripts/integrative/blueprint/LogFiles/Binarization/temp.e #Put error file in log files with with temporary name
+# Temporary log file, later to be removed
+#SBATCH --output=temp%j.log
+# Temporary error file, later to be removed
+#SBATCH --error=temp%j.err
 #SBATCH --job-name=Binarization
 
 ## -------------------------------------------------------------------------------------------- ##
@@ -62,27 +64,31 @@ fi
 ##    SET UP    ##
 ## ------------ ##
 
-# Rename the output and error files to have format: [job related feature]~[job id]~[date]-[time]
-# This requires a hard link as you cannot rename log files whilst running the script without a wrapper function
-LOG_FILE_PATH=/lustre/projects/Research_Project-MRC190311/scripts/integrative/blueprint/LogFiles/$SLURM_JOB_NAME/
-mkdir -p "$LOG_FILE_PATH"
-cd "${LOG_FILE_PATH}" || exit 1
-timestamp=$(date -u +%Y.%m.%d-%H:%M)
-# Not saving the error file as the error files for this can get very very large (hundreds of gigabytes).
-# This is likely due to the absence of the header in the merged bam files. You get an error message for every single line in the bam files.
-rm temp.e
-ln temp.o "$1~${SLURM_JOB_ID}~$timestamp.o"
-
-# Print start date/time
-echo "Job '$SLURM_JOB_NAME' started at..."
+echo "Job '$SLURM_JOB_NAME' started at:"
 date -u
 
-# Get the start time for the program
 start_time=$(date +%s)
 
 # Activate config.txt to access all file paths
-echo "Loading config file:"
-source /lustre/projects/Research_Project-MRC190311/scripts/integrative/blueprint/config/config.txt
+# CHANGE THIS TO YOUR OWN CONFIG FILE
+echo "Loading config file..."
+source "/lustre/projects/Research_Project-MRC190311\
+/scripts/integrative/blueprint/config/config.txt"
+
+# Rename the output and error files to have format:
+# BinSize-[bin size]~[job id]~[date]-[time]
+# This requires a hard link as you cannot rename log files
+# whilst running the script without a wrapper function
+LOG_FILE_PATH="${LOG_DIR}/$USER/$SLURM_JOB_NAME/"
+mkdir -p "${LOG_FILE_PATH}"
+timestamp=$(date -u +%Y.%m.%d-%H:%M)
+
+ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" \
+"${LOG_FILE_PATH}/BinSize-$1~${SLURM_JOB_ID}~$timestamp.log"
+ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
+"${LOG_FILE_PATH}/BinSize-$1~${SLURM_JOB_ID}~$timestamp.err"
+
+
 
 # Initialise variables
 BIN_SIZE=$1
@@ -95,9 +101,8 @@ if [ -z "$(ls -A)" ]; then
     echo "Aborting..."
 
     # Remove temporary log files
-    cd "${LOG_FILE_PATH}" || exit 1
-    rm temp.e
-    rm temp.o
+    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log"
+    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err"
 
     exit 1
 fi
@@ -169,6 +174,5 @@ time_taken=$(("$end_time"-"$start_time"))
 echo "Job took a total of: ${time_taken} seconds to complete"
 
 # Removing temporary log files
-cd "${LOG_FILE_PATH}" || exit 1
-rm temp.e
-rm temp.o
+rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log"
+rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err"
