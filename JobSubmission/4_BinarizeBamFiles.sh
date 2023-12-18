@@ -146,10 +146,10 @@ for file in *.bam; do
     # inserted after the cell name (as this file is supposed to be tsv).
     echo -ne "Mature_Neutorphil_SampleSize_${SAMPLE_SIZE}_BinSize_${BIN_SIZE}\t" >>\
     "cellmarkfiletable.txt"
-    # The subsampled files are named: subsampled.[SampleSize].[Mark_Name].bam. 
-    # Below extracts Mark_Name
-    Mark_Name=$(echo "$file" | cut -d "." -f 3) 
-    echo -ne "${Mark_Name}\t" >> "cellmarkfiletable.txt"
+    # The subsampled files are named: subsampled.[SampleSize].[mark_name].bam. 
+    # Below extracts mark_name
+    mark_name=$(echo "$file" | cut -d "." -f 3) 
+    echo -ne "${mark_name}\t" >> "cellmarkfiletable.txt"
     echo "$file" >> "cellmarkfiletable.txt"
 done
 
