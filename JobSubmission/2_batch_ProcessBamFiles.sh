@@ -8,7 +8,7 @@
 #SBATCH -A Research_Project-MRC190311 
 #SBATCH --nodes=1 
 #SBATCH --ntasks-per-node=16
-# Make sure it is not higher than the number of files being processed
+# Make sure array is not higher than the number of files being processed
 # as this ends up with all files being processed by max index array
 #SBATCH --array=1-4
 # specify bytes memory to reserve
@@ -70,11 +70,9 @@ fi
 ##    SET UP    ##
 ## ============ ##
 
-# Print start date/time
 echo "Job '$SLURM_JOB_NAME' started at:"
 date -u
 
-# Get the start time for the program
 start_time=$(date +%s)
 
 # Activate config.txt to access all file paths
@@ -90,6 +88,7 @@ source "/lustre/projects/Research_Project-MRC190311\
 LOG_FILE_PATH="${LOG_DIR}/$USER/$SLURM_JOB_NAME/"
 mkdir -p "${LOG_FILE_PATH}"
 timestamp=$(date -u +%Y.%m.%d-%H:%M)
+
 ln "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_TASK_ID}.log" \
 "${LOG_FILE_PATH}/$1~${SLURM_ARRAY_JOB_ID}~${SLURM_ARRAY_TASK_ID}~$timestamp.log"
 ln "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_TASK_ID}.err" \
