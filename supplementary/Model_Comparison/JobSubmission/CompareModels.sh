@@ -115,10 +115,10 @@ rm ./*
 
 cd "${MODEL_DIR}" || { echo "Model directory doesn't exist, \
 make sure config.txt is pointing to the correct directory"; exit 1; }
-Emission_Text_Files=$(find . -type f -name "Emission*.txt")
+emission_text_files=$(find . -type f -name "Emission*.txt")
 
 echo "Copying emission files to a temporary directory..."
-for file in $Emission_Text_Files; do
+for file in $emission_text_files; do
     echo "Copying ${file}..."
     # ChromHMM's CompareModels requires files to start with 'emissions'
     # This is case sensitive, hence we need to convert to lower case.
@@ -138,30 +138,30 @@ done
 module purge
 module load Java
 
-for file in $Emission_Text_Files; do
+for file in $emission_text_files; do
     # 1)
     cd "${COMPARE_DIR}" || exit 1
-    Most_Complex_Model_Number=$(find ./temp -type f -name "emissions*.txt" | \
+    most_complex_model_number=$(find ./temp -type f -name "emissions*.txt" | \
     grep -oP "\d+(?=.txt)"| \
     sort -g | \
     tail -1)
 
-    Most_Complex_Model_File=$(find ./temp -type f -name "emissions*.txt" | \
-    grep "${Most_Complex_Model_Number}.txt")
+    most_complex_model_file=$(find ./temp -type f -name "emissions*.txt" | \
+    grep "${most_complex_model_number}.txt")
 
-    echo "${Most_Complex_Model_File}"
+    echo "${most_complex_model_file}"
 
     # 2)
-    echo -n "Comparing ${Most_Complex_Model_File} to the " 
+    echo -n "Comparing ${most_complex_model_file} to the " 
     echo "present less complex emission files..."
 
     java -mx1G \
     -jar "${CHROMHMM_MAIN_DIR}/ChromHMM.jar" CompareModels \
-    "${Most_Complex_Model_File}" temp/ \
-    "Comparison_To_${Most_Complex_Model_Number}_states" 
+    "${most_complex_model_file}" temp/ \
+    "Comparison_To_${most_complex_model_number}_states" 
 
     # 3)
-    rm "${Most_Complex_Model_File}"
+    rm "${most_complex_model_file}"
 done
 
 rm -rf temp
