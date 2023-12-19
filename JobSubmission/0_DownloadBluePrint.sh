@@ -76,22 +76,22 @@ source "/lustre/projects/Research_Project-MRC190311\
 /scripts/integrative/blueprint/config/config.txt"
 
 # Rename the output and error files to have format:
-# [job id]~[date]-[time]
+# [file name]~[job id]~[date]-[time]
 # This requires a hard link as you cannot rename log files
 # whilst running the script without a wrapper function
 LOG_FILE_PATH="${LOG_DIR}/$SLURM_JOB_NAME/$USER"
 mkdir -p "${LOG_FILE_PATH}"
 timestamp=$(date -u +%Y.%m.%d-%H:%M)
 ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" \
-"${LOG_FILE_PATH}/${SLURM_JOB_ID}~$timestamp.log"
+"${LOG_FILE_PATH}/File-$1~${SLURM_JOB_ID}~$timestamp.log"
 ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
-"${LOG_FILE_PATH}/${SLURM_JOB_ID}~$timestamp.err"
+"${LOG_FILE_PATH}/File-$1~${SLURM_JOB_ID}~$timestamp.err"
 
 ## ========================= ##
 ##    VARIABLE ASSIGNMENT    ##
 ## ========================= ##
 
-Text_File_Containing_Inodes=$1
+TEXT_FILE_CONTAINING_INODES=$1
 
 ## ========== ##
 ##    MAIN    ##
@@ -107,14 +107,15 @@ module load Miniconda3
 source /lustre/home/sof202/miniconda3/etc/profile.d/conda.sh 
 
 # CHANGE THIS TO YOUR CONDA ENVIRONMENT NAME
-conda activate pyega
+conda activate /lustre/home/sof202/miniconda3/envs/pyega
 
-while IFS= read -r line; do
+mkdir -p "${DOWNLOAD_DIR}"
+# Read each line and handle the last line without a newline character
+while IFS= read -r line || [[ -n "$line" ]]; do
     # CHANGE egaConfig.json TO FILE WITH EGA LOGIN CREDENTIALS
-    mkdir -p "${DOWNLOAD_DIR}"
-    pyega3 -c 5 -cf ~/pyegaDownloading/egaConfig.json fetch \
-    "$line" --output-dir "${DOWNLOAD_DIR}" 
-done < "${Text_File_Containing_Inodes}"
+    pyega3 -c 5 -cf ~/Tools/pyegaDownloading/egaConfig.json fetch \
+    "$line" --output-dir "${DOWNLOAD_DIR}"
+done < "${TEXT_FILE_CONTAINING_INODES}"
 
 
 ## ======================= ##
@@ -127,5 +128,6 @@ end_time=$(date +%s)
 time_taken=$((end_time-start_time))
 echo "Job took a total of: ${time_taken} seconds to complete."
 
+rm "${SLURM_SUBMIT_DIR}/pyega3_output.log"
 rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log"
 rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err"
