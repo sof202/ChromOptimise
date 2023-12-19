@@ -8,8 +8,8 @@
 #SBATCH -A Research_Project-MRC190311 
 #SBATCH --nodes=1 
 #SBATCH --ntasks-per-node=16
-# If the downloaded files are very large, you may want to increase this value 
-#SBATCH --mem=5G
+# Moving files on linux takes very little memory
+#SBATCH --mem=1G
 # Send an email after the job is done
 #SBATCH --mail-type=END
 # Temporary log file, later to be removed
