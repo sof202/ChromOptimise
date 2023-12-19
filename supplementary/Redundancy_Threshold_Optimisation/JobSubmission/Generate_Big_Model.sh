@@ -10,7 +10,8 @@
 #SBATCH -A Research_Project-MRC190311
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=16
-# Large memory consumption for big models, difficult to give good estimates
+# Large memory consumption for big models, difficult to give good estimates, see 
+# 5_batch_CreateIncrementalModels.sh for a idea with less states
 #SBATCH --mem=32G 
 #SBATCH --mail-type=END # Send an email after the job is done
 # Temporary log file, later to be removed

@@ -9,7 +9,7 @@
 #SBATCH --nodes=1 
 #SBATCH --ntasks-per-node=16
 # When comparing a relatively small number of models (7 models) the peak
-# heap memory consumption was xxMB
+# heap memory consumption was 44 KB.
 #SBATCH --mem=1G
 # Send an email after the job is done
 #SBATCH --mail-type=END 

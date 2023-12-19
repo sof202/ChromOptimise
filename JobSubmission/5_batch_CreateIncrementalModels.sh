@@ -4,7 +4,7 @@
 # Submit to the mrc queue for faster queue times
 #SBATCH -p mrcq
 # Tests: 1MB of binary data, 3 states: 55s, 4 states: 105s, 5 states: 575s,
-# 6 states: 763s, 7 states: 791s
+# 6 states: 763s, 7 states: 903s, 8 states: 1500s
 # Forward backwards algorithm has time complexity of N^2T, where T is the number of 
 # Genomic bins and N is the number of states
 #SBATCH --time=01:00:00 
