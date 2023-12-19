@@ -86,7 +86,7 @@ source "/lustre/projects/Research_Project-MRC190311\
 # ModelSize-[model size]~[job id]~[date]-[time]
 # This requires a hard link as you cannot rename log files
 # whilst running the script without a wrapper function
-LOG_FILE_PATH="${LOG_DIR}/$USER/$SLURM_JOB_NAME/"
+LOG_FILE_PATH="${LOG_DIR}/$SLURM_JOB_NAME/$USER"
 mkdir -p "${LOG_FILE_PATH}"
 timestamp=$(date -u +%Y.%m.%d-%H:%M)
 
