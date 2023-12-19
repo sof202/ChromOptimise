@@ -205,6 +205,24 @@ done
 
 rm -r "${OPTIMUM_STATES_DIR}/temp"
 
+## ========================= ##
+##   OPTIMUM STATES CHECK    ##
+## ========================= ##
+
+# If the largest model learned has no redundant states, this doesn't necessarily imply
+# that it has the optimum number of states, perhaps a more complex model does. This
+# section checks for this scenario.
+
+if [[ $(wc -l "${Output_Directory}/OptimumNumberOfStates.txt") -eq 1 ]]; then
+    {
+    echo -n "${Max_Model_Number} states may not be the optimum number of states. "
+    echo -n "Try increasing the size of the most complex model or increasing "
+    echo "the thresholds in the config.r file." 
+    } >> "${Output_Directory}/OptimumNumberOfStates.txt"
+else
+    echo "Optimum number of states for data is: ${Max_Model_Number}" >> \
+    "${Output_Directory}/OptimumNumberOfStates.txt"
+fi
 
 ## ============== ##
 ##    PLOTTING    ##
