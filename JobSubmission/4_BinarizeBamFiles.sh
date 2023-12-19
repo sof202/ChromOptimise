@@ -3,14 +3,13 @@
 #SBATCH --export=ALL
 # Submit to the mrc queue for faster queue times
 #SBATCH -p mrcq 
-# From tests, binarizing 6 files (total size: 8GB), took a total of 22 mjnutes
+# Tests: 17 GB of files took 4 minutes to binarize
 #SBATCH --time=01:00:00 
 #SBATCH -A Research_Project-MRC190311 
 #SBATCH --nodes=1 
 #SBATCH --ntasks-per-node=16
-# Lots is required for this script
-# The binarization process temporarily stores a lot of data in memory
-#SBATCH --mem=100G 
+# 17GB of files used 40MB of peak heap memory consumption
+#SBATCH --mem=10G 
 # Send an email after the job is done
 #SBATCH --mail-type=END 
 # Temporary log file, later to be removed

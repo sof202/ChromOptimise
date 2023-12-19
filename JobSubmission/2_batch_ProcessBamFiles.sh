@@ -55,7 +55,7 @@
 ## ======================== ##
 
 if [[ "$1" == "--help" || "$1" == "-h" ]]; then
-    echo "====================================================="
+    echo "=============================================================="
     echo "Purpose: Processes .bam files by removing duplicates,"
     echo "filtering out poor quality reads and sorting."
     echo "Author: Sam Fletcher"
@@ -64,7 +64,9 @@ if [[ "$1" == "--help" || "$1" == "-h" ]]; then
     echo "Inputs:"
     echo "\$1 -> Name of epigenetic mark"
     echo "\$2 -> Phred score threshold value"
-    echo "====================================================="
+    echo "Optional:"
+    echo "Specify --array in sbatch options, to set a custom array size."
+    echo "=============================================================="
     exit 0
 fi
 

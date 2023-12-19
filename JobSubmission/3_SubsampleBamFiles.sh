@@ -2,15 +2,15 @@
 # Export all environment variables to the batch job
 #SBATCH --export=ALL
 # Submit to the mrc queue for faster queue times
-#SBATCH -p mrcq
-# Change this depending on the number of files that are to be merged. 
-# In previous tests, merging 2 files of 1-2 Gigabytes each took ~7 minutes.
+#SBATCH -p mrcq 
+# Previous tests:(50%) 3 and 4 GB -> 4 mins. 5 and 7 GB -> 7 mins, 6 and 7 GB -> 7 mins
 #SBATCH --time=01:00:00 
 #SBATCH -A Research_Project-MRC190311 
 #SBATCH --nodes=1 
 #SBATCH --ntasks-per-node=16 
-# Lots of memory is required for this script as the merging process 
-# opens up every file at the same time piece by piece
+# Predicted that memory consumption will rise massively when merging lots of files
+# For 2 files, the merging only uses 5 MB. Though there is a large number of temporary
+# allocations
 #SBATCH --mem=100G 
 # Send an email after the job is done
 #SBATCH --mail-type=END 
