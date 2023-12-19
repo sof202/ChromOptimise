@@ -3,8 +3,10 @@
 #SBATCH --export=ALL
 # Submit to the mrc queue for faster queue times
 #SBATCH -p mrcq
-# Test runs using 3 marks and 7 models (1-8) took 15 minutes
-# When there was 1 megabyte of binary data
+# Tests: 1MB of binary data, 3 states: 55s, 4 states: 105s, 5 states: 575s,
+# 6 states: 763s, 7 states: 791s
+# Forward backwards algorithm has time complexity of N^2T, where T is the number of 
+# Genomic bins and N is the number of states
 #SBATCH --time=01:00:00 
 #SBATCH -A Research_Project-MRC190311 
 #SBATCH --nodes=1 
@@ -12,15 +14,16 @@
 # Make sure array is not higher than the number of models being learned
 # as this ends up with all models being processed by max index array
 #SBATCH --array=1-4
-# In test runs, learning a two state model with 1MB of binary data had
-# xxMB of peak heap consumption.
-#SBATCH --mem=10G
+# Tests: 1MB of binary data. 2 states: 181 MB 3 states: 145 MB, 4 states: 165 MB,
+# 5 states: 128 MB, 6 states 165 MB, 7 states 168 MB 
+# Memory consumption doesn't seem to be dependent on number of states
+#SBATCH --mem=5G
 # Send an email after the job is done
 #SBATCH --mail-type=END 
 # Temporary log file, later to be removed
-#SBATCH --output=temp%a.log
+#SBATCH --output=temp%A_%a.log
 # Temporary error file, later to be removed
-#SBATCH --error=temp%a.err
+#SBATCH --error=temp%A_%a.err
 #SBATCH --job-name=Model_Learning
 
 ## =================================================================================##
@@ -83,7 +86,7 @@ if [[ "$1" == "--help" || "$1" == "-h" ]]; then
     echo "\$4 -> Sample Size, WARNING: Use the same sample size as was used in"
     echo "3_SubsampleBamFiles.sh"
     echo "Optional:"
-    echo "Specify --array, to determine the number of concurrent processes"
+    echo "Specify --array in sbatch options, to set a custom array size."
     echo "======================================================================"
     exit 0
 fi
@@ -111,9 +114,9 @@ LOG_FILE_PATH="${LOG_DIR}/$SLURM_JOB_NAME/$USER"
 mkdir -p "${LOG_FILE_PATH}"
 timestamp=$(date -u +%Y.%m.%d-%H:%M)
 
-ln "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_TASK_ID}.log" \
+ln "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.log" \
 "${LOG_FILE_PATH}/${SLURM_ARRAY_JOB_ID}~${SLURM_ARRAY_TASK_ID}~$timestamp.log"
-ln "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_TASK_ID}.err" \
+ln "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err" \
 "${LOG_FILE_PATH}/${SLURM_ARRAY_JOB_ID}~${SLURM_ARRAY_TASK_ID}~$timestamp.err"
 
 
@@ -124,8 +127,8 @@ if [ -z "$(ls -A)" ]; then
     echo "Ensure that 4_BinarizeBamFiles.sh has been ran before this script."
     echo "Aborting..."
 
-    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_TASK_ID}.log"
-    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_TASK_ID}.err"
+    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.log"
+    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err"
 
     exit 1
 fi
@@ -240,7 +243,7 @@ seq "$starting_number_of_states" "$STATE_INCREMENT" "$ending_number_of_states"\
 for numstates in ${sequence}; do
     echo "Learning model with: ${numstates} states..."
     # The -nobrowser option is here as we have no need for the genome browser files
-    java -mx10G \
+    java -mx4G \
     -jar "${CHROMHMM_MAIN_DIR}/ChromHMM.jar" LearnModel \
     -nobrowser \
     -b "${BIN_SIZE}" \
@@ -300,5 +303,5 @@ end_time=$(date +%s)
 time_taken=$((end_time-start_time))
 echo "Job took a total of: ${time_taken} seconds to complete"
 
-rm "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_TASK_ID}.log"
-rm "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_TASK_ID}.err"
+rm "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.log"
+rm "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err"
