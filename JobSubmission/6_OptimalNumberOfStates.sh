@@ -150,12 +150,12 @@ rm -f ./*
 
 cd "${MODEL_DIR}" || { echo "Model directory doesn't exist, \
 make sure config.txt is pointing to the correct directory"; exit 1; }
-Emission_Text_Files=$(find . -type f -name "Emissions*.txt")
-for file in $Emission_Text_Files; do
+emission_text_files=$(find . -type f -name "Emissions*.txt")
+for file in $emission_text_files; do
     cp "$file" "${OPTIMUM_STATES_DIR}/temp"
 done
-Transition_Text_Files=$(find . -type f -name "Transitions*.txt")
-for file in $Transition_Text_Files; do
+transition_text_files=$(find . -type f -name "Transitions*.txt")
+for file in $transition_text_files; do
     cp "$file" "${OPTIMUM_STATES_DIR}/temp"
 done
 
@@ -168,38 +168,38 @@ module load R/4.2.1-foss-2022a
 cd "${RSCRIPTS_DIR}" || { echo "Rscripts directory doesn't exist, \
 make sure config.txt is pointing to the correct directory"; exit 1; }
 
-Max_Model_Number=$(find "${OPTIMUM_STATES_DIR}/temp" -type f -name "*.txt" | \
+max_model_number=$(find "${OPTIMUM_STATES_DIR}/temp" -type f -name "*.txt" | \
 grep -oP "\d+(?=.txt)"| \
 sort -g | \
 tail -1) 
 
-Output_Directory="${OPTIMUM_STATES_DIR}\
-/BinSize_${BIN_SIZE}_SampleSize_${SAMPLE_SIZE}_MaxModelSize_${Max_Model_Number}"
+output_directory="${OPTIMUM_STATES_DIR}\
+/BinSize_${BIN_SIZE}_SampleSize_${SAMPLE_SIZE}_MaxModelSize_${max_model_number}"
 
-mkdir -p "${Output_Directory}"
-rm -f "${Output_Directory}"/*
+mkdir -p "${output_directory}"
+rm -f "${output_directory}"/*
 
-while [[ $Max_Model_Number -gt 2 ]]; do
-    Max_Model_Number=$(find "${OPTIMUM_STATES_DIR}/temp" -type f -name "*.txt" | \
+while [[ $max_model_number -gt 2 ]]; do
+    max_model_number=$(find "${OPTIMUM_STATES_DIR}/temp" -type f -name "*.txt" | \
     grep -oP "\d+(?=.txt)"| \
     sort -g | \
     tail -1) 
 
-    Rscript RedundantStateChecker.R "${Max_Model_Number}" "${BIN_SIZE}" \
-    "${SAMPLE_SIZE}" "${Output_Directory}"
+    Rscript RedundantStateChecker.R "${max_model_number}" "${BIN_SIZE}" \
+    "${SAMPLE_SIZE}" "${output_directory}"
 
-    Redundant_States=$(tail -1 \
-    "${Output_Directory}/Redundant_States_Modelsize_${Max_Model_Number}.txt")
+    redundant_states=$(tail -1 \
+    "${output_directory}/redundant_states_Modelsize_${max_model_number}.txt")
 
-    if [[ "$Redundant_States" == "NONE" ]]; then
-        echo "Model with ${Max_Model_Number} states has no redundant states." >> \
-        "${Output_Directory}/OptimumNumberOfStates.txt"
+    if [[ "$redundant_states" == "NONE" ]]; then
+        echo "Model with ${max_model_number} states has no redundant states." >> \
+        "${output_directory}/OptimumNumberOfStates.txt"
         break
     else
-        rm -f "${OPTIMUM_STATES_DIR}"/temp/*"${Max_Model_Number}".txt
-        echo -n "Model with ${Max_Model_Number} states has redundant states: " >> \
-        "${Output_Directory}/OptimumNumberOfStates.txt"
-        echo "${Redundant_States}" >> "${Output_Directory}/OptimumNumberOfStates.txt"
+        rm -f "${OPTIMUM_STATES_DIR}"/temp/*"${max_model_number}".txt
+        echo -n "Model with ${max_model_number} states has redundant states: " >> \
+        "${output_directory}/OptimumNumberOfStates.txt"
+        echo "${redundant_states}" >> "${output_directory}/OptimumNumberOfStates.txt"
     fi
 done
 
@@ -213,15 +213,15 @@ rm -r "${OPTIMUM_STATES_DIR}/temp"
 # that it has the optimum number of states, perhaps a more complex model does. This
 # section checks for this scenario.
 
-if [[ $(wc -l "${Output_Directory}/OptimumNumberOfStates.txt") -eq 1 ]]; then
+if [[ $(wc -l "${output_directory}/OptimumNumberOfStates.txt") -eq 1 ]]; then
     {
-    echo -n "${Max_Model_Number} states may not be the optimum number of states. "
+    echo -n "${max_model_number} states may not be the optimum number of states. "
     echo -n "Try increasing the size of the most complex model or increasing "
     echo "the thresholds in the config.r file." 
-    } >> "${Output_Directory}/OptimumNumberOfStates.txt"
+    } >> "${output_directory}/OptimumNumberOfStates.txt"
 else
-    echo "Optimum number of states for data is: ${Max_Model_Number}" >> \
-    "${Output_Directory}/OptimumNumberOfStates.txt"
+    echo "Optimum number of states for data is: ${max_model_number}" >> \
+    "${output_directory}/OptimumNumberOfStates.txt"
 fi
 
 ## ============== ##
@@ -229,7 +229,7 @@ fi
 ## ============== ##
 
 # Plots the estimated log likelihood against the number of states across all models 
-Rscript PlotLikelihoods.R "${BIN_SIZE}" "${SAMPLE_SIZE}" "${Output_Directory}"
+Rscript PlotLikelihoods.R "${BIN_SIZE}" "${SAMPLE_SIZE}" "${output_directory}"
 
 ## ======================= ##
 ##   LOG FILE MANAGEMENT   ##
