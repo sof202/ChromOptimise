@@ -8,7 +8,7 @@
 #SBATCH -A Research_Project-MRC190311 
 #SBATCH --nodes=1 
 #SBATCH --ntasks-per-node=16
-# Script uses very little memory consumption
+# Memory consumption is very low, in testing it has been less than 1MB
 #SBATCH --mem=1G 
 # Send an email after the job is done
 #SBATCH --mail-type=END 
@@ -188,19 +188,18 @@ while [[ $Max_Model_Number -gt 2 ]]; do
     Rscript RedundantStateChecker.R "${Max_Model_Number}" "${BIN_SIZE}" \
     "${SAMPLE_SIZE}" "${Output_Directory}"
 
-    Redundant_States=$(tail -1 "${Output_Directory}\
-    /Redundant_States_Modelsize_${Max_Model_Number}.txt")
+    Redundant_States=$(tail -1 \
+    "${Output_Directory}/Redundant_States_Modelsize_${Max_Model_Number}.txt")
 
     if [[ "$Redundant_States" == "NONE" ]]; then
         echo "Model with ${Max_Model_Number} states has no redundant states." >> \
-        "${Output_Directory}\
-        /OptimumNumberOfStates.BinSize.${BIN_SIZE}.SampleSize.${SAMPLE_SIZE}.txt"
+        "${Output_Directory}/OptimumNumberOfStates.txt"
         break
     else
         rm -f "${OPTIMUM_STATES_DIR}"/temp/*"${Max_Model_Number}".txt
-        echo -n "Model with ${Max_Model_Number} states has redundant states: "
-        echo "${Redundant_States}" >> "${Output_Directory}\
-        /OptimumNumberOfStates.BinSize.${BIN_SIZE}.SampleSize.${SAMPLE_SIZE}.txt"
+        echo -n "Model with ${Max_Model_Number} states has redundant states: " >> \
+        "${Output_Directory}/OptimumNumberOfStates.txt"
+        echo "${Redundant_States}" >> "${Output_Directory}/OptimumNumberOfStates.txt"
     fi
 done
 
