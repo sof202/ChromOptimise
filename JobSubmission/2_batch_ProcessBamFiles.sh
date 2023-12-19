@@ -3,7 +3,8 @@
 #SBATCH --export=ALL
 # Submit to the mrc queue for faster queue times
 #SBATCH -p mrcq
-# Time for a single bam file of size: 1134MB was: ~10 minutes (scale up accordingly)
+# Tests have thus far shown a linear relationship between file size and time
+# Current approximation is: [time (mins)] = 0.1 + 9*[file size (GB)]
 #SBATCH --time=01:00:00 
 #SBATCH -A Research_Project-MRC190311 
 #SBATCH --nodes=1 
@@ -11,14 +12,15 @@
 # Make sure array is not higher than the number of files being processed
 # as this ends up with all files being processed by max index array
 #SBATCH --array=1-4
-# specify bytes memory to reserve
+# Peak memory consumption appears to come from samtools sort
+# Previous tests show 1GB peak heap memory consumption with 1.5GB files
 #SBATCH --mem=10G 
 # Send an email after the job is done
 #SBATCH --mail-type=END
 # Temporary log file, later to be removed
-#SBATCH --output=temp%a.log
+#SBATCH --output=temp%A_%a.log
 # Temporary error file, later to be removed
-#SBATCH --error=temp%a.err
+#SBATCH --error=temp%A_%a.err
 #SBATCH --job-name=Processing
 
 ## =================================================================================##
@@ -89,9 +91,9 @@ LOG_FILE_PATH="${LOG_DIR}/$SLURM_JOB_NAME/$USER"
 mkdir -p "${LOG_FILE_PATH}"
 timestamp=$(date -u +%Y.%m.%d-%H:%M)
 
-ln "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_TASK_ID}.log" \
+ln "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.log" \
 "${LOG_FILE_PATH}/$1~${SLURM_ARRAY_JOB_ID}~${SLURM_ARRAY_TASK_ID}~$timestamp.log"
-ln "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_TASK_ID}.err" \
+ln "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err" \
 "${LOG_FILE_PATH}/$1~${SLURM_ARRAY_JOB_ID}~${SLURM_ARRAY_TASK_ID}~$timestamp.err"
 
 ## ========================= ##
@@ -126,8 +128,8 @@ else
     echo "you have ran 1_MoveFilesToSingleDirectory.sh first"
     echo "Aborting..."
 
-    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_TASK_ID}.log"
-    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_TASK_ID}.err"
+    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.log"
+    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err"
     exit 1
 fi
 
@@ -237,7 +239,7 @@ end_time=$(date +%s)
 time_taken=$((end_time-start_time))
 echo "Job took a total of: ${time_taken} seconds to complete"
 
-rm "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_TASK_ID}.log"
-rm "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_TASK_ID}.err"
+rm "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.log"
+rm "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err"
 
 
