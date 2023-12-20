@@ -63,15 +63,12 @@ euclidean_distance <- function(vector_a, vector_b) {
   sqrt(sum((vector_a - vector_b) ^ 2))
 }
 
-
 ## ================================== ##
 ##   SIMILARITY METRIC CALCULATIONS   ##
 ## ================================== ##
 
-# Calculate the cosine similarity score and Euclidean distance for each
+# Calculate the Euclidean distance for each
 # disjoint pair of vectors in the emissions text file
-cosine_similarity_scores <-
-  data.frame(Score = double(), stringsAsFactors = FALSE)
 euclidean_distance_scores <-
   data.frame(Score = double(), stringsAsFactors = FALSE)
 
@@ -80,23 +77,13 @@ for (reference_state_index in 1:(model_size - 1)){
     reference_state <- as.numeric(emission_data[reference_state_index, ])
     comparison_state <- as.numeric(emission_data[comparison_state_index, ])
 
-    dot_product_of_states <- dot(reference_state, comparison_state)
-    reference_state_magnitude <- norm(reference_state, type = "2")
-    comparison_state_magnitude <- norm(comparison_state, type = "2")
-
-    cosine_similarity_score <-
-      dot_product_of_states /
-      (reference_state_magnitude * comparison_state_magnitude)
     distance_between_vectors <-
       euclidean_distance(reference_state, comparison_state)
 
-    cosine_similarity_scores[nrow(cosine_similarity_scores) + 1, ] <-
-      cosine_similarity_score
     euclidean_distance_scores[nrow(euclidean_distance_scores) + 1, ] <-
       distance_between_vectors
   }
 }
-
 
 ## ========================== ##
 ##    SUGGESTED THRESHOLDS    ##
@@ -138,23 +125,12 @@ euclidean_distance_histogram <- ggplot(euclidean_distance_scores,
   annotate("text", x = threshold_suggestion + 12 * bin_size, y = max_count / 5,
            label = threshold_suggestion_label)
 
-cosine_similarity_histogram <-
-  ggplot(cosine_similarity_scores, aes(x = Score)) +
-  theme_minimal() +
-  geom_histogram(binwidth = bin_size, color = "black", fill = "white") +
-  labs(title = "Histogram of cosine similarity Scores",
-       x = "Cosine Similarity", y = "Frequency") +
-  theme(plot.title = element_text(hjust = 0.5))
-
-
 ## ============== ##
 ##   SAVE PLOTS   ##
 ## ============== ##
 
 euclidean_distance_plot_name <-
   paste0("euclidean_distance_histogram.model_size.", model_size, ".pdf")
-cosin_similarity_plot_name <-
-  paste0("cosine_similarity_histogram.model_size.", model_size, ".pdf")
 
 ggsave(
   euclidean_distance_plot_name,
@@ -162,8 +138,3 @@ ggsave(
   path = emissions_plotting_dir
 )
 
-ggsave(
-  cosin_similarity_plot_name,
-  plot = cosine_similarity_histogram,
-  path = emissions_plotting_dir
-)
