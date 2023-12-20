@@ -30,7 +30,7 @@
 ## AUTHOR: Sam Fletcher s.o.fletcher@exeter.ac.uk                                   ||
 ## CREATED: December 2023                                                           ||
 ## =================================================================================##
-## PREREQUISITES: Run 5_batch_CreateIncementalModels.sh or Generate_Big_Model.sh    ||
+## PREREQUISITES: Run Generate_Big_Model.sh or ChromHMM's LearnModel Command        ||
 ## =================================================================================##
 ## DEPENDENCIES: R                                                                  ||
 ## =================================================================================##
