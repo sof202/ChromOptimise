@@ -21,8 +21,9 @@ export COMPARE_DIR="${BLUEPRINT_MAIN_DIR}/path/to/comparison/files/"
 export BIG_MODELS_DIR="${BLUEPRINT_MAIN_DIR}/path/to/big/models/"
 
 ## Script locations
-export SCRIPTS_DIR="/path/to/JobSubmission/directory"
-export RSCRIPTS_DIR="path/to/Rscripts/directory"
+export SCRIPTS_DIR="/path/to/main"
+export SUPPLEMENTARY_DIR="path/to/supplementary/directory"
+export RSCRIPTS_DIR="path/to/main/Rscripts/directory"
 
 ## ChromHMM file locations
 export CHROMHMM_MAIN_DIR="/path/to/ChromHMM/main/directory"
