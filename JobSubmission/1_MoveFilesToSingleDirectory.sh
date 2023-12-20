@@ -84,11 +84,25 @@ ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" \
 ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 "${LOG_FILE_PATH}/$1~${SLURM_JOB_ID}~$timestamp.err"
 
-## ========================= ##
-##    VARIABLE ASSIGNMENT    ##
-## ========================= ##
+## ============================= ##
+##    VARIABLES AND FUNCTIONS    ##
+## ============================= ##
 
 blueprint_mark_name=$1
+
+## ====== FUNCTION : delete_logs() ========================
+## Delete temporary log and error files then exit
+## Globals: 
+##   SLURM_SUBMIT_DIR
+##   SLURM_JOB_ID
+## Arguments:
+##   exit code
+## ========================================================
+delete_logs(){
+    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" 
+    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err"
+    exit "$1"
+}
 
 ## ================== ##
 ##    MOVING FILES    ##
@@ -96,7 +110,7 @@ blueprint_mark_name=$1
 
 cd "${BLUEPRINT_MAIN_DIR}" || \
 { echo "Main directory doesn't exist, \
-make sure config.txt is pointing to the correct directory"; exit 1; }
+make sure config.txt is pointing to the correct directory"; delete_logs 1; }
 
 list_of_files_with_mark_name=\
 $(find . -type f -name "*${blueprint_mark_name}*.bam")
@@ -113,10 +127,7 @@ if [ "${number_of_files_to_move}" -eq 0 ]; then
     echo "Please input a epigenetic mark name that exists (case sensitive)." 
     echo "Aborting..."
 
-    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log"
-    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err"
-
-    exit 1
+    delete_logs 1
 fi
 
 mkdir -p "${RAW_DIR}/${blueprint_mark_name}"
@@ -129,9 +140,9 @@ for file in ${list_of_files_with_mark_name}; do
 done
 
 
-## ----------------------- ##
+## ======================= ##
 ##   LOG FILE MANAGEMENT   ##
-## ----------------------- ##
+## ======================= ##
 
 echo "Job completed at:"
 date -u
@@ -139,5 +150,4 @@ end_time=$(date +%s)
 time_taken=$((end_time-start_time))
 echo "Job took a total of: ${time_taken} seconds to complete"
 
-rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log"
-rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err"
+delete_logs 0

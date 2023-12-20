@@ -119,28 +119,28 @@ ln "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.log" \
 ln "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err" \
 "${LOG_FILE_PATH}/${SLURM_ARRAY_JOB_ID}~${SLURM_ARRAY_TASK_ID}~$timestamp.err"
 
-
-cd "${BINARY_DIR}" || { echo "Binary directory doesn't exist, \
-make sure config.txt is pointing to the correct directory"; exit 1; }
-if [ -z "$(ls -A)" ]; then
-    echo "4_BinarizedFiles is empty."
-    echo "Ensure that 4_BinarizeBamFiles.sh has been ran before this script."
-    echo "Aborting..."
-
-    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.log"
-    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err"
-
-    exit 1
-fi
-
-## ========================= ##
-##    VARIABLE ASSIGNMENT    ##
-## ========================= ##
+## ============================= ##
+##    VARIABLES AND FUNCTIONS    ##
+## ============================= ##
 
 number_of_models_to_generate=$1
 states_increment=$2
 bin_size=$3
 sample_size=$4
+
+## ====== FUNCTION : delete_logs() ========================
+## Delete temporary log and error files then exit
+## Globals: 
+##   SLURM_SUBMIT_DIR
+##   SLURM_JOB_ID
+## Arguments:
+##   exit code
+## ========================================================
+delete_logs(){
+    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" 
+    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err"
+    exit "$1"
+}
 
 if [ -z "${number_of_models_to_generate}" ]; then
     echo "Number of models to generate was not given."
@@ -161,10 +161,11 @@ if [ -z "${bin_size}" ]; then
     echo "uses the correct bin size..."
 
     cd "${BINARY_DIR}" || { echo "Binary directory doesn't exist, \
-    make sure config.txt is pointing to the correct directory"; exit 1; }
+    make sure config.txt is pointing to the correct directory"; delete_logs 1; }
 
     bin_size=$(find . -type f -name "*.txt*.gz" | head -1 | cut -d "_" -f 6)
 fi
+
 # 'intelligently' set sample size default by searching through the subsample directory
 if [ -z "${sample_size}" ]; then
     echo "No sample size was given."
@@ -172,29 +173,29 @@ if [ -z "${sample_size}" ]; then
     echo "uses the correct sample size..."
 
     cd "${BINARY_DIR}" || { echo "Binary directory doesn't exist, \
-    make sure config.txt is pointing to the correct directory"; exit 1; }
+    make sure config.txt is pointing to the correct directory"; delete_logs 1; }
 
     sample_size=$(find . -type f -name "*.txt*.gz" | head -1 | cut -d "_" -f 4)
 fi
 
-echo -n "Generating ${number_of_models_to_generate} models for the binary files "
-echo "found in the 4_BinarizedFiles directory."
-echo -n "Models will have states starting at 2 and going up in increments of: "
-echo "${states_increment}."
-echo "ChromHMM's LearnModel command will use the option '-b ${bin_size}'."
+## =============================== ##
+##   CLEAN UP AND ERROR CATCHING   ##
+## =============================== ##
 
-## ===================== ##
-##   ADDITIONAL SET UP   ##
-## ===================== ##
+cd "${BINARY_DIR}" || { echo "Binary directory doesn't exist, \
+make sure config.txt is pointing to the correct directory"; delete_logs 1; }
+if [ -z "$(ls -A)" ]; then
+    echo "4_BinarizedFiles is empty."
+    echo "Ensure that 4_BinarizeBamFiles.sh has been ran before this script."
+    echo "Aborting..."
 
+    delete_logs 1
+fi
+
+# Clean up from previous runs of script
 cd "${MODEL_DIR}" || { echo "Model directory doesn't exist, \
-make sure config.txt is pointing to the correct directory"; exit 1; }
+make sure config.txt is pointing to the correct directory"; delete_logs 1; }
 rm -f ./*
-
-cd "${OPTIMUM_STATES_DIR}" || { echo "Optimum states directory doesn't exist, \
-make sure config.txt is pointing to the correct directory"; exit 1; }
-mkdir -p "Likelihood_Values"
-cd "Likelihood_Values" || exit 1
 
 ## ========================== ##
 ##   PARALLELISATION SET UP   ##
@@ -226,8 +227,17 @@ fi
 ##    MODEL GENERATION   ##
 ## ===================== ##
 
+echo -n "Generating ${number_of_models_to_generate} models for the binary files "
+echo "found in the 4_BinarizedFiles directory."
+echo -n "Models will have states starting at 2 and going up in increments of: "
+echo "${states_increment}."
+echo "ChromHMM's LearnModel command will use the option '-b ${bin_size}'."
+
 module purge
 module load Java
+
+mkdir -p "${OPTIMUM_STATES_DIR}/Likelihood_Values"
+cd "${OPTIMUM_STATES_DIR}/Likelihood_Values" || delete_logs 1
 
 # Job is to be submitted as an array so we only want to 
 # remake likelihood files for one of the array tasks, not all of them.
@@ -240,6 +250,7 @@ sequence=$(\
 seq "$starting_number_of_states" "$states_increment" "$ending_number_of_states"\
 )
 
+# Main loop
 for numstates in ${sequence}; do
     echo "Learning model with: ${numstates} states..."
     # The -nobed option is here as we have no need for the genome browser files
@@ -272,7 +283,7 @@ done
 ## ========================= ##
 
 cd "${MODEL_DIR}" || { echo "Model directory doesn't exist, \
-make sure config.txt is pointing to the correct directory"; exit 1; }
+make sure config.txt is pointing to the correct directory"; delete_logs 1; }
 emission_files_to_rename=$(find . -type f -name "emissions*")
 for file in $emission_files_to_rename; do
     file_ending=$(echo "$file" | cut -d "_" -f 2) 
@@ -305,5 +316,4 @@ end_time=$(date +%s)
 time_taken=$((end_time-start_time))
 echo "Job took a total of: ${time_taken} seconds to complete"
 
-rm "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.log"
-rm "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err"
+delete_logs 0

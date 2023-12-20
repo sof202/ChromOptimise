@@ -60,7 +60,7 @@ if [[ "$1" == "--help" || "$1" == "-h" ]]; then
     echo "\$1 -> Bin size to be used by BinarizeBam command"
     echo "\$2 -> Sample size used in 3_SubsampleBamFiles.sh"
     echo "====================================================="
-    exit 3
+    exit 0
 fi
 
 ## ============ ##
@@ -91,26 +91,26 @@ ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" \
 ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 "${LOG_FILE_PATH}/BinSize-$1~${SLURM_JOB_ID}~$timestamp.err"
 
-## ========================= ##
-##    VARIABLE ASSIGNMENT    ##
-## ========================= ##
+## ============================= ##
+##    VARIABLES AND FUNCTIONS    ##
+## ============================= ##
 
 bin_size=$1
 sample_size=$2
 
-cd "${SUBSAMPLED_DIR}" || { echo "Subsample directory doesn't exist, \
-make sure config.txt is pointing to the correct directory"; exit 1; }
-
-if [ -z "$(ls -A)" ]; then
-    echo "3_SubsampledBamFiles is empty."
-    echo "Ensure that 3_SubsampleBamFiles.sh has been ran before this script."
-    echo "Aborting..."
-
-    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log"
+## ====== FUNCTION : delete_logs() ========================
+## Delete temporary log and error files then exit
+## Globals: 
+##   SLURM_SUBMIT_DIR
+##   SLURM_JOB_ID
+## Arguments:
+##   exit code
+## ========================================================
+delete_logs(){
+    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" 
     rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err"
-
-    exit 1
-fi
+    exit "$1"
+}
 
 if [ -z "$bin_size" ]; then
     echo "No bin size was given, using the default value of 200 instead."
@@ -122,13 +122,27 @@ if [ -z "${sample_size}" ]; then
     echo "No sample size was given."
     echo -n "Assuming that the first file in the subsampled "
     echo "directory uses the correct sample size..."
-    cd "${SUBSAMPLED_DIR}" || { echo "Subsample directory doesn't exist,\
-     make sure config.txt is pointing to the correct directory"; exit 1; }
+
+    cd "${SUBSAMPLED_DIR}" || { echo "Subsample directory doesn't exist, \
+    make sure config.txt is pointing to the correct directory"; delete_logs 1; }
+
     sample_size=$(find . -type f -name "Sub*" | head -1 | cut -d "." -f 3)
 fi
 
-echo -n "Binarizing subsampled bam files found in 3_SubsampledBamFiles with "
-echo "sample size: ${sample_size} using a bin size of: ${bin_size}."
+## ================== ##
+##   FILE EXISTENCE   ##
+## ================== ##
+
+cd "${SUBSAMPLED_DIR}" || { echo "Subsample directory doesn't exist, \
+make sure config.txt is pointing to the correct directory"; delete_logs 1; }
+
+if [ -z "$(ls -A)" ]; then
+    echo "3_SubsampledBamFiles is empty."
+    echo "Ensure that 3_SubsampleBamFiles.sh has been ran before this script."
+    echo "Aborting..."
+
+    delete_logs 1
+fi
 
 ## =================================== ##
 ##    CREATE A CELL MARK FILE TABLE    ##
@@ -153,8 +167,11 @@ done
 ##    BINARIZATION USING CHROMHMM    ##
 ## ================================= ##
 
+echo -n "Binarizing subsampled bam files found in 3_SubsampledBamFiles with "
+echo "sample size: ${sample_size} using a bin size of: ${bin_size}."
+
 cd "${BINARY_DIR}" || { echo "Binary directory doesn't exist, \
-make sure config.txt is pointing to the correct directory"; exit 1; }
+make sure config.txt is pointing to the correct directory"; delete_logs 1; }
 rm ./*.txt*
 
 module purge
@@ -180,5 +197,4 @@ end_time=$(date +%s)
 time_taken=$(("$end_time"-"$start_time"))
 echo "Job took a total of: ${time_taken} seconds to complete"
 
-rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log"
-rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err"
+delete_logs 0

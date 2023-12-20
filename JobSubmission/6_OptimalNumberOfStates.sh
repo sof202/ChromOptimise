@@ -116,18 +116,19 @@ ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 bin_size=$1
 sample_size=$2
 
-cd "${MODEL_DIR}" || { echo "Model directory doesn't exist, \
-make sure config.txt is pointing to the correct directory"; exit 1; }
-if [ -z "$(ls -A)" ]; then
-    echo "No files found in the model directory."
-    echo "Please run 5_CreateIncrementalModels.sh before this script."
-    echo "Aborting..."
-
-    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log"
+## ====== FUNCTION : delete_logs() ========================
+## Delete temporary log and error files then exit
+## Globals: 
+##   SLURM_SUBMIT_DIR
+##   SLURM_JOB_ID
+## Arguments:
+##   exit code
+## ========================================================
+delete_logs(){
+    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" 
     rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err"
-
-    exit 1
-fi
+    exit "$1"
+}
 
 # 'Intelligently' set defaults by searching through the model directory
 if [ -z "$bin_size" ]; then
@@ -144,12 +145,22 @@ fi
 ##   FILE MANAGEMENT   ##
 ## =================== ##
 
+cd "${MODEL_DIR}" || { echo "Model directory doesn't exist, \
+make sure config.txt is pointing to the correct directory"; delete_logs 1; }
+if [ -z "$(ls -A)" ]; then
+    echo "No files found in the model directory."
+    echo "Please run 5_CreateIncrementalModels.sh before this script."
+    echo "Aborting..."
+
+    delete_logs 1
+fi
+
 mkdir -p "${OPTIMUM_STATES_DIR}/temp"
-cd "${OPTIMUM_STATES_DIR}/temp" || exit 1
+cd "${OPTIMUM_STATES_DIR}/temp" || delete_logs 1
 rm -f ./*
 
 cd "${MODEL_DIR}" || { echo "Model directory doesn't exist, \
-make sure config.txt is pointing to the correct directory"; exit 1; }
+make sure config.txt is pointing to the correct directory"; delete_logs 1; }
 emission_text_files=$(find . -type f -name "Emissions*.txt")
 for file in $emission_text_files; do
     cp "$file" "${OPTIMUM_STATES_DIR}/temp"
@@ -166,7 +177,7 @@ done
 module purge
 module load R/4.2.1-foss-2022a
 cd "${RSCRIPTS_DIR}" || { echo "Rscripts directory doesn't exist, \
-make sure config.txt is pointing to the correct directory"; exit 1; }
+make sure config.txt is pointing to the correct directory"; delete_logs 1; }
 
 max_model_number=$(find "${OPTIMUM_STATES_DIR}/temp" -type f -name "*.txt" | \
 grep -oP "\d+(?=.txt)"| \
@@ -241,6 +252,5 @@ end_time=$(date +%s)
 time_taken=$((end_time-start_time))
 echo "Job took a total of: ${time_taken} seconds to complete"
 
-rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log"
-rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err"
+delete_logs 0
 

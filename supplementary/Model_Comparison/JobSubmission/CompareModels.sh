@@ -89,31 +89,46 @@ ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" \
 ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 "${LOG_FILE_PATH}/${SLURM_JOB_ID}~$timestamp.err"
 
+## ============= ##
+##   FUNCTIONS   ##
+## ============= ##
+
+## ====== FUNCTION : delete_logs() ========================
+## Delete temporary log and error files then exit
+## Globals: 
+##   SLURM_SUBMIT_DIR
+##   SLURM_JOB_ID
+## Arguments:
+##   exit code
+## ========================================================
+delete_logs(){
+    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" 
+    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err"
+    exit "$1"
+}
+
 ## ===================== ##
 ##    FILE MANAGEMENT    ##
 ## ===================== ##
 
 cd "${MODEL_DIR}" || { echo "Model directory doesn't exist, \
-make sure config.txt is pointing to the correct directory"; exit 1; }
+make sure config.txt is pointing to the correct directory"; delete_logs 1; }
 if [ -z "$(ls -A)" ]; then
     echo "5_ModelFiles is empty."
     echo "Ensure that 5_CreateIncrementalModels.sh has been ran before this script."
     echo "Aborting..."
 
-    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log"
-    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err"
-
-    exit 1
+    delete_logs 1
 fi
 
 cd "${COMPARE_DIR}" || { echo "Comparison directory doesn't exist, \
-make sure config.txt is pointing to the correct directory"; exit 1; }
+make sure config.txt is pointing to the correct directory"; delete_logs 1; }
 mkdir -p temp
-cd temp || exit 1
+cd temp || delete_logs 1
 rm ./*
 
 cd "${MODEL_DIR}" || { echo "Model directory doesn't exist, \
-make sure config.txt is pointing to the correct directory"; exit 1; }
+make sure config.txt is pointing to the correct directory"; delete_logs 1; }
 emission_text_files=$(find . -type f -name "Emission*.txt")
 
 echo "Copying emission files to a temporary directory..."
@@ -139,7 +154,7 @@ module load Java
 
 for file in $emission_text_files; do
     # 1)
-    cd "${COMPARE_DIR}" || exit 1
+    cd "${COMPARE_DIR}" || delete_logs 1
     most_complex_model_number=$(find ./temp -type f -name "emissions*.txt" | \
     grep -oP "\d+(?=.txt)"| \
     sort -g | \
@@ -175,8 +190,7 @@ end_time=$(date +%s)
 time_taken=$((end_time-start_time))
 echo "Job took a total of: ${time_taken} seconds to complete"
 
-rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log"
-rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err"
+delete_logs 0
 
 
 

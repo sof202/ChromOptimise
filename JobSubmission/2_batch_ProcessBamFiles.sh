@@ -98,42 +98,43 @@ ln "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.log" \
 ln "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err" \
 "${LOG_FILE_PATH}/$1~${SLURM_ARRAY_JOB_ID}~${SLURM_ARRAY_TASK_ID}~$timestamp.err"
 
-## ========================= ##
-##    VARIABLE ASSIGNMENT    ##
-## ========================= ##
+## ============================= ##
+##    VARIABLES AND FUNCTIONS    ##
+## ============================= ##
 
 blueprint_mark_name=$1
 minimum_tolerated_phred_score=$2
 BLUEPRINT_FULL_FILE_PATH="${RAW_DIR}/${blueprint_mark_name}"
 BLUEPRINT_PROCESSED_FULL_FILE_PATH="${PROCESSED_DIR}/${blueprint_mark_name}"
 
-
+## ====== FUNCTION : delete_logs() ========================
+## Delete temporary log and error files then exit
+## Globals: 
+##   SLURM_SUBMIT_DIR
+##   SLURM_JOB_ID
+## Arguments:
+##   exit code
+## ========================================================
+delete_logs(){
+    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" 
+    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err"
+    exit "$1"
+}
 
 if [ -z "${minimum_tolerated_phred_score}" ]; then
     minimum_tolerated_phred_score=20
-    echo "No Phred score threshold was given, using default value of 20."
+    echo "No Phred score threshold was given, \
+    using default value of ${minimum_tolerated_phred_score}."
 fi
-echo -n "Processing .bam files using Phred score threshold of: "
-echo "${minimum_tolerated_phred_score} for epigenetic mark: ${blueprint_mark_name}."
 
 
 ## ===================== ##
 ##    FILE MANAGEMENT    ##
 ## ===================== ##
 
-if [ -d "${BLUEPRINT_FULL_FILE_PATH}" ]; then
-    echo "Changing directory to: ${BLUEPRINT_FULL_FILE_PATH}" 
-    cd "${BLUEPRINT_FULL_FILE_PATH}" || exit 1
-else
-    echo "Directory does not exist yet."
-    echo -n "Make sure you typed the epigenetic mark correctly and that "
-    echo "you have ran 1_MoveFilesToSingleDirectory.sh first"
-    echo "Aborting..."
-
-    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.log"
-    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err"
-    exit 1
-fi
+cd "${BLUEPRINT_FULL_FILE_PATH}" || { echo "raw directory for mark doesn't exist, \
+make sure you typed the epigenetic mark correctly and that you have ran \
+1_MoveFilesToSingleDirectory.sh first."; delete_logs 1; }
 
 # Get base name of the files in 3 steps
 # 1) Find all of the .bam files in the mark directory
@@ -174,13 +175,15 @@ else
     tail -$number_of_files_for_each_array )
 fi
 
-# Debugging
-echo "Processing the following files:"
-echo "${files_to_process}"
-
 ## ====================== ##
 ##    PROCESSING STAGE    ##
 ## ====================== ##
+
+echo "Processing the following files:"
+echo "${files_to_process}"
+
+echo -n "Processing .bam files using Phred score threshold of: "
+echo "${minimum_tolerated_phred_score} for epigenetic mark: ${blueprint_mark_name}."
 
 module purge
 module load SAMtools
@@ -195,7 +198,7 @@ module load SAMtools
 # 4) Create an index file, an index stats file and a stats file for the processed files
 
 for file in ${files_to_process}; do
-    cd "${BLUEPRINT_FULL_FILE_PATH}" || exit 1
+    cd "${BLUEPRINT_FULL_FILE_PATH}" || delete_logs 1
     # 1)
     samtools index "${file}.bam" 
     samtools idxstats "${file}.bam" > "${file}.PerChromosomeStats.txt"
@@ -204,7 +207,7 @@ for file in ${files_to_process}; do
     # 2)
     samtools sort "${file}.bam" > \
     "${BLUEPRINT_PROCESSED_FULL_FILE_PATH}/${file}.sorted.bam"
-    cd "${BLUEPRINT_PROCESSED_FULL_FILE_PATH}" || exit 1
+    cd "${BLUEPRINT_PROCESSED_FULL_FILE_PATH}" || delete_logs 1
 
     # Need to use the -h option here to keep the headers 
     # so that the next samtools view can function properly
@@ -241,7 +244,6 @@ end_time=$(date +%s)
 time_taken=$((end_time-start_time))
 echo "Job took a total of: ${time_taken} seconds to complete"
 
-rm "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.log"
-rm "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err"
+delete_logs 0
 
 

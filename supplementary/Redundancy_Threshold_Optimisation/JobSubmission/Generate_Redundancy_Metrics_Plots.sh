@@ -92,13 +92,28 @@ ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" \
 ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 "${LOG_FILE_PATH}/ModelSize-$1~${SLURM_JOB_ID}~$timestamp.err"
 
-## ========================= ##
-##    VARIABLE ASSIGNMENT    ##
-## ========================= ##
+## ============================= ##
+##    VARIABLES AND FUNCTIONS    ##
+## ============================= ##
 
 model_size=$1
 seed=$2
 model_file_dir=$3
+
+## ====== FUNCTION : delete_logs() ========================
+## Delete temporary log and error files then exit
+## Globals: 
+##   SLURM_SUBMIT_DIR
+##   SLURM_JOB_ID
+## Arguments:
+##   exit code
+## ========================================================
+delete_logs(){
+    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" 
+    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err"
+    exit "$1"
+}
+
 
 if [ -z "$model_file_dir" ]; then
     echo "Model file directory was not given, using the default of ${BIG_MODELS_DIR}"
@@ -121,16 +136,13 @@ fi
 
 cd "${model_file_dir}" ||  { echo "Directory given doesn't exist, \
 ensure that the directory exists or that config.txt is pointing \
-to the correct directory if default path was used."; exit 1; }
+to the correct directory if default path was used."; delete_logs 1; }
 
 if [[ -z $(find . -type f -name "emissions*") ]]; then
     echo "No model files were found in the directory given."
     echo "Aborting..."
 
-    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" 
-    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" 
-
-    exit 1
+    delete_logs 1
 fi
 
 ## ======== ##
@@ -140,7 +152,9 @@ fi
 module purge
 module load R/4.2.1-foss-2022a
 
-cd "${SUPPLEMENTARY_DIR}/Redundancy_Threshold_Optimisation/Rscripts" || exit 1
+cd "${SUPPLEMENTARY_DIR}/Redundancy_Threshold_Optimisation/Rscripts" ||  \
+{ echo "Rscripts directory doesn't exist, \
+make sure config.txt is pointing to the correct directory"; delete_logs 1; }
 
 Rscript HistogramPlotsForSimilarityMetrics_Emissions.r \
 "${model_size}" "${seed}" "${model_file_dir}"
@@ -159,5 +173,4 @@ end_time=$(date +%s)
 time_taken=$((end_time - start_time))
 echo "Job took a total of: ${time_taken} seconds to complete."
 
-rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" 
-rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" 
+delete_logs 0

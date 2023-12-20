@@ -96,25 +96,26 @@ ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" \
 ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 "${LOG_FILE_PATH}/ModelSize-$1~${SLURM_JOB_ID}~$timestamp.err"
 
-cd "${BINARY_DIR}" || { echo "Binary directory doesn't exist, \
-make sure config.txt is pointing to the correct directory"; exit 1; }
-if [ -z "$(ls -A)" ]; then
-    echo "4_BinarizedFiles is empty."
-    echo "Ensure that 4_BinarizeBamFiles.sh has been ran before this script."
-    echo "Aborting..."
-
-    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" 
-    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" 
-
-    exit 1
-fi
-
-## ========================= ##
-##    VARIABLE ASSIGNMENT    ##
-## ========================= ##
+## ============================= ##
+##    VARIABLES AND FUNCTIONS    ##
+## ============================= ##
 
 model_size=$1
 seed=$2
+
+## ====== FUNCTION : delete_logs() ========================
+## Delete temporary log and error files then exit
+## Globals: 
+##   SLURM_SUBMIT_DIR
+##   SLURM_JOB_ID
+## Arguments:
+##   exit code
+## ========================================================
+delete_logs(){
+    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" 
+    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err"
+    exit "$1"
+}
 
 if [ -z "$model_size" ]; then
     echo "No model size was given by the user, using default value of 20."
@@ -126,17 +127,31 @@ if [ -z "$seed" ]; then
     seed=1
 fi
 
-echo "Learning a model with ${model_size} states and with random seed: ${seed}."
+## ================== ##
+##   FILE EXISTANCE   ##
+## ================== ##
+
+cd "${BINARY_DIR}" || { echo "Binary directory doesn't exist, \
+make sure config.txt is pointing to the correct directory"; delete_logs 1; }
+if [ -z "$(ls -A)" ]; then
+    echo "4_BinarizedFiles is empty."
+    echo "Ensure that 4_BinarizeBamFiles.sh has been ran before this script."
+    echo "Aborting..."
+
+    delete_logs 1
+fi
 
 ## ========== ##
 ##    MAIN    ##
 ## ========== ##
 
+echo "Learning a model with ${model_size} states and with random seed: ${seed}."
+
 module purge
 module load Java
 
 cd "${BIG_MODELS_DIR}" || { echo "Big models directory doesn't exist, \
-make sure config.txt is pointing to the correct directory"; exit 1; }
+make sure config.txt is pointing to the correct directory"; delete_logs 1; }
 
 java -mx30G \
 -jar "${CHROMHMM_MAIN_DIR}/ChromHMM.jar" LearnModel \
@@ -166,5 +181,4 @@ end_time=$(date +%s)
 time_taken=$((end_time - start_time))
 echo "Job took a total of: ${time_taken} seconds to complete."
 
-rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" 
-rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" 
+delete_logs 0

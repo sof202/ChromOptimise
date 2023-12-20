@@ -95,37 +95,50 @@ ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" \
 ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 "${LOG_FILE_PATH}/$1~$2~${SLURM_JOB_ID}~$timestamp.err"
 
-## ========================= ##
-##    VARIABLE ASSIGNMENT    ##
-## ========================= ##
+## ============================= ##
+##    VARIABLES AND FUNCTIONS    ##
+## ============================= ##
 
 blueprint_mark_name=$1
 sample_size=$2
 BLUEPRINT_PROCESSED_FILE_PATH="${PROCESSED_DIR}/${blueprint_mark_name}"
+
+## ====== FUNCTION : delete_logs() ========================
+## Delete temporary log and error files then exit
+## Globals: 
+##   SLURM_SUBMIT_DIR
+##   SLURM_JOB_ID
+## Arguments:
+##   exit code
+## ========================================================
+delete_logs(){
+    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" 
+    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err"
+    exit "$1"
+}
 
 if [ -z "${blueprint_mark_name}" ]; then
     echo "No Blueprint epigenetic mark name given."
     echo "Ensure first argument is the name of the epigenetic mark."
     echo "Aborting..."
 
-    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log"
-    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err"
-    exit 1
+    delete_logs 1
 fi
 
 if [ -z "${sample_size}" ]; then
     sample_size=50
-    echo "No sample size was given, using default value of 50 percent."
+    echo "No sample size was given, using default value of ${sample_size} percent."
 fi
-echo -n "Subsampling processed .bam files using sample size of: "
-echo "${sample_size} percent for epigenetic mark: ${blueprint_mark_name}"
 
 ## ========================= ##
 ##   MERGING OF .BAM FILES   ##
 ## ========================= ##
 
+echo -n "Subsampling processed .bam files using sample size of: "
+echo "${sample_size} percent for epigenetic mark: ${blueprint_mark_name}"
+
 cd "${BLUEPRINT_PROCESSED_FILE_PATH}" || { echo "Directory doesn't exist, \
-make sure that you typed the epigenetic mark correctly"; exit 1; }
+make sure that you typed the epigenetic mark correctly"; delete_logs 1; }
 
 echo "Finding suitable .bam files to merge..."
 find . -type f -name "*.sorted.filtered.noDuplicates.bam" \
@@ -143,7 +156,7 @@ samtools merge -b List_Of_Bam_Files_To_Merge.txt "${output_file_path}"
 ## ===================================== ##
 
 cd "${SUBSAMPLED_DIR}" || { echo "Subsampled directory doesn't exist, \
-make sure config.txt is pointing to the correct directory"; exit 1; }
+make sure config.txt is pointing to the correct directory"; delete_logs 1; }
 
 sample_size_decimal=$(echo "scale=2; $sample_size /100" | bc)
 echo "Subsampling..."
@@ -154,7 +167,7 @@ samtools view -s "${sample_size_decimal}" "${output_file_path}" \
 >> "Subsampled.${sample_size}.${blueprint_mark_name}.bam"
 
 rm "FullMerged.${blueprint_mark_name}.bam"
-cd "${BLUEPRINT_PROCESSED_FILE_PATH}" || exit 1
+cd "${BLUEPRINT_PROCESSED_FILE_PATH}" || delete_logs 1
 rm List_Of_Bam_Files_To_Merge.txt
 
 ## ======================= ##
@@ -167,5 +180,4 @@ end_time=$(date +%s)
 time_taken=$((end_time-start_time))
 echo "Job took a total of: ${time_taken} seconds to complete"
 
-rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log"
-rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err"
+delete_logs 0
