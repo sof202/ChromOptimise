@@ -117,8 +117,8 @@ MODEL_SIZE=$1
 SEED=$2
 
 if [ -z "$MODEL_SIZE" ]; then
-    echo "No model size was given by the user, using default value of 200."
-    MODEL_SIZE=200
+    echo "No model size was given by the user, using default value of 20."
+    MODEL_SIZE=20
 fi
 
 if [ -z "$SEED" ]; then
