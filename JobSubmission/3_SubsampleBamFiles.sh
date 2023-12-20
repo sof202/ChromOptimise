@@ -124,19 +124,8 @@ echo "${SAMPLE_SIZE} percent for epigenetic mark: ${BLUEPRINT_MARK_NAME}"
 ##   MERGING OF .BAM FILES   ##
 ## ========================= ##
 
-if [ -d "${BLUEPRINT_PROCESSED_FILE_PATH}" ]; then
-    echo "Changing directory to: ${BLUEPRINT_PROCESSED_FILE_PATH}" 
-    cd "${BLUEPRINT_PROCESSED_FILE_PATH}" || exit 1
-else
-    echo "Directory does not exist yet." 
-    echo -n "Make sure you typed the epigenetic mark correctly "
-    echo "and that you have ran 2_ProcessBamFiles.sh first."
-    echo "Aborting..."
-
-    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log"
-    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err"
-    exit 1
-fi
+cd "${BLUEPRINT_PROCESSED_FILE_PATH}" || { echo "Directory doesn't exist, \
+make sure that you typed the epigenetic mark correctly"; exit 1; }
 
 echo "Finding suitable .bam files to merge..."
 find . -type f -name "*.sorted.filtered.noDuplicates.bam" \
