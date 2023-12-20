@@ -135,4 +135,3 @@ ggsave(
   plot = euclidean_distance_histogram,
   path = emission_plotting_dir
 )
-
