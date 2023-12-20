@@ -87,9 +87,9 @@ ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" \
 ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 "${LOG_FILE_PATH}/File-$1~${SLURM_JOB_ID}~$timestamp.err"
 
-## ============================= ##
-##    VARIABLES AND FUNCTIONS    ##
-## ============================= ##
+## =============== ##
+##    VARIABLES    ##
+## =============== ##
 
 text_file_containing_inodes=$1
 
