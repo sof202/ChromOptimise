@@ -37,11 +37,13 @@ library("ggplot2")
 
 setwd("/lustre/projects/Research_Project-MRC190311/scripts")
 source("integrative/blueprint/config/config.R")
-setwd(big_models_dir)
 
 arguments <- commandArgs(trailingOnly = TRUE)
 model_size <- as.numeric(arguments[1])
 seed <- arguments[2]
+input_path <- arguments[3]
+
+setwd(input_path)
 
 file_name <- paste0("transitions_", model_size, "_", seed, ".txt")
 transition_data <- read.table(file_name, skip = 1)

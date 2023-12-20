@@ -47,11 +47,15 @@ library("pracma")
 library("ggplot2")
 library("stringr")
 
-model_size <- commandArgs(trailingOnly = TRUE)
-model_size <- as.numeric(model_size)
+arguments <- commandArgs(trailingOnly = TRUE)
+model_size <- as.numeric(arguments[1])
+seed <- arguments[2]
+input_path <- arguments[3]
 bin_size <- 0.025
 
-file_name <- paste0("emissions_", model_size, "_1.txt")
+setwd(input_path)
+
+file_name <- paste0("emissions_", model_size, "_", seed, ".txt")
 emission_data <- read.table(file_name, skip = 1)
 emission_data <- subset(emission_data, select = -V1)
 
