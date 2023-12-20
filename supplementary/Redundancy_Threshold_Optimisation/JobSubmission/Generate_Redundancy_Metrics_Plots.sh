@@ -115,13 +115,27 @@ if [ -z "$SEED" ]; then
     SEED=1
 fi
 
-## ======== ##
-##   MAIN   ##
-## ======== ##
+## ================== ##
+##   FILE EXISTANCE   ##
+## ================== ##
 
 cd "${MODEL_FILE_DIR}" ||  { echo "Directory given doesn't exist, \
 ensure that the directory exists or that config.txt is pointing \
 to the correct directory if default path was used."; exit 1; }
+
+if [[ -z $(find . -type f -name emissions*) ]]; then
+    echo "No model files were found in the directory given."
+    echo "Aborting..."
+
+    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" 
+    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" 
+
+    exit 1
+fi
+
+## ======== ##
+##   MAIN   ##
+## ======== ##
 
 module purge
 module load R/4.2.1-foss-2022a
