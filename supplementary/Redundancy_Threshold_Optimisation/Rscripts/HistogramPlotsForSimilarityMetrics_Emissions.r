@@ -128,11 +128,11 @@ euclidean_distance_histogram <- ggplot(euclidean_distance_scores,
 ## ============== ##
 
 euclidean_distance_plot_name <-
-  paste0("euclidean_distance_histogram.model_size.", model_size, ".pdf")
+  paste0("Euclidean_Distances_Histogram.model_size.", model_size, ".pdf")
 
 ggsave(
   euclidean_distance_plot_name,
   plot = euclidean_distance_histogram,
-  path = emissions_plotting_dir
+  path = emission_plotting_dir
 )
 

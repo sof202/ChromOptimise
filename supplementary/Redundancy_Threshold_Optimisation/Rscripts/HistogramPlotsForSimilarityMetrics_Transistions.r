@@ -98,7 +98,7 @@ transition_to_scatter <-
 ## ================ ##
 
 transition_to_scatter_name <-
-  paste0("Scatter.Plot.Maximum.Probability.Transition.Towards.model_size",
+  paste0("Maximum_Transition_Probability_Towards_states.model_size.",
          model_size, ".pdf")
 
 ggsave(

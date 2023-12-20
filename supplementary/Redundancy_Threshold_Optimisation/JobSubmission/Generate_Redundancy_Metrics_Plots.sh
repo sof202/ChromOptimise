@@ -101,7 +101,7 @@ SEED=$2
 MODEL_FILE_DIR=$3
 
 if [ -z "$MODEL_FILE_DIR" ]; then
-    echo "Model file directory was given using the default of ${BIG_MODELS_DIR}"
+    echo "Model file directory was not given using the default of ${BIG_MODELS_DIR}"
     MODEL_FILE_DIR="${BIG_MODELS_DIR}"
 fi
 
@@ -123,7 +123,7 @@ cd "${MODEL_FILE_DIR}" ||  { echo "Directory given doesn't exist, \
 ensure that the directory exists or that config.txt is pointing \
 to the correct directory if default path was used."; exit 1; }
 
-if [[ -z $(find . -type f -name emissions*) ]]; then
+if [[ -z $(find . -type f -name "emissions*") ]]; then
     echo "No model files were found in the directory given."
     echo "Aborting..."
 
