@@ -71,7 +71,7 @@ fi
 ##    SET UP    ##
 ## ============ ##
 
-echo "Job '$SLURM_JOB_NAME' started at:"
+echo "Job '${SLURM_JOB_NAME}' started at:"
 date -u
 
 start_time=$(date +%s)
@@ -99,11 +99,11 @@ ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 ##    VARIABLE ASSIGNMENT    ##
 ## ========================= ##
 
-BLUEPRINT_MARK_NAME=$1
-SAMPLE_SIZE=$2
-BLUEPRINT_PROCESSED_FILE_PATH="${PROCESSED_DIR}/${BLUEPRINT_MARK_NAME}"
+blueprint_mark_name=$1
+sample_size=$2
+BLUEPRINT_PROCESSED_FILE_PATH="${PROCESSED_DIR}/${blueprint_mark_name}"
 
-if [ -z "${BLUEPRINT_MARK_NAME}" ]; then
+if [ -z "${blueprint_mark_name}" ]; then
     echo "No Blueprint epigenetic mark name given."
     echo "Ensure first argument is the name of the epigenetic mark."
     echo "Aborting..."
@@ -113,12 +113,12 @@ if [ -z "${BLUEPRINT_MARK_NAME}" ]; then
     exit 1
 fi
 
-if [ -z "${SAMPLE_SIZE}" ]; then
-    SAMPLE_SIZE=50
+if [ -z "${sample_size}" ]; then
+    sample_size=50
     echo "No sample size was given, using default value of 50 percent."
 fi
 echo -n "Subsampling processed .bam files using sample size of: "
-echo "${SAMPLE_SIZE} percent for epigenetic mark: ${BLUEPRINT_MARK_NAME}"
+echo "${sample_size} percent for epigenetic mark: ${blueprint_mark_name}"
 
 ## ========================= ##
 ##   MERGING OF .BAM FILES   ##
@@ -133,7 +133,7 @@ find . -type f -name "*.sorted.filtered.noDuplicates.bam" \
 
 module purge
 module load SAMtools
-output_file_path="${SUBSAMPLED_DIR}/FullMerged.${BLUEPRINT_MARK_NAME}.bam"
+output_file_path="${SUBSAMPLED_DIR}/FullMerged.${blueprint_mark_name}.bam"
 
 echo "Merging..."
 samtools merge -b List_Of_Bam_Files_To_Merge.txt "${output_file_path}"
@@ -145,15 +145,15 @@ samtools merge -b List_Of_Bam_Files_To_Merge.txt "${output_file_path}"
 cd "${SUBSAMPLED_DIR}" || { echo "Subsampled directory doesn't exist, \
 make sure config.txt is pointing to the correct directory"; exit 1; }
 
-sample_size_decimal=$(echo "scale=2; $SAMPLE_SIZE /100" | bc)
+sample_size_decimal=$(echo "scale=2; $sample_size /100" | bc)
 echo "Subsampling..."
 # Ensure headers are kept in subsampled file to avoid errors later in pipeline
 samtools view -H "${output_file_path}" \
-> "Subsampled.${SAMPLE_SIZE}.${BLUEPRINT_MARK_NAME}.bam"
+> "Subsampled.${sample_size}.${blueprint_mark_name}.bam"
 samtools view -s "${sample_size_decimal}" "${output_file_path}" \
->> "Subsampled.${SAMPLE_SIZE}.${BLUEPRINT_MARK_NAME}.bam"
+>> "Subsampled.${sample_size}.${blueprint_mark_name}.bam"
 
-rm "FullMerged.${BLUEPRINT_MARK_NAME}.bam"
+rm "FullMerged.${blueprint_mark_name}.bam"
 cd "${BLUEPRINT_PROCESSED_FILE_PATH}" || exit 1
 rm List_Of_Bam_Files_To_Merge.txt
 

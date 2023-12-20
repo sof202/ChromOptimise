@@ -61,7 +61,7 @@ fi
 ##    SET UP    ##
 ## ============ ##
 
-echo "Job '$SLURM_JOB_NAME' started at:"
+echo "Job '${SLURM_JOB_NAME}' started at:"
 date -u
 
 start_time=$(date +%s)
@@ -88,7 +88,7 @@ ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 ##    VARIABLE ASSIGNMENT    ##
 ## ========================= ##
 
-BLUEPRINT_MARK_NAME=$1
+blueprint_mark_name=$1
 
 ## ================== ##
 ##    MOVING FILES    ##
@@ -99,11 +99,11 @@ cd "${BLUEPRINT_MAIN_DIR}" || \
 make sure config.txt is pointing to the correct directory"; exit 1; }
 
 list_of_files_with_mark_name=\
-$(find . -type f -name "*${BLUEPRINT_MARK_NAME}*.bam")
+$(find . -type f -name "*${blueprint_mark_name}*.bam")
 
 # If the above list is empty then the epigenetic mark must not exist.
 number_of_files_to_move=\
-$(find . -type f -name "*${BLUEPRINT_MARK_NAME}*.bam" | wc -l)
+$(find . -type f -name "*${blueprint_mark_name}*.bam" | wc -l)
 echo "Number of .bam files to be moved is: ${number_of_files_to_move}"
 
 # Exit here if there are no files 
@@ -119,13 +119,13 @@ if [ "${number_of_files_to_move}" -eq 0 ]; then
     exit 1
 fi
 
-mkdir -p "${RAW_DIR}/${BLUEPRINT_MARK_NAME}"
+mkdir -p "${RAW_DIR}/${blueprint_mark_name}"
 
-echo "Moving bam files to ${RAW_DIR}/${BLUEPRINT_MARK_NAME}"
+echo "Moving bam files to ${RAW_DIR}/${blueprint_mark_name}"
 
 for file in ${list_of_files_with_mark_name}; do
     echo "Moving file ${file}..."
-    mv "${file}" "${RAW_DIR}/${BLUEPRINT_MARK_NAME}"
+    mv "${file}" "${RAW_DIR}/${blueprint_mark_name}"
 done
 
 

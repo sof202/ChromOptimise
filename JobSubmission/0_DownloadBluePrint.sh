@@ -64,7 +64,7 @@ fi
 ##    SET UP    ##
 ## ============ ##
 
-echo "Job '$SLURM_JOB_NAME' started at:"
+echo "Job '${SLURM_JOB_NAME}' started at:"
 date -u
 
 start_time=$(date +%s)
@@ -87,11 +87,11 @@ ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" \
 ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 "${LOG_FILE_PATH}/File-$1~${SLURM_JOB_ID}~$timestamp.err"
 
-## ========================= ##
-##    VARIABLE ASSIGNMENT    ##
-## ========================= ##
+## ============================= ##
+##    VARIABLES AND FUNCTIONS    ##
+## ============================= ##
 
-TEXT_FILE_CONTAINING_INODES=$1
+text_file_containing_inodes=$1
 
 ## ========== ##
 ##    MAIN    ##
@@ -115,7 +115,7 @@ while IFS= read -r line || [[ -n "$line" ]]; do
     # CHANGE egaConfig.json TO FILE WITH EGA LOGIN CREDENTIALS
     pyega3 -c 5 -cf ~/Tools/pyegaDownloading/egaConfig.json fetch \
     "$line" --output-dir "${DOWNLOAD_DIR}"
-done < "${TEXT_FILE_CONTAINING_INODES}"
+done < "${text_file_containing_inodes}"
 
 
 ## ======================= ##

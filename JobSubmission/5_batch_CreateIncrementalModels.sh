@@ -95,7 +95,7 @@ fi
 ##    SET UP    ##
 ## ============ ##
 
-echo "Job '$SLURM_JOB_NAME' started at:"
+echo "Job '${SLURM_JOB_NAME}' started at:"
 date -u
 
 start_time=$(date +%s)
@@ -137,25 +137,25 @@ fi
 ##    VARIABLE ASSIGNMENT    ##
 ## ========================= ##
 
-NUMBER_OF_MODELS_TO_GENERATE=$1
-STATE_INCREMENT=$2
-BIN_SIZE=$3
-SAMPLE_SIZE=$4
+number_of_models_to_generate=$1
+states_increment=$2
+bin_size=$3
+sample_size=$4
 
-if [ -z "${NUMBER_OF_MODELS_TO_GENERATE}" ]; then
+if [ -z "${number_of_models_to_generate}" ]; then
     echo "Number of models to generate was not given."
     echo "Using the default value of 4 instead."
-    NUMBER_OF_MODELS_TO_GENERATE=4
+    number_of_models_to_generate=4
 fi
 
-if [ -z "${STATE_INCREMENT}" ]; then
+if [ -z "${states_increment}" ]; then
     echo "The value for the state increment was not given."
     echo "Using the default value of 1 instead."
-    STATE_INCREMENT=1
+    states_increment=1
 fi
 
 # 'intelligently' set bin size default by searching through the subsample directory
-if [ -z "${BIN_SIZE}" ]; then
+if [ -z "${bin_size}" ]; then
     echo "The value for the bin size was not given." 
     echo -n "Assuming that the first file in the subsampled directory "
     echo "uses the correct bin size..."
@@ -163,10 +163,10 @@ if [ -z "${BIN_SIZE}" ]; then
     cd "${BINARY_DIR}" || { echo "Binary directory doesn't exist, \
     make sure config.txt is pointing to the correct directory"; exit 1; }
 
-    BIN_SIZE=$(find . -type f -name "*.txt*.gz" | head -1 | cut -d "_" -f 6)
+    bin_size=$(find . -type f -name "*.txt*.gz" | head -1 | cut -d "_" -f 6)
 fi
 # 'intelligently' set sample size default by searching through the subsample directory
-if [ -z "${SAMPLE_SIZE}" ]; then
+if [ -z "${sample_size}" ]; then
     echo "No sample size was given."
     echo -n "Assuming that the first file in the subsampled directory "
     echo "uses the correct sample size..."
@@ -174,14 +174,14 @@ if [ -z "${SAMPLE_SIZE}" ]; then
     cd "${BINARY_DIR}" || { echo "Binary directory doesn't exist, \
     make sure config.txt is pointing to the correct directory"; exit 1; }
 
-    SAMPLE_SIZE=$(find . -type f -name "*.txt*.gz" | head -1 | cut -d "_" -f 4)
+    sample_size=$(find . -type f -name "*.txt*.gz" | head -1 | cut -d "_" -f 4)
 fi
 
-echo -n "Generating ${NUMBER_OF_MODELS_TO_GENERATE} models for the binary files "
+echo -n "Generating ${number_of_models_to_generate} models for the binary files "
 echo "found in the 4_BinarizedFiles directory."
 echo -n "Models will have states starting at 2 and going up in increments of: "
-echo "${STATE_INCREMENT}."
-echo "ChromHMM's LearnModel command will use the option '-b ${BIN_SIZE}'."
+echo "${states_increment}."
+echo "ChromHMM's LearnModel command will use the option '-b ${bin_size}'."
 
 ## ===================== ##
 ##   ADDITIONAL SET UP   ##
@@ -200,8 +200,8 @@ cd "Likelihood_Values" || exit 1
 ##   PARALLELISATION SET UP   ##
 ## ========================== ##
 
-number_of_models_per_array=$((NUMBER_OF_MODELS_TO_GENERATE / SLURM_ARRAY_TASK_COUNT))
-remainder=$((NUMBER_OF_MODELS_TO_GENERATE % SLURM_ARRAY_TASK_COUNT))
+number_of_models_per_array=$((number_of_models_to_generate / SLURM_ARRAY_TASK_COUNT))
+remainder=$((number_of_models_to_generate % SLURM_ARRAY_TASK_COUNT))
 
 # If the number of models to be generated isn't a multiple of the size of the array,
 # the array with the smallest id will learn the left over smaller models
@@ -209,16 +209,16 @@ remainder=$((NUMBER_OF_MODELS_TO_GENERATE % SLURM_ARRAY_TASK_COUNT))
 if [ "${SLURM_ARRAY_TASK_ID}" -eq 1 ]; then
     starting_number_of_states=2
     ending_number_of_states=$(( \
-    2 + STATE_INCREMENT*(remainder+number_of_models_per_array-1) \
+    2 + states_increment*(remainder+number_of_models_per_array-1) \
     ))
 else
     starting_number_of_states=$(( \
     (((SLURM_ARRAY_TASK_ID-1)*number_of_models_per_array) + remainder)*\
-    STATE_INCREMENT + 2 \
+    states_increment + 2 \
     )) 
     ending_number_of_states=$(( \
     (((SLURM_ARRAY_TASK_ID)*number_of_models_per_array) + remainder -1 )*\
-    STATE_INCREMENT + 2 \
+    states_increment + 2 \
     ))
 fi
 
@@ -232,12 +232,12 @@ module load Java
 # Job is to be submitted as an array so we only want to 
 # remake likelihood files for one of the array tasks, not all of them.
 if [[ "${SLURM_ARRAY_TASK_ID}" -eq 1 ]]; then
-    rm -f "likelihood.BinSize.${BIN_SIZE}.SampleSize.${SAMPLE_SIZE}.txt"
-    touch "likelihood.BinSize.${BIN_SIZE}.SampleSize.${SAMPLE_SIZE}.txt"
+    rm -f "likelihood.BinSize.${bin_size}.SampleSize.${sample_size}.txt"
+    touch "likelihood.BinSize.${bin_size}.SampleSize.${sample_size}.txt"
 fi
 
 sequence=$(\
-seq "$starting_number_of_states" "$STATE_INCREMENT" "$ending_number_of_states"\
+seq "$starting_number_of_states" "$states_increment" "$ending_number_of_states"\
 )
 
 for numstates in ${sequence}; do
@@ -248,23 +248,23 @@ for numstates in ${sequence}; do
     -jar "${CHROMHMM_MAIN_DIR}/ChromHMM.jar" LearnModel \
     -noautoopen \
     -nobed \
-    -b "${BIN_SIZE}" \
+    -b "${bin_size}" \
     "${BINARY_DIR}" "${MODEL_DIR}" "${numstates}" hg19 > \
-    "ChromHMM.Output.BinSize.${BIN_SIZE}.numstates.${numstates}.txt"
+    "ChromHMM.Output.BinSize.${bin_size}.numstates.${numstates}.txt"
 
     echo -n "Writing estimated log likelihood to: "
-    echo "likelihood.BinSize.${BIN_SIZE}.SampleSize.${SAMPLE_SIZE}.txt"
+    echo "likelihood.BinSize.${bin_size}.SampleSize.${sample_size}.txt"
     echo -n "Estimated Log Likelihood for ${numstates} states: " >> \
-    "likelihood.BinSize.${BIN_SIZE}.SampleSize.${SAMPLE_SIZE}.txt"
+    "likelihood.BinSize.${bin_size}.SampleSize.${sample_size}.txt"
 
     # grep removes the terminal logs associated with writing to files. 
     # The tail and awk locate the final estimated log likelihood.
-    grep "       " "ChromHMM.Output.BinSize.${BIN_SIZE}.numstates.${numstates}.txt" | \
+    grep "       " "ChromHMM.Output.BinSize.${bin_size}.numstates.${numstates}.txt" | \
     tail -1 | \
     awk '{print $2}' >> \
-    "likelihood.BinSize.${BIN_SIZE}.SampleSize.${SAMPLE_SIZE}.txt" 
+    "likelihood.BinSize.${bin_size}.SampleSize.${sample_size}.txt" 
 
-    rm "ChromHMM.Output.BinSize.${BIN_SIZE}.numstates.${numstates}.txt"
+    rm "ChromHMM.Output.BinSize.${bin_size}.numstates.${numstates}.txt"
 done
 
 ## ========================= ##
@@ -277,21 +277,21 @@ emission_files_to_rename=$(find . -type f -name "emissions*")
 for file in $emission_files_to_rename; do
     file_ending=$(echo "$file" | cut -d "_" -f 2) 
     mv "$file" \
-    "Emissions_BinSize_${BIN_SIZE}_SampleSize_${SAMPLE_SIZE}_NumberOfStates_${file_ending}" 
+    "Emissions_BinSize_${bin_size}_SampleSize_${sample_size}_NumberOfStates_${file_ending}" 
 done
 
 transistion_files_to_rename=$(find . -type f -name "transitions*")
 for file in $transistion_files_to_rename; do
     file_ending=$(echo "$file" | cut -d "_" -f 2)
     mv "$file" \
-    "Transitions_BinSize_${BIN_SIZE}_SampleSize_${SAMPLE_SIZE}_NumberOfStates_${file_ending}" 
+    "Transitions_BinSize_${bin_size}_SampleSize_${sample_size}_NumberOfStates_${file_ending}" 
 done
 
 model_files_to_rename=$(find . -type f -name "model*")
 for file in $model_files_to_rename; do
     file_ending=$(echo "$file" | cut -d "_" -f 2)
     mv "$file" \
-    "Model_BinSize_${BIN_SIZE}_SampleSize_${SAMPLE_SIZE}_NumberOfStates_${file_ending}" 
+    "Model_BinSize_${bin_size}_SampleSize_${sample_size}_NumberOfStates_${file_ending}" 
 done
 
 

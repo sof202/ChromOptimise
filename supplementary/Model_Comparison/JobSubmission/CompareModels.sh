@@ -65,7 +65,7 @@ fi
 ##    SET UP    ##
 ## ============ ##
 
-echo "Job '$SLURM_JOB_NAME' started at:"
+echo "Job '${SLURM_JOB_NAME}' started at:"
 date -u
 
 start_time=$(date +%s)

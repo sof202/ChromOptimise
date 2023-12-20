@@ -72,7 +72,7 @@ fi
 ##    SET UP    ##
 ## ============ ##
 
-echo "Job '$SLURM_JOB_NAME' started at:"
+echo "Job '${SLURM_JOB_NAME}' started at:"
 date -u
 
 start_time=$(date +%s)
@@ -113,20 +113,20 @@ fi
 ##    VARIABLE ASSIGNMENT    ##
 ## ========================= ##
 
-MODEL_SIZE=$1
-SEED=$2
+model_size=$1
+seed=$2
 
-if [ -z "$MODEL_SIZE" ]; then
+if [ -z "$model_size" ]; then
     echo "No model size was given by the user, using default value of 20."
-    MODEL_SIZE=20
+    model_size=20
 fi
 
-if [ -z "$SEED" ]; then
+if [ -z "$seed" ]; then
     echo "No random seed was given by the user, using defualt value of 1."
-    SEED=1
+    seed=1
 fi
 
-echo "Learning a model with ${MODEL_SIZE} states and with random seed: ${SEED}."
+echo "Learning a model with ${model_size} states and with random seed: ${seed}."
 
 ## ========== ##
 ##    MAIN    ##
@@ -143,18 +143,18 @@ java -mx30G \
 -noautoopen \
 -nobed \
 -init random \
--s "${SEED}" \
-"${BINARY_DIR}" "${BLUEPRINT_MAIN_DIR}/Big_Model_Files" "${MODEL_SIZE}" hg19 > \
-"ChromHMM.Output.ModelSize.${MODEL_SIZE}.txt"
+-s "${seed}" \
+"${BINARY_DIR}" "${BLUEPRINT_MAIN_DIR}/Big_Model_Files" "${model_size}" hg19 > \
+"ChromHMM.Output.ModelSize.${model_size}.txt"
 
 echo "Model Learning finished"
 echo "Writing estimated log likelihood to file"
 # grep removes the terminal logs associated with writing to files.
 # The tail and awk locate the final estimated log likelihood
-grep "       " "ChromHMM.Output.ModelSize.${MODEL_SIZE}.txt" | \
+grep "       " "ChromHMM.Output.ModelSize.${model_size}.txt" | \
 tail -1 | \
 awk '{print $2}' >> \
-"likelihood.ModelSize.${MODEL_SIZE}.txt" 
+"likelihood.ModelSize.${model_size}.txt" 
 
 ## ======================= ##
 ##   LOG FILE MANAGEMENT   ##

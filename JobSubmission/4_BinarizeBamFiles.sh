@@ -67,7 +67,7 @@ fi
 ##    SET UP    ##
 ## ============ ##
 
-echo "Job '$SLURM_JOB_NAME' started at:"
+echo "Job '${SLURM_JOB_NAME}' started at:"
 date -u
 
 start_time=$(date +%s)
@@ -95,8 +95,8 @@ ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 ##    VARIABLE ASSIGNMENT    ##
 ## ========================= ##
 
-BIN_SIZE=$1
-SAMPLE_SIZE=$2
+bin_size=$1
+sample_size=$2
 
 cd "${SUBSAMPLED_DIR}" || { echo "Subsample directory doesn't exist, \
 make sure config.txt is pointing to the correct directory"; exit 1; }
@@ -112,23 +112,23 @@ if [ -z "$(ls -A)" ]; then
     exit 1
 fi
 
-if [ -z "$BIN_SIZE" ]; then
+if [ -z "$bin_size" ]; then
     echo "No bin size was given, using the default value of 200 instead."
-    BIN_SIZE=200
+    bin_size=200
 fi
 
 # 'Intelligently' find the sample size using first file name in subsampled directory
-if [ -z "${SAMPLE_SIZE}" ]; then
+if [ -z "${sample_size}" ]; then
     echo "No sample size was given."
     echo -n "Assuming that the first file in the subsampled "
     echo "directory uses the correct sample size..."
     cd "${SUBSAMPLED_DIR}" || { echo "Subsample directory doesn't exist,\
      make sure config.txt is pointing to the correct directory"; exit 1; }
-    SAMPLE_SIZE=$(find . -type f -name "Sub*" | head -1 | cut -d "." -f 3)
+    sample_size=$(find . -type f -name "Sub*" | head -1 | cut -d "." -f 3)
 fi
 
 echo -n "Binarizing subsampled bam files found in 3_SubsampledBamFiles with "
-echo "sample size: ${SAMPLE_SIZE} using a bin size of: ${BIN_SIZE}."
+echo "sample size: ${sample_size} using a bin size of: ${bin_size}."
 
 ## =================================== ##
 ##    CREATE A CELL MARK FILE TABLE    ##
@@ -140,7 +140,7 @@ echo "sample size: ${SAMPLE_SIZE} using a bin size of: ${BIN_SIZE}."
 
 rm -f "cellmarkfiletable.txt" 
 for file in *.bam; do
-    echo -ne "Mature_Neutorphil_SampleSize_${SAMPLE_SIZE}_BinSize_${BIN_SIZE}\t" >>\
+    echo -ne "Mature_Neutorphil_SampleSize_${sample_size}_BinSize_${bin_size}\t" >>\
     "cellmarkfiletable.txt"
     # The subsampled files are named: subsampled.[SampleSize].[mark_name].bam. 
     # Below extracts the mark name
@@ -162,13 +162,13 @@ module load Java
 
 # Binarize the files in the subsampled directory.
 # The blueprint data uses GChr37 assembly (which is equivalent to UCSC's hg19).
-java -mx30G -jar "${CHROMHMM_MAIN_DIR}/ChromHMM.jar" BinarizeBam -b "${BIN_SIZE}" \
+java -mx30G -jar "${CHROMHMM_MAIN_DIR}/ChromHMM.jar" BinarizeBam -b "${bin_size}" \
 -gzip "${CHROMHMM_CHROM_SIZES}/hg19.txt" "${SUBSAMPLED_DIR}" \
 "${SUBSAMPLED_DIR}/cellmarkfiletable.txt" "${BINARY_DIR}"
 
 # Optional: One may not want to keep the mitochondrial DNA in the analysis
 # rm "${BINARY_DIR}\
-# /Mature_Neutorphil_SampleSize_${SAMPLE_SIZE}_BinSize_${BIN_SIZE}_chrM_binary.txt.gz"
+# /Mature_Neutorphil_SampleSize_${sample_size}_BinSize_${bin_size}_chrM_binary.txt.gz"
 
 ## ======================= ##
 ##   LOG FILE MANAGEMENT   ##

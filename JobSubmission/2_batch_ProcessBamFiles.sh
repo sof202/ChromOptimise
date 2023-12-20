@@ -74,7 +74,7 @@ fi
 ##    SET UP    ##
 ## ============ ##
 
-echo "Job '$SLURM_JOB_NAME' started at:"
+echo "Job '${SLURM_JOB_NAME}' started at:"
 date -u
 
 start_time=$(date +%s)
@@ -102,19 +102,19 @@ ln "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err" \
 ##    VARIABLE ASSIGNMENT    ##
 ## ========================= ##
 
-BLUEPRINT_MARK_NAME=$1
-MINIMUM_TOLERATED_PHRED_SCORE=$2
-BLUEPRINT_FULL_FILE_PATH="${RAW_DIR}/${BLUEPRINT_MARK_NAME}"
-BLUEPRINT_PROCESSED_FULL_FILE_PATH="${PROCESSED_DIR}/${BLUEPRINT_MARK_NAME}"
+blueprint_mark_name=$1
+minimum_tolerated_phred_score=$2
+BLUEPRINT_FULL_FILE_PATH="${RAW_DIR}/${blueprint_mark_name}"
+BLUEPRINT_PROCESSED_FULL_FILE_PATH="${PROCESSED_DIR}/${blueprint_mark_name}"
 
 
 
-if [ -z "${MINIMUM_TOLERATED_PHRED_SCORE}" ]; then
-    MINIMUM_TOLERATED_PHRED_SCORE=20
+if [ -z "${minimum_tolerated_phred_score}" ]; then
+    minimum_tolerated_phred_score=20
     echo "No Phred score threshold was given, using default value of 20."
 fi
 echo -n "Processing .bam files using Phred score threshold of: "
-echo "${MINIMUM_TOLERATED_PHRED_SCORE} for epigenetic mark: ${BLUEPRINT_MARK_NAME}."
+echo "${minimum_tolerated_phred_score} for epigenetic mark: ${blueprint_mark_name}."
 
 
 ## ===================== ##
@@ -188,7 +188,7 @@ module load SAMtools
 # The processing is characterised into 4 stages:
 # 1) Create an index file, an index stats file and a stats file for the original files
 # 2) Sort the .bam files, remove reads with a phred score that is below:
-#     $MINIMUM_TOLERATED_PHRED_SCORE
+#     $minimum_tolerated_phred_score
 #     [Note that blueprint files have already processed to 
 #      remove reads with phred score below 15]
 # 3) Delete intermediate files
@@ -208,7 +208,7 @@ for file in ${files_to_process}; do
 
     # Need to use the -h option here to keep the headers 
     # so that the next samtools view can function properly
-    samtools view -q "${MINIMUM_TOLERATED_PHRED_SCORE}" -h "${file}.sorted.bam" | \
+    samtools view -q "${minimum_tolerated_phred_score}" -h "${file}.sorted.bam" | \
     samtools sort /dev/stdin -o "${file}.sorted.filtered.bam"
 
     # The -h option here it to ensure the idxstats can be completed in step 4.  

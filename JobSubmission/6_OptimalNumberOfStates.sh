@@ -84,7 +84,7 @@ fi
 ##    SET UP    ##
 ## ============ ##
 
-echo "Job '$SLURM_JOB_NAME' started at:"
+echo "Job '${SLURM_JOB_NAME}' started at:"
 date -u
 
 start_time=$(date +%s)
@@ -113,8 +113,8 @@ ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 ##    VARIABLE ASSIGNMENT    ##
 ## ========================= ##
 
-BIN_SIZE=$1
-SAMPLE_SIZE=$2
+bin_size=$1
+sample_size=$2
 
 cd "${MODEL_DIR}" || { echo "Model directory doesn't exist, \
 make sure config.txt is pointing to the correct directory"; exit 1; }
@@ -130,14 +130,14 @@ if [ -z "$(ls -A)" ]; then
 fi
 
 # 'Intelligently' set defaults by searching through the model directory
-if [ -z "$BIN_SIZE" ]; then
-    BIN_SIZE=$(find . -type f -name "Emissions*.txt" | head -1 | cut -d "_" -f 3)
-    echo "No bin size was given, assuming a default value of ${BIN_SIZE}..."
+if [ -z "$bin_size" ]; then
+    bin_size=$(find . -type f -name "Emissions*.txt" | head -1 | cut -d "_" -f 3)
+    echo "No bin size was given, assuming a default value of ${bin_size}..."
 fi
 
-if [ -z "$SAMPLE_SIZE" ]; then
-    SAMPLE_SIZE=$(find . -type f -name "Emissions*.txt" | head -1 | cut -d "_" -f 5)
-    echo "No sample size was given, assuming a default value of ${SAMPLE_SIZE}..."
+if [ -z "$sample_size" ]; then
+    sample_size=$(find . -type f -name "Emissions*.txt" | head -1 | cut -d "_" -f 5)
+    echo "No sample size was given, assuming a default value of ${sample_size}..."
 fi
 
 ## =================== ##
@@ -174,7 +174,7 @@ sort -g | \
 tail -1) 
 
 output_directory="${OPTIMUM_STATES_DIR}\
-/BinSize_${BIN_SIZE}_SampleSize_${SAMPLE_SIZE}_MaxModelSize_${max_model_number}"
+/BinSize_${bin_size}_SampleSize_${sample_size}_MaxModelSize_${max_model_number}"
 
 mkdir -p "${output_directory}"
 rm -f "${output_directory}"/*
@@ -185,8 +185,8 @@ while [[ $max_model_number -gt 2 ]]; do
     sort -g | \
     tail -1) 
 
-    Rscript RedundantStateChecker.R "${max_model_number}" "${BIN_SIZE}" \
-    "${SAMPLE_SIZE}" "${output_directory}"
+    Rscript RedundantStateChecker.R "${max_model_number}" "${bin_size}" \
+    "${sample_size}" "${output_directory}"
 
     redundant_states=$(tail -1 \
     "${output_directory}/redundant_states_Modelsize_${max_model_number}.txt")
@@ -229,7 +229,7 @@ fi
 ## ============== ##
 
 # Plots the estimated log likelihood against the number of states across all models 
-Rscript PlotLikelihoods.R "${BIN_SIZE}" "${SAMPLE_SIZE}" "${output_directory}"
+Rscript PlotLikelihoods.R "${bin_size}" "${sample_size}" "${output_directory}"
 
 ## ======================= ##
 ##   LOG FILE MANAGEMENT   ##

@@ -68,7 +68,7 @@ fi
 ##    SET UP    ##
 ## ============ ##
 
-echo "Job '$SLURM_JOB_NAME' started at:"
+echo "Job '${SLURM_JOB_NAME}' started at:"
 date -u
 
 start_time=$(date +%s)
@@ -96,30 +96,30 @@ ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 ##    VARIABLE ASSIGNMENT    ##
 ## ========================= ##
 
-MODEL_SIZE=$1
-SEED=$2
-MODEL_FILE_DIR=$3
+model_size=$1
+seed=$2
+model_file_dir=$3
 
-if [ -z "$MODEL_FILE_DIR" ]; then
-    echo "Model file directory was not given using the default of ${BIG_MODELS_DIR}"
-    MODEL_FILE_DIR="${BIG_MODELS_DIR}"
+if [ -z "$model_file_dir" ]; then
+    echo "Model file directory was not given, using the default of ${BIG_MODELS_DIR}"
+    model_file_dir="${BIG_MODELS_DIR}"
 fi
 
-if [ -z "$MODEL_SIZE" ]; then
+if [ -z "$model_size" ]; then
     echo "No model size was given by the user, using default value of 20."
-    MODEL_SIZE=20
+    model_size=20
 fi
 
-if [ -z "$SEED" ]; then
+if [ -z "$seed" ]; then
     echo "No random seed was given by the user, using default value of 1."
-    SEED=1
+    seed=1
 fi
 
 ## ================== ##
 ##   FILE EXISTANCE   ##
 ## ================== ##
 
-cd "${MODEL_FILE_DIR}" ||  { echo "Directory given doesn't exist, \
+cd "${model_file_dir}" ||  { echo "Directory given doesn't exist, \
 ensure that the directory exists or that config.txt is pointing \
 to the correct directory if default path was used."; exit 1; }
 
@@ -143,10 +143,10 @@ module load R/4.2.1-foss-2022a
 cd "${SUPPLEMENTARY_DIR}/Redundancy_Threshold_Optimisation/Rscripts" || exit 1
 
 Rscript HistogramPlotsForSimilarityMetrics_Emissions.r \
-"${MODEL_SIZE}" "${SEED}" "${MODEL_FILE_DIR}"
+"${model_size}" "${seed}" "${model_file_dir}"
 
 Rscript HistogramPlotsForSimilarityMetrics_Transistions.r \
-"${MODEL_SIZE}" "${SEED}" "${MODEL_FILE_DIR}"
+"${model_size}" "${seed}" "${model_file_dir}"
 
 
 ## ======================= ##
