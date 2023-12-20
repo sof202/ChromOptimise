@@ -5,12 +5,12 @@
 ## ============================================================== ##
 ## PURPOSE:                                                       ||
 ## This R script is in place to find and plot the maximum         ||
-## transistion parameter seen in each row/column of the           ||
+## transistion probability seen in each column of the             ||
 ## transition matrix produced as an output from ChromHMM.         ||
-## These can then be used to identify the relative stability      ||
-## of the states in the model. By stability, we mean:             ||
-## likely to follow onto / from at leaset one specific state      ||
-## more often than random chance.                                 ||
+## These can then be used to identify the relative assignment of  ||
+## each state. If the maximum transition probability is very low  ||
+## this implies that the state is unlikely to be assigned to      ||
+## genomic bins.                                                  ||
 ## ============================================================== ##
 ## AUTHOR: Sam Fletcher s.o.fletcher@exeter.ac.uk                 ||
 ## CREATED: December 2023                                         ||
@@ -20,11 +20,12 @@
 ## ============================================================== ##
 ## INPUTS:                                                        ||
 ## $1 -> Model size                                               ||
+## $2 -> Random seed                                              ||
+## $3 -> Path to directory containing the model files             ||
 ## ============================================================== ##
 ## OUTPUTS:                                                       ||
-## 2 histograms and 2 scatter plots displaying the maxima for     ||
-## the rows and columns seen in the transition parameter          ||
-## matrix that is loaded.                                         ||
+## A scatter plot displaying the maxima for the columns seen in   ||
+## the transition parameter matrix that is loaded.                ||
 ## ============================================================== ##
 
 ## ========== ##
