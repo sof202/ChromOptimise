@@ -17,6 +17,7 @@
 ## ============================================================== ##
 ## PREREQUISITES:                                                 ||
 ## Run: Generate_Big_Model.sh                                     ||
+## Run Generate_Big_Model.sh or ChromHMM's LearnModel Command     ||
 ## ============================================================== ##
 ## INPUTS:                                                        ||
 ## $1 -> Model size                                               ||

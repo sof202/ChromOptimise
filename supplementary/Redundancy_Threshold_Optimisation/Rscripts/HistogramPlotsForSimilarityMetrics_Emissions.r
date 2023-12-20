@@ -4,31 +4,29 @@
 ##                                                                ||
 ## ============================================================== ##
 ## PURPOSE:                                                       ||
-## This R script is in place to find and plot the cosine          ||
-## similarity scores and the Euclidean distances between the      ||
-## emission parameters for each pair of states that are           ||
-## in a hidden Markov model that has been produced by ChromHMM.   ||
-## These scores are then plotted in a histogram so that an        ||
-## appropriate threshold can be chosen for when two states        ||
-## are 'sufficiently distinct' from one another.                  ||
+## This R script is in place to find and plot the Euclidean       ||
+## distances between the emission parameters for each pair of     ||
+## states in a ChromHMM modelThese scores are then plotted in a   ||
+## histogram so that an appropriate threshold can be chosen for   ||
+## when two states are 'sufficiently distinct' from one another.  ||
 ##                                                                ||
-## In addition to this, a suggested threshold is given for the    ||
-## Euclidean distances histogram. This value is determined by     ||
-## looking for gaps in the histogram.                             ||
+## In addition to this, a suggested threshold is given. This      ||
+## value is determined by looking for gaps in the histogram.      ||
 ## ============================================================== ##
 ## AUTHOR: Sam Fletcher s.o.fletcher@exeter.ac.uk                 ||
 ## CREATED: November 2023                                         ||
 ## ============================================================== ##
 ## PREREQUISITES:                                                 ||
-## Run: Generate_Big_Model.sh                                     ||
+## Run Generate_Big_Model.sh or ChromHMM's LearnModel Command     ||
 ## ============================================================== ##
 ## INPUTS:                                                        ||
 ## $1 -> Model size                                               ||
+## $2 -> Random seed                                              ||
+## $3 -> Path to directory containing the model files             ||
 ## ============================================================== ##
 ## OUTPUTS:                                                       ||
-## 2 histograms displaying the distribution of Euclidean          ||
-## distances and the cosine similarity scores for the emission    ||
-## matrix that is loaded.                                         ||
+## histogram displaying the distribution of Euclidean distances   ||
+## for the emission matrix that is loaded.                        ||
 ## ============================================================== ##
 
 ## ========== ##
