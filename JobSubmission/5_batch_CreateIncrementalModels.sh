@@ -242,10 +242,12 @@ seq "$starting_number_of_states" "$STATE_INCREMENT" "$ending_number_of_states"\
 
 for numstates in ${sequence}; do
     echo "Learning model with: ${numstates} states..."
-    # The -nobrowser option is here as we have no need for the genome browser files
+    # The -nobed option is here as we have no need for the genome browser files
+    # or segmentation files.
     java -mx4G \
     -jar "${CHROMHMM_MAIN_DIR}/ChromHMM.jar" LearnModel \
-    -nobrowser \
+    -noautoopen \
+    -nobed \
     -b "${BIN_SIZE}" \
     "${BINARY_DIR}" "${MODEL_DIR}" "${numstates}" hg19 > \
     "ChromHMM.Output.BinSize.${BIN_SIZE}.numstates.${numstates}.txt"

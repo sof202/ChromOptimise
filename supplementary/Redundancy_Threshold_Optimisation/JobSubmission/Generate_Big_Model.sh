@@ -10,8 +10,8 @@
 #SBATCH -A Research_Project-MRC190311
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=16
-# Large memory consumption for big models, difficult to give good estimates, see 
-# 5_batch_CreateIncrementalModels.sh for a idea with less states
+# Possible large memory consumption for big models, difficult to give good estimates,  
+# see 5_batch_CreateIncrementalModels.sh for a idea with less states
 #SBATCH --mem=32G 
 #SBATCH --mail-type=END # Send an email after the job is done
 # Temporary log file, later to be removed
@@ -139,7 +139,9 @@ cd "${BIG_MODELS_DIR}" || { echo "Big models directory doesn't exist, \
 make sure config.txt is pointing to the correct directory"; exit 1; }
 
 java -mx30G \
--jar "${CHROMHMM_MAIN_DIR}/ChromHMM.jar" LearnModel -nobrowser \
+-jar "${CHROMHMM_MAIN_DIR}/ChromHMM.jar" LearnModel \
+-noautoopen \
+-nobed \
 -init random \
 -s "${SEED}" \
 "${BINARY_DIR}" "${BLUEPRINT_MAIN_DIR}/Big_Model_Files" "${MODEL_SIZE}" hg19 > \
