@@ -37,7 +37,7 @@
 ## DEPENDENCIES: Java, ChromHMM                                                     ||
 ## =================================================================================##
 ## INPUTS:                                                                          ||
-## $1 -> Bin size to be used by BinarizeBam command                                 ||
+## $1 -> Bin size to be used by BinarizeBam command (default: 200)                  ||
 ## $2 -> Sample size used in 3_SubsampleBamFiles.sh                                 ||
 ## =================================================================================##
 ## OUTPUTS:                                                                         ||
@@ -129,6 +129,10 @@ if [ -z "${sample_size}" ]; then
     sample_size=$(find . -type f -name "Subsampled*" | head -1 | cut -d "." -f 3)
     echo -e "WARNING: No sample size was given.\n\
     Assuming that ${sample_size} is the desired sample size..."
+fi
+if [ -z "${sample_size}" ]; then
+    { >&2 echo -e "ERROR: No sample size even after fail safe. Please run\n\
+    3_SubsampleBamFiles.sh before running this script" ;}
 fi
 
 ## ================== ##

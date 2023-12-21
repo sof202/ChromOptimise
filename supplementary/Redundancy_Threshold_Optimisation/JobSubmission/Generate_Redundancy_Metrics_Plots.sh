@@ -35,9 +35,10 @@
 ## DEPENDENCIES: R                                                                  ||
 ## =================================================================================##
 ## INPUTS:                                                                          ||
-## $1 -> Size of model                                                              ||
-## $2 -> Random Seed                                                                ||
-## $3 -> Path to directory containing model files                                   ||
+## $1 -> Size of model (default: 20)                                                ||
+## $2 -> Random seed (default: 1)"                                                  ||
+## $3 -> Path to directory containing the model files                               ||
+##       (default: \${BIG_MODELS_DIR} in config.txt)                                ||
 ## =================================================================================##
 ## OUTPUTS:                                                                         ||
 ## Histogram plot of Euclidean distances between emission parameters of pairs       ||

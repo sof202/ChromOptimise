@@ -42,7 +42,7 @@
 ## =================================================================================##
 ## INPUTS:                                                                          ||
 ## $1 -> Epigenetic mark to process                                                 ||
-## $2 -> Phred score threshold value                                                ||
+## $2 -> Phred score threshold value (default: 20)                                  ||
 ## =================================================================================##
 ## OUTPUTS:                                                                         ||
 ## Processed .bam files                                                             ||

@@ -43,7 +43,7 @@
 ## =================================================================================##
 ## INPUTS:                                                                          ||
 ## $1 -> Epigenetic mark to process                                                 ||
-## $2 -> Sample size as a percentage                                                ||
+## $2 -> Sample size as a percentage (default : 50)                                 ||
 ## =================================================================================##
 ## OUTPUTS:                                                                         ||
 ## Subsampled .bam files                                                            ||

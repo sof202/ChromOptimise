@@ -38,8 +38,8 @@
 ## DEPENDENCIES: Java, ChromHMM                                                     ||
 ## =================================================================================##
 ## INPUTS:                                                                          ||
-## $1 -> Size of model                                                              ||
-## $2 -> Random Seed                                                                ||
+## $1 -> Size of model (default: 20)                                                ||
+## $2 -> Random seed (default: 1)                                                   ||
 ## =================================================================================##
 ## OUTPUTS:                                                                         ||
 ## The emission parameter matrix of the model (.png,.txt,.svg)                      ||

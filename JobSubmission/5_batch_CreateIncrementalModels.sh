@@ -52,8 +52,8 @@
 ## DEPENDENCIES: Java, ChromHMM                                                     ||
 ## =================================================================================##
 ## INPUTS:                                                                          ||
-## $1 -> Number of models to generate                                               ||
-## $2  -> The increment to use between model sizes                                  ||
+## $1 -> Number of models to learn (default: 4)                                     ||
+## $2  -> The increment to use between model sizes (default: 1)                     ||
 ## =================================================================================##
 ## OUTPUTS:                                                                         ||
 ## Emission parameter matrix for models (.png, .txt and .svg)                       ||
@@ -75,7 +75,7 @@ if [[ "$1" == "--help" || "$1" == "-h" ]]; then
     echo "Contact: s.o.fletcher@exeter.ac.uk"
     echo "Dependencies: Java, ChromHMM"
     echo "Inputs:"
-    echo "\$1 -> Number of models to generate (default: 4)"
+    echo "\$1 -> Number of models to learn (default: 4)"
     echo "\$2 -> The increment to use between model sizes (default: 1)"
     echo "Optional:"
     echo "Specify --array in sbatch options, to set a custom array size."
