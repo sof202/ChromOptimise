@@ -49,10 +49,7 @@
 ## DEPENDENCIES: R                                                                  ||
 ## =================================================================================##
 ## INPUTS:                                                                          ||
-## $3 -> Bin size, WARNING: Use the same bin size as was used in                    ||
-##       4_BinarizeBamFiles.sh                                                      ||
-## $4 -> Sample Size, WARNING: Use the same sample size as was used in              ||
-##       3_SubsampleBamFiles.sh                                                     ||
+## NONE
 ## =================================================================================##
 ## OUTPUTS:                                                                         ||
 ## File containing why models with too many states were rejected                    ||
@@ -72,10 +69,7 @@ if [[ "$1" == "--help" || "$1" == "-h" ]]; then
     echo "Contact: s.o.fletcher@exeter.ac.uk"
     echo "Dependencies: R"
     echo "Inputs:"
-    echo "\$1 -> Bin size, WARNING: Use the same bin size as was used in"
-    echo "4_BinarizeBamFiles.sh"
-    echo "\$2 -> Sample size, WARNING: Use the same sample size as was used in"
-    echo "3_SubsampleBamFiles.sh"
+    echo "NONE"
     echo "======================================================================"
     exit 0
 fi
@@ -108,12 +102,9 @@ ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 "${LOG_FILE_PATH}/${SLURM_JOB_ID}~$timestamp.err"
 
 
-## ========================= ##
-##    VARIABLE ASSIGNMENT    ##
-## ========================= ##
-
-bin_size=$1
-sample_size=$2
+## ============================= ##
+##    VARIABLES AND FUNCTIONS    ##
+## ============================= ##
 
 ## ====== FUNCTION : delete_logs() ========================
 ## Delete temporary log and error files then exit
@@ -129,24 +120,17 @@ delete_logs(){
     exit "$1"
 }
 
-# 'Intelligently' set defaults by searching through the model directory
-if [ -z "$bin_size" ]; then
-    bin_size=$(find . -type f -name "Emissions*.txt" | head -1 | cut -d "_" -f 3)
-    echo "No bin size was given, assuming a default value of ${bin_size}..."
-fi
+# Set bin/sample size by searching through the model directory
+cd "${MODEL_DIR}" || \
+{ >&2 echo "ERROR: \${MODEL_DIR} - ${MODEL_DIR} doesn't exist, \
+make sure config.txt is pointing to the correct directory."; delete_logs 1; }
 
-if [ -z "$sample_size" ]; then
-    sample_size=$(find . -type f -name "Emissions*.txt" | head -1 | cut -d "_" -f 5)
-    echo "No sample size was given, assuming a default value of ${sample_size}..."
-fi
+bin_size=$(find . -type f -name "*.txt" | head -1 | cut -d "_" -f 3)
+sample_size=$(find . -type f -name "*.txt" | head -1 | cut -d "_" -f 5)
 
 ## =================== ##
 ##   FILE MANAGEMENT   ##
 ## =================== ##
-
-cd "${MODEL_DIR}" || \
-{ >&2 echo "ERROR: \${MODEL_DIR} - ${MODEL_DIR} doesn't exist, \
-make sure config.txt is pointing to the correct directory."; delete_logs 1; }
 
 if [ -z "$(ls -A)" ]; then
     { >&2 echo -e "ERROR: No files found in \${MODEL_DIR} - ${MODEL_DIR}.\n\

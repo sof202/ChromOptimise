@@ -54,10 +54,6 @@
 ## INPUTS:                                                                          ||
 ## $1 -> Number of models to generate                                               ||
 ## $2  -> The increment to use between model sizes                                  ||
-## $3 -> Bin size, WARNING: Use the same bin size as was used in                    ||
-##       4_BinarizeBamFiles.sh                                                      ||
-## $4 -> Sample Size, WARNING: Use the same sample size as was used in              ||
-##       3_SubsampleBamFiles.sh                                                     ||
 ## =================================================================================##
 ## OUTPUTS:                                                                         ||
 ## Emission parameter matrix for models (.png, .txt and .svg)                       ||
@@ -167,9 +163,8 @@ sample_size=$(find . -type f -name "*.txt*.gz" | head -1 | cut -d "_" -f 4)
 ## =============================== ##
 
 if [ -z "$(ls -A)" ]; then
-    echo "4_BinarizedFiles is empty."
-    echo "Ensure that 4_BinarizeBamFiles.sh has been ran before this script."
-    echo "Aborting..."
+    { >&2 echo -e "ERROR: \${BINARY_DIR} - ${BINARY_DIR} is empty.\n\
+    Ensure that 4_BinarizeBamFiles.sh has been ran before this script."; }
 
     delete_logs 1
 fi
