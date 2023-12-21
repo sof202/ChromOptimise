@@ -8,19 +8,19 @@ Alternatively, you could set each path manually in all scripts, but that would b
 Note that the pipeline was completed with blueprint data in mind, if your data is already downloaded, processed, binarized etc. then the associated lines in the config files will not be required.
 ### config.txt
 ```
-## Blueprint directories
-export BLUEPRINT_MAIN_DIR="path/to/main/directory"
-export DOWNLOAD_DIR="${BLUEPRINT_MAIN_DIR}/path/to/downloads/"
-export RAW_DIR="${BLUEPRINT_MAIN_DIR}/path/to/raw/data/"
-export PROCESSED_DIR="${BLUEPRINT_MAIN_DIR}/path/to/processed/data/"
-export SUBSAMPLED_DIR="${BLUEPRINT_MAIN_DIR}/path/to/subsampled/data/"
-export BINARY_DIR="${BLUEPRINT_MAIN_DIR}/path/to/binary/data/"
-export MODEL_DIR="${BLUEPRINT_MAIN_DIR}/path/to/chromHMM/models/"
-export OPTIMUM_STATES_DIR="${BLUEPRINT_MAIN_DIR}/path/to/optimum/states/output/"
-export COMPARE_DIR="${BLUEPRINT_MAIN_DIR}/path/to/comparison/files/"
-export BIG_MODELS_DIR="${BLUEPRINT_MAIN_DIR}/path/to/big/models/"
+## Data directories
+export MAIN_DIR="path/to/main/directory"
+export DOWNLOAD_DIR="${MAIN_DIR}/path/to/downloads/"
+export RAW_DIR="${MAIN_DIR}/path/to/raw/data/"
+export PROCESSED_DIR="${MAIN_DIR}/path/to/processed/data/"
+export SUBSAMPLED_DIR="${MAIN_DIR}/path/to/subsampled/data/"
+export BINARY_DIR="${MAIN_DIR}/path/to/binary/data/"
+export MODEL_DIR="${MAIN_DIR}/path/to/chromHMM/models/"
+export OPTIMUM_STATES_DIR="${MAIN_DIR}/path/to/optimum/states/output/"
+export COMPARE_DIR="${MAIN_DIR}/path/to/comparison/files/"
+export BIG_MODELS_DIR="${MAIN_DIR}/path/to/big/models/"
 
-## Script locations
+## Script directories
 export SCRIPTS_DIR="/path/to/main"
 export SUPPLEMENTARY_DIR="path/to/supplementary/directory"
 export RSCRIPTS_DIR="path/to/main/Rscripts/directory"
@@ -31,17 +31,17 @@ export CHROMHMM_CHROM_SIZES="${CHROMHMM_MAIN_DIR}/path/to/chromosome/sizes"
 ```
 ### config.r
 ```
-## Blueprint directories
-blueprint_main_dir="path/to/main/directory"
-model_dir=paste0(blueprint_main_dir, "path/to/model/files/")
-optimum_states_dir=paste0(blueprint_main_dir, "path/to/optimum/states/output/")
+## Data Directories
+main_dir="path/to/main/directory"
+model_dir=paste0(main_dir, "path/to/model/files/")
+optimum_states_dir=paste0(main_dir, "path/to/optimum/states/output/")
 likelihood_dir=paste0(optimum_states_dir, "path/to/likelihood/files/")
-compare_dir=paste0(blueprint_main_dir, "path/to/comparison/files/")
-big_models_dir=paste0(blueprint_main_dir,"path/to/big/model/files/")
+compare_dir=paste0(main_dir, "path/to/comparison/files/")
+big_models_dir=paste0(main_dir,"path/to/big/model/files/")
 
 ## Plotting directories
-transition_plotting_dir=paste0(blueprint_main_dir,"/path/to/plots")
-emission_plotting_dir=paste0(blueprint_main_dir,"/path/to/plots")
+transition_plotting_dir=paste0(main_dir,"/path/to/plots")
+emission_plotting_dir=paste0(main_dir,"/path/to/plots")
 
 ## Redundancy parameters
 emissions_threshold=VALUE
