@@ -73,7 +73,7 @@ start_time=$(date +%s)
 # Activate config.txt to access all file paths
 # CHANGE THIS TO YOUR OWN CONFIG FILE
 source "/lustre/projects/Research_Project-MRC190311\
-scripts/integrative/ChromHMM_OptimumStates/config/config.txt"
+/scripts/integrative/ChromHMM_OptimumStates/config/config.txt"
 
 # Rename the output and error files to have format:
 # [file name]~[job id]~[date]-[time]
@@ -82,6 +82,7 @@ scripts/integrative/ChromHMM_OptimumStates/config/config.txt"
 LOG_FILE_PATH="${LOG_DIR}/$SLURM_JOB_NAME/$USER"
 mkdir -p "${LOG_FILE_PATH}"
 timestamp=$(date -u +%Y.%m.%d-%H:%M)
+
 ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" \
 "${LOG_FILE_PATH}/File-$1~${SLURM_JOB_ID}~$timestamp.log"
 ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
@@ -103,30 +104,32 @@ module load Miniconda3
 # Conda environments will not be activated until one uses `conda init bash`
 # However, running this will result in a new shell being created.
 # This means one cannot have their environment activatable and activate it
-# Using the conda shell script is a known work around for this.
+# Using the conda shell script in the [conda]/etc folder is a work around for this.
 source /lustre/home/sof202/miniconda3/etc/profile.d/conda.sh 
 
-# CHANGE THIS TO YOUR CONDA ENVIRONMENT NAME
+# CHANGE THIS TO YOUR CONDA ENVIRONMENT PATH/NAME
 conda activate /lustre/home/sof202/miniconda3/envs/pyega
 
 mkdir -p "${DOWNLOAD_DIR}"
-# Read each line and handle the last line without a newline character
+# Read each line of text file
+# [[ -n "$line" ]] handles the last line that has no newline character
 while IFS= read -r line || [[ -n "$line" ]]; do
-    # CHANGE egaConfig.json TO FILE WITH EGA LOGIN CREDENTIALS
+    # CHANGE "egaConfig.json" TO FILE WITH EGA LOGIN CREDENTIALS
+    # -c 5 -> Failed downloads are retried 5 times before moving on to next file
     pyega3 -c 5 -cf ~/Tools/pyegaDownloading/egaConfig.json fetch \
     "$line" --output-dir "${DOWNLOAD_DIR}"
 done < "${text_file_containing_inodes}"
 
 
 ## ======================= ##
-##   LOG FILE MANAGEMENT   ##
+##   FINISHING STATEMENT   ##
 ## ======================= ##
 
-echo "Job completed at:"
+echo "Job finished with exit code 0 at:"
 date -u
 end_time=$(date +%s)
 time_taken=$((end_time-start_time))
-echo "Job took a total of: ${time_taken} seconds to complete."
+echo "Job took a total of: ${time_taken} seconds to finish."
 
 rm "${SLURM_SUBMIT_DIR}/pyega3_output.log"
 rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log"

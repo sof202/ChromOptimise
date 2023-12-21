@@ -8,7 +8,7 @@
 #SBATCH -A Research_Project-MRC190311 
 #SBATCH --nodes=1 
 #SBATCH --ntasks-per-node=16
-# Moving files on linux takes very little memory
+# Moving files on linux takes very little memory unless moving between drives
 #SBATCH --mem=1G
 # Send an email after the job is done
 #SBATCH --mail-type=END
@@ -24,7 +24,7 @@
 ##                                                                                  ||
 ## =================================================================================##
 ## PURPOSE:                                                                         ||
-## Moves .bam files that include the epigenetic mark into a single folder.          ||
+## Moves .bam files that include the inputted epigenetic mark into a single folder. ||
 ## =================================================================================##
 ## AUTHOR: Sam Fletcher                                                             ||
 ## CONTACT: s.o.fletcher@exeter.ac.uk                                               ||
@@ -70,7 +70,7 @@ start_time=$(date +%s)
 # Activate config.txt to access all file paths
 # CHANGE THIS TO YOUR OWN CONFIG FILE
 source "/lustre/projects/Research_Project-MRC190311\
-scripts/integrative/ChromHMM_OptimumStates/config/config.txt"
+/scripts/integrative/ChromHMM_OptimumStates/config/config.txt"
 
 # Rename the output and error files to have format:
 # [epigenetic mark name]~[job id]~[date]-[time]
