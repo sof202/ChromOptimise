@@ -159,10 +159,10 @@ cd "${SUPPLEMENTARY_DIR}/Redundancy_Threshold_Optimisation/Rscripts" ||  \
 doesn't exist, make sure config.txt is pointing to the correct directory"; \
 delete_logs 1; }
 
-Rscript HistogramPlotsForSimilarityMetrics_Emissions.r \
+Rscript HistogramPlotForEuclideanDistances.R \
 "${model_size}" "${seed}" "${model_file_dir}"
 
-Rscript HistogramPlotsForSimilarityMetrics_Transistions.r \
+Rscript ScatterPlotForTransitionMaxima.R \
 "${model_size}" "${seed}" "${model_file_dir}"
 
 
