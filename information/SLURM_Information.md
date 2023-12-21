@@ -30,3 +30,6 @@ A fair amount of effort would be required to get such scripts to work without th
 
 ## Time and memory allocation
 SLURM workload manager allows one to set up a peak memory allocation parameter and a maximum wall time for the submitted job. These parameters are specified in the `#SBATCH` lines at the top of the scripts. If one executes the script normally, the absence of these should not matter. One may want to implement artificial maximum wall times regardless as some programs can take a long time to finish and cause too much memory pile up (resulting in a crash).
+
+## `Module purge` and `Module load`
+In most scripts you will see lines: `Module purge` and `Module load`. This is in place as most software on the HPC at the University of Exeter is split up into modules to ensure compatibility between versions. These lines can be deleted on other systems as they will not do anything. 
