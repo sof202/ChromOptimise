@@ -72,7 +72,6 @@ start_time=$(date +%s)
 
 # Activate config.txt to access all file paths
 # CHANGE THIS TO YOUR OWN CONFIG FILE
-echo "Loading config file..."
 source "/lustre/projects/Research_Project-MRC190311\
 /scripts/integrative/blueprint/config/config.txt"
 
@@ -111,29 +110,33 @@ delete_logs(){
 ##    FILE MANAGEMENT    ##
 ## ===================== ##
 
-cd "${MODEL_DIR}" || { echo "Model directory doesn't exist, \
-make sure config.txt is pointing to the correct directory"; delete_logs 1; }
+cd "${MODEL_DIR}" || \
+{ >&2 echo "ERROR: \${MODEL_DIR} - ${MODEL_DIR} doesn't exist, \
+make sure config.txt is pointing to the correct directory."; delete_logs 1; }
+
 if [ -z "$(ls -A)" ]; then
-    echo "5_ModelFiles is empty."
-    echo "Ensure that 5_CreateIncrementalModels.sh has been ran before this script."
-    echo "Aborting..."
+    { echo -e "ERROR: \${MODEL_DIR} - ${MODEL_DIR} is empty.\n\
+    Ensure that 5_CreateIncrementalModels.sh has been ran before this script."; }
 
     delete_logs 1
 fi
 
-cd "${COMPARE_DIR}" || { echo "Comparison directory doesn't exist, \
+cd "${COMPARE_DIR}" || { echo "ERROR: \${COMPARE_DIR} - ${COMPARE_DIR} doesn't exist, \
 make sure config.txt is pointing to the correct directory"; delete_logs 1; }
 mkdir -p temp
 cd temp || delete_logs 1
 rm ./*
 
-cd "${MODEL_DIR}" || { echo "Model directory doesn't exist, \
-make sure config.txt is pointing to the correct directory"; delete_logs 1; }
+cd "${MODEL_DIR}" || \
+{ >&2 echo "ERROR: \${MODEL_DIR} - ${MODEL_DIR} doesn't exist, \
+make sure config.txt is pointing to the correct directory."; delete_logs 1; }
+
 emission_text_files=$(find . -type f -name "Emission*.txt")
 
-echo "Copying emission files to a temporary directory..."
+echo "Copying all found emission files to a temporary directory..."
 for file in $emission_text_files; do
     echo "Copying ${file}..."
+
     # ChromHMM's CompareModels requires files to start with 'emissions'
     # This is case sensitive, hence we need to convert to lower case.
     new_file_name=$(echo "$file" | tr '[:upper:]' '[:lower:]')
@@ -166,8 +169,8 @@ for file in $emission_text_files; do
     echo "${most_complex_model_file}"
 
     # 2)
-    echo -n "Comparing ${most_complex_model_file} to the " 
-    echo "present less complex emission files..."
+    echo -e "Comparing model with ${most_complex_model_file} states to the \ 
+    less complex models..."
 
     java -mx1G \
     -jar "${CHROMHMM_MAIN_DIR}/ChromHMM.jar" CompareModels \

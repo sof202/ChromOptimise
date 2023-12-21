@@ -68,7 +68,6 @@ start_time=$(date +%s)
 
 # Activate config.txt to access all file paths
 # CHANGE THIS TO YOUR OWN CONFIG FILE
-echo "Loading config file..."
 source "/lustre/projects/Research_Project-MRC190311\
 /scripts/integrative/blueprint/config/config.txt"
 
@@ -79,6 +78,7 @@ source "/lustre/projects/Research_Project-MRC190311\
 LOG_FILE_PATH="${LOG_DIR}/$SLURM_JOB_NAME/$USER"
 mkdir -p "${LOG_FILE_PATH}"
 timestamp=$(date -u +%Y.%m.%d-%H:%M)
+
 ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" \
 "${LOG_FILE_PATH}/$1~${SLURM_JOB_ID}~$timestamp.log"
 ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
@@ -88,7 +88,7 @@ ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 ##    VARIABLES AND FUNCTIONS    ##
 ## ============================= ##
 
-blueprint_mark_name=$1
+mark_name=$1
 
 ## ====== FUNCTION : delete_logs() ========================
 ## Delete temporary log and error files then exit
@@ -109,34 +109,34 @@ delete_logs(){
 ## ================== ##
 
 cd "${BLUEPRINT_MAIN_DIR}" || \
-{ echo "Main directory doesn't exist, \
+{ >&2 echo "ERROR: \${BLUEPRINT_MAIN_DIR} - ${BLUEPRINT_MAIN_DIR} doesn't exist, \
 make sure config.txt is pointing to the correct directory"; delete_logs 1; }
 
 list_of_files_with_mark_name=\
-$(find . -type f -name "*${blueprint_mark_name}*.bam")
+$(find . -type f -name "*${mark_name}*.bam")
 
 # If the above list is empty then the epigenetic mark must not exist.
 number_of_files_to_move=\
-$(find . -type f -name "*${blueprint_mark_name}*.bam" | wc -l)
+$(find . -type f -name "*${mark_name}*.bam" | wc -l)
 echo "Number of .bam files to be moved is: ${number_of_files_to_move}"
 
 # Exit here if there are no files 
 # There is no point in generating a folder if the mark doesn't exist
 if [ "${number_of_files_to_move}" -eq 0 ]; then
-    echo "No files were found."
-    echo "Please input a epigenetic mark name that exists (case sensitive)." 
-    echo "Aborting..."
+    { >&2 echo -e "ERROR: No files with epigenetic mark: ${mark_name} were found.\n\
+    Please input a epigenetic mark name that exists (note that this is \
+    case sensitive)."; }
 
     delete_logs 1
 fi
 
-mkdir -p "${RAW_DIR}/${blueprint_mark_name}"
+mkdir -p "${RAW_DIR}/${mark_name}"
 
-echo "Moving bam files to ${RAW_DIR}/${blueprint_mark_name}"
+echo "Moving .bam files to ${RAW_DIR}/${mark_name}..."
 
 for file in ${list_of_files_with_mark_name}; do
     echo "Moving file ${file}..."
-    mv "${file}" "${RAW_DIR}/${blueprint_mark_name}"
+    mv "${file}" "${RAW_DIR}/${mark_name}"
 done
 
 

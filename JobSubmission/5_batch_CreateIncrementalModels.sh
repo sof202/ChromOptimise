@@ -102,7 +102,6 @@ start_time=$(date +%s)
 
 # Activate config.txt to access all file paths
 # CHANGE THIS TO YOUR OWN CONFIG FILE
-echo "Loading config file..."
 source "/lustre/projects/Research_Project-MRC190311\
 /scripts/integrative/blueprint/config/config.txt"
 
@@ -137,31 +136,39 @@ sample_size=$4
 ##   exit code
 ## ========================================================
 delete_logs(){
-    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" 
-    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err"
+    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.log"
+    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err"
     exit "$1"
 }
 
 if [ -z "${number_of_models_to_generate}" ]; then
-    echo "Number of models to generate was not given."
-    echo "Using the default value of 4 instead."
     number_of_models_to_generate=4
+    echo "Number of models to generate was not given."
+    echo "Using the default value of: ${number_of_models_to_generate} instead."
+elif [[ "${number_of_models_to_generate}" =~ ^[^0-9]+ ]]; then
+    echo "Number of models to generate given is invalid (non-integer)."
+    echo "Using the default value of: ${number_of_models_to_generate} instead."
 fi
 
 if [ -z "${states_increment}" ]; then
-    echo "The value for the state increment was not given."
-    echo "Using the default value of 1 instead."
     states_increment=1
+    echo "The value for the state increment was not given."
+    echo "Using the default value of ${states_increment} instead."
+elif [[ "${states_increment}" =~ ^[^0-9]+ ]]; then
+    states_increment=1
+    echo "The value for the state increment was not valid (non-integer)."
+    echo "Using the default value of ${states_increment} instead."
 fi
 
 # 'intelligently' set bin size default by searching through the subsample directory
 if [ -z "${bin_size}" ]; then
     echo "The value for the bin size was not given." 
     echo -n "Assuming that the first file in the subsampled directory "
-    echo "uses the correct bin size..."
+    echo "uses the desired bin size..."
 
-    cd "${BINARY_DIR}" || { echo "Binary directory doesn't exist, \
-    make sure config.txt is pointing to the correct directory"; delete_logs 1; }
+    cd "${BINARY_DIR}" || \
+    { >&2 echo "ERROR: \${BINARY_DIR} - ${BINARY_DIR} doesn't exist, \
+    make sure config.txt is pointing to the correct directory."; delete_logs 1; }
 
     bin_size=$(find . -type f -name "*.txt*.gz" | head -1 | cut -d "_" -f 6)
 fi
@@ -170,10 +177,11 @@ fi
 if [ -z "${sample_size}" ]; then
     echo "No sample size was given."
     echo -n "Assuming that the first file in the subsampled directory "
-    echo "uses the correct sample size..."
+    echo "uses the desired sample size..."
 
-    cd "${BINARY_DIR}" || { echo "Binary directory doesn't exist, \
-    make sure config.txt is pointing to the correct directory"; delete_logs 1; }
+    cd "${BINARY_DIR}" || \
+    { >&2 echo "ERROR: \${BINARY_DIR} - ${BINARY_DIR} doesn't exist, \
+    make sure config.txt is pointing to the correct directory."; delete_logs 1; }
 
     sample_size=$(find . -type f -name "*.txt*.gz" | head -1 | cut -d "_" -f 4)
 fi
@@ -182,8 +190,9 @@ fi
 ##   CLEAN UP AND ERROR CATCHING   ##
 ## =============================== ##
 
-cd "${BINARY_DIR}" || { echo "Binary directory doesn't exist, \
-make sure config.txt is pointing to the correct directory"; delete_logs 1; }
+cd "${BINARY_DIR}" || \
+{ >&2 echo "ERROR: \${BINARY_DIR} - ${BINARY_DIR} doesn't exist, \
+make sure config.txt is pointing to the correct directory."; delete_logs 1; }
 if [ -z "$(ls -A)" ]; then
     echo "4_BinarizedFiles is empty."
     echo "Ensure that 4_BinarizeBamFiles.sh has been ran before this script."
@@ -193,8 +202,9 @@ if [ -z "$(ls -A)" ]; then
 fi
 
 # Clean up from previous runs of script
-cd "${MODEL_DIR}" || { echo "Model directory doesn't exist, \
-make sure config.txt is pointing to the correct directory"; delete_logs 1; }
+cd "${MODEL_DIR}" || \
+{ >&2 echo "ERROR: \${MODEL_DIR} - ${MODEL_DIR} doesn't exist, \
+make sure config.txt is pointing to the correct directory."; delete_logs 1; }
 rm -f ./*
 
 ## ========================== ##
@@ -227,12 +237,6 @@ fi
 ##    MODEL GENERATION   ##
 ## ===================== ##
 
-echo -n "Generating ${number_of_models_to_generate} models for the binary files "
-echo "found in the 4_BinarizedFiles directory."
-echo -n "Models will have states starting at 2 and going up in increments of: "
-echo "${states_increment}."
-echo "ChromHMM's LearnModel command will use the option '-b ${bin_size}'."
-
 module purge
 module load Java
 
@@ -250,11 +254,13 @@ sequence=$(\
 seq "$starting_number_of_states" "$states_increment" "$ending_number_of_states"\
 )
 
+echo "Learning models with: (${sequence}) states using a bin size of ${bin_size}." 
+
 # Main loop
 for numstates in ${sequence}; do
     echo "Learning model with: ${numstates} states..."
-    # The -nobed option is here as we have no need for the genome browser files
-    # or segmentation files.
+    # -nobed is used as genome browser files and segmentation files are not required.
+    # -noautoopen is used so html files are not opened after model learning finshes.
     java -mx4G \
     -jar "${CHROMHMM_MAIN_DIR}/ChromHMM.jar" LearnModel \
     -noautoopen \
@@ -282,27 +288,29 @@ done
 ##   RENAMING OUTPUT FILES   ##
 ## ========================= ##
 
-cd "${MODEL_DIR}" || { echo "Model directory doesn't exist, \
-make sure config.txt is pointing to the correct directory"; delete_logs 1; }
+cd "${MODEL_DIR}" || \
+{ >&2 echo "ERROR: \${MODEL_DIR} - ${MODEL_DIR} doesn't exist, \
+make sure config.txt is pointing to the correct directory."; delete_logs 1; }
+
 emission_files_to_rename=$(find . -type f -name "emissions*")
 for file in $emission_files_to_rename; do
     file_ending=$(echo "$file" | cut -d "_" -f 2) 
     mv "$file" \
-    "Emissions_BinSize_${bin_size}_SampleSize_${sample_size}_NumberOfStates_${file_ending}" 
+    "Emissions_BinSize_${bin_size}_SampleSize_${sample_size}_States_${file_ending}"
 done
 
 transistion_files_to_rename=$(find . -type f -name "transitions*")
 for file in $transistion_files_to_rename; do
     file_ending=$(echo "$file" | cut -d "_" -f 2)
     mv "$file" \
-    "Transitions_BinSize_${bin_size}_SampleSize_${sample_size}_NumberOfStates_${file_ending}" 
+    "Transitions_BinSize_${bin_size}_SampleSize_${sample_size}_States_${file_ending}"
 done
 
 model_files_to_rename=$(find . -type f -name "model*")
 for file in $model_files_to_rename; do
     file_ending=$(echo "$file" | cut -d "_" -f 2)
     mv "$file" \
-    "Model_BinSize_${bin_size}_SampleSize_${sample_size}_NumberOfStates_${file_ending}" 
+    "Model_BinSize_${bin_size}_SampleSize_${sample_size}_States_${file_ending}"
 done
 
 

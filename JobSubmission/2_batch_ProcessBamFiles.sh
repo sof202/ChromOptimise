@@ -81,7 +81,6 @@ start_time=$(date +%s)
 
 # Activate config.txt to access all file paths
 # CHANGE THIS TO YOUR OWN CONFIG FILE
-echo "Loading config file..."
 source "/lustre/projects/Research_Project-MRC190311\
 /scripts/integrative/blueprint/config/config.txt"
 
@@ -116,25 +115,29 @@ BLUEPRINT_PROCESSED_FULL_FILE_PATH="${PROCESSED_DIR}/${blueprint_mark_name}"
 ##   exit code
 ## ========================================================
 delete_logs(){
-    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" 
-    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err"
+    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.log" 
+    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err"
     exit "$1"
 }
 
-if [ -z "${minimum_tolerated_phred_score}" ]; then
+if [[ -z "${minimum_tolerated_phred_score}" ]]; then
     minimum_tolerated_phred_score=20
     echo "No Phred score threshold was given, \
-    using default value of ${minimum_tolerated_phred_score}."
+    using the default value of ${minimum_tolerated_phred_score}."
+elif [[ "${minimum_tolerated_phred_score}" =~ ^[^0-9]+$ ]]; then
+    minimum_tolerated_phred_score=20
+    echo "Phred score threshold given is invalid (non-integer), \
+    using the default value of ${minimum_tolerated_phred_score}."
 fi
-
 
 ## ===================== ##
 ##    FILE MANAGEMENT    ##
 ## ===================== ##
 
-cd "${BLUEPRINT_FULL_FILE_PATH}" || { echo "raw directory for mark doesn't exist, \
-make sure you typed the epigenetic mark correctly and that you have ran \
-1_MoveFilesToSingleDirectory.sh first."; delete_logs 1; }
+cd "${BLUEPRINT_FULL_FILE_PATH}" || \
+{ >&2 echo "ERROR: \${BLUEPRINT_FULL_FILE_PATH} - ${BLUEPRINT_FULL_FILE_PATH} \
+doesn't exist, make sure you typed the epigenetic mark correctly and that you \
+have ran 1_MoveFilesToSingleDirectory.sh first."; delete_logs 1; }
 
 # Get base name of the files in 3 steps
 # 1) Find all of the .bam files in the mark directory
@@ -179,11 +182,9 @@ fi
 ##    PROCESSING STAGE    ##
 ## ====================== ##
 
-echo "Processing the following files:"
+echo -n "Processing the following files using Phred score threshold of "
+echo "${minimum_tolerated_phred_score}:"
 echo "${files_to_process}"
-
-echo -n "Processing .bam files using Phred score threshold of: "
-echo "${minimum_tolerated_phred_score} for epigenetic mark: ${blueprint_mark_name}."
 
 module purge
 module load SAMtools
@@ -242,7 +243,7 @@ echo "Job completed at:"
 date -u
 end_time=$(date +%s)
 time_taken=$((end_time-start_time))
-echo "Job took a total of: ${time_taken} seconds to complete"
+echo "Job took a total of: ${time_taken} seconds to complete."
 
 delete_logs 0
 

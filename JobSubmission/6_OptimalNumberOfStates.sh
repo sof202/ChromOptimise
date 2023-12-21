@@ -91,7 +91,6 @@ start_time=$(date +%s)
 
 # Activate config.txt to access all file paths
 # CHANGE THIS TO YOUR OWN CONFIG FILE
-echo "Loading config file..."
 source "/lustre/projects/Research_Project-MRC190311\
 /scripts/integrative/blueprint/config/config.txt"
 
@@ -145,12 +144,13 @@ fi
 ##   FILE MANAGEMENT   ##
 ## =================== ##
 
-cd "${MODEL_DIR}" || { echo "Model directory doesn't exist, \
-make sure config.txt is pointing to the correct directory"; delete_logs 1; }
+cd "${MODEL_DIR}" || \
+{ >&2 echo "ERROR: \${MODEL_DIR} - ${MODEL_DIR} doesn't exist, \
+make sure config.txt is pointing to the correct directory."; delete_logs 1; }
+
 if [ -z "$(ls -A)" ]; then
-    echo "No files found in the model directory."
-    echo "Please run 5_CreateIncrementalModels.sh before this script."
-    echo "Aborting..."
+    { >&2 echo -e "ERROR: No files found in \${MODEL_DIR} - ${MODEL_DIR}.\n\
+    Please run 5_CreateIncrementalModels.sh before this script."; }
 
     delete_logs 1
 fi
@@ -159,8 +159,10 @@ mkdir -p "${OPTIMUM_STATES_DIR}/temp"
 cd "${OPTIMUM_STATES_DIR}/temp" || delete_logs 1
 rm -f ./*
 
-cd "${MODEL_DIR}" || { echo "Model directory doesn't exist, \
-make sure config.txt is pointing to the correct directory"; delete_logs 1; }
+cd "${MODEL_DIR}" || \
+{ >&2 echo "ERROR: \${MODEL_DIR} - ${MODEL_DIR} doesn't exist, \
+make sure config.txt is pointing to the correct directory."; delete_logs 1; }
+
 emission_text_files=$(find . -type f -name "Emissions*.txt")
 for file in $emission_text_files; do
     cp "$file" "${OPTIMUM_STATES_DIR}/temp"
@@ -176,7 +178,8 @@ done
 
 module purge
 module load R/4.2.1-foss-2022a
-cd "${RSCRIPTS_DIR}" || { echo "Rscripts directory doesn't exist, \
+cd "${RSCRIPTS_DIR}" || \
+{ >&2 echo "\${RSCRIPTS_DIR} - ${RSCRIPTS_DIR} doesn't exist, \
 make sure config.txt is pointing to the correct directory"; delete_logs 1; }
 
 max_model_number=$(find "${OPTIMUM_STATES_DIR}/temp" -type f -name "*.txt" | \
@@ -195,6 +198,8 @@ while [[ $max_model_number -gt 2 ]]; do
     grep -oP "\d+(?=.txt)"| \
     sort -g | \
     tail -1) 
+
+    echo "Running RedundantStateChecker.R for: ${max_model_number}..."
 
     Rscript RedundantStateChecker.R "${max_model_number}" "${bin_size}" \
     "${sample_size}" "${output_directory}"
@@ -226,9 +231,9 @@ rm -r "${OPTIMUM_STATES_DIR}/temp"
 
 if [[ $(wc -l "${output_directory}/OptimumNumberOfStates.txt") -eq 1 ]]; then
     {
-    echo -n "${max_model_number} states may not be the optimum number of states. "
-    echo -n "Try increasing the size of the most complex model or increasing "
-    echo "the thresholds in the config.r file." 
+    echo -e "${max_model_number} states may not be the optimum number of states.\n\ 
+    Try increasing the size of the most complex model or increasing \
+    the thresholds in the config.r file." 
     } >> "${output_directory}/OptimumNumberOfStates.txt"
 else
     echo "Optimum number of states for data is: ${max_model_number}" >> \
@@ -239,7 +244,8 @@ fi
 ##    PLOTTING    ##
 ## ============== ##
 
-# Plots the estimated log likelihood against the number of states across all models 
+# Plots the estimated log likelihood against the number of states across all models
+echo "Plotting the estimated log likelihoods of learned models against one another..."
 Rscript PlotLikelihoods.R "${bin_size}" "${sample_size}" "${output_directory}"
 
 ## ======================= ##

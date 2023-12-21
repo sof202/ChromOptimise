@@ -74,7 +74,6 @@ start_time=$(date +%s)
 
 # Activate config.txt to access all file paths
 # CHANGE THIS TO YOUR OWN CONFIG FILE
-echo "Loading config file..."
 source "/lustre/projects/Research_Project-MRC190311\
 /scripts/integrative/blueprint/config/config.txt"
 
@@ -112,9 +111,13 @@ delete_logs(){
     exit "$1"
 }
 
-if [ -z "$bin_size" ]; then
-    echo "No bin size was given, using the default value of 200 instead."
+if [ -z "${bin_size}" ]; then
     bin_size=200
+    echo "No bin size was given, using the default value of ${bin_size} instead."
+elif [[ "${bin_size}" =~ ^[^0-9]+$ ]]; then
+    bin_size=200
+    echo "bin size given is invalid (non-integer), \
+    using the default value of ${bin_size} instead."
 fi
 
 # 'Intelligently' find the sample size using first file name in subsampled directory
@@ -123,23 +126,24 @@ if [ -z "${sample_size}" ]; then
     echo -n "Assuming that the first file in the subsampled "
     echo "directory uses the correct sample size..."
 
-    cd "${SUBSAMPLED_DIR}" || { echo "Subsample directory doesn't exist, \
-    make sure config.txt is pointing to the correct directory"; delete_logs 1; }
+    cd "${SUBSAMPLED_DIR}" || \
+    { >&2 echo "ERROR: \${SUBSAMPLED_DIR} - ${SUBSAMPLED_DIR} doesn't exist, make \
+    sure config.txt is pointing to the correct directory"; delete_logs 1; }
 
-    sample_size=$(find . -type f -name "Sub*" | head -1 | cut -d "." -f 3)
+    sample_size=$(find . -type f -name "Subsampled*" | head -1 | cut -d "." -f 3)
 fi
 
 ## ================== ##
 ##   FILE EXISTENCE   ##
 ## ================== ##
 
-cd "${SUBSAMPLED_DIR}" || { echo "Subsample directory doesn't exist, \
-make sure config.txt is pointing to the correct directory"; delete_logs 1; }
+cd "${SUBSAMPLED_DIR}" || \
+{ >&2 echo "ERROR: \${SUBSAMPLED_DIR} - ${SUBSAMPLED_DIR} doesn't exist, make \
+sure config.txt is pointing to the correct directory"; delete_logs 1; }
 
 if [ -z "$(ls -A)" ]; then
-    echo "3_SubsampledBamFiles is empty."
-    echo "Ensure that 3_SubsampleBamFiles.sh has been ran before this script."
-    echo "Aborting..."
+    { >&2 echo "ERROR: \${SUBSAMPLED_DIR} - ${SUBSAMPLED_DIR} is empty.
+    Ensure that 3_SubsampleBamFiles.sh has been ran before this script."; }
 
     delete_logs 1
 fi
@@ -167,10 +171,12 @@ done
 ##    BINARIZATION USING CHROMHMM    ##
 ## ================================= ##
 
-echo -n "Binarizing subsampled bam files found in 3_SubsampledBamFiles with "
-echo "sample size: ${sample_size} using a bin size of: ${bin_size}."
+echo "Binarizing subsampled bam files found in \${SUBSAMPLED_DIR} - \
+${SUBSAMPLED_DIR} with sample size: ${sample_size} using a bin size \
+of: ${bin_size}."
 
-cd "${BINARY_DIR}" || { echo "Binary directory doesn't exist, \
+cd "${BINARY_DIR}" || \
+{ echo "ERROR: \${BINARY_DIR} - ${BINARY_DIR} doesn't exist, \
 make sure config.txt is pointing to the correct directory"; delete_logs 1; }
 rm ./*.txt*
 

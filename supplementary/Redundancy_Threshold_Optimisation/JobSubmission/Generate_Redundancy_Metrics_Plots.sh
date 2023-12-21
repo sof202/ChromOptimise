@@ -75,7 +75,6 @@ start_time=$(date +%s)
 
 # Activate config.txt to access all file paths
 # CHANGE THIS TO YOUR OWN CONFIG FILE
-echo "Loading config file..."
 source "/lustre/projects/Research_Project-MRC190311\
 /scripts/integrative/blueprint/config/config.txt"
 
@@ -116,17 +115,17 @@ delete_logs(){
 
 
 if [ -z "$model_file_dir" ]; then
-    echo "Model file directory was not given, using the default of ${BIG_MODELS_DIR}"
+    echo "Model file directory was not given, using the default of: ${BIG_MODELS_DIR}"
     model_file_dir="${BIG_MODELS_DIR}"
 fi
 
 if [ -z "$model_size" ]; then
-    echo "No model size was given by the user, using default value of 20."
+    echo "No model size was given by the user, using default value of: ${model_size}."
     model_size=20
 fi
 
 if [ -z "$seed" ]; then
-    echo "No random seed was given by the user, using default value of 1."
+    echo "No random seed was given by the user, using default value of: ${seed}."
     seed=1
 fi
 
@@ -134,13 +133,14 @@ fi
 ##   FILE EXISTANCE   ##
 ## ================== ##
 
-cd "${model_file_dir}" ||  { echo "Directory given doesn't exist, \
-ensure that the directory exists or that config.txt is pointing \
-to the correct directory if default path was used."; delete_logs 1; }
+cd "${model_file_dir}" ||  { >&2 echo "ERROR: ${model_file_dir} doesn't exist, \
+ensure that the directory exists before running this script."; delete_logs 1; }
 
 if [[ -z $(find . -type f -name "emissions*") ]]; then
-    echo "No model files were found in the directory given."
-    echo "Aborting..."
+    { >&2 echo -e "ERROR: No model files were found in ${model_file_dir}.\n\
+    Ensure that you have ran Generate_Big_Model.sh or ChromHMM's \
+    LearnModel Command before using this script." 
+    }
 
     delete_logs 1
 fi
@@ -153,8 +153,9 @@ module purge
 module load R/4.2.1-foss-2022a
 
 cd "${SUPPLEMENTARY_DIR}/Redundancy_Threshold_Optimisation/Rscripts" ||  \
-{ echo "Rscripts directory doesn't exist, \
-make sure config.txt is pointing to the correct directory"; delete_logs 1; }
+{ >&2 echo "ERROR: ${SUPPLEMENTARY_DIR}/Redundancy_Threshold_Optimisation/Rscripts \
+doesn't exist, make sure config.txt is pointing to the correct directory"; \
+delete_logs 1; }
 
 Rscript HistogramPlotsForSimilarityMetrics_Emissions.r \
 "${model_size}" "${seed}" "${model_file_dir}"

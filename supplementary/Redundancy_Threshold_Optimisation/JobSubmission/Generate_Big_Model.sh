@@ -79,7 +79,6 @@ start_time=$(date +%s)
 
 # Activate config.txt to access all file paths
 # CHANGE THIS TO YOUR OWN CONFIG FILE
-echo "Loading config file..."
 source "/lustre/projects/Research_Project-MRC190311\
 /scripts/integrative/blueprint/config/config.txt"
 
@@ -118,12 +117,12 @@ delete_logs(){
 }
 
 if [ -z "$model_size" ]; then
-    echo "No model size was given by the user, using default value of 20."
+    echo "No model size was given by the user, using default value of: ${model_size}."
     model_size=20
 fi
 
 if [ -z "$seed" ]; then
-    echo "No random seed was given by the user, using defualt value of 1."
+    echo "No random seed was given by the user, using defualt value of: ${seed}."
     seed=1
 fi
 
@@ -131,12 +130,12 @@ fi
 ##   FILE EXISTANCE   ##
 ## ================== ##
 
-cd "${BINARY_DIR}" || { echo "Binary directory doesn't exist, \
+cd "${BINARY_DIR}" || { >&2 echo "ERROR: \${BINARY_DIR} - ${BINARY_DIR} doesn't exist, \
 make sure config.txt is pointing to the correct directory"; delete_logs 1; }
 if [ -z "$(ls -A)" ]; then
-    echo "4_BinarizedFiles is empty."
-    echo "Ensure that 4_BinarizeBamFiles.sh has been ran before this script."
-    echo "Aborting..."
+    { >&2 echo -e "ERROR: \${BINARY_DIR} - ${BINARY_DIR} is empty.\n\
+    Ensure that 4_BinarizeBamFiles.sh has been ran before this script."
+    }
 
     delete_logs 1
 fi
@@ -145,13 +144,14 @@ fi
 ##    MAIN    ##
 ## ========== ##
 
-echo "Learning a model with ${model_size} states and with random seed: ${seed}."
+echo "Learning a model with: ${model_size} states and with random seed: ${seed}..."
 
 module purge
 module load Java
 
-cd "${BIG_MODELS_DIR}" || { echo "Big models directory doesn't exist, \
-make sure config.txt is pointing to the correct directory"; delete_logs 1; }
+cd "${BIG_MODELS_DIR}" || { >&2 echo "ERROR: \${BIG_MODELS_DIR} - ${BIG_MODELS_DIR} \
+doesn't exist, make sure config.txt is pointing to the correct directory"
+delete_logs 1; }
 
 java -mx30G \
 -jar "${CHROMHMM_MAIN_DIR}/ChromHMM.jar" LearnModel \
@@ -162,8 +162,7 @@ java -mx30G \
 "${BINARY_DIR}" "${BLUEPRINT_MAIN_DIR}/Big_Model_Files" "${model_size}" hg19 > \
 "ChromHMM.Output.ModelSize.${model_size}.txt"
 
-echo "Model Learning finished"
-echo "Writing estimated log likelihood to file"
+echo "Writing estimated log likelihood to likelihood.ModelSize.${model_size}.txt..."
 # grep removes the terminal logs associated with writing to files.
 # The tail and awk locate the final estimated log likelihood
 grep "       " "ChromHMM.Output.ModelSize.${model_size}.txt" | \
