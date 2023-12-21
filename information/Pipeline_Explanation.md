@@ -66,10 +66,14 @@ Note 2: This pipeline was built using the SLURM Workload Manager. Scripts will l
 ## Additional Shell Scripts
 There are a number of additional scripts that are given in JobSubmission/Extra_Scripts that are not directly a part of the main pipeline, but proved useful to constructing the pipeline. Such scripts are outlined here:
 ### `Generate_Big_Model.sh` 
-- This uses the binarized data produced by `4_BinarizeBamFiles.sh` to produce a signle very complex model with a high number of user specified states.
+- This uses the binarized data produced by `4_BinarizeBamFiles.sh` to produce a single very complex model with a high number of user specified states.
     - The model produced will use a random initialisation of emission/transition paramters so that an arbitrary number of states can be used in the model (default initialisation method does not allow for this)
     - These large models were used with blueprint data to obtain sensible threshold values for the similarity metrics used in OptimumNumberOfStates.R
 ### `CompareModels.sh` 
 - This uses ChromHMM's `CompareModels` command to generate comparisons between the models produced in the previous step.
     - Note that `CompareModels` only looks at the emission parameters for each state in the models inputted.
     - This script will compare each model with all of the models that are less complex than it (so a model with 8 states will be compared against only those models that have fewer than 8 states).
+### `Generate_Redundancy_Metrics_Plots.sh`
+- This runs two R scripts on a specified model (recommended to be a very complex model) so that the user can make informed decisions on the thresholds used in determining redundant states in `6_OptimalNumberOfStates.sh`.
+    - HistogramPlotForEuclideanDistances.R -> Creates a histogram for the Euclidean distances between pairs of states in the model provided.
+    - ScatterPlotForTransitionMaxima.R -> Creates a scatter plot for the maximum transition probability towards each state in the model provided.
