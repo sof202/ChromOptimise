@@ -126,7 +126,7 @@ finishing_statement(){
     exit "$1"
 }
 
-
+## ====== DEFAULTS ====================================================================
 if [[ -z "$model_file_dir" ]]; then
     model_file_dir="${BIG_MODELS_DIR}"
     echo "Model file directory was not given, using the default of: ${BIG_MODELS_DIR}"
@@ -141,6 +141,7 @@ if [[ -z "$seed" ]]; then
     seed=1
     echo "No random seed was given by the user, using defualt value of: ${seed}." 
 fi
+# =====================================================================================
 
 ## ================== ##
 ##   FILE EXISTANCE   ##

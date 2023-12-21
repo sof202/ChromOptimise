@@ -143,6 +143,7 @@ finishing_statement(){
     exit "$1"
 }
 
+## ====== DEFAULTS ====================================================================
 if [[ -z "${number_of_models_to_generate}" ]]; then
     number_of_models_to_generate=4
     echo "Number of models to generate was not given."
@@ -161,6 +162,7 @@ elif [[ "${states_increment}" =~ ^[^0-9]+ ]]; then
     echo "The value for the state increment was not valid (non-integer)."
     echo "Using the default value of ${states_increment} instead."
 fi
+# =====================================================================================
 
 # Set bin/sample size by searching through the binary directory
 cd "${BINARY_DIR}" || \

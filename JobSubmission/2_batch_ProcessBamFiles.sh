@@ -132,6 +132,7 @@ finishing_statement(){
     exit "$1"
 }
 
+## ====== DEFAULTS ====================================================================
 if [[ -z "${minimum_tolerated_phred_score}" ]]; then
     minimum_tolerated_phred_score=20
     echo "No Phred score threshold was given, \
@@ -141,6 +142,7 @@ elif [[ "${minimum_tolerated_phred_score}" =~ ^[^0-9]+$ ]]; then
     echo "Phred score threshold given is invalid (non-integer), \
     using the default value of ${minimum_tolerated_phred_score}."
 fi
+## ====================================================================================
 
 ## ===================== ##
 ##    FILE MANAGEMENT    ##

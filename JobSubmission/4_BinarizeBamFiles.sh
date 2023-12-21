@@ -122,6 +122,7 @@ finishing_statement(){
     exit "$1"
 }
 
+## ====== DEFAULTS ====================================================================
 if [[ -z "${bin_size}" ]]; then
     bin_size=200
     echo "No bin size was given, using the default value of ${bin_size} instead."
@@ -145,6 +146,7 @@ if [[ -z "${sample_size}" ]]; then
     { >&2 echo -e "ERROR: No sample size even after fail safe. Please run\n\
     3_SubsampleBamFiles.sh before running this script" ;}
 fi
+## ====================================================================================
 
 ## ================== ##
 ##   FILE EXISTENCE   ##

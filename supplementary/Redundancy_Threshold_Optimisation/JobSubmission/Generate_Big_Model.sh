@@ -127,6 +127,7 @@ finishing_statement(){
     exit "$1"
 }
 
+## ====== DEFAULTS ====================================================================
 if [[ -z "$model_size" ]]; then
     model_size=20
     echo "No model size was given by the user, using default value of: ${model_size}."
@@ -136,6 +137,7 @@ if [[ -z "$seed" ]]; then
     seed=1
     echo "No random seed was given by the user, using defualt value of: ${seed}." 
 fi
+# =====================================================================================
 
 ## ================== ##
 ##   FILE EXISTANCE   ##

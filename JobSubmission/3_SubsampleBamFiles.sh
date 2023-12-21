@@ -126,6 +126,7 @@ finishing_statement(){
     exit "$1"
 }
 
+## ====== DEFAULTS ====================================================================
 if [[ -z "${mark_name}" ]]; then
     { >&2 echo -e "ERROR: No epigenetic mark name given.\n\
     Ensure that the first argument is the name of a processed epigenetic mark." ;}
@@ -143,6 +144,7 @@ if [[ "${sample_size}" -gt 100 || "${sample_size}" -le 0 ]]; then
     sample_size=50
     echo "Using a default value of: ${sample_size}% instead."
 fi
+## ====================================================================================
 
 ## ========================= ##
 ##   MERGING OF .BAM FILES   ##
