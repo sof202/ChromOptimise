@@ -50,16 +50,16 @@
 ## ======================== ##
 
 if [[ "$1" == "--help" || "$1" == "-h" ]]; then
-    echo "====================================================="
+    echo "================================================================"
     echo "Purpose: Creates a 'cell mark file table' and uses"
     echo "ChromHMM's BinarizeBam command to binarize bam files."
     echo "Author: Sam Fletcher"
     echo "Contact: s.o.fletcher@exeter.ac.uk"
     echo "Dependencies: Java, ChromHMM"
     echo "Inputs:"
-    echo "\$1 -> Bin size to be used by BinarizeBam command"
+    echo "\$1 -> Bin size to be used by BinarizeBam command (default: 200)"
     echo "\$2 -> Sample size used in 3_SubsampleBamFiles.sh"
-    echo "====================================================="
+    echo "================================================================"
     exit 0
 fi
 
@@ -122,15 +122,13 @@ fi
 
 # 'Intelligently' find the sample size using first file name in subsampled directory
 if [ -z "${sample_size}" ]; then
-    echo "No sample size was given."
-    echo -n "Assuming that the first file in the subsampled "
-    echo "directory uses the correct sample size..."
-
     cd "${SUBSAMPLED_DIR}" || \
     { >&2 echo "ERROR: \${SUBSAMPLED_DIR} - ${SUBSAMPLED_DIR} doesn't exist, make \
     sure config.txt is pointing to the correct directory"; delete_logs 1; }
 
     sample_size=$(find . -type f -name "Subsampled*" | head -1 | cut -d "." -f 3)
+    echo -e "WARNING: No sample size was given.\n\
+    Assuming that ${sample_size} is the desired sample size..."
 fi
 
 ## ================== ##

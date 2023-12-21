@@ -49,14 +49,14 @@
 ## ======================== ##
 
 if [[ "$1" == "--help" || "$1" == "-h" ]]; then
-    echo "======================================================================"
-    echo "Purpose: Downloads files from EGA from a list of file/directory names."
+    echo "======================================================================="
+    echo "Purpose: Downloads files from EGA using a list of file/directory names."
     echo "Author: Sam Fletcher"
     echo "Contact: s.o.fletcher@exeter.ac.uk"
-    echo "Dependencies: Miniconda/Conda/Anaconda, EGA account details, Python"
+    echo "Dependencies: Miniconda/Conda/Anaconda, EGA login credentials, Python"
     echo "Inputs:"
-    echo "\$1 -> File of names of files/directories to download from EGA"
-    echo "======================================================================"
+    echo "\$1 -> File of file names to download from EGA."
+    echo "======================================================================="
     exit 0
 fi
 

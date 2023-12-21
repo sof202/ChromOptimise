@@ -63,7 +63,7 @@ if [[ "$1" == "--help" || "$1" == "-h" ]]; then
     echo "Dependencies: Samtools"
     echo "Inputs:"
     echo "\$1 -> Name of epigenetic mark"
-    echo "\$2 -> Phred score threshold value"
+    echo "\$2 -> Phred score threshold value (default: 20)"
     echo "Optional:"
     echo "Specify --array in sbatch options, to set a custom array size."
     echo "=============================================================="

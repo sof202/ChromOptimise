@@ -57,9 +57,10 @@ if [[ "$1" == "--help" || "$1" == "-h" ]]; then
     echo "Contact: s.o.fletcher@exeter.ac.uk"
     echo "Dependencies: R"
     echo "Inputs:"
-    echo "\$1 -> Size of model"
-    echo "\$2 -> Random seed"
+    echo "\$1 -> Size of model (default: 20)"
+    echo "\$2 -> Random seed (default: 1)"
     echo "\$3 -> Path to directory containing the model files"
+    echo "       (default: \${BIG_MODELS_DIR} in config.txt)"
     echo "======================================================================="
     exit 0
 fi
@@ -115,18 +116,18 @@ delete_logs(){
 
 
 if [ -z "$model_file_dir" ]; then
-    echo "Model file directory was not given, using the default of: ${BIG_MODELS_DIR}"
     model_file_dir="${BIG_MODELS_DIR}"
+    echo "Model file directory was not given, using the default of: ${BIG_MODELS_DIR}"
 fi
 
 if [ -z "$model_size" ]; then
-    echo "No model size was given by the user, using default value of: ${model_size}."
     model_size=20
+    echo "No model size was given by the user, using default value of: ${model_size}."
 fi
 
 if [ -z "$seed" ]; then
-    echo "No random seed was given by the user, using default value of: ${seed}."
     seed=1
+    echo "No random seed was given by the user, using defualt value of: ${seed}." 
 fi
 
 ## ================== ##

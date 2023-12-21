@@ -62,7 +62,7 @@ if [[ "$1" == "--help" || "$1" == "-h" ]]; then
     echo "Dependencies: Samtools"
     echo "Inputs:"
     echo "\$1 -> Name of epigenetic mark"
-    echo "\$2 -> Sample size as a percentage"
+    echo "\$2 -> Sample size as a percentage (default : 50)"
     echo "==================================================="
     exit 0
 fi
