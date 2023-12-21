@@ -34,7 +34,7 @@
 ## DEPENDENCIES: NONE                                                               ||
 ## =================================================================================##
 ## INPUTS:                                                                          ||
-## $1 -> Blueprint Epigenetic Mark to process                                       ||
+## $1 -> Epigenetic Mark to process                                                 ||
 ## =================================================================================##
 ## OUTPUTS:                                                                         ||
 ## NONE                                                                             ||
@@ -69,7 +69,7 @@ start_time=$(date +%s)
 # Activate config.txt to access all file paths
 # CHANGE THIS TO YOUR OWN CONFIG FILE
 source "/lustre/projects/Research_Project-MRC190311\
-/scripts/integrative/blueprint/config/config.txt"
+scripts/integrative/ChromHMM_OptimumStates/config/config.txt"
 
 # Rename the output and error files to have format:
 # [epigenetic mark name]~[job id]~[date]-[time]
@@ -108,8 +108,8 @@ delete_logs(){
 ##    MOVING FILES    ##
 ## ================== ##
 
-cd "${BLUEPRINT_MAIN_DIR}" || \
-{ >&2 echo "ERROR: \${BLUEPRINT_MAIN_DIR} - ${BLUEPRINT_MAIN_DIR} doesn't exist, \
+cd "${MAIN_DIR}" || \
+{ >&2 echo "ERROR: \${MAIN_DIR} - ${MAIN_DIR} doesn't exist, \
 make sure config.txt is pointing to the correct directory"; delete_logs 1; }
 
 list_of_files_with_mark_name=\

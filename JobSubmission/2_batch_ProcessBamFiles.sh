@@ -82,7 +82,7 @@ start_time=$(date +%s)
 # Activate config.txt to access all file paths
 # CHANGE THIS TO YOUR OWN CONFIG FILE
 source "/lustre/projects/Research_Project-MRC190311\
-/scripts/integrative/blueprint/config/config.txt"
+scripts/integrative/ChromHMM_OptimumStates/config/config.txt"
 
 # Rename the output and error files to have format:
 # [epigenetic mark name]~[job id]~[array id]~[date]-[time]
@@ -101,10 +101,10 @@ ln "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err" \
 ##    VARIABLES AND FUNCTIONS    ##
 ## ============================= ##
 
-blueprint_mark_name=$1
+mark_name=$1
 minimum_tolerated_phred_score=$2
-BLUEPRINT_FULL_FILE_PATH="${RAW_DIR}/${blueprint_mark_name}"
-BLUEPRINT_PROCESSED_FULL_FILE_PATH="${PROCESSED_DIR}/${blueprint_mark_name}"
+RAW_FULL_FILE_PATH="${RAW_DIR}/${mark_name}"
+PROCESSED_FULL_FILE_PATH="${PROCESSED_DIR}/${mark_name}"
 
 ## ====== FUNCTION : delete_logs() ========================
 ## Delete temporary log and error files then exit
@@ -134,8 +134,8 @@ fi
 ##    FILE MANAGEMENT    ##
 ## ===================== ##
 
-cd "${BLUEPRINT_FULL_FILE_PATH}" || \
-{ >&2 echo "ERROR: \${BLUEPRINT_FULL_FILE_PATH} - ${BLUEPRINT_FULL_FILE_PATH} \
+cd "${RAW_FULL_FILE_PATH}" || \
+{ >&2 echo "ERROR: \${RAW_FULL_FILE_PATH} - ${RAW_FULL_FILE_PATH} \
 doesn't exist, make sure you typed the epigenetic mark correctly and that you \
 have ran 1_MoveFilesToSingleDirectory.sh first."; delete_logs 1; }
 
@@ -144,7 +144,7 @@ have ran 1_MoveFilesToSingleDirectory.sh first."; delete_logs 1; }
 # 2) Remove the "./" at the start of these file paths
 # 3) Remove the .bam found at the end of these file names using substition
 list_of_files=$(find . -type f -name "*.bam" | cut -d "/" -f 2 | sed 's/.bam//')
-mkdir -p "${BLUEPRINT_PROCESSED_FULL_FILE_PATH}"
+mkdir -p "${PROCESSED_FULL_FILE_PATH}"
 
 
 ## =============================== ##
@@ -199,7 +199,7 @@ module load SAMtools
 # 4) Create an index file, an index stats file and a stats file for the processed files
 
 for file in ${files_to_process}; do
-    cd "${BLUEPRINT_FULL_FILE_PATH}" || delete_logs 1
+    cd "${RAW_FULL_FILE_PATH}" || delete_logs 1
     # 1)
     samtools index "${file}.bam" 
     samtools idxstats "${file}.bam" > "${file}.PerChromosomeStats.txt"
@@ -207,8 +207,8 @@ for file in ${files_to_process}; do
 
     # 2)
     samtools sort "${file}.bam" > \
-    "${BLUEPRINT_PROCESSED_FULL_FILE_PATH}/${file}.sorted.bam"
-    cd "${BLUEPRINT_PROCESSED_FULL_FILE_PATH}" || delete_logs 1
+    "${PROCESSED_FULL_FILE_PATH}/${file}.sorted.bam"
+    cd "${PROCESSED_FULL_FILE_PATH}" || delete_logs 1
 
     # Need to use the -h option here to keep the headers 
     # so that the next samtools view can function properly

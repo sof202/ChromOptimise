@@ -26,13 +26,12 @@
 ##                                                                                  ||
 ## =================================================================================##
 ## PURPOSE:                                                                         ||
-## Obtain a sample of the blueprint bam files. However, the bam files have varying  ||
-## sizes due to the number of reads. Sampling the files produced in                 ||
-## 2_ProcessBamFiles.sh will lead to samples with the same number of files that     ||
-## contain a different number of reads. This removes the reproducability of the     ||
-## proceedure. To get around this, this script merges all of the processed          ||
-## blueprint .bam files and subsequently samples this larger file randomly.         ||
-## To save space, the merged file is deleted.                                       ||
+## Obtain a sample of the bam files. However, the bam files have varying sizes due  ||
+## to the number of reads. Sampling the files produced in 2_ProcessBamFiles.sh will ||
+## lead to samples with the same number of files that contain a different number    ||
+## of reads. This removes the reproducability of the proceedure. To get around      ||
+## this, this script merges all of the processed .bam files and subsequently        ||
+## samples this larger file randomly. To save space, the merged file is deleted.    ||
 ## =================================================================================##
 ## AUTHOR: Sam Fletcher s.o.fletcher@exeter.ac.uk                                   ||
 ## CREATED: November 2023                                                           ||
@@ -79,7 +78,7 @@ start_time=$(date +%s)
 # Activate config.txt to access all file paths
 # CHANGE THIS TO YOUR OWN CONFIG FILE
 source "/lustre/projects/Research_Project-MRC190311\
-/scripts/integrative/blueprint/config/config.txt"
+scripts/integrative/ChromHMM_OptimumStates/config/config.txt"
 
 # Rename the output and error files to have format:
 # [epigenetic mark name]~[Sample size]~[job id]~[date]-[time]
@@ -100,7 +99,7 @@ ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 
 mark_name=$1
 sample_size=$2
-BLUEPRINT_PROCESSED_FILE_PATH="${PROCESSED_DIR}/${mark_name}"
+PROCESSED_FILE_PATH="${PROCESSED_DIR}/${mark_name}"
 
 ## ====== FUNCTION : delete_logs() ========================
 ## Delete temporary log and error files then exit
@@ -117,7 +116,7 @@ delete_logs(){
 }
 
 if [ -z "${mark_name}" ]; then
-    { >&2 echo -e "ERROR: No Blueprint epigenetic mark name given.\n\
+    { >&2 echo -e "ERROR: No epigenetic mark name given.\n\
     Ensure that the first argument is the name of a processed epigenetic mark." ;}
 
     delete_logs 1
@@ -140,7 +139,7 @@ fi
 
 echo -n "Merging processed .bam files for epigenetic mark: ${mark_name}"
 
-cd "${BLUEPRINT_PROCESSED_FILE_PATH}" || \
+cd "${PROCESSED_FILE_PATH}" || \
 { >&2 echo "ERROR: \${PROCESSED_DIR}/\${mark_name} - ${PROCESSED_DIR}/${mark_name} \
 doesn't exist, make sure that you typed the epigenetic mark correctly and that \
 config.txt is pointing to the correct directory"; delete_logs 1; }
@@ -174,7 +173,7 @@ samtools view -s "${sample_size_decimal}" "${output_file_path}" \
 >> "Subsampled.${sample_size}.${mark_name}.bam"
 
 rm "FullMerged.${mark_name}.bam"
-cd "${BLUEPRINT_PROCESSED_FILE_PATH}" || delete_logs 1
+cd "${PROCESSED_FILE_PATH}" || delete_logs 1
 rm List_Of_Bam_Files_To_Merge.txt
 
 ## ======================= ##

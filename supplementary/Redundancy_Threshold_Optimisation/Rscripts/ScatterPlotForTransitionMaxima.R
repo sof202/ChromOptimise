@@ -38,7 +38,7 @@ rm(list = ls())
 library("ggplot2")
 
 setwd("/lustre/projects/Research_Project-MRC190311/scripts")
-source("integrative/blueprint/config/config.R")
+source("integrative/ChromHMM_OptimumStates/config/config.R")
 
 arguments <- commandArgs(trailingOnly = TRUE)
 model_size <- as.numeric(arguments[1])

@@ -78,7 +78,7 @@ start_time=$(date +%s)
 # Activate config.txt to access all file paths
 # CHANGE THIS TO YOUR OWN CONFIG FILE
 source "/lustre/projects/Research_Project-MRC190311\
-/scripts/integrative/blueprint/config/config.txt"
+scripts/integrative/ChromHMM_OptimumStates/config/config.txt"
 
 # Rename the output and error files to have format:
 # ModelSize-[model size]~[job id]~[date]-[time]

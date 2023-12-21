@@ -32,7 +32,7 @@
 rm(list = ls())
 
 setwd("/lustre/projects/Research_Project-MRC190311/scripts")
-source("integrative/blueprint/config/config.R")
+source("integrative/ChromHMM_OptimumStates/config/config.R")
 setwd(likelihood_dir)
 
 rm(list = ls())
