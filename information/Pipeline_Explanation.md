@@ -10,9 +10,9 @@ The pipeline expects aligned `.bam` files as its input. The pipeline will then o
 - A scatter plot that showcases how the number of states in the hidden Markov model influences the estimated log likelihood of the model
 - A file containing the optimum number of states to use with the binarized data files (when a specific bin size has been used)
 
-Note: This pipeline was built with the blueprint data from EGA in mind. Many steps are in place purely to work with these files specifically. Scripts 3 and onwards will work with any data set that can be peak called.
+Note 1: This pipeline was built with the blueprint data from EGA in mind. Many steps are in place purely to work with these files specifically. Scripts 3 and onwards will work with any .bam files from a data set that can be peak called.
 \
-Note 2: This pipeline was built using the SLURM Workload Manager. Scripts will likely fail if not ran using the `sbatch` SLURM command. This is because many scripts have paralellisation built into them using SLURM's array feature. Please adapt the scripts accordingly if SLURM is not being used.
+Note 2: This pipeline was built using the SLURM workload manager. Scripts will contain errors (scripts of the form `x_batch_xxx.sh` will fail) if not ran using the `sbatch` SLURM command. Please adapt the scripts accordingly if SLURM is not being used.
 
 ## Main pipeline shell scripts
 ### `0_DownloadBluePrint.sh` 
@@ -29,7 +29,7 @@ Note 2: This pipeline was built using the SLURM Workload Manager. Scripts will l
     - This step also outputs some statistics on the aligned read files using `samtools stats` and `samtools idxstats` before and after processing.
 ### `3_SubsampleBamFiles.sh` 
 - This merges all of the processed `.bam` files from the previous step using `samtools merge` and subsequently subsamples this file using `samtools view -s`
-    - This script takes a subsample size as the input from the user. If no input is recieved, a default of 50 is used.
+    - This script takes a subsample size as the input from the user.
         - Note that samtools had a known bug in version 0.1.18 where subsampling would fail if the sample size was above 50%, ensure that your version of samtools is up to date.
     - The reason for merging files and subsampling instead of simply subsampling the original files is that it is unlikely that every processed `.bam` file is of the same size. If the `.bam` files are of different sizes, then different subsamples (when subsampling the original files without merging) can have different sizes. 
     - This results in the different samples no longer being directly comparable.
