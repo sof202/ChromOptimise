@@ -81,10 +81,6 @@ if [[ "$1" == "--help" || "$1" == "-h" ]]; then
     echo "Inputs:"
     echo "\$1 -> Number of models to generate"
     echo "\$2 -> The increment to use between model sizes"
-    echo "\$3 -> Bin size, WARNING: Use the same bin size as was used in" 
-    echo "4_BinarizeBamFiles.sh"
-    echo "\$4 -> Sample Size, WARNING: Use the same sample size as was used in"
-    echo "3_SubsampleBamFiles.sh"
     echo "Optional:"
     echo "Specify --array in sbatch options, to set a custom array size."
     echo "======================================================================"
@@ -124,8 +120,6 @@ ln "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err" \
 
 number_of_models_to_generate=$1
 states_increment=$2
-bin_size=$3
-sample_size=$4
 
 ## ====== FUNCTION : delete_logs() ========================
 ## Delete temporary log and error files then exit
@@ -160,39 +154,18 @@ elif [[ "${states_increment}" =~ ^[^0-9]+ ]]; then
     echo "Using the default value of ${states_increment} instead."
 fi
 
-# 'intelligently' set bin size default by searching through the subsample directory
-if [ -z "${bin_size}" ]; then
-    echo "The value for the bin size was not given." 
-    echo -n "Assuming that the first file in the subsampled directory "
-    echo "uses the desired bin size..."
+# Set bin/sample size by searching through the binary directory
+cd "${BINARY_DIR}" || \
+{ >&2 echo "ERROR: \${BINARY_DIR} - ${BINARY_DIR} doesn't exist, \
+make sure config.txt is pointing to the correct directory."; delete_logs 1; }
 
-    cd "${BINARY_DIR}" || \
-    { >&2 echo "ERROR: \${BINARY_DIR} - ${BINARY_DIR} doesn't exist, \
-    make sure config.txt is pointing to the correct directory."; delete_logs 1; }
-
-    bin_size=$(find . -type f -name "*.txt*.gz" | head -1 | cut -d "_" -f 6)
-fi
-
-# 'intelligently' set sample size default by searching through the subsample directory
-if [ -z "${sample_size}" ]; then
-    echo "No sample size was given."
-    echo -n "Assuming that the first file in the subsampled directory "
-    echo "uses the desired sample size..."
-
-    cd "${BINARY_DIR}" || \
-    { >&2 echo "ERROR: \${BINARY_DIR} - ${BINARY_DIR} doesn't exist, \
-    make sure config.txt is pointing to the correct directory."; delete_logs 1; }
-
-    sample_size=$(find . -type f -name "*.txt*.gz" | head -1 | cut -d "_" -f 4)
-fi
+bin_size=$(find . -type f -name "*.txt*.gz" | head -1 | cut -d "_" -f 6)
+sample_size=$(find . -type f -name "*.txt*.gz" | head -1 | cut -d "_" -f 4)
 
 ## =============================== ##
 ##   CLEAN UP AND ERROR CATCHING   ##
 ## =============================== ##
 
-cd "${BINARY_DIR}" || \
-{ >&2 echo "ERROR: \${BINARY_DIR} - ${BINARY_DIR} doesn't exist, \
-make sure config.txt is pointing to the correct directory."; delete_logs 1; }
 if [ -z "$(ls -A)" ]; then
     echo "4_BinarizedFiles is empty."
     echo "Ensure that 4_BinarizeBamFiles.sh has been ran before this script."
