@@ -39,9 +39,6 @@ Note 2: This pipeline was built using the SLURM Workload Manager. Scripts will l
 - This uses ChromHMM's `BinarizeBam` command to binarize the subsampled `.bam` file produced in the previous step. 
     - It is assumed at this point that the above steps have been completed for all of the epigenetic marks that you aim to inspect.
     - This step takes a user input for the bin size, see about for how this will effect your results. If no bin size is given, the default of 200 is used (ChromHMM's default bin size)
-    - Note that, due to the merging process completed in the previous step, `BinarizeBam` will have a very large number of (ignored) errors due to the absence of the header in the `.bam` file being binarized.
-        - The number of errors will equate to the number of lines in each of the `.bam` files being binarized, which can be hundreds of Gigabytes large.
-        - Do not store the error files for this step.
  ### `5_batch_CreateIncrementalModels.sh` 
  - This uses ChromHMM's `LearnModel` command to learn multiple hidden Markov models for the inputted data with varying number of states. It also obtains the estimated log likelihood value of each model. 
     - The number of models and the increment to be used between them is user specified.
