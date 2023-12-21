@@ -12,7 +12,8 @@
 ## this implies that the state is unlikely to be assigned to      ||
 ## genomic bins.                                                  ||
 ## ============================================================== ##
-## AUTHOR: Sam Fletcher s.o.fletcher@exeter.ac.uk                 ||
+## AUTHOR: Sam Fletcher                                           ||
+## CONTACT: s.o.fletcher@exeter.ac.uk                             ||
 ## CREATED: December 2023                                         ||
 ## ============================================================== ##
 ## PREREQUISITES:                                                 ||

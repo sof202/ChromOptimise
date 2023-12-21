@@ -13,7 +13,8 @@
 ## In addition to this, a suggested threshold is given. This      ||
 ## value is determined by looking for gaps in the histogram.      ||
 ## ============================================================== ##
-## AUTHOR: Sam Fletcher s.o.fletcher@exeter.ac.uk                 ||
+## AUTHOR: Sam Fletcher                                           ||
+## CONTACT: s.o.fletcher@exeter.ac.uk                             ||
 ## CREATED: November 2023                                         ||
 ## ============================================================== ##
 ## PREREQUISITES:                                                 ||

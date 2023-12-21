@@ -27,7 +27,8 @@
 ## pairs of states) and the maximum transition probability towards each state in    ||
 ## the selected model.                                                              ||
 ## =================================================================================##
-## AUTHOR: Sam Fletcher s.o.fletcher@exeter.ac.uk                                   ||
+## AUTHOR: Sam Fletcher                                                             ||
+## CONTACT: s.o.fletcher@exeter.ac.uk                                               ||
 ## CREATED: December 2023                                                           ||
 ## =================================================================================##
 ## PREREQUISITES: Run Generate_Big_Model.sh or ChromHMM's LearnModel Command        ||

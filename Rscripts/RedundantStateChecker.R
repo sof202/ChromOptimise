@@ -11,7 +11,8 @@
 ##    1) Euclidean distance between emission parameters           ||
 ##    2) Maximum transition probability towards states            ||
 ## ============================================================== ##
-## AUTHOR: Sam Fletcher s.o.fletcher@exeter.ac.uk                 ||
+## AUTHOR: Sam Fletcher                                           ||
+## CONTACT: s.o.fletcher@exeter.ac.uk                             ||
 ## CREATED: December 2023                                         ||
 ## ============================================================== ##
 ## PREREQUISITES:                                                 ||

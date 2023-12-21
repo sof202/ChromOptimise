@@ -29,7 +29,8 @@
 ## epigenetic marks that one wants to inspect have been subsampled. The .bam files  ||
 ## need to be binarized so that they can be used by ChromHMM's LearnModel command.  ||
 ## =================================================================================##
-## AUTHOR: Sam Fletcher s.o.fletcher@exeter.ac.uk                                   ||
+## AUTHOR: Sam Fletcher                                                             ||
+## CONTACT: s.o.fletcher@exeter.ac.uk                                               ||
 ## CREATED: November 2023                                                           ||
 ## =================================================================================##
 ## PREREQUISITES: Run: 3_SubsampleBamFiles.sh                                       ||

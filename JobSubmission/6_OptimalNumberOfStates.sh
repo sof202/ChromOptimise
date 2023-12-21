@@ -42,7 +42,8 @@
 ## Note: If the largest model has no redundant states, the optimum model size may   ||
 ##       be larger than the largest model that was trained                          ||
 ## =================================================================================##
-## AUTHOR: Sam Fletcher s.o.fletcher@exeter.ac.uk                                   ||
+## AUTHOR: Sam Fletcher                                                             ||
+## CONTACT: s.o.fletcher@exeter.ac.uk                                               ||
 ## CREATED: December 2023                                                           ||
 ## =================================================================================##
 ## PREREQUISITES: Run: 5_batch_CreateIncrementalModels.sh                           ||
@@ -50,7 +51,7 @@
 ## DEPENDENCIES: R                                                                  ||
 ## =================================================================================##
 ## INPUTS:                                                                          ||
-## NONE
+## NONE                                                                             ||
 ## =================================================================================##
 ## OUTPUTS:                                                                         ||
 ## File containing why models with too many states were rejected                    ||

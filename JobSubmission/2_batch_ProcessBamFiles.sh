@@ -33,7 +33,8 @@
 ## yet to be processed, they still contain duplicates, multimapped fragments and    ||
 ## low quality reads. This script processes the bam files.                          ||
 ## =================================================================================##
-## AUTHOR: Sam Fletcher s.o.fletcher@exeter.ac.uk                                   ||
+## AUTHOR: Sam Fletcher                                                             ||
+## CONTACT: s.o.fletcher@exeter.ac.uk                                               ||
 ## CREATED: November 2023                                                           ||
 ## =================================================================================##
 ## PREREQUISITES: All .bam files for a specific epigenetic mark must be in 1 folder ||

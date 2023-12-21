@@ -28,7 +28,8 @@
 ## 4_BinarizeBamFiles.sh with a random initialisation of parameters                 ||
 ## (with a set seed).                                                               ||
 ## =================================================================================##
-## AUTHOR: Sam Fletcher s.o.fletcher@exeter.ac.uk                                   ||
+## AUTHOR: Sam Fletcher                                                             ||
+## CONTACT: s.o.fletcher@exeter.ac.uk                                               ||
 ## CREATED: November 2023                                                           ||
 ## =================================================================================##
 ## PREREQUISITES: Run 4_BinarizeBamFiles.sh                                         ||

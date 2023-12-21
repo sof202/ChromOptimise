@@ -31,7 +31,8 @@
 ## this, this script merges all of the processed .bam files and subsequently        ||
 ## samples this larger file randomly. To save space, the merged file is deleted.    ||
 ## =================================================================================##
-## AUTHOR: Sam Fletcher s.o.fletcher@exeter.ac.uk                                   ||
+## AUTHOR: Sam Fletcher                                                             ||
+## CONTACT: s.o.fletcher@exeter.ac.uk                                               ||
 ## CREATED: November 2023                                                           ||
 ## =================================================================================##
 ## PREREQUISITES: Run 2_batch_ProcessBamFiles.sh                                    ||

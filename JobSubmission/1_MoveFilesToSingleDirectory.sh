@@ -26,7 +26,8 @@
 ## PURPOSE:                                                                         ||
 ## Moves .bam files that include the epigenetic mark into a single folder.          ||
 ## =================================================================================##
-## AUTHOR: Sam Fletcher s.o.fletcher@exeter.ac.uk                                   ||
+## AUTHOR: Sam Fletcher                                                             ||
+## CONTACT: s.o.fletcher@exeter.ac.uk                                               ||
 ## CREATED: November 2023                                                           ||
 ## =================================================================================##
 ## PREREQUISITES: Downloaded files from EGA                                         ||

@@ -31,7 +31,8 @@
 ## process is repeated for the next most complex model.                             ||
 ## This continues until all emission files have been deleted.                       ||
 ## =================================================================================##
-## AUTHOR: Sam Fletcher s.o.fletcher@exeter.ac.uk                                   ||
+## AUTHOR: Sam Fletcher                                                             ||
+## CONTACT: s.o.fletcher@exeter.ac.uk                                               ||
 ## CREATED: November 2023                                                           ||
 ## =================================================================================##
 ## PREREQUISITES: Run: 5_batch_CreateIncrementalModels.sh                           ||
