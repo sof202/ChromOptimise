@@ -3,7 +3,7 @@
 ## Finds the optimum number of states that should be used with ChromHMM's `LearnModel` with a particular data set
 
 ### About
-This directory contains bash scripts and R scripts that aim to identify an 'intelligent' number of states to include in the hidden Markov models produced by ChromHMM's `LearnModel` command.
+This repository contains bash scripts and R scripts that aim to identify an 'intelligent' number of states to include in the hidden Markov models produced by ChromHMM's `LearnModel` command.
 \
 When producing models with this tool, it is often difficult to detemine how many states to include:
 - Including too many states will result in overfitting your data and introduces redundant states (states that are highly similar in their emission parameters)
@@ -37,7 +37,15 @@ This pipeline requires the following software:
 - ChromHMM (>=1.23)
 
 ### Further information
-For further information or enquiries, please contact:
+The information folder in this repository contains useful information on the following topics:
+- Pipeline_Explanation.md -> Script / pipeline specific information
+- Optimal_States_Analysis_Pipeline.pdf -> Pipeline process in schematic representation
+- Processing_Times.md -> Estimated processing times for scripts subject to CPU performance 
+- Memory_Profiling.md -> Estimated peak heap memory consumption for scripts
+- SLURM_Information.md -> Information on the SLURM workload manager used for job submission
+- Config_Setup.md -> Provides templates for the config files sourced in the scripts.
+
+For any further enquiries, please contact:
 \
 Sam Fletcher: s.o.fletcher@exeter.ac.uk
 
