@@ -3,13 +3,13 @@
 #SBATCH --export=ALL
 # Submit to the mrc queue for faster queue times
 #SBATCH -p mrcq 
-# Tests: 17 GB of files took 4 minutes to binarize
+# Consult information/Processing_Times.md for expected time
 #SBATCH --time=01:00:00 
 #SBATCH -A Research_Project-MRC190311 
 #SBATCH --nodes=1 
 #SBATCH --ntasks-per-node=16
-# 17GB of files used 40MB of peak heap memory consumption
-#SBATCH --mem=10G 
+# Memory consumption is generally fairly low
+#SBATCH --mem=4G 
 # Send an email after the job is done
 #SBATCH --mail-type=END 
 # Temporary log file, later to be removed
@@ -200,7 +200,7 @@ module load Java
 
 # Binarize the files in the subsampled directory.
 # The blueprint data uses GChr37 assembly (which is equivalent to UCSC's hg19).
-java -mx30G -jar "${CHROMHMM_MAIN_DIR}/ChromHMM.jar" BinarizeBam -b "${bin_size}" \
+java -mx4G -jar "${CHROMHMM_MAIN_DIR}/ChromHMM.jar" BinarizeBam -b "${bin_size}" \
 -gzip "${CHROMHMM_CHROM_SIZES}/hg19.txt" "${SUBSAMPLED_DIR}" \
 "${SUBSAMPLED_DIR}/cellmarkfiletable.txt" "${BINARY_DIR}"
 

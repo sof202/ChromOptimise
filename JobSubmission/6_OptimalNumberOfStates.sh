@@ -8,7 +8,8 @@
 #SBATCH -A Research_Project-MRC190311 
 #SBATCH --nodes=1 
 #SBATCH --ntasks-per-node=16
-# Memory consumption is very low, in testing it has been less than 1MB
+# Memory consumption is very low in testing
+# Consult information/Memory_Profiling.md for expected memory usage
 #SBATCH --mem=1G 
 # Send an email after the job is done
 #SBATCH --mail-type=END 

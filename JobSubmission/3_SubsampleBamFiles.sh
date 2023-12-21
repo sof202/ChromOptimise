@@ -3,14 +3,12 @@
 #SBATCH --export=ALL
 # Submit to the mrc queue for faster queue times
 #SBATCH -p mrcq 
-# Previous tests:(50%) 3 and 4 GB -> 4 mins. 5 and 7 GB -> 7 mins, 6 and 7 GB -> 7 mins
+# Consult information/Processing_Times.md for expected time
 #SBATCH --time=01:00:00 
 #SBATCH -A Research_Project-MRC190311 
 #SBATCH --nodes=1 
 #SBATCH --ntasks-per-node=16 
 # Predicted that memory consumption will rise massively when merging lots of files
-# For 2 files, the merging only uses 5 MB. Though there is a large number of temporary
-# allocations
 #SBATCH --mem=100G 
 # Send an email after the job is done
 #SBATCH --mail-type=END 

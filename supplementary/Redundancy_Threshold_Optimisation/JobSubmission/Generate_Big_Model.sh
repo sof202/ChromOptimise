@@ -4,14 +4,12 @@
 # Submit to the mrc queue for faster queue times
 #SBATCH -p mrcq 
 # This can be a lengthy process for particularly large models
-# A model with 80 states took 26 hours off of 1MB of binary data.
-# See BigModelLearningTimes.pdf for an idea of maximum wall time
+# Consult information/Processing_Times.md for expected time
 #SBATCH --time=40:00:00 
 #SBATCH -A Research_Project-MRC190311
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=16
-# Possible large memory consumption for big models, difficult to give good estimates,  
-# see 5_batch_CreateIncrementalModels.sh for a idea with less states
+# Possible large memory consumption for big models, difficult to give good estimates
 #SBATCH --mem=32G 
 #SBATCH --mail-type=END # Send an email after the job is done
 # Temporary log file, later to be removed

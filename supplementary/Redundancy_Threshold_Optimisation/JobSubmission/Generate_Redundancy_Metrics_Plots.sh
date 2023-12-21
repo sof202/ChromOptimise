@@ -3,7 +3,7 @@
 #SBATCH --export=ALL 
 # Submit to the mrc queue for faster queue times
 #SBATCH -p mrcq 
-# This script uses two Rscripts with low computational complexity
+# Script usually takes less than three minutes
 #SBATCH --time=00:10:00 
 #SBATCH -A Research_Project-MRC190311
 #SBATCH --nodes=1

@@ -3,13 +3,13 @@
 #SBATCH --export=ALL
 # Submit to the mrc queue for faster queue times
 #SBATCH -p mrcq
-# Running this script on model files (2-8 states) took 10 seconds
+# Script usually takes less than one minute
 #SBATCH --time=00:01:00 
 #SBATCH -A Research_Project-MRC190311 
 #SBATCH --nodes=1 
 #SBATCH --ntasks-per-node=16
-# When comparing a relatively small number of models (7 models) the peak
-# heap memory consumption was 44 KB.
+# Previous testing has shown very little memory usage
+# Consult information/Memory_Profiling.md for expected memory usage
 #SBATCH --mem=1G
 # Send an email after the job is done
 #SBATCH --mail-type=END 

@@ -3,10 +3,9 @@
 #SBATCH --export=ALL
 # Submit to the mrc queue for faster queue times
 #SBATCH -p mrcq
-# Tests: 1MB of binary data, 3 states: 55s, 4 states: 105s, 5 states: 575s,
-# 6 states: 763s, 7 states: 903s, 8 states: 1500s
-# Forward backwards algorithm has time complexity of N^2T, where T is the number of 
-# Genomic bins and N is the number of states
+# Consult information/Processing_Times.md for expected time
+# Forward backwards algorithm has time complexity of O(N^2T), where T is the number of
+# genomic bins and N is the number of states
 #SBATCH --time=01:00:00 
 #SBATCH -A Research_Project-MRC190311 
 #SBATCH --nodes=1 
@@ -14,9 +13,8 @@
 # Make sure array is not higher than the number of models being learned
 # as this ends up with all models being processed by max index array
 #SBATCH --array=1-4
-# Tests: 1MB of binary data. 2 states: 181 MB 3 states: 145 MB, 4 states: 165 MB,
-# 5 states: 128 MB, 6 states 165 MB, 7 states 168 MB 
-# Memory consumption doesn't seem to be dependent on number of states
+# Memory consumption doesn't appear to be dependent on number of states
+# Consult information/Memory_Profiling.md for expected memory usage
 #SBATCH --mem=5G
 # Send an email after the job is done
 #SBATCH --mail-type=END 
