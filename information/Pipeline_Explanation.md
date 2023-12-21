@@ -43,12 +43,10 @@ Note 2: This pipeline was built using the SLURM Workload Manager. Scripts will l
         - The number of errors will equate to the number of lines in each of the `.bam` files being binarized, which can be hundreds of Gigabytes large.
         - Do not store the error files for this step.
  ### `5_batch_CreateIncrementalModels.sh` 
- - This uses ChromHMM's `LearnModel` command to learn multiple hidden Markov models for the inputted data with varying number of states. It also obtains the estimated log likelihood value of each model.
-    - **IMPORTANT**: The bin size (3rd input) used at this stage **must** be the same as what was given in the previous step.  
+ - This uses ChromHMM's `LearnModel` command to learn multiple hidden Markov models for the inputted data with varying number of states. It also obtains the estimated log likelihood value of each model. 
     - The number of models and the increment to be used between them is user specified.
     - Note that this is using the 'information' initialisation method for the starting parameter set for the model. As such, the number of states in the model cannot exceed the total number of combinations of marks in your dataset.
-        - Though as of version 1.24, the number of states does not always reach the theoretical total combinations of marks. It is likely limited by computational complexity and the observed frequency of each mark in the input data.
-            - This only seems to happen when the number of marks is greater than or equal to 5 in testing (at 5, the theoretical maximum should be 2<sup>5</sup> but instead it is 27 in testing).
+        - One may not know this number before running the script. However, the maximum number of mark combinations one can have for a binary file will always be capped by 2<sup>k</sup> where k is the total number of marks. If one exceeds the maximum number of states permitted for this initialisation technique, ChromHMM will tell the user the maximum number of states allowed in the associated error message. 
     - This script will always generate a model with 2 states. Inspecting the emission parameters for this simple model is a good way of validating your data.
         - Generally, most of your genomic data will be non-coding regions. The 2 state model will show if this is the case in the overlap files produced.
 ### `6_OptimalNumberOfStates.sh` 
@@ -77,3 +75,7 @@ There are a number of additional scripts that are given in JobSubmission/Extra_S
 - This runs two R scripts on a specified model (recommended to be a very complex model) so that the user can make informed decisions on the thresholds used in determining redundant states in `6_OptimalNumberOfStates.sh`.
     - HistogramPlotForEuclideanDistances.R -> Creates a histogram for the Euclidean distances between pairs of states in the model provided.
     - ScatterPlotForTransitionMaxima.R -> Creates a scatter plot for the maximum transition probability towards each state in the model provided.
+    - The user should input a very complex model as this will result in the two plots possessing two obvious groups, redundant states and useful states.
+        - For Euclidean distances -> Redundant state pairs have very low Euclidean distance, other wise they have much higher Euclidean distance (with a noticable gap between these groups).
+        - For Transition probabilities -> Redundant state candidates score very low whilst useful state candidates score close to 1 (with a noticable gap between these groups).
+- This script is only optional as the user is free to set their own redundancy determining thresholds if they have a good idea for the values from other sources.
