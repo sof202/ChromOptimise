@@ -111,7 +111,7 @@ delete_logs(){
     exit "$1"
 }
 
-if [ -z "${bin_size}" ]; then
+if [[ -z "${bin_size}" ]]; then
     bin_size=200
     echo "No bin size was given, using the default value of ${bin_size} instead."
 elif [[ "${bin_size}" =~ ^[^0-9]+$ ]]; then
@@ -121,7 +121,7 @@ elif [[ "${bin_size}" =~ ^[^0-9]+$ ]]; then
 fi
 
 # 'Intelligently' find the sample size using first file name in subsampled directory
-if [ -z "${sample_size}" ]; then
+if [[ -z "${sample_size}" ]]; then
     cd "${SUBSAMPLED_DIR}" || \
     { >&2 echo "ERROR: \${SUBSAMPLED_DIR} - ${SUBSAMPLED_DIR} doesn't exist, make \
     sure config.txt is pointing to the correct directory"; delete_logs 1; }
@@ -130,7 +130,7 @@ if [ -z "${sample_size}" ]; then
     echo -e "WARNING: No sample size was given.\n\
     Assuming that ${sample_size} is the desired sample size..."
 fi
-if [ -z "${sample_size}" ]; then
+if [[ -z "${sample_size}" ]]; then
     { >&2 echo -e "ERROR: No sample size even after fail safe. Please run\n\
     3_SubsampleBamFiles.sh before running this script" ;}
 fi
@@ -143,7 +143,7 @@ cd "${SUBSAMPLED_DIR}" || \
 { >&2 echo "ERROR: \${SUBSAMPLED_DIR} - ${SUBSAMPLED_DIR} doesn't exist, make \
 sure config.txt is pointing to the correct directory"; delete_logs 1; }
 
-if [ -z "$(ls -A)" ]; then
+if [[ -z "$(ls -A)" ]]; then
     { >&2 echo "ERROR: \${SUBSAMPLED_DIR} - ${SUBSAMPLED_DIR} is empty.
     Ensure that 3_SubsampleBamFiles.sh has been ran before this script."; }
 

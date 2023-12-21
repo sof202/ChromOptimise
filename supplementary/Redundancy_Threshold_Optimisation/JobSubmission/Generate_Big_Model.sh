@@ -116,12 +116,12 @@ delete_logs(){
     exit "$1"
 }
 
-if [ -z "$model_size" ]; then
+if [[ -z "$model_size" ]]; then
     model_size=20
     echo "No model size was given by the user, using default value of: ${model_size}."
 fi
 
-if [ -z "$seed" ]; then
+if [[ -z "$seed" ]]; then
     seed=1
     echo "No random seed was given by the user, using defualt value of: ${seed}." 
 fi
@@ -132,7 +132,7 @@ fi
 
 cd "${BINARY_DIR}" || { >&2 echo "ERROR: \${BINARY_DIR} - ${BINARY_DIR} doesn't exist, \
 make sure config.txt is pointing to the correct directory"; delete_logs 1; }
-if [ -z "$(ls -A)" ]; then
+if [[ -z "$(ls -A)" ]]; then
     { >&2 echo -e "ERROR: \${BINARY_DIR} - ${BINARY_DIR} is empty.\n\
     Ensure that 4_BinarizeBamFiles.sh has been ran before this script."
     }

@@ -115,7 +115,7 @@ delete_logs(){
     exit "$1"
 }
 
-if [ -z "${mark_name}" ]; then
+if [[ -z "${mark_name}" ]]; then
     { >&2 echo -e "ERROR: No epigenetic mark name given.\n\
     Ensure that the first argument is the name of a processed epigenetic mark." ;}
 

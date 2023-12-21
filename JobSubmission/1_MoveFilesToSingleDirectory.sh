@@ -122,7 +122,7 @@ echo "Number of .bam files to be moved is: ${number_of_files_to_move}"
 
 # Exit here if there are no files 
 # There is no point in generating a folder if the mark doesn't exist
-if [ "${number_of_files_to_move}" -eq 0 ]; then
+if [[ "${number_of_files_to_move}" -eq 0 ]]; then
     { >&2 echo -e "ERROR: No files with epigenetic mark: ${mark_name} were found.\n\
     Please input a epigenetic mark name that exists (note that this is \
     case sensitive)."; }

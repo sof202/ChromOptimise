@@ -131,7 +131,7 @@ delete_logs(){
     exit "$1"
 }
 
-if [ -z "${number_of_models_to_generate}" ]; then
+if [[ -z "${number_of_models_to_generate}" ]]; then
     number_of_models_to_generate=4
     echo "Number of models to generate was not given."
     echo "Using the default value of: ${number_of_models_to_generate} instead."
@@ -140,7 +140,7 @@ elif [[ "${number_of_models_to_generate}" =~ ^[^0-9]+ ]]; then
     echo "Using the default value of: ${number_of_models_to_generate} instead."
 fi
 
-if [ -z "${states_increment}" ]; then
+if [[ -z "${states_increment}" ]]; then
     states_increment=1
     echo "The value for the state increment was not given."
     echo "Using the default value of ${states_increment} instead."
@@ -162,7 +162,7 @@ sample_size=$(find . -type f -name "*.txt*.gz" | head -1 | cut -d "_" -f 4)
 ##   CLEAN UP AND ERROR CATCHING   ##
 ## =============================== ##
 
-if [ -z "$(ls -A)" ]; then
+if [[ -z "$(ls -A)" ]]; then
     { >&2 echo -e "ERROR: \${BINARY_DIR} - ${BINARY_DIR} is empty.\n\
     Ensure that 4_BinarizeBamFiles.sh has been ran before this script."; }
 
@@ -185,7 +185,7 @@ remainder=$((number_of_models_to_generate % SLURM_ARRAY_TASK_COUNT))
 # If the number of models to be generated isn't a multiple of the size of the array,
 # the array with the smallest id will learn the left over smaller models
 # (spreading the larger models evenly across the other array elements).
-if [ "${SLURM_ARRAY_TASK_ID}" -eq 1 ]; then
+if [[ "${SLURM_ARRAY_TASK_ID}" -eq 1 ]]; then
     starting_number_of_states=2
     ending_number_of_states=$(( \
     2 + states_increment*(remainder+number_of_models_per_array-1) \

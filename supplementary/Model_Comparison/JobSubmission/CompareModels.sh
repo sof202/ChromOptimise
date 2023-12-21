@@ -114,7 +114,7 @@ cd "${MODEL_DIR}" || \
 { >&2 echo "ERROR: \${MODEL_DIR} - ${MODEL_DIR} doesn't exist, \
 make sure config.txt is pointing to the correct directory."; delete_logs 1; }
 
-if [ -z "$(ls -A)" ]; then
+if [[ -z "$(ls -A)" ]]; then
     { echo -e "ERROR: \${MODEL_DIR} - ${MODEL_DIR} is empty.\n\
     Ensure that 5_CreateIncrementalModels.sh has been ran before this script."; }
 
