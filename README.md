@@ -28,7 +28,9 @@ After using this pipeline, the user will have greater knowledge over their datas
 \
 \
 Note: This pipeline was designed with a very large dataset in mind. The dataset being blueprint from EGA (which includes a large amount of ChIP-Seq data from Mature Neutrophils in blood samples). Keep this in mind when experimenting with subsampling.
-
+\
+\
+Note 2: For a quick explanation on how a script works, run the script with the `-h` or `--help` flags.
 ### Required software
 This pipeline requires the following software:
 - Bash (>=4.2.46(2))
