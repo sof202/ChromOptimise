@@ -46,15 +46,15 @@
 ## ======================== ##
 
 if [[ "$1" == "--help" || "$1" == "-h" ]]; then
-    echo "=========================================================="
-    echo "Purpose: Moves .bam files that include the epigenetic mark"
+    echo "==========================================================="
+    echo "Purpose: Moves .bam files that include the epigenetic mark."
     echo "into a single folder."
     echo "Author: Sam Fletcher"
     echo "Contact: s.o.fletcher@exeter.ac.uk"
     echo "Dependencies: NONE"
     echo "Inputs:"
     echo "\$1 -> Epigenetic mark name"
-    echo "=========================================================="
+    echo "==========================================================="
     exit 0
 fi
 
@@ -130,16 +130,15 @@ $(find . -type f -name "*${mark_name}*.bam")
 # If the above list is empty then the epigenetic mark must not exist.
 number_of_files_to_move=\
 $(find . -type f -name "*${mark_name}*.bam" | wc -l)
-echo "Number of .bam files to be moved is: ${number_of_files_to_move}"
 
-# Exit here if there are no files 
+echo "Number of .bam files to be moved is: ${number_of_files_to_move}."
+
+# Exit here if there are no files.
 # There is no point in generating a folder if the mark doesn't exist
 if [[ "${number_of_files_to_move}" -eq 0 ]]; then
     { >&2 echo -e "ERROR: No files with epigenetic mark: ${mark_name} were found.\n\
     Please input a epigenetic mark name that exists (note that this is \
-    case sensitive)."; }
-
-    finishing_statement 1
+    case sensitive)."; finishing_statement 1; }
 fi
 
 mkdir -p "${RAW_DIR}/${mark_name}"

@@ -9,7 +9,7 @@
 #SBATCH --nodes=1 
 #SBATCH --ntasks-per-node=16 
 # Predicted that memory consumption will rise massively when merging lots of files
-#SBATCH --mem=100G 
+#SBATCH --mem=10G 
 # Send an email after the job is done
 #SBATCH --mail-type=END 
 # Temporary log file, later to be removed
@@ -98,7 +98,7 @@ ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 
 mark_name=$1
 sample_size=$2
-PROCESSED_FILE_PATH="${PROCESSED_DIR}/${mark_name}"
+PROCESSED_FULL_FILE_PATH="${PROCESSED_DIR}/${mark_name}"
 
 ## ====== FUNCTION : finishing_statement() ===========================================
 ## Description: Delete temporary log and error files, give finishing message then exit
@@ -125,14 +125,13 @@ finishing_statement(){
     exit "$1"
 }
 
-## ====== DEFAULTS ====================================================================
 if [[ -z "${mark_name}" ]]; then
     { >&2 echo -e "ERROR: No epigenetic mark name given.\n\
-    Ensure that the first argument is the name of a processed epigenetic mark." ;}
-
-    finishing_statement 1
+    Ensure that the first argument is the name of a processed epigenetic mark." ; \
+    finishing_statement 1; }
 fi
 
+## ====== DEFAULTS ====================================================================
 if [[ -z "${sample_size}" || "${sample_size}" =~ ^[^0-9]+$ ]]; then
     sample_size=50
     echo "Invalid sample size was given, using default value of: ${sample_size}%."
@@ -149,9 +148,7 @@ fi
 ##   MERGING OF .BAM FILES   ##
 ## ========================= ##
 
-echo -n "Merging processed .bam files for epigenetic mark: ${mark_name}"
-
-cd "${PROCESSED_FILE_PATH}" || \
+cd "${PROCESSED_FULL_FILE_PATH}" || \
 { >&2 echo "ERROR: \${PROCESSED_DIR}/\${mark_name} - ${PROCESSED_DIR}/${mark_name} \
 doesn't exist, make sure that you typed the epigenetic mark correctly and that \
 config.txt is pointing to the correct directory"; finishing_statement 1; }
@@ -178,6 +175,7 @@ make sure config.txt is pointing to the correct directory"; finishing_statement 
 
 sample_size_decimal=$(echo "scale=2; $sample_size /100" | bc)
 echo "Subsampling merged .bam file with sample size ${sample_size}%..."
+
 # Ensure headers are kept in subsampled file to avoid errors later in pipeline
 samtools view -H "${output_file_path}" \
 > "Subsampled.${sample_size}.${mark_name}.bam"
@@ -185,7 +183,7 @@ samtools view -s "${sample_size_decimal}" "${output_file_path}" \
 >> "Subsampled.${sample_size}.${mark_name}.bam"
 
 rm "FullMerged.${mark_name}.bam"
-cd "${PROCESSED_FILE_PATH}" || finishing_statement 1
+cd "${PROCESSED_FULL_FILE_PATH}" || finishing_statement 1
 rm List_Of_Bam_Files_To_Merge.txt
 
 finishing_statement 0

@@ -204,12 +204,11 @@ echo "${files_to_process}"
 module purge
 module load SAMtools
 
-# The processing is characterised into 4 stages:
+# The processing is split into 4 steps:
 # 1) Create an index file, an index stats file and a stats file for the original files
-# 2) Sort the .bam files, remove reads with a phred score that is below:
-#     $minimum_tolerated_phred_score
-#     [Note that blueprint files have already processed to 
-#      remove reads with phred score below 15]
+# 2) Sort the .bam files and remove reads with a phred score that is below
+#    $minimum_tolerated_phred_score [Note that blueprint files have already processed 
+#    to remove reads with phred score below 15]   
 # 3) Delete intermediate files
 # 4) Create an index file, an index stats file and a stats file for the processed files
 
@@ -223,6 +222,7 @@ for file in ${files_to_process}; do
     # 2)
     samtools sort "${file}.bam" > \
     "${PROCESSED_FULL_FILE_PATH}/${file}.sorted.bam"
+    
     cd "${PROCESSED_FULL_FILE_PATH}" || finishing_statement 1
 
     # Need to use the -h option here to keep the headers 
