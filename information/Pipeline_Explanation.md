@@ -10,7 +10,7 @@ The pipeline expects aligned `.bam` files as its input. The pipeline will then o
 - A scatter plot that showcases how the number of states in the hidden Markov model influences the estimated log likelihood of the model
 - A file containing the optimum number of states to use with the binarized data files (when a specific bin size has been used)
 
-Note 1: This pipeline was built with the blueprint data from EGA in mind. Many steps are in place purely to work with these files specifically. Scripts 3 and onwards will work with any .bam files from a data set that can be peak called.
+Note 1: This pipeline was built with the blueprint data from EGA in mind. Many steps are in place purely to work with these files specifically. Scripts 3 and onwards will work with any .bam files from a dataset that can be peak called.
 \
 Note 2: This pipeline was built using the SLURM workload manager. Scripts will contain errors (scripts of the form `x_batch_xxx.sh` will fail) if not ran using the `sbatch` SLURM command. Please adapt the scripts accordingly if SLURM is not being used.
 
