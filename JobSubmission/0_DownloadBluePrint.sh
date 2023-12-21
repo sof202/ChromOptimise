@@ -29,7 +29,7 @@
 ## CREATED: November 2023                                                           ||
 ## =================================================================================##
 ## PREREQUISITES:                                                                   ||
-## Create a conda environement that has pyega installed in it                       ||
+## Create a conda environement that has pyega3 installed in it                      ||
 ## Change source file in |MAIN| to be your personal etc/profile.d/conda.sh file     ||
 ## Create a .json file containing your EGA login credentials                        ||
 ## =================================================================================##
@@ -39,7 +39,7 @@
 ## Pyega3                                                                           ||
 ## =================================================================================##
 ## INPUTS:                                                                          ||
-## $1 -> File of Names of files/directories to download                             ||
+## $1 -> File of file names to download from EGA.                                   ||
 ## =================================================================================##
 ## OUTPUTS:                                                                         ||
 ## NONE                                                                             ||
