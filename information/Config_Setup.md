@@ -1,9 +1,13 @@
 # How to set up the config files for pipeline
 You will need two config files for this pipeline to work, config.txt and config.r.
 \
-The paths are used by each of the R and bash scripts to aid in organisation.
+The paths are used by each of the R and bash scripts to aid in organisation of the scripts as they avoid repetition.
 \
 Alternatively, you could set each path manually in all scripts, but that would be a lot of effort.
+\
+You must ensure that the directories actually exist on your system before running any of the scripts in the pipeline.
+\
+The scripts do not create their own directories (except sub-directories) as this could lead to unwanted folder positions if the user incorrectly assigns the paths in the config files.
 ## Templates for config files
 Note that the pipeline was completed with blueprint data in mind, if your data is already downloaded, processed, binarized etc. then the associated lines in the config files will not be required.
 ### config.txt
