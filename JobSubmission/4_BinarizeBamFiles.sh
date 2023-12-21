@@ -97,17 +97,28 @@ ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 bin_size=$1
 sample_size=$2
 
-## ====== FUNCTION : delete_logs() ========================
-## Delete temporary log and error files then exit
+## ====== FUNCTION : finishing_statement() ===========================================
+## Description: Delete temporary log and error files, give finishing message then exit
 ## Globals: 
-##   SLURM_SUBMIT_DIR
-##   SLURM_JOB_ID
+##     SLURM_SUBMIT_DIR
+##     SLURM_JOB_ID
+##     start_time
+## Locals:
+##     end_time
+##     time_taken
 ## Arguments:
-##   exit code
-## ========================================================
-delete_logs(){
+##     exit code
+## ===================================================================================
+finishing_statement(){
     rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" 
     rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err"
+    echo "Job finished with exit code $1 at:"
+    date -u
+    local end_time
+    local time_taken
+    end_time=$(date +%s)
+    time_taken=$((end_time-start_time))
+    echo "Job took a total of: ${time_taken} seconds to finish."
     exit "$1"
 }
 
@@ -124,7 +135,7 @@ fi
 if [[ -z "${sample_size}" ]]; then
     cd "${SUBSAMPLED_DIR}" || \
     { >&2 echo "ERROR: \${SUBSAMPLED_DIR} - ${SUBSAMPLED_DIR} doesn't exist, make \
-    sure config.txt is pointing to the correct directory"; delete_logs 1; }
+    sure config.txt is pointing to the correct directory"; finishing_statement 1; }
 
     sample_size=$(find . -type f -name "Subsampled*" | head -1 | cut -d "." -f 3)
     echo -e "WARNING: No sample size was given.\n\
@@ -141,13 +152,13 @@ fi
 
 cd "${SUBSAMPLED_DIR}" || \
 { >&2 echo "ERROR: \${SUBSAMPLED_DIR} - ${SUBSAMPLED_DIR} doesn't exist, make \
-sure config.txt is pointing to the correct directory"; delete_logs 1; }
+sure config.txt is pointing to the correct directory"; finishing_statement 1; }
 
 if [[ -z "$(ls -A)" ]]; then
     { >&2 echo "ERROR: \${SUBSAMPLED_DIR} - ${SUBSAMPLED_DIR} is empty.
     Ensure that 3_SubsampleBamFiles.sh has been ran before this script."; }
 
-    delete_logs 1
+    finishing_statement 1
 fi
 
 ## =================================== ##
@@ -179,7 +190,7 @@ of: ${bin_size}."
 
 cd "${BINARY_DIR}" || \
 { echo "ERROR: \${BINARY_DIR} - ${BINARY_DIR} doesn't exist, \
-make sure config.txt is pointing to the correct directory"; delete_logs 1; }
+make sure config.txt is pointing to the correct directory"; finishing_statement 1; }
 rm ./*.txt*
 
 module purge
@@ -195,14 +206,4 @@ java -mx30G -jar "${CHROMHMM_MAIN_DIR}/ChromHMM.jar" BinarizeBam -b "${bin_size}
 # rm "${BINARY_DIR}\
 # /Mature_Neutorphil_SampleSize_${sample_size}_BinSize_${bin_size}_chrM_binary.txt.gz"
 
-## ======================= ##
-##   LOG FILE MANAGEMENT   ##
-## ======================= ##
-
-echo "Job completed at:"
-date -u
-end_time=$(date +%s)
-time_taken=$(("$end_time"-"$start_time"))
-echo "Job took a total of: ${time_taken} seconds to complete"
-
-delete_logs 0
+finishing_statement 0

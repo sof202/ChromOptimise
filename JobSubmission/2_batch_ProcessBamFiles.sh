@@ -106,17 +106,29 @@ minimum_tolerated_phred_score=$2
 RAW_FULL_FILE_PATH="${RAW_DIR}/${mark_name}"
 PROCESSED_FULL_FILE_PATH="${PROCESSED_DIR}/${mark_name}"
 
-## ====== FUNCTION : delete_logs() ========================
-## Delete temporary log and error files then exit
+## ====== FUNCTION : finishing_statement() ===========================================
+## Description: Delete temporary log and error files, give finishing message then exit
 ## Globals: 
-##   SLURM_SUBMIT_DIR
-##   SLURM_JOB_ID
+##     SLURM_SUBMIT_DIR
+##     SLURM_ARRAY_JOB_ID
+##     SLURM_ARRAY_TASK_ID
+##     start_time
+## Locals:
+##     end_time
+##     time_taken
 ## Arguments:
-##   exit code
-## ========================================================
-delete_logs(){
+##     exit code
+## ===================================================================================
+finishing_statement(){
     rm "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.log" 
     rm "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err"
+    echo "Job finished with exit code $1 at:"
+    date -u
+    local end_time
+    local time_taken
+    end_time=$(date +%s)
+    time_taken=$((end_time-start_time))
+    echo "Job took a total of: ${time_taken} seconds to finish."
     exit "$1"
 }
 
@@ -137,7 +149,7 @@ fi
 cd "${RAW_FULL_FILE_PATH}" || \
 { >&2 echo "ERROR: \${RAW_FULL_FILE_PATH} - ${RAW_FULL_FILE_PATH} \
 doesn't exist, make sure you typed the epigenetic mark correctly and that you \
-have ran 1_MoveFilesToSingleDirectory.sh first."; delete_logs 1; }
+have ran 1_MoveFilesToSingleDirectory.sh first."; finishing_statement 1; }
 
 # Get base name of the files in 3 steps
 # 1) Find all of the .bam files in the mark directory
@@ -199,7 +211,7 @@ module load SAMtools
 # 4) Create an index file, an index stats file and a stats file for the processed files
 
 for file in ${files_to_process}; do
-    cd "${RAW_FULL_FILE_PATH}" || delete_logs 1
+    cd "${RAW_FULL_FILE_PATH}" || finishing_statement 1
     # 1)
     samtools index "${file}.bam" 
     samtools idxstats "${file}.bam" > "${file}.PerChromosomeStats.txt"
@@ -208,7 +220,7 @@ for file in ${files_to_process}; do
     # 2)
     samtools sort "${file}.bam" > \
     "${PROCESSED_FULL_FILE_PATH}/${file}.sorted.bam"
-    cd "${PROCESSED_FULL_FILE_PATH}" || delete_logs 1
+    cd "${PROCESSED_FULL_FILE_PATH}" || finishing_statement 1
 
     # Need to use the -h option here to keep the headers 
     # so that the next samtools view can function properly
@@ -234,17 +246,6 @@ for file in ${files_to_process}; do
     "${file}.sorted.filtered.noDuplicates.stats"
 done
 
-
-## ======================= ##
-##   LOG FILE MANAGEMENT   ##
-## ======================= ##
-
-echo "Job completed at:"
-date -u
-end_time=$(date +%s)
-time_taken=$((end_time-start_time))
-echo "Job took a total of: ${time_taken} seconds to complete."
-
-delete_logs 0
+finishing_statement 0
 
 

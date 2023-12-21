@@ -90,17 +90,28 @@ ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 
 mark_name=$1
 
-## ====== FUNCTION : delete_logs() ========================
-## Delete temporary log and error files then exit
+## ====== FUNCTION : finishing_statement() ===========================================
+## Description: Delete temporary log and error files, give finishing message then exit
 ## Globals: 
-##   SLURM_SUBMIT_DIR
-##   SLURM_JOB_ID
+##     SLURM_SUBMIT_DIR
+##     SLURM_JOB_ID
+##     start_time
+## Locals:
+##     end_time
+##     time_taken
 ## Arguments:
-##   exit code
-## ========================================================
-delete_logs(){
+##     exit code
+## ===================================================================================
+finishing_statement(){
     rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" 
     rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err"
+    echo "Job finished with exit code $1 at:"
+    date -u
+    local end_time
+    local time_taken
+    end_time=$(date +%s)
+    time_taken=$((end_time-start_time))
+    echo "Job took a total of: ${time_taken} seconds to finish."
     exit "$1"
 }
 
@@ -110,7 +121,7 @@ delete_logs(){
 
 cd "${MAIN_DIR}" || \
 { >&2 echo "ERROR: \${MAIN_DIR} - ${MAIN_DIR} doesn't exist, \
-make sure config.txt is pointing to the correct directory"; delete_logs 1; }
+make sure config.txt is pointing to the correct directory"; finishing_statement 1; }
 
 list_of_files_with_mark_name=\
 $(find . -type f -name "*${mark_name}*.bam")
@@ -127,7 +138,7 @@ if [[ "${number_of_files_to_move}" -eq 0 ]]; then
     Please input a epigenetic mark name that exists (note that this is \
     case sensitive)."; }
 
-    delete_logs 1
+    finishing_statement 1
 fi
 
 mkdir -p "${RAW_DIR}/${mark_name}"
@@ -139,15 +150,4 @@ for file in ${list_of_files_with_mark_name}; do
     mv "${file}" "${RAW_DIR}/${mark_name}"
 done
 
-
-## ======================= ##
-##   LOG FILE MANAGEMENT   ##
-## ======================= ##
-
-echo "Job completed at:"
-date -u
-end_time=$(date +%s)
-time_taken=$((end_time-start_time))
-echo "Job took a total of: ${time_taken} seconds to complete"
-
-delete_logs 0
+finishing_statement 0

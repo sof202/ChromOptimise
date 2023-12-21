@@ -92,17 +92,28 @@ ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 ##   FUNCTIONS   ##
 ## ============= ##
 
-## ====== FUNCTION : delete_logs() ========================
-## Delete temporary log and error files then exit
+## ====== FUNCTION : finishing_statement() ===========================================
+## Description: Delete temporary log and error files, give finishing message then exit
 ## Globals: 
-##   SLURM_SUBMIT_DIR
-##   SLURM_JOB_ID
+##     SLURM_SUBMIT_DIR
+##     SLURM_JOB_ID
+##     start_time
+## Locals:
+##     end_time
+##     time_taken
 ## Arguments:
-##   exit code
-## ========================================================
-delete_logs(){
+##     exit code
+## ===================================================================================
+finishing_statement(){
     rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" 
     rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err"
+    echo "Job finished with exit code $1 at:"
+    date -u
+    local end_time
+    local time_taken
+    end_time=$(date +%s)
+    time_taken=$((end_time-start_time))
+    echo "Job took a total of: ${time_taken} seconds to finish."
     exit "$1"
 }
 
@@ -112,24 +123,24 @@ delete_logs(){
 
 cd "${MODEL_DIR}" || \
 { >&2 echo "ERROR: \${MODEL_DIR} - ${MODEL_DIR} doesn't exist, \
-make sure config.txt is pointing to the correct directory."; delete_logs 1; }
+make sure config.txt is pointing to the correct directory."; finishing_statement 1; }
 
 if [[ -z "$(ls -A)" ]]; then
     { echo -e "ERROR: \${MODEL_DIR} - ${MODEL_DIR} is empty.\n\
     Ensure that 5_CreateIncrementalModels.sh has been ran before this script."; }
 
-    delete_logs 1
+    finishing_statement 1
 fi
 
 cd "${COMPARE_DIR}" || { echo "ERROR: \${COMPARE_DIR} - ${COMPARE_DIR} doesn't exist, \
-make sure config.txt is pointing to the correct directory"; delete_logs 1; }
+make sure config.txt is pointing to the correct directory"; finishing_statement 1; }
 mkdir -p temp
-cd temp || delete_logs 1
+cd temp || finishing_statement 1
 rm ./*
 
 cd "${MODEL_DIR}" || \
 { >&2 echo "ERROR: \${MODEL_DIR} - ${MODEL_DIR} doesn't exist, \
-make sure config.txt is pointing to the correct directory."; delete_logs 1; }
+make sure config.txt is pointing to the correct directory."; finishing_statement 1; }
 
 emission_text_files=$(find . -type f -name "Emission*.txt")
 
@@ -157,7 +168,7 @@ module load Java
 
 for file in $emission_text_files; do
     # 1)
-    cd "${COMPARE_DIR}" || delete_logs 1
+    cd "${COMPARE_DIR}" || finishing_statement 1
     most_complex_model_number=$(find ./temp -type f -name "emissions*.txt" | \
     grep -oP "\d+(?=.txt)"| \
     sort -g | \
@@ -183,17 +194,7 @@ done
 
 rm -rf temp
 
-## ======================= ##
-##   LOG FILE MANAGEMENT   ##
-## ======================= ##
-
-echo "Job completed at:"
-date -u
-end_time=$(date +%s)
-time_taken=$((end_time-start_time))
-echo "Job took a total of: ${time_taken} seconds to complete"
-
-delete_logs 0
+finishing_statement 0
 
 
 

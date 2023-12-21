@@ -117,17 +117,29 @@ ln "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err" \
 number_of_models_to_generate=$1
 states_increment=$2
 
-## ====== FUNCTION : delete_logs() ========================
-## Delete temporary log and error files then exit
+## ====== FUNCTION : finishing_statement() ===========================================
+## Description: Delete temporary log and error files, give finishing message then exit
 ## Globals: 
-##   SLURM_SUBMIT_DIR
-##   SLURM_JOB_ID
+##     SLURM_SUBMIT_DIR
+##     SLURM_ARRAY_JOB_ID
+##     SLURM_ARRAY_TASK_ID
+##     start_time
+## Locals:
+##     end_time
+##     time_taken
 ## Arguments:
-##   exit code
-## ========================================================
-delete_logs(){
-    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.log"
+##     exit code
+## ===================================================================================
+finishing_statement(){
+    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.log" 
     rm "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err"
+    echo "Job finished with exit code $1 at:"
+    date -u
+    local end_time
+    local time_taken
+    end_time=$(date +%s)
+    time_taken=$((end_time-start_time))
+    echo "Job took a total of: ${time_taken} seconds to finish."
     exit "$1"
 }
 
@@ -153,7 +165,7 @@ fi
 # Set bin/sample size by searching through the binary directory
 cd "${BINARY_DIR}" || \
 { >&2 echo "ERROR: \${BINARY_DIR} - ${BINARY_DIR} doesn't exist, \
-make sure config.txt is pointing to the correct directory."; delete_logs 1; }
+make sure config.txt is pointing to the correct directory."; finishing_statement 1; }
 
 bin_size=$(find . -type f -name "*.txt*.gz" | head -1 | cut -d "_" -f 6)
 sample_size=$(find . -type f -name "*.txt*.gz" | head -1 | cut -d "_" -f 4)
@@ -166,13 +178,13 @@ if [[ -z "$(ls -A)" ]]; then
     { >&2 echo -e "ERROR: \${BINARY_DIR} - ${BINARY_DIR} is empty.\n\
     Ensure that 4_BinarizeBamFiles.sh has been ran before this script."; }
 
-    delete_logs 1
+    finishing_statement 1
 fi
 
 # Clean up from previous runs of script
 cd "${MODEL_DIR}" || \
 { >&2 echo "ERROR: \${MODEL_DIR} - ${MODEL_DIR} doesn't exist, \
-make sure config.txt is pointing to the correct directory."; delete_logs 1; }
+make sure config.txt is pointing to the correct directory."; finishing_statement 1; }
 rm -f ./*
 
 ## ========================== ##
@@ -209,7 +221,7 @@ module purge
 module load Java
 
 mkdir -p "${OPTIMUM_STATES_DIR}/Likelihood_Values"
-cd "${OPTIMUM_STATES_DIR}/Likelihood_Values" || delete_logs 1
+cd "${OPTIMUM_STATES_DIR}/Likelihood_Values" || finishing_statement 1
 
 # Job is to be submitted as an array so we only want to 
 # remake likelihood files for one of the array tasks, not all of them.
@@ -258,7 +270,7 @@ done
 
 cd "${MODEL_DIR}" || \
 { >&2 echo "ERROR: \${MODEL_DIR} - ${MODEL_DIR} doesn't exist, \
-make sure config.txt is pointing to the correct directory."; delete_logs 1; }
+make sure config.txt is pointing to the correct directory."; finishing_statement 1; }
 
 emission_files_to_rename=$(find . -type f -name "emissions*")
 for file in $emission_files_to_rename; do
@@ -281,15 +293,4 @@ for file in $model_files_to_rename; do
     "Model_BinSize_${bin_size}_SampleSize_${sample_size}_States_${file_ending}"
 done
 
-
-## ======================= ##
-##   LOG FILE MANAGEMENT   ##
-## ======================= ##
-
-echo "Job completed at:"
-date -u
-end_time=$(date +%s)
-time_taken=$((end_time-start_time))
-echo "Job took a total of: ${time_taken} seconds to complete"
-
-delete_logs 0
+finishing_statement 0

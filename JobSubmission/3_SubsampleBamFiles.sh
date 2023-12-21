@@ -101,17 +101,28 @@ mark_name=$1
 sample_size=$2
 PROCESSED_FILE_PATH="${PROCESSED_DIR}/${mark_name}"
 
-## ====== FUNCTION : delete_logs() ========================
-## Delete temporary log and error files then exit
+## ====== FUNCTION : finishing_statement() ===========================================
+## Description: Delete temporary log and error files, give finishing message then exit
 ## Globals: 
-##   SLURM_SUBMIT_DIR
-##   SLURM_JOB_ID
+##     SLURM_SUBMIT_DIR
+##     SLURM_JOB_ID
+##     start_time
+## Locals:
+##     end_time
+##     time_taken
 ## Arguments:
-##   exit code
-## ========================================================
-delete_logs(){
+##     exit code
+## ===================================================================================
+finishing_statement(){
     rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" 
     rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err"
+    echo "Job finished with exit code $1 at:"
+    date -u
+    local end_time
+    local time_taken
+    end_time=$(date +%s)
+    time_taken=$((end_time-start_time))
+    echo "Job took a total of: ${time_taken} seconds to finish."
     exit "$1"
 }
 
@@ -119,7 +130,7 @@ if [[ -z "${mark_name}" ]]; then
     { >&2 echo -e "ERROR: No epigenetic mark name given.\n\
     Ensure that the first argument is the name of a processed epigenetic mark." ;}
 
-    delete_logs 1
+    finishing_statement 1
 fi
 
 if [[ -z "${sample_size}" || "${sample_size}" =~ ^[^0-9]+$ ]]; then
@@ -142,7 +153,7 @@ echo -n "Merging processed .bam files for epigenetic mark: ${mark_name}"
 cd "${PROCESSED_FILE_PATH}" || \
 { >&2 echo "ERROR: \${PROCESSED_DIR}/\${mark_name} - ${PROCESSED_DIR}/${mark_name} \
 doesn't exist, make sure that you typed the epigenetic mark correctly and that \
-config.txt is pointing to the correct directory"; delete_logs 1; }
+config.txt is pointing to the correct directory"; finishing_statement 1; }
 
 find . -type f -name "*.sorted.filtered.noDuplicates.bam" \
 > List_Of_Bam_Files_To_Merge.txt
@@ -162,7 +173,7 @@ samtools merge -b List_Of_Bam_Files_To_Merge.txt "${output_file_path}"
 
 cd "${SUBSAMPLED_DIR}" || \
 { >&2 echo "ERROR: \${SUBSAMPLED_DIR} - ${SUBSAMPLED_DIR} doesn't exist, \
-make sure config.txt is pointing to the correct directory"; delete_logs 1; }
+make sure config.txt is pointing to the correct directory"; finishing_statement 1; }
 
 sample_size_decimal=$(echo "scale=2; $sample_size /100" | bc)
 echo "Subsampling merged .bam file with sample size ${sample_size}%..."
@@ -173,17 +184,7 @@ samtools view -s "${sample_size_decimal}" "${output_file_path}" \
 >> "Subsampled.${sample_size}.${mark_name}.bam"
 
 rm "FullMerged.${mark_name}.bam"
-cd "${PROCESSED_FILE_PATH}" || delete_logs 1
+cd "${PROCESSED_FILE_PATH}" || finishing_statement 1
 rm List_Of_Bam_Files_To_Merge.txt
 
-## ======================= ##
-##   LOG FILE MANAGEMENT   ##
-## ======================= ##
-
-echo "Job completed at:"
-date -u
-end_time=$(date +%s)
-time_taken=$((end_time-start_time))
-echo "Job took a total of: ${time_taken} seconds to complete"
-
-delete_logs 0
+finishing_statement 0

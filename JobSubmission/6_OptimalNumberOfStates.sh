@@ -106,24 +106,35 @@ ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 ##    VARIABLES AND FUNCTIONS    ##
 ## ============================= ##
 
-## ====== FUNCTION : delete_logs() ========================
-## Delete temporary log and error files then exit
+## ====== FUNCTION : finishing_statement() ===========================================
+## Description: Delete temporary log and error files, give finishing message then exit
 ## Globals: 
-##   SLURM_SUBMIT_DIR
-##   SLURM_JOB_ID
+##     SLURM_SUBMIT_DIR
+##     SLURM_JOB_ID
+##     start_time
+## Locals:
+##     end_time
+##     time_taken
 ## Arguments:
-##   exit code
-## ========================================================
-delete_logs(){
+##     exit code
+## ===================================================================================
+finishing_statement(){
     rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" 
     rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err"
+    echo "Job finished with exit code $1 at:"
+    date -u
+    local end_time
+    local time_taken
+    end_time=$(date +%s)
+    time_taken=$((end_time-start_time))
+    echo "Job took a total of: ${time_taken} seconds to finish."
     exit "$1"
 }
 
 # Set bin/sample size by searching through the model directory
 cd "${MODEL_DIR}" || \
 { >&2 echo "ERROR: \${MODEL_DIR} - ${MODEL_DIR} doesn't exist, \
-make sure config.txt is pointing to the correct directory."; delete_logs 1; }
+make sure config.txt is pointing to the correct directory."; finishing_statement 1; }
 
 bin_size=$(find . -type f -name "*.txt" | head -1 | cut -d "_" -f 3)
 sample_size=$(find . -type f -name "*.txt" | head -1 | cut -d "_" -f 5)
@@ -136,16 +147,16 @@ if [[ -z "$(ls -A)" ]]; then
     { >&2 echo -e "ERROR: No files found in \${MODEL_DIR} - ${MODEL_DIR}.\n\
     Please run 5_CreateIncrementalModels.sh before this script."; }
 
-    delete_logs 1
+    finishing_statement 1
 fi
 
 mkdir -p "${OPTIMUM_STATES_DIR}/temp"
-cd "${OPTIMUM_STATES_DIR}/temp" || delete_logs 1
+cd "${OPTIMUM_STATES_DIR}/temp" || finishing_statement 1
 rm -f ./*
 
 cd "${MODEL_DIR}" || \
 { >&2 echo "ERROR: \${MODEL_DIR} - ${MODEL_DIR} doesn't exist, \
-make sure config.txt is pointing to the correct directory."; delete_logs 1; }
+make sure config.txt is pointing to the correct directory."; finishing_statement 1; }
 
 emission_text_files=$(find . -type f -name "Emissions*.txt")
 for file in $emission_text_files; do
@@ -164,7 +175,7 @@ module purge
 module load R/4.2.1-foss-2022a
 cd "${RSCRIPTS_DIR}" || \
 { >&2 echo "\${RSCRIPTS_DIR} - ${RSCRIPTS_DIR} doesn't exist, \
-make sure config.txt is pointing to the correct directory"; delete_logs 1; }
+make sure config.txt is pointing to the correct directory"; finishing_statement 1; }
 
 max_model_number=$(find "${OPTIMUM_STATES_DIR}/temp" -type f -name "*.txt" | \
 grep -oP "\d+(?=.txt)"| \
@@ -232,15 +243,5 @@ fi
 echo "Plotting the estimated log likelihoods of learned models against one another..."
 Rscript PlotLikelihoods.R "${bin_size}" "${sample_size}" "${output_directory}"
 
-## ======================= ##
-##   LOG FILE MANAGEMENT   ##
-## ======================= ##
-
-echo "Job completed at:"
-date -u
-end_time=$(date +%s)
-time_taken=$((end_time-start_time))
-echo "Job took a total of: ${time_taken} seconds to complete"
-
-delete_logs 0
+finishing_statement 0
 
