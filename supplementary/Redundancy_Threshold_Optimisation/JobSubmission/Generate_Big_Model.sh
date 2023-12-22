@@ -147,9 +147,7 @@ make sure config.txt is pointing to the correct directory"; finishing_statement 
 if [[ -z "$(ls -A)" ]]; then
     { >&2 echo -e "ERROR: \${BINARY_DIR} - ${BINARY_DIR} is empty.\n\
     Ensure that 4_BinarizeBamFiles.sh has been ran before this script."
-    }
-
-    finishing_statement 1
+    finishing_statement 1; }
 fi
 
 ## ========== ##
@@ -174,7 +172,7 @@ java -mx30G \
 "${BINARY_DIR}" "${BIG_MODELS_DIR}" "${model_size}" hg19 > \
 "ChromHMM.Output.ModelSize.${model_size}.txt"
 
-echo "Writing estimated log likelihood to likelihood.ModelSize.${model_size}.txt..."
+echo "Writing estimated log likelihood to: likelihood.ModelSize.${model_size}.txt..."
 # grep removes the terminal logs associated with writing to files.
 # The tail and awk locate the final estimated log likelihood
 grep "       " "ChromHMM.Output.ModelSize.${model_size}.txt" | \
