@@ -227,7 +227,7 @@ sequence=$(\
 seq "$starting_number_of_states" "$states_increment" "$ending_number_of_states"\
 )
 
-echo "Learning models with: (${sequence}) states using a bin size of ${bin_size}." 
+echo "Learning models using a bin size of ${bin_size}..." 
 
 # Main loop
 for numstates in ${sequence}; do
