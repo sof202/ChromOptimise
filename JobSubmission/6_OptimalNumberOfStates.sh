@@ -146,8 +146,8 @@ sample_size=$(find . -type f -name "*.txt" | head -1 | cut -d "_" -f 5)
 ## =================== ##
 
 if [[ -z "$(ls -A)" ]]; then
-    { >&2 echo -e "ERROR: No files found in \${MODEL_DIR} - ${MODEL_DIR}.\n\
-    Please run 5_CreateIncrementalModels.sh before this script."
+    { >&2 echo -e "ERROR: No files found in \${MODEL_DIR} - ${MODEL_DIR}.\n"\
+    "Please run 5_CreateIncrementalModels.sh before this script."
     finishing_statement 1; }
 fi
 
@@ -227,8 +227,7 @@ rm -r "${OPTIMUM_STATES_DIR}/temp"
 # section checks for this scenario.
 
 if [[ $(wc -l "${output_directory}/OptimumNumberOfStates.txt") -eq 1 ]]; then
-    {
-    echo -e "${max_model_number} states may not be the optimum number of states.\n\ 
+    { echo -e "${max_model_number} states may not be the optimum number of states.\n\ 
     Try increasing the size of the most complex model or increasing \
     the thresholds in the config.r file." 
     } >> "${output_directory}/OptimumNumberOfStates.txt"

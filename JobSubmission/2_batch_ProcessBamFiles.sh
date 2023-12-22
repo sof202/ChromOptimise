@@ -136,8 +136,8 @@ finishing_statement(){
 ## ====== DEFAULTS ====================================================================
 if ! [[ "${minimum_tolerated_phred_score}" =~ ^[0-9]+$ ]]; then
     minimum_tolerated_phred_score=20
-    echo "Phred score threshold given is invalid, \
-    using the default value of ${minimum_tolerated_phred_score}."
+    echo "Phred score threshold given is invalid, "\
+    "using the default value of ${minimum_tolerated_phred_score}."
 fi
 ## ====================================================================================
 

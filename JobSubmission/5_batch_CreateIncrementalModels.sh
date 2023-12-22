@@ -169,10 +169,9 @@ sample_size=$(find . -type f -name "*.txt*.gz" | head -1 | cut -d "_" -f 4)
 ## =============================== ##
 
 if [[ -z "$(ls -A)" ]]; then
-    { >&2 echo -e "ERROR: \${BINARY_DIR} - ${BINARY_DIR} is empty.\n\
-    Ensure that 4_BinarizeBamFiles.sh has been ran before this script."; }
-
-    finishing_statement 1
+    { >&2 echo -e "ERROR: \${BINARY_DIR} - ${BINARY_DIR} is empty.\n"\
+    "Ensure that 4_BinarizeBamFiles.sh has been ran before this script."
+    finishing_statement 1; }
 fi
 
 # Clean up from previous runs of script

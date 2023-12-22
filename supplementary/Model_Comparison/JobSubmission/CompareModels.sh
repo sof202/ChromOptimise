@@ -126,8 +126,8 @@ cd "${MODEL_DIR}" || \
 make sure config.txt is pointing to the correct directory."; finishing_statement 1; }
 
 if [[ -z "$(ls -A)" ]]; then
-    { echo -e "ERROR: \${MODEL_DIR} - ${MODEL_DIR} is empty.\n\
-    Ensure that 5_CreateIncrementalModels.sh has been ran before this script."
+    { echo -e "ERROR: \${MODEL_DIR} - ${MODEL_DIR} is empty.\n"\
+    "Ensure that 5_CreateIncrementalModels.sh has been ran before this script."
     finishing_statement 1; }
 fi
 

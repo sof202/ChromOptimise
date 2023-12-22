@@ -152,10 +152,9 @@ cd "${model_file_dir}" ||  { >&2 echo "ERROR: ${model_file_dir} doesn't exist, \
 ensure that the directory exists before running this script."; finishing_statement 1; }
 
 if [[ -z $(find . -type f -name "emissions*") ]]; then
-    { >&2 echo -e "ERROR: No model files were found in ${model_file_dir}.\n\
-    Ensure that you have ran Generate_Big_Model.sh or ChromHMM's \
-    LearnModel command before using this script." 
-    finishing_statement 1; }  
+    { >&2 echo -e "ERROR: No model files were found in ${model_file_dir}.\n"\
+    "Ensure that you have ran Generate_Big_Model.sh or ChromHMM's "\
+    "LearnModel command before using this script."; finishing_statement 1; }  
 fi
 
 ## ======== ##

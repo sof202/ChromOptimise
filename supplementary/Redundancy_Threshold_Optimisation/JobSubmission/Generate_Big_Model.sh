@@ -145,8 +145,8 @@ fi
 cd "${BINARY_DIR}" || { >&2 echo "ERROR: \${BINARY_DIR} - ${BINARY_DIR} doesn't exist, \
 make sure config.txt is pointing to the correct directory"; finishing_statement 1; }
 if [[ -z "$(ls -A)" ]]; then
-    { >&2 echo -e "ERROR: \${BINARY_DIR} - ${BINARY_DIR} is empty.\n\
-    Ensure that 4_BinarizeBamFiles.sh has been ran before this script."
+    { >&2 echo -e "ERROR: \${BINARY_DIR} - ${BINARY_DIR} is empty.\n"\
+    "Ensure that 4_BinarizeBamFiles.sh has been ran before this script."
     finishing_statement 1; }
 fi
 

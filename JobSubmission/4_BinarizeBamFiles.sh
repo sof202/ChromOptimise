@@ -132,16 +132,16 @@ fi
 # 'Intelligently' find the sample size using first file name in subsampled directory
 if [[ -z "${sample_size}" ]]; then
     cd "${SUBSAMPLED_DIR}" || \
-    { >&2 echo "ERROR: \${SUBSAMPLED_DIR} - ${SUBSAMPLED_DIR} doesn't exist, make \
-    sure config.txt is pointing to the correct directory"; finishing_statement 1; }
+    { >&2 echo "ERROR: \${SUBSAMPLED_DIR} - ${SUBSAMPLED_DIR} doesn't exist, make "\
+    "sure config.txt is pointing to the correct directory"; finishing_statement 1; }
 
     sample_size=$(find . -type f -name "Subsampled*" | head -1 | cut -d "." -f 3)
-    echo -e "WARNING: No sample size was given.\n\
-    Assuming that ${sample_size} is the desired sample size..."
+    echo -e "WARNING: No sample size was given.\n"\
+    "Assuming that ${sample_size} is the desired sample size..."
 fi
 if [[ -z "${sample_size}" ]]; then
-    { >&2 echo -e "ERROR: No sample size even after fail safe. Please run\n\
-    3_SubsampleBamFiles.sh before running this script" ;}
+    { >&2 echo -e "ERROR: No sample size even after fail safe. Please run "\
+    "3_SubsampleBamFiles.sh before running this script." ;}
 fi
 ## ====================================================================================
 
@@ -154,10 +154,9 @@ cd "${SUBSAMPLED_DIR}" || \
 sure config.txt is pointing to the correct directory"; finishing_statement 1; }
 
 if [[ -z "$(find . -type f -name "Subsampled.${sample_size}*")" ]]; then
-    { >&2 echo "ERROR: \${SUBSAMPLED_DIR} - ${SUBSAMPLED_DIR} is empty.
-    Ensure that 3_SubsampleBamFiles.sh has been ran before this script."; }
-
-    finishing_statement 1
+    { >&2 echo -e "ERROR: \${SUBSAMPLED_DIR} - ${SUBSAMPLED_DIR} is empty.\n"\
+    "Ensure that 3_SubsampleBamFiles.sh has been ran before this script."
+    finishing_statement 1; }
 fi
 
 ## =================================== ##
