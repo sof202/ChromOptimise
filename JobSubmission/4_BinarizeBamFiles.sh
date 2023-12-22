@@ -24,10 +24,10 @@
 ##                                                                                  ||
 ## =================================================================================##
 ## PURPOSE:                                                                         ||
-## The Subsampled files for each mark will now be binarized through the use of      ||
+## The subsampled files for each mark will now be binarized through the use of      ||
 ## ChromHMM's BinarizeBam command. This script is to be ran after all of the        ||
 ## epigenetic marks that one wants to inspect have been subsampled. The .bam files  ||
-## need to be binarized so that they can be used by ChromHMM's LearnModel command.  ||
+## need to be binarized before they can be used by ChromHMM's LearnModel command.   ||
 ## =================================================================================##
 ## AUTHOR: Sam Fletcher                                                             ||
 ## CONTACT: s.o.fletcher@exeter.ac.uk                                               ||
@@ -153,7 +153,7 @@ cd "${SUBSAMPLED_DIR}" || \
 { >&2 echo "ERROR: \${SUBSAMPLED_DIR} - ${SUBSAMPLED_DIR} doesn't exist, make \
 sure config.txt is pointing to the correct directory"; finishing_statement 1; }
 
-if [[ -z "$(ls -A)" ]]; then
+if [[ -z "$(find . -type f -name "Subsampled.${sample_size}*")" ]]; then
     { >&2 echo "ERROR: \${SUBSAMPLED_DIR} - ${SUBSAMPLED_DIR} is empty.
     Ensure that 3_SubsampleBamFiles.sh has been ran before this script."; }
 
