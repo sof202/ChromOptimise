@@ -197,8 +197,11 @@ module load Java
 
 # Binarize the files in the subsampled directory.
 # The blueprint data uses GChr37 assembly (which is equivalent to UCSC's hg19).
-java -mx4G -jar "${CHROMHMM_MAIN_DIR}/ChromHMM.jar" BinarizeBam -b "${bin_size}" \
--gzip "${CHROMHMM_CHROM_SIZES}/hg19.txt" "${SUBSAMPLED_DIR}" \
+java -mx4G \
+-jar "${CHROMHMM_MAIN_DIR}/ChromHMM.jar" BinarizeBam \
+-b "${bin_size}" \
+-gzip \
+"${CHROMHMM_CHROM_SIZES}/hg19.txt" "${SUBSAMPLED_DIR}" \
 "${SUBSAMPLED_DIR}/cellmarkfiletable.txt" "${BINARY_DIR}"
 
 # Optional: One may not want to keep the mitochondrial DNA in the analysis
