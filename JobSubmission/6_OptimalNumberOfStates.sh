@@ -147,7 +147,7 @@ sample_size=$(find . -type f -name "*.txt" | head -1 | cut -d "_" -f 5)
 
 if [[ -z "$(ls -A)" ]]; then
     { >&2 echo -e "ERROR: No files found in \${MODEL_DIR} - ${MODEL_DIR}.\n\
-    Please run 5_CreateIncrementalModels.sh before this script."; \
+    Please run 5_CreateIncrementalModels.sh before this script."
     finishing_statement 1; }
 fi
 
