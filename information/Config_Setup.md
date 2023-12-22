@@ -25,9 +25,10 @@ export COMPARE_DIR="${MAIN_DIR}/path/to/comparison/files/"
 export BIG_MODELS_DIR="${MAIN_DIR}/path/to/big/models/"
 
 ## Script directories
-export SCRIPTS_DIR="/path/to/main"
-export SUPPLEMENTARY_DIR="path/to/supplementary/directory"
-export RSCRIPTS_DIR="path/to/main/Rscripts/directory"
+export SCRIPTS_DIR="/path/to/this/repository"
+export RSCRIPTS_DIR="${SCRIPTS_DIR}/Rscripts"
+export SUPPLEMENTARY_DIR="${SCRIPTS_DIR}/supplementary"
+export LOG_DIR="${SCRIPTS_DIR}/LogFiles"
 
 ## ChromHMM file locations
 export CHROMHMM_MAIN_DIR="/path/to/ChromHMM/main/directory"
