@@ -32,27 +32,27 @@
 ## PURPOSE:                                                                         ||
 ## Uses ChromHMM's LearnModel command to generate models with increasing numbers of ||
 ## states. The idea here is to increment the number of states in the hidden Markov  ||
-## model so that they  can later be compared to test for redundant states, allowing ||
-## for an 'intelligent' choice for the number of states in the model.               ||
+## model so that they can later be compared when testing for redundant states,      ||
+## allowing for an 'intelligent' choice for the number of states in the model.      ||
 ##                                                                                  ||
 ## IMPORTANT NOTE: The number of states in any one model cannot exceed 2^k, where   ||
-## k is the number of marks in the binary files. This is because the 'init' method  ||
-## is being used by ChromHMM's LearnModel command for reproducability. This 2^k     ||
-## limit is a hard cap, but depending on the data, a smaller soft cap may exist.    ||
-## ChromHMM outputs the maximum number of states allowed if the cap is exceeded,    ||
-## check the error logs for this message.                                           ||
+## k is the number of marks in the binary files. This is because the 'information'  ||
+## method is being used by ChromHMM's LearnModel command for reproducability. This  ||
+## 2^k limit is a hard cap, but depending on the data, a smaller soft cap may       ||
+## exist. ChromHMM outputs the maximum number of states allowed if the cap is       ||
+## exceeded, check the error logs for this message.                                 ||
 ## =================================================================================##
 ## AUTHOR: Sam Fletcher                                                             ||
 ## CONTACT: s.o.fletcher@exeter.ac.uk                                               ||
 ## CREATED: November 2023                                                           ||
 ## =================================================================================##
-## PREREQUISITES: All .bam files for a specific epigenetic mark must be in 1 folder ||
+## PREREQUISITES: Run 4_BinarizeBamFiles.sh                                         ||
 ## =================================================================================##
 ## DEPENDENCIES: Java, ChromHMM                                                     ||
 ## =================================================================================##
 ## INPUTS:                                                                          ||
 ## $1 -> Number of models to learn (default: 4)                                     ||
-## $2  -> The increment to use between model sizes (default: 1)                     ||
+## $2 -> The increment to use between model sizes (default: 1)                      ||
 ## =================================================================================##
 ## OUTPUTS:                                                                         ||
 ## Emission parameter matrix for models (.png, .txt and .svg)                       ||
@@ -69,7 +69,7 @@
 if [[ "$1" == "--help" || "$1" == "-h" ]]; then
     echo "======================================================================"
     echo "Purpose: Uses ChromHMM's LearnModel command to generate several models"
-    echo "with increasing numbers of states"
+    echo "with increasing numbers of states."
     echo "Author: Sam Fletcher"
     echo "Contact: s.o.fletcher@exeter.ac.uk"
     echo "Dependencies: Java, ChromHMM"
@@ -144,7 +144,8 @@ finishing_statement(){
 
 ## ====== DEFAULTS ====================================================================
 if ! [[ "${number_of_models_to_generate}" =~ ^[0-9]+$ ]]; then
-    echo "Number of models to generate given is invalid."
+    number_of_models_to_generate=4
+    echo "Value for 'number of models to generate' is invalid."
     echo "Using the default value of: ${number_of_models_to_generate} instead."
 fi
 
