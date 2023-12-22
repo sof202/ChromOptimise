@@ -127,14 +127,14 @@ finishing_statement(){
 }
 
 ## ====== DEFAULTS ====================================================================
-if [[ -z "$model_size" ]]; then
+if ! [[ "${model_size}" =~ ^[0-9]+$ ]]; then
     model_size=20
-    echo "No model size was given by the user, using default value of: ${model_size}."
+    echo "Model size given is invalid, using default value of: ${model_size}."
 fi
 
-if [[ -z "$seed" ]]; then
+if ! [[ "$seed" =~ ^[0-9]+$ ]]; then
     seed=1
-    echo "No random seed was given by the user, using defualt value of: ${seed}." 
+    echo "Random seed given is invalid, using defualt value of: ${seed}." 
 fi
 # =====================================================================================
 

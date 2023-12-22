@@ -124,13 +124,9 @@ finishing_statement(){
 }
 
 ## ====== DEFAULTS ====================================================================
-if [[ -z "${bin_size}" ]]; then
+if ! [[ "${bin_size}" =~ ^[0-9]+$ ]]; then
     bin_size=200
-    echo "No bin size was given, using the default value of ${bin_size} instead."
-elif [[ "${bin_size}" =~ ^[^0-9]+$ ]]; then
-    bin_size=200
-    echo "bin size given is invalid (non-integer), \
-    using the default value of ${bin_size} instead."
+    echo "Invalid bin size given, using the default value of ${bin_size} instead."
 fi
 
 # 'Intelligently' find the sample size using first file name in subsampled directory

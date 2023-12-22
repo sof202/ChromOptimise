@@ -24,10 +24,10 @@
 ##                                                                                  ||
 ## =================================================================================##
 ## PURPOSE:                                                                         ||
-## Obtain a sample of the bam files. However, the bam files have varying sizes due  ||
-## to the number of reads. Sampling the files produced in 2_ProcessBamFiles.sh will ||
-## lead to samples with the same number of files that contain a different number    ||
-## of reads. This removes the reproducability of the proceedure. To get around      ||
+## Obtain a sample of the bam files. The bam files have varying sizes due to the    ||
+## number of reads. Sampling the files produced in 2_ProcessBamFiles.sh will lead   ||
+## to samples with the same number of files that contain a different number of      ||
+## reads. This removes the reproducability of the proceedure. To get around         ||
 ## this, this script merges all of the processed .bam files and subsequently        ||
 ## samples this larger file randomly. To save space, the merged file is deleted.    ||
 ## =================================================================================##
@@ -52,8 +52,8 @@
 ## ======================== ##
 
 if [[ "$1" == "--help" || "$1" == "-h" ]]; then
-    echo "==================================================="
-    echo "Purpose: Merges and subsamples processed .bam files"
+    echo "===================================================="
+    echo "Purpose: Merges and subsamples processed .bam files."
     echo "present in specified folder"
     echo "Author: Sam Fletcher"
     echo "Contact: s.o.fletcher@exeter.ac.uk"
@@ -61,7 +61,7 @@ if [[ "$1" == "--help" || "$1" == "-h" ]]; then
     echo "Inputs:"
     echo "\$1 -> Name of epigenetic mark"
     echo "\$2 -> Sample size as a percentage (default : 50)"
-    echo "==================================================="
+    echo "===================================================="
     exit 0
 fi
 
@@ -132,7 +132,7 @@ if [[ -z "${mark_name}" ]]; then
 fi
 
 ## ====== DEFAULTS ====================================================================
-if [[ -z "${sample_size}" || "${sample_size}" =~ ^[^0-9]+$ ]]; then
+if ! [[ "${sample_size}" =~ ^[0-9]+$ ]]; then
     sample_size=50
     echo "Invalid sample size was given, using default value of: ${sample_size}%."
 fi

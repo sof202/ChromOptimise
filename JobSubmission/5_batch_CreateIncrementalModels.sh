@@ -143,22 +143,14 @@ finishing_statement(){
 }
 
 ## ====== DEFAULTS ====================================================================
-if [[ -z "${number_of_models_to_generate}" ]]; then
-    number_of_models_to_generate=4
-    echo "Number of models to generate was not given."
-    echo "Using the default value of: ${number_of_models_to_generate} instead."
-elif [[ "${number_of_models_to_generate}" =~ ^[^0-9]+ ]]; then
-    echo "Number of models to generate given is invalid (non-integer)."
+if ! [[ "${number_of_models_to_generate}" =~ ^[0-9]+$ ]]; then
+    echo "Number of models to generate given is invalid."
     echo "Using the default value of: ${number_of_models_to_generate} instead."
 fi
 
-if [[ -z "${states_increment}" ]]; then
+if [[ "${states_increment}" =~ ^[0-9]+$ ]]; then
     states_increment=1
-    echo "The value for the state increment was not given."
-    echo "Using the default value of ${states_increment} instead."
-elif [[ "${states_increment}" =~ ^[^0-9]+ ]]; then
-    states_increment=1
-    echo "The value for the state increment was not valid (non-integer)."
+    echo "State increment given is invalid."
     echo "Using the default value of ${states_increment} instead."
 fi
 # =====================================================================================
