@@ -257,7 +257,9 @@ for file in ${files_to_process}; do
     if [[ success -eq 0 ]]; then
         echo "${file}.bam processed successfully."
     else
-        echo "${file}.bam had an error during processing."
+        { echo -e "${file}.bam had an error during processing. Check error log:\n\
+        ${LOG_FILE_PATH}/$1~${SLURM_ARRAY_JOB_ID\
+        }~${SLURM_ARRAY_TASK_ID}~$timestamp.err"; }
     fi
 done
 
