@@ -43,7 +43,7 @@
 ## NONE                                                                             ||
 ## =================================================================================##
 ## OUTPUTS:                                                                         ||
-## Model comparison files in (.txt,.svg,.png)                                       ||
+## Model comparison files in (.txt,.svg,.png) format                                ||
 ## =================================================================================##
 
 ## ======================== ##
@@ -127,13 +127,13 @@ make sure config.txt is pointing to the correct directory."; finishing_statement
 
 if [[ -z "$(ls -A)" ]]; then
     { echo -e "ERROR: \${MODEL_DIR} - ${MODEL_DIR} is empty.\n\
-    Ensure that 5_CreateIncrementalModels.sh has been ran before this script."; }
-
-    finishing_statement 1
+    Ensure that 5_CreateIncrementalModels.sh has been ran before this script."
+    finishing_statement 1; }
 fi
 
 cd "${COMPARE_DIR}" || { echo "ERROR: \${COMPARE_DIR} - ${COMPARE_DIR} doesn't exist, \
 make sure config.txt is pointing to the correct directory"; finishing_statement 1; }
+
 mkdir -p temp
 cd temp || finishing_statement 1
 rm ./*
@@ -177,10 +177,8 @@ for file in $emission_text_files; do
     most_complex_model_file=$(find ./temp -type f -name "emissions*.txt" | \
     grep "${most_complex_model_number}.txt")
 
-    echo "${most_complex_model_file}"
-
     # 2)
-    echo -e "Comparing model with ${most_complex_model_file} states to the \ 
+    echo -e "Comparing model with ${most_complex_model_number} states to the \ 
     less complex models..."
 
     java -mx1G \
