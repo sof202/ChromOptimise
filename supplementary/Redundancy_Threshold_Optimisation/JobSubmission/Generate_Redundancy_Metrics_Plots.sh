@@ -31,13 +31,13 @@
 ## CONTACT: s.o.fletcher@exeter.ac.uk                                               ||
 ## CREATED: December 2023                                                           ||
 ## =================================================================================##
-## PREREQUISITES: Run Generate_Big_Model.sh or ChromHMM's LearnModel Command        ||
+## PREREQUISITES: Run Generate_Big_Model.sh or ChromHMM's LearnModel command        ||
 ## =================================================================================##
 ## DEPENDENCIES: R                                                                  ||
 ## =================================================================================##
 ## INPUTS:                                                                          ||
 ## $1 -> Size of model (default: 20)                                                ||
-## $2 -> Random seed (default: 1)"                                                  ||
+## $2 -> Random seed (default: 1)                                                   ||
 ## $3 -> Path to directory containing the model files                               ||
 ##       (default: \${BIG_MODELS_DIR} in config.txt)                                ||
 ## =================================================================================##
@@ -154,10 +154,8 @@ ensure that the directory exists before running this script."; finishing_stateme
 if [[ -z $(find . -type f -name "emissions*") ]]; then
     { >&2 echo -e "ERROR: No model files were found in ${model_file_dir}.\n\
     Ensure that you have ran Generate_Big_Model.sh or ChromHMM's \
-    LearnModel Command before using this script." 
-    }
-
-    finishing_statement 1
+    LearnModel command before using this script." 
+    finishing_statement 1; }  
 fi
 
 ## ======== ##
@@ -169,8 +167,8 @@ module load R/4.2.1-foss-2022a
 
 cd "${SUPPLEMENTARY_DIR}/Redundancy_Threshold_Optimisation/Rscripts" ||  \
 { >&2 echo "ERROR: ${SUPPLEMENTARY_DIR}/Redundancy_Threshold_Optimisation/Rscripts \
-doesn't exist, make sure config.txt is pointing to the correct directory"; \
-finishing_statement 1; }
+doesn't exist, make sure \${SUPPLEMENTARY_DIR} in config.txt is pointing to the \
+correct directory"; finishing_statement 1; }
 
 Rscript HistogramPlotForEuclideanDistances.R \
 "${model_size}" "${seed}" "${model_file_dir}"
