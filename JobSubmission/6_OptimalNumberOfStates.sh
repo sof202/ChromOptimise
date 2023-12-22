@@ -27,7 +27,7 @@
 ## PURPOSE:                                                                         ||
 ## Determines the optimum number of states by searching for redundant states in     ||
 ## the model files (starting with most complex). Redundant states are states that   ||
-## satisfy the following critereon:                                                 ||
+## satisfy the following criteria:                                                  ||
 ##  (i) The state's emissions parameter vector is close to another state's under    ||
 ##      the Euclidean distance metric,                                              ||
 ## (ii) The state's transition parameter vector (towards the state) has a low       ||
@@ -36,11 +36,11 @@
 ## This then repeats, iterating across smaller and smaller models until no          ||
 ## no redundant states are found.                                                   ||
 ##                                                                                  ||
-## The script also creates a plot of the log likelihood against the number of       ||
-## states in each model for human sense checking.                                   ||
+## The script also creates a plot of the estimated log likelihood against the       ||
+## number of states in each model for human sense checking.                         ||
 ##                                                                                  ||
 ## Note: If the largest model has no redundant states, the optimum model size may   ||
-##       be larger than the largest model that was trained                          ||
+##       be larger than the largest model that was trained.                         ||
 ## =================================================================================##
 ## AUTHOR: Sam Fletcher                                                             ||
 ## CONTACT: s.o.fletcher@exeter.ac.uk                                               ||
@@ -55,7 +55,7 @@
 ## =================================================================================##
 ## OUTPUTS:                                                                         ||
 ## File containing why models with too many states were rejected                    ||
-## The optimum number of states to use with the model                               ||
+## The optimum number of states to use with the data                                ||
 ## Plot between estimated log likelihood and number of states                       ||
 ## =================================================================================##
 
@@ -147,9 +147,8 @@ sample_size=$(find . -type f -name "*.txt" | head -1 | cut -d "_" -f 5)
 
 if [[ -z "$(ls -A)" ]]; then
     { >&2 echo -e "ERROR: No files found in \${MODEL_DIR} - ${MODEL_DIR}.\n\
-    Please run 5_CreateIncrementalModels.sh before this script."; }
-
-    finishing_statement 1
+    Please run 5_CreateIncrementalModels.sh before this script."; \
+    finishing_statement 1; }
 fi
 
 mkdir -p "${OPTIMUM_STATES_DIR}/temp"
@@ -175,6 +174,7 @@ done
 
 module purge
 module load R/4.2.1-foss-2022a
+
 cd "${RSCRIPTS_DIR}" || \
 { >&2 echo "\${RSCRIPTS_DIR} - ${RSCRIPTS_DIR} doesn't exist, \
 make sure config.txt is pointing to the correct directory"; finishing_statement 1; }
@@ -190,7 +190,7 @@ output_directory="${OPTIMUM_STATES_DIR}\
 mkdir -p "${output_directory}"
 rm -f "${output_directory}"/*
 
-while [[ $max_model_number -gt 2 ]]; do
+while [[ ${max_model_number} -gt 2 ]]; do
     max_model_number=$(find "${OPTIMUM_STATES_DIR}/temp" -type f -name "*.txt" | \
     grep -oP "\d+(?=.txt)"| \
     sort -g | \
@@ -202,7 +202,7 @@ while [[ $max_model_number -gt 2 ]]; do
     "${sample_size}" "${output_directory}"
 
     redundant_states=$(tail -1 \
-    "${output_directory}/redundant_states_Modelsize_${max_model_number}.txt")
+    "${output_directory}/Redundant_States_Modelsize_${max_model_number}.txt")
 
     if [[ "$redundant_states" == "NONE" ]]; then
         echo "Model with ${max_model_number} states has no redundant states." >> \
@@ -233,7 +233,7 @@ if [[ $(wc -l "${output_directory}/OptimumNumberOfStates.txt") -eq 1 ]]; then
     the thresholds in the config.r file." 
     } >> "${output_directory}/OptimumNumberOfStates.txt"
 else
-    echo "Optimum number of states for data is: ${max_model_number}" >> \
+    echo "Optimum number of states for the data is: ${max_model_number}" >> \
     "${output_directory}/OptimumNumberOfStates.txt"
 fi
 
