@@ -134,13 +134,9 @@ finishing_statement(){
 }
 
 ## ====== DEFAULTS ====================================================================
-if [[ -z "${minimum_tolerated_phred_score}" ]]; then
+if ! [[ "${minimum_tolerated_phred_score}" =~ ^[0-9]+$ ]]; then
     minimum_tolerated_phred_score=20
-    echo "No Phred score threshold was given, \
-    using the default value of ${minimum_tolerated_phred_score}."
-elif [[ "${minimum_tolerated_phred_score}" =~ ^[^0-9]+$ ]]; then
-    minimum_tolerated_phred_score=20
-    echo "Phred score threshold given is invalid (non-integer), \
+    echo "Phred score threshold given is invalid, \
     using the default value of ${minimum_tolerated_phred_score}."
 fi
 ## ====================================================================================
