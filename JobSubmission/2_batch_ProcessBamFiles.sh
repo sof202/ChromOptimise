@@ -197,10 +197,6 @@ fi
 ##    PROCESSING STAGE    ##
 ## ====================== ##
 
-echo -n "Processing the following files using Phred score threshold of "
-echo "${minimum_tolerated_phred_score}:"
-echo "${files_to_process}"
-
 module purge
 module load SAMtools
 
@@ -213,6 +209,8 @@ module load SAMtools
 # 4) Create an index file, an index stats file and a stats file for the processed files
 
 for file in ${files_to_process}; do
+    echo "Processing ${file}.bam..."
+    success=0
     cd "${RAW_FULL_FILE_PATH}" || finishing_statement 1
     # 1)
     samtools index "${file}.bam" 
@@ -222,6 +220,10 @@ for file in ${files_to_process}; do
     # 2)
     samtools sort "${file}.bam" > \
     "${PROCESSED_FULL_FILE_PATH}/${file}.sorted.bam"
+    if [[ $? == 1 ]]; then 
+        { >&2 echo "Sorting failed for ${file}."; }
+        success=1
+    fi
     
     cd "${PROCESSED_FULL_FILE_PATH}" || finishing_statement 1
 
@@ -229,6 +231,10 @@ for file in ${files_to_process}; do
     # so that the next samtools view can function properly
     samtools view -q "${minimum_tolerated_phred_score}" -h "${file}.sorted.bam" | \
     samtools sort /dev/stdin -o "${file}.sorted.filtered.bam"
+    if (( PIPESTATUS[0] != 0 || PIPESTATUS[1] != 0 )); then 
+        { >&2 echo "Filtering failed for ${file}."; }
+        success=1
+    fi
 
     # The -h option here it to ensure the idxstats can be completed in step 4.  
     # The -F 1796 exludes reads with the following flags: 
@@ -236,6 +242,10 @@ for file in ${files_to_process}; do
     # c) Reads that fail PCR/vendor checks d) Reads that are PCR/optical duplicates
     samtools view -F 1796 -h "${file}.sorted.filtered.bam" > \
     "${file}.sorted.filtered.noDuplicates.bam"
+    if [[ $? == 1 ]]; then 
+        { >&2 echo "Remove duplicates failed for ${file}."; }
+        success=1
+    fi
 
     # 3)
     rm "${file}.sorted.bam"
@@ -247,6 +257,12 @@ for file in ${files_to_process}; do
     "${file}.sorted.filtered.noDuplicates.PerChromosomeStats.txt"
     samtools stats "${file}.sorted.filtered.noDuplicates.bam" > \
     "${file}.sorted.filtered.noDuplicates.stats"
+
+    if [[ success -eq 0 ]]; then
+        echo "${file}.bam processed successfully."
+    else
+        echo "${file}.bam had an error during processing."
+    fi
 done
 
 finishing_statement 0
