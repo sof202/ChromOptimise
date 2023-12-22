@@ -134,13 +134,13 @@ fi
 ## ====== DEFAULTS ====================================================================
 if ! [[ "${sample_size}" =~ ^[0-9]+$ ]]; then
     sample_size=50
-    echo "Invalid sample size was given, using default value of: ${sample_size}%."
+    echo "Invalid sample size was given, using the default value of: ${sample_size}%."
 fi
 
 if [[ "${sample_size}" -gt 100 || "${sample_size}" -le 0 ]]; then
     echo "Sample size must be greater than 0 and less than or equal to 100."
     sample_size=50
-    echo "Using a default value of: ${sample_size}% instead."
+    echo "Using the default value of: ${sample_size}% instead."
 fi
 ## ====================================================================================
 
@@ -151,7 +151,7 @@ fi
 cd "${PROCESSED_FULL_FILE_PATH}" || \
 { >&2 echo "ERROR: \${PROCESSED_DIR}/\${mark_name} - ${PROCESSED_DIR}/${mark_name} \
 doesn't exist, make sure that you typed the epigenetic mark correctly and that \
-config.txt is pointing to the correct directory"; finishing_statement 1; }
+config.txt is pointing to the correct directory."; finishing_statement 1; }
 
 find . -type f -name "*.sorted.filtered.noDuplicates.bam" \
 > List_Of_Bam_Files_To_Merge.txt
