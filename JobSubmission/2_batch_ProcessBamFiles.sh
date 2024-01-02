@@ -5,7 +5,7 @@
 #SBATCH -p mrcq
 # Tests have thus far shown a linear relationship between file size and time
 # Current approximation is: [time (mins)] = 0.1 + 9*[file size (GB)]
-#SBATCH --time=01:00:00 
+#SBATCH --time=12:00:00 
 #SBATCH -A Research_Project-MRC190311 
 #SBATCH --nodes=1 
 #SBATCH --ntasks-per-node=16

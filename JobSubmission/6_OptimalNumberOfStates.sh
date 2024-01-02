@@ -226,10 +226,10 @@ rm -r "${OPTIMUM_STATES_DIR}/temp"
 # that it has the optimum number of states, perhaps a more complex model does. This
 # section checks for this scenario.
 
-if [[ $(wc -l "${output_directory}/OptimumNumberOfStates.txt") -eq 1 ]]; then
-    { echo -e "${max_model_number} states may not be the optimum number of states.\n\ 
-    Try increasing the size of the most complex model or increasing \
-    the thresholds in the config.r file." 
+if [[ $(wc -l < "${output_directory}/OptimumNumberOfStates.txt") -eq 1 ]]; then
+    { echo "${max_model_number} states may not be the optimum number of states."
+    echo "Try increasing the size of the most complex model or increasing "\
+    "the thresholds in the config.r file." 
     } >> "${output_directory}/OptimumNumberOfStates.txt"
 else
     echo "Optimum number of states for the data is: ${max_model_number}" >> \
