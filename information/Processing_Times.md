@@ -31,16 +31,20 @@ Regardless, in previous tests moving 130 files (each being 1-2 GB) amongst ~1000
 The processing time for this script mainly depends on the sizes of the files that are being processed. In tests thus far, the main contributor to computational time comes from `samtools sort` and appears to have a linear relationship with file size.
 \
 In testing, the following was observed:
--  Processing a ~1.1 Gb file took ~10 minutes,
--  Processing a ~1.4 Gb file took ~12 minutes,
--  Processing a ~1.8 Gb file took ~16 minutes,
--  Processing a ~2.1 Gb file took ~19 minutes.
+-  Processing a ~1.1 GB file took ~10 minutes,
+-  Processing a ~1.4 GB file took ~12 minutes,
+-  Processing a ~1.8 GB file took ~16 minutes,
+-  Processing a ~2.1 GB file took ~19 minutes.
 
 The conclusion was made that one should expect that the processing time would be roughly:
 \
 [9 * file size (in GB)] minutes.
 \
 Additionally, it's important to note that this script is designed to be executed as an array through the SLURM workload manager. Therefore, the processing time is likley to vary depending on the number of cores assigned to each task in the array. Further note that if the size of the array is larger than the number of files being processed, all files will be processed by the highest indexed array element (causing slow down).
+\
+When applying an array of size 4, the following was observed:
+-  Processing ~1.3 TB of files took ~ 11 hours and 45 minutes,
+-  Processing ~1.1 TB of files took ~ 9 hours and 58 minutes.
 
 ## 3_SubsampleBamFiles.sh
 This script's largest contributor to computational time is `samtools merge`. Depending on the number of files and size of said files, the time taken can vary dramatically.
