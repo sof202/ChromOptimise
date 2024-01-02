@@ -4,7 +4,7 @@
 # Submit to the mrc queue for faster queue times
 #SBATCH -p mrcq 
 # Consult information/Processing_Times.md for expected time
-#SBATCH --time=01:00:00 
+#SBATCH --time=24:00:00 
 #SBATCH -A Research_Project-MRC190311 
 #SBATCH --nodes=1 
 #SBATCH --ntasks-per-node=16 
