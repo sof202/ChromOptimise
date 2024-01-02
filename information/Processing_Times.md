@@ -43,8 +43,11 @@ The conclusion was made that one should expect that the processing time would be
 Additionally, it's important to note that this script is designed to be executed as an array through the SLURM workload manager. Therefore, the processing time is likley to vary depending on the number of cores assigned to each task in the array. Further note that if the size of the array is larger than the number of files being processed, all files will be processed by the highest indexed array element (causing slow down).
 \
 When applying an array of size 4, the following was observed:
--  Processing ~1.3 TB of files took ~ 11 hours and 45 minutes,
--  Processing ~1.1 TB of files took ~ 9 hours and 58 minutes.
+-  Processing ~272 GB of files took ~ 11 hours and 45 minutes,
+-  Processing ~228 GB of files took ~ 9 hours and 53 minutes,
+-  Processing ~263 GB of files took ~ 10 hours and 47 minutes.
+
+This to some extent supports the above claim for the processing time being linear. It is unlikely that using an array size of 4 will result in exactly 4 times faster processing time. Therefore, it is difficult to support the processing time equation previously given using these tests.  
 
 ## 3_SubsampleBamFiles.sh
 This script's largest contributor to computational time is `samtools merge`. Depending on the number of files and size of said files, the time taken can vary dramatically.
