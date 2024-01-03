@@ -34,6 +34,7 @@ Templates for the configuration files can be found in the [wiki](https://github.
 \
 After creating these configuration files and placing them in the correct directory, run `setup`. 
 \
+\
 **IMPORTANT**: Please ensure that you execute the `setup` executable from the directory where the `setup` file is located.
 
 ### Note 2
@@ -48,7 +49,7 @@ This pipeline requires the following software:
 - SLURM Workload Manager (>=20.02.3)
 - SAMtools (>=1.9)
 - R (>=4.3.1)
-- Java openjdk (>=13.0.2)
+- Java (>= openjdk 13.0.2)
 - ChromHMM (>=1.23)
 
 ## Further information
