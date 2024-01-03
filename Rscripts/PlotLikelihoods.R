@@ -33,7 +33,7 @@
 rm(list = ls())
 
 setwd("/lustre/projects/Research_Project-MRC190311/scripts/integrative")
-source("ChromHMM_OptimumStates/configuration/LogFileManagement.R")
+source("ChromHMM_OptimumStates/configuration/config.R")
 setwd(likelihood_dir)
 
 rm(list = ls())

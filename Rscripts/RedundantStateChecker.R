@@ -42,7 +42,7 @@ rm(list = ls())
 library("stringr")
 
 setwd("/lustre/projects/Research_Project-MRC190311/scripts/integrative")
-source("ChromHMM_OptimumStates/configuration/LogFileManagement.R")
+source("ChromHMM_OptimumStates/configuration/config.R")
 setwd(model_dir)
 
 arguments <- commandArgs(trailingOnly = TRUE)
