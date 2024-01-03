@@ -22,7 +22,8 @@
 script_path=$(dirname "$(readlink -f "$0")")
 
 if [ ! "$(pwd)" == "$script_path" ]; then
-    echo "IMPORTANT: Please ensure that you execute the setup executable from the directory where the setup file is located."
+    echo "IMPORTANT: Please ensure that you execute the setup executable from the" \
+    "directory where the setup file is located."
     exit 1
 fi
 
