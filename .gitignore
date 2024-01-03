@@ -1,6 +1,7 @@
 # Ignore all log files and config files
 LogFiles/*
-/configuration/*
-   !/configuration/.gitkeep
+config.R
+FilePaths.txt
+LogFileManagement.sh
 *.log
 *.err
