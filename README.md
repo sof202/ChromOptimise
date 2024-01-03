@@ -49,7 +49,7 @@ This pipeline requires the following software:
 - SLURM Workload Manager (>=20.02.3)
 - SAMtools (>=1.9)
 - R (>=4.3.1)
-- Java openjdk (>=13.0.2)
+- Java (>= openjdk 13.0.2)
 - ChromHMM (>=1.23)
 
 ## Further information
