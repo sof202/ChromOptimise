@@ -41,7 +41,7 @@ This pipeline requires the following software:
 - ChromHMM (>=1.23)
 
 ### Further information
-The information folder in this repository contains useful information on the following topics:
+Further information on the following topics can be found in the [wiki](https://github.com/sof202/ChromHMM_Optimum_States/wiki)
 - Pipeline_Explanation.md -> Script / pipeline specific information
 - Optimal_States_Analysis_Pipeline.pdf -> Pipeline process in schematic representation
 - Processing_Times.md -> Estimated processing times for scripts subject to CPU performance 
