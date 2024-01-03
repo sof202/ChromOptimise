@@ -34,6 +34,7 @@ Templates for the configuration files can be found in the [wiki](https://github.
 \
 After creating these configuration files and placing them in the correct directory, run `setup`. 
 \
+\
 **IMPORTANT**: Please ensure that you execute the `setup` executable from the directory where the `setup` file is located.
 
 ### Note 2
