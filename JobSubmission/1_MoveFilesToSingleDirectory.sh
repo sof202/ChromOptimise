@@ -87,7 +87,7 @@ mark_name=$1
 ## ================== ##
 
 cd "${MAIN_DIR}" || \
-{ >&2 echo "ERROR: \${MAIN_DIR} - ${MAIN_DIR} doesn't exist, \
+{ >&2 echo "ERROR: [\${MAIN_DIR} - ${MAIN_DIR}] doesn't exist, \
 make sure config.txt is pointing to the correct directory"; finishing_statement 1; }
 
 list_of_files_with_mark_name=\

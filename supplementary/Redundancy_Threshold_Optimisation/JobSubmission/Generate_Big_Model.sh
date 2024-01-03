@@ -108,10 +108,12 @@ fi
 ##   FILE EXISTANCE   ##
 ## ================== ##
 
-cd "${BINARY_DIR}" || { >&2 echo "ERROR: \${BINARY_DIR} - ${BINARY_DIR} doesn't exist, \
-make sure config.txt is pointing to the correct directory"; finishing_statement 1; }
+cd "${BINARY_DIR}" || { >&2 echo "ERROR: [\${BINARY_DIR} - ${BINARY_DIR}] \
+doesn't exist, make sure config.txt is pointing to the correct directory."
+finishing_statement 1; }
+
 if [[ -z "$(ls -A)" ]]; then
-    { >&2 echo -e "ERROR: \${BINARY_DIR} - ${BINARY_DIR} is empty.\n"\
+    { >&2 echo -e "ERROR: [\${BINARY_DIR} - ${BINARY_DIR}] is empty.\n"\
     "Ensure that 4_BinarizeBamFiles.sh has been ran before this script."
     finishing_statement 1; }
 fi
@@ -125,8 +127,8 @@ echo "Learning a model with: ${model_size} states and with random seed: ${seed}.
 module purge
 module load Java
 
-cd "${BIG_MODELS_DIR}" || { >&2 echo "ERROR: \${BIG_MODELS_DIR} - ${BIG_MODELS_DIR} \
-doesn't exist, make sure config.txt is pointing to the correct directory"
+cd "${BIG_MODELS_DIR}" || { >&2 echo "ERROR: [\${BIG_MODELS_DIR} - ${BIG_MODELS_DIR}] \
+doesn't exist, make sure config.txt is pointing to the correct directory."
 finishing_statement 1; }
 
 java -mx30G \

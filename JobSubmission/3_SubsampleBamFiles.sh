@@ -115,7 +115,7 @@ fi
 ## ========================= ##
 
 cd "${PROCESSED_FULL_FILE_PATH}" || \
-{ >&2 echo "ERROR: \${PROCESSED_DIR}/\${mark_name} - ${PROCESSED_DIR}/${mark_name} \
+{ >&2 echo "ERROR: [\${PROCESSED_DIR}/\${mark_name} - ${PROCESSED_DIR}/${mark_name}] \
 doesn't exist, make sure that you typed the epigenetic mark correctly and that \
 config.txt is pointing to the correct directory."; finishing_statement 1; }
 
@@ -136,7 +136,7 @@ samtools merge -b List_Of_Bam_Files_To_Merge.txt "${output_file_path}"
 ## ===================================== ##
 
 cd "${SUBSAMPLED_DIR}" || \
-{ >&2 echo "ERROR: \${SUBSAMPLED_DIR} - ${SUBSAMPLED_DIR} doesn't exist, \
+{ >&2 echo "ERROR: [\${SUBSAMPLED_DIR} - ${SUBSAMPLED_DIR} doesn't exist,] \
 make sure config.txt is pointing to the correct directory"; finishing_statement 1; }
 
 sample_size_decimal=$(echo "scale=2; $sample_size /100" | bc)

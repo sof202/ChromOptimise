@@ -39,7 +39,7 @@
 ## $1 -> Size of model (default: 20)                                                ||
 ## $2 -> Random seed (default: 1)                                                   ||
 ## $3 -> Path to directory containing the model files                               ||
-##       (default: \${BIG_MODELS_DIR} in config.txt)                                ||
+##       (default: \${BIG_MODELS_DIR} in FilePaths.txt)                             ||
 ## =================================================================================##
 ## OUTPUTS:                                                                         ||
 ## Histogram plot of Euclidean distances between emission parameters of pairs       ||
@@ -53,7 +53,7 @@
 
 if [[ "$1" == "--help" || "$1" == "-h" ]]; then
     echo "======================================================================="
-    echo "Purpose: Generates plots to aid in thresholds used in config.r which"
+    echo "Purpose: Generates plots to aid in thresholds used in config.R which"
     echo "are used in 6_OptimumNumberOfStates.sh in determining redundant states."
     echo "Author: Sam Fletcher"
     echo "Contact: s.o.fletcher@exeter.ac.uk"
@@ -62,7 +62,7 @@ if [[ "$1" == "--help" || "$1" == "-h" ]]; then
     echo "\$1 -> Size of model (default: 20)"
     echo "\$2 -> Random seed (default: 1)"
     echo "\$3 -> Path to directory containing the model files"
-    echo "       (default: \${BIG_MODELS_DIR} in config.txt)"
+    echo "       (default: \${BIG_MODELS_DIR} in FilePaths.txt)"
     echo "======================================================================="
     exit 0
 fi
@@ -132,8 +132,8 @@ module load R/4.2.1-foss-2022a
 
 cd "${SUPPLEMENTARY_DIR}/Redundancy_Threshold_Optimisation/Rscripts" ||  \
 { >&2 echo "ERROR: ${SUPPLEMENTARY_DIR}/Redundancy_Threshold_Optimisation/Rscripts \
-doesn't exist, make sure \${SUPPLEMENTARY_DIR} in config.txt is pointing to the \
-correct directory"; finishing_statement 1; }
+doesn't exist, make sure [\${SUPPLEMENTARY_DIR} - ${SUPPLEMENTARY_DIR}] \
+in config.txt is pointing to the correct directory"; finishing_statement 1; }
 
 Rscript HistogramPlotForEuclideanDistances.R \
 "${model_size}" "${seed}" "${model_file_dir}"

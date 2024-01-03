@@ -123,8 +123,9 @@ fi
 
 # Set bin/sample size by searching through the binary directory
 cd "${BINARY_DIR}" || \
-{ >&2 echo "ERROR: \${BINARY_DIR} - ${BINARY_DIR} doesn't exist, \
-make sure config.txt is pointing to the correct directory."; batch_finishing_statement 1; }
+{ >&2 echo "ERROR: [\${BINARY_DIR} - ${BINARY_DIR}] doesn't exist, \
+make sure config.txt is pointing to  the correct directory."
+batch_finishing_statement 1; }
 
 bin_size=$(find . -type f -name "*.txt*.gz" | head -1 | cut -d "_" -f 6)
 sample_size=$(find . -type f -name "*.txt*.gz" | head -1 | cut -d "_" -f 4)
@@ -134,15 +135,16 @@ sample_size=$(find . -type f -name "*.txt*.gz" | head -1 | cut -d "_" -f 4)
 ## =============================== ##
 
 if [[ -z "$(ls -A)" ]]; then
-    { >&2 echo -e "ERROR: \${BINARY_DIR} - ${BINARY_DIR} is empty.\n"\
+    { >&2 echo -e "ERROR: [\${BINARY_DIR} - ${BINARY_DIR}] is empty.\n"\
     "Ensure that 4_BinarizeBamFiles.sh has been ran before this script."
     batch_finishing_statement 1; }
 fi
 
 # Clean up from previous runs of script
 cd "${MODEL_DIR}" || \
-{ >&2 echo "ERROR: \${MODEL_DIR} - ${MODEL_DIR} doesn't exist, \
-make sure config.txt is pointing to the correct directory."; batch_finishing_statement 1; }
+{ >&2 echo "ERROR: [\${MODEL_DIR} - ${MODEL_DIR}] doesn't exist, \
+make sure config.txt is pointing to the correct directory."
+batch_finishing_statement 1; }
 rm -f ./*
 
 ## ========================== ##
@@ -227,8 +229,9 @@ done
 ## ========================= ##
 
 cd "${MODEL_DIR}" || \
-{ >&2 echo "ERROR: \${MODEL_DIR} - ${MODEL_DIR} doesn't exist, \
-make sure config.txt is pointing to the correct directory."; batch_finishing_statement 1; }
+{ >&2 echo "ERROR: [\${MODEL_DIR} - ${MODEL_DIR}] doesn't exist, \
+make sure config.txt is pointing to the correct directory."
+batch_finishing_statement 1; }
 
 emission_files_to_rename=$(find . -type f -name "emissions*")
 for file in $emission_files_to_rename; do

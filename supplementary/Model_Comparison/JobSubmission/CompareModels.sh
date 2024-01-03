@@ -85,24 +85,25 @@ ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 ## ===================== ##
 
 cd "${MODEL_DIR}" || \
-{ >&2 echo "ERROR: \${MODEL_DIR} - ${MODEL_DIR} doesn't exist, \
+{ >&2 echo "ERROR: [\${MODEL_DIR} - ${MODEL_DIR}] doesn't exist, \
 make sure config.txt is pointing to the correct directory."; finishing_statement 1; }
 
 if [[ -z "$(ls -A)" ]]; then
-    { echo -e "ERROR: \${MODEL_DIR} - ${MODEL_DIR} is empty.\n"\
+    { echo -e "ERROR: [\${MODEL_DIR} - ${MODEL_DIR}] is empty.\n"\
     "Ensure that 5_CreateIncrementalModels.sh has been ran before this script."
     finishing_statement 1; }
 fi
 
-cd "${COMPARE_DIR}" || { echo "ERROR: \${COMPARE_DIR} - ${COMPARE_DIR} doesn't exist, \
-make sure config.txt is pointing to the correct directory"; finishing_statement 1; }
+cd "${COMPARE_DIR}" || { echo "ERROR: [\${COMPARE_DIR} - ${COMPARE_DIR}] \
+doesn't exist, make sure config.txt is pointing to the correct directory."
+finishing_statement 1; }
 
 mkdir -p temp
 cd temp || finishing_statement 1
 rm ./*
 
 cd "${MODEL_DIR}" || \
-{ >&2 echo "ERROR: \${MODEL_DIR} - ${MODEL_DIR} doesn't exist, \
+{ >&2 echo "ERROR: [\${MODEL_DIR} - ${MODEL_DIR}] doesn't exist, \
 make sure config.txt is pointing to the correct directory."; finishing_statement 1; }
 
 emission_text_files=$(find . -type f -name "Emission*.txt")

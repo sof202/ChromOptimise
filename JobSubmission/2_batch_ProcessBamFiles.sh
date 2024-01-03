@@ -111,7 +111,7 @@ fi
 ## ===================== ##
 
 cd "${RAW_FULL_FILE_PATH}" || \
-{ >&2 echo "ERROR: \${RAW_FULL_FILE_PATH} - ${RAW_FULL_FILE_PATH} \
+{ >&2 echo "ERROR: [\${RAW_FULL_FILE_PATH} - ${RAW_FULL_FILE_PATH}] \
 doesn't exist, make sure you typed the epigenetic mark correctly and that you \
 have ran 1_MoveFilesToSingleDirectory.sh first."; batch_finishing_statement 1; }
 

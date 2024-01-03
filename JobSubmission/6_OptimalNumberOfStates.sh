@@ -101,7 +101,7 @@ ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 
 # Set bin/sample size by searching through the model directory
 cd "${MODEL_DIR}" || \
-{ >&2 echo "ERROR: \${MODEL_DIR} - ${MODEL_DIR} doesn't exist, \
+{ >&2 echo "ERROR: [\${MODEL_DIR} - ${MODEL_DIR}] doesn't exist, \
 make sure config.txt is pointing to the correct directory."; finishing_statement 1; }
 
 bin_size=$(find . -type f -name "*.txt" | head -1 | cut -d "_" -f 3)
@@ -112,7 +112,7 @@ sample_size=$(find . -type f -name "*.txt" | head -1 | cut -d "_" -f 5)
 ## =================== ##
 
 if [[ -z "$(ls -A)" ]]; then
-    { >&2 echo -e "ERROR: No files found in \${MODEL_DIR} - ${MODEL_DIR}.\n"\
+    { >&2 echo -e "ERROR: No files found in [\${MODEL_DIR} - ${MODEL_DIR}].\n"\
     "Please run 5_CreateIncrementalModels.sh before this script."
     finishing_statement 1; }
 fi
@@ -122,7 +122,7 @@ cd "${OPTIMUM_STATES_DIR}/temp" || finishing_statement 1
 rm -f ./*
 
 cd "${MODEL_DIR}" || \
-{ >&2 echo "ERROR: \${MODEL_DIR} - ${MODEL_DIR} doesn't exist, \
+{ >&2 echo "ERROR: [\${MODEL_DIR} - ${MODEL_DIR}] doesn't exist, \
 make sure config.txt is pointing to the correct directory."; finishing_statement 1; }
 
 emission_text_files=$(find . -type f -name "Emissions*.txt")
@@ -142,7 +142,7 @@ module purge
 module load R/4.2.1-foss-2022a
 
 cd "${RSCRIPTS_DIR}" || \
-{ >&2 echo "\${RSCRIPTS_DIR} - ${RSCRIPTS_DIR} doesn't exist, \
+{ >&2 echo "ERROR: [\${RSCRIPTS_DIR} - ${RSCRIPTS_DIR}] doesn't exist, \
 make sure config.txt is pointing to the correct directory"; finishing_statement 1; }
 
 max_model_number=$(find "${OPTIMUM_STATES_DIR}/temp" -type f -name "*.txt" | \

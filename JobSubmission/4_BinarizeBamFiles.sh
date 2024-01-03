@@ -98,7 +98,7 @@ fi
 # 'Intelligently' find the sample size using first file name in subsampled directory
 if [[ -z "${sample_size}" ]]; then
     cd "${SUBSAMPLED_DIR}" || \
-    { >&2 echo "ERROR: \${SUBSAMPLED_DIR} - ${SUBSAMPLED_DIR} doesn't exist, make "\
+    { >&2 echo "ERROR: [\${SUBSAMPLED_DIR} - ${SUBSAMPLED_DIR}] doesn't exist, make "\
     "sure config.txt is pointing to the correct directory"; finishing_statement 1; }
 
     sample_size=$(find . -type f -name "Subsampled*" | head -1 | cut -d "." -f 3)
@@ -116,11 +116,11 @@ fi
 ## ================== ##
 
 cd "${SUBSAMPLED_DIR}" || \
-{ >&2 echo "ERROR: \${SUBSAMPLED_DIR} - ${SUBSAMPLED_DIR} doesn't exist, make \
+{ >&2 echo "ERROR: [\${SUBSAMPLED_DIR} - ${SUBSAMPLED_DIR}] doesn't exist, make \
 sure config.txt is pointing to the correct directory"; finishing_statement 1; }
 
 if [[ -z "$(find . -type f -name "Subsampled.${sample_size}*")" ]]; then
-    { >&2 echo -e "ERROR: \${SUBSAMPLED_DIR} - ${SUBSAMPLED_DIR} is empty.\n"\
+    { >&2 echo -e "ERROR: [\${SUBSAMPLED_DIR} - ${SUBSAMPLED_DIR}] is empty.\n"\
     "Ensure that 3_SubsampleBamFiles.sh has been ran before this script."
     finishing_statement 1; }
 fi
@@ -148,12 +148,12 @@ done
 ##    BINARIZATION USING CHROMHMM    ##
 ## ================================= ##
 
-echo "Binarizing subsampled bam files found in \${SUBSAMPLED_DIR} - \
-${SUBSAMPLED_DIR} with sample size: ${sample_size} using a bin size \
+echo "Binarizing subsampled bam files found in [\${SUBSAMPLED_DIR} - \
+${SUBSAMPLED_DIR}] with sample size: ${sample_size} using a bin size \
 of: ${bin_size}."
 
 cd "${BINARY_DIR}" || \
-{ echo "ERROR: \${BINARY_DIR} - ${BINARY_DIR} doesn't exist, \
+{ echo "ERROR: [\${BINARY_DIR} - ${BINARY_DIR}] doesn't exist, \
 make sure config.txt is pointing to the correct directory"; finishing_statement 1; }
 rm ./*.txt*
 
