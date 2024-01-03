@@ -46,12 +46,11 @@ This pipeline requires the following software:
 
 ### Further information
 Further information on the following topics can be found in the [wiki](https://github.com/sof202/ChromHMM_Optimum_States/wiki)
-- Pipeline_Explanation.md -> Script / pipeline specific information
-- Optimal_States_Analysis_Pipeline.pdf -> Pipeline process in schematic representation
-- Processing_Times.md -> Estimated processing times for scripts subject to CPU performance 
-- Memory_Profiling.md -> Estimated peak heap memory consumption for scripts
-- SLURM_Information.md -> Information on the SLURM workload manager used for job submission
-- Config_Setup.md -> Provides templates for the config files sourced in the scripts.
+- Pipeline Explanation -> Script / pipeline specific information
+- Processing Times -> Estimated processing times for scripts subject to CPU performance 
+- Memory Profiling -> Estimated peak heap memory consumption for scripts
+- SLURM Workload Manager Information -> Information on the SLURM workload manager used for job submission
+- Configuration Files Setup -> Provides templates for the config files sourced in the scripts.
 
 For any further enquiries, please contact:
 \
