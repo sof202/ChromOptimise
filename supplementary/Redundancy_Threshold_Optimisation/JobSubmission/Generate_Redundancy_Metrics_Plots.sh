@@ -71,61 +71,27 @@ fi
 ##    SET UP    ##
 ## ============ ##
 
-echo "Job '${SLURM_JOB_NAME}' started at:"
-date -u
+# CHANGE THESE TO YOUR OWN CONFIG FILES
+source "/lustre/projects/Research_Project-MRC190311/scripts/integrative\
+/ChromHMM_OptimumStates/configuration/FilePaths.txt"
+source "/lustre/projects/Research_Project-MRC190311/scripts/integrative\
+/ChromHMM_OptimumStates/configuration/LogFileManagement.sh"
 
-start_time=$(date +%s)
-
-# Activate config.txt to access all file paths
-# CHANGE THIS TO YOUR OWN CONFIG FILE
-source "/lustre/projects/Research_Project-MRC190311\
-/scripts/integrative/ChromHMM_OptimumStates/config/config.txt"
-
-# Rename the output and error files to have format:
+# Output and error files renamed to:
 # ModelSize-[model size]~[job id]~[date]-[time]
-# This requires a hard link as you cannot rename log files
-# whilst running the script without a wrapper function
-LOG_FILE_PATH="${LOG_DIR}/$SLURM_JOB_NAME/$USER"
-mkdir -p "${LOG_FILE_PATH}"
-timestamp=$(date -u +%Y.%m.%d-%H:%M)
 
 ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" \
-"${LOG_FILE_PATH}/ModelSize-$1~${SLURM_JOB_ID}~$timestamp.log"
+"${LOG_FILE_PATH}/ModelSize-$1~${SLURM_JOB_ID}~${timestamp:=}.log"
 ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 "${LOG_FILE_PATH}/ModelSize-$1~${SLURM_JOB_ID}~$timestamp.err"
 
-## ============================= ##
-##    VARIABLES AND FUNCTIONS    ##
-## ============================= ##
+## =============== ##
+##    VARIABLES    ##
+## =============== ##
 
 model_size=$1
 seed=$2
 model_file_dir=$3
-
-## ====== FUNCTION : finishing_statement() ===========================================
-## Description: Delete temporary log and error files, give finishing message then exit
-## Globals: 
-##     SLURM_SUBMIT_DIR
-##     SLURM_JOB_ID
-##     start_time
-## Locals:
-##     end_time
-##     time_taken
-## Arguments:
-##     exit code
-## ===================================================================================
-finishing_statement(){
-    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" 
-    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err"
-    echo "Job finished with exit code $1 at:"
-    date -u
-    local end_time
-    local time_taken
-    end_time=$(date +%s)
-    time_taken=$((end_time-start_time))
-    echo "Job took a total of: ${time_taken} seconds to finish."
-    exit "$1"
-}
 
 ## ====== DEFAULTS ====================================================================
 if [[ -z "$model_file_dir" ]]; then

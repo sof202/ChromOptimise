@@ -86,61 +86,26 @@ fi
 ##    SET UP    ##
 ## ============ ##
 
-echo "Job '${SLURM_JOB_NAME}' started at:"
-date -u
+# CHANGE THESE TO YOUR OWN CONFIG FILES
+source "/lustre/projects/Research_Project-MRC190311/scripts/integrative\
+/ChromHMM_OptimumStates/configuration/FilePaths.txt"
+source "/lustre/projects/Research_Project-MRC190311/scripts/integrative\
+/ChromHMM_OptimumStates/configuration/LogFileManagement.sh"
 
-start_time=$(date +%s)
-
-# Activate config.txt to access all file paths
-# CHANGE THIS TO YOUR OWN CONFIG FILE
-source "/lustre/projects/Research_Project-MRC190311\
-/scripts/integrative/ChromHMM_OptimumStates/config/config.txt"
-
-# Rename the output and error files to have format:
+# Output and error files renamed to:
 # [job id]~[array id]~[date]-[time]
-# This requires a hard link as you cannot rename log files
-# whilst running the script without a wrapper function
-LOG_FILE_PATH="${LOG_DIR}/$SLURM_JOB_NAME/$USER"
-mkdir -p "${LOG_FILE_PATH}"
-timestamp=$(date -u +%Y.%m.%d-%H:%M)
 
 ln "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.log" \
-"${LOG_FILE_PATH}/${SLURM_ARRAY_JOB_ID}~${SLURM_ARRAY_TASK_ID}~$timestamp.log"
+"${LOG_FILE_PATH}/${SLURM_ARRAY_JOB_ID}~${SLURM_ARRAY_TASK_ID}~${timestamp:=}.log"
 ln "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err" \
 "${LOG_FILE_PATH}/${SLURM_ARRAY_JOB_ID}~${SLURM_ARRAY_TASK_ID}~$timestamp.err"
 
-## ============================= ##
-##    VARIABLES AND FUNCTIONS    ##
-## ============================= ##
+## =============== ##
+##    VARIABLES    ##
+## =============== ##
 
 number_of_models_to_generate=$1
 states_increment=$2
-
-## ====== FUNCTION : finishing_statement() ===========================================
-## Description: Delete temporary log and error files, give finishing message then exit
-## Globals: 
-##     SLURM_SUBMIT_DIR
-##     SLURM_ARRAY_JOB_ID
-##     SLURM_ARRAY_TASK_ID
-##     start_time
-## Locals:
-##     end_time
-##     time_taken
-## Arguments:
-##     exit code
-## ===================================================================================
-finishing_statement(){
-    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.log" 
-    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err"
-    echo "Job finished with exit code $1 at:"
-    date -u
-    local end_time
-    local time_taken
-    end_time=$(date +%s)
-    time_taken=$((end_time-start_time))
-    echo "Job took a total of: ${time_taken} seconds to finish."
-    exit "$1"
-}
 
 ## ====== DEFAULTS ====================================================================
 if ! [[ "${number_of_models_to_generate}" =~ ^[0-9]+$ ]]; then
@@ -159,7 +124,7 @@ fi
 # Set bin/sample size by searching through the binary directory
 cd "${BINARY_DIR}" || \
 { >&2 echo "ERROR: \${BINARY_DIR} - ${BINARY_DIR} doesn't exist, \
-make sure config.txt is pointing to the correct directory."; finishing_statement 1; }
+make sure config.txt is pointing to the correct directory."; batch_finishing_statement 1; }
 
 bin_size=$(find . -type f -name "*.txt*.gz" | head -1 | cut -d "_" -f 6)
 sample_size=$(find . -type f -name "*.txt*.gz" | head -1 | cut -d "_" -f 4)
@@ -171,13 +136,13 @@ sample_size=$(find . -type f -name "*.txt*.gz" | head -1 | cut -d "_" -f 4)
 if [[ -z "$(ls -A)" ]]; then
     { >&2 echo -e "ERROR: \${BINARY_DIR} - ${BINARY_DIR} is empty.\n"\
     "Ensure that 4_BinarizeBamFiles.sh has been ran before this script."
-    finishing_statement 1; }
+    batch_finishing_statement 1; }
 fi
 
 # Clean up from previous runs of script
 cd "${MODEL_DIR}" || \
 { >&2 echo "ERROR: \${MODEL_DIR} - ${MODEL_DIR} doesn't exist, \
-make sure config.txt is pointing to the correct directory."; finishing_statement 1; }
+make sure config.txt is pointing to the correct directory."; batch_finishing_statement 1; }
 rm -f ./*
 
 ## ========================== ##
@@ -214,7 +179,7 @@ module purge
 module load Java
 
 mkdir -p "${OPTIMUM_STATES_DIR}/Likelihood_Values"
-cd "${OPTIMUM_STATES_DIR}/Likelihood_Values" || finishing_statement 1
+cd "${OPTIMUM_STATES_DIR}/Likelihood_Values" || batch_finishing_statement 1
 
 # Job is to be submitted as an array so we only want to 
 # remake likelihood files for one of the array tasks, not all of them.
@@ -263,7 +228,7 @@ done
 
 cd "${MODEL_DIR}" || \
 { >&2 echo "ERROR: \${MODEL_DIR} - ${MODEL_DIR} doesn't exist, \
-make sure config.txt is pointing to the correct directory."; finishing_statement 1; }
+make sure config.txt is pointing to the correct directory."; batch_finishing_statement 1; }
 
 emission_files_to_rename=$(find . -type f -name "emissions*")
 for file in $emission_files_to_rename; do
@@ -286,4 +251,4 @@ for file in $model_files_to_rename; do
     "Model_BinSize_${bin_size}_SampleSize_${sample_size}_States_${file_ending}"
 done
 
-finishing_statement 0
+batch_finishing_statement 0

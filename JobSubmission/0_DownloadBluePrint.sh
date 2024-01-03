@@ -70,18 +70,16 @@ date -u
 
 start_time=$(date +%s)
 
-# Activate config.txt to access all file paths
 # CHANGE THIS TO YOUR OWN CONFIG FILE
-source "/lustre/projects/Research_Project-MRC190311\
-/scripts/integrative/ChromHMM_OptimumStates/config/config.txt"
+source "/lustre/projects/Research_Project-MRC190311/scripts/integrative\
+/ChromHMM_OptimumStates/configuration/FilePaths.txt"
 
-# Rename the output and error files to have format:
-# [file name]~[job id]~[date]-[time]
-# This requires a hard link as you cannot rename log files
-# whilst running the script without a wrapper function
 LOG_FILE_PATH="${LOG_DIR}/$SLURM_JOB_NAME/$USER"
 mkdir -p "${LOG_FILE_PATH}"
 timestamp=$(date -u +%Y.%m.%d-%H:%M)
+
+# Output and error files renamed to:
+# [file name]~[job id]~[date]-[time]
 
 ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" \
 "${LOG_FILE_PATH}/File-$1~${SLURM_JOB_ID}~$timestamp.log"

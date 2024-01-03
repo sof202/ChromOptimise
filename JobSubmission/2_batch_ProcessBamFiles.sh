@@ -75,63 +75,28 @@ fi
 ##    SET UP    ##
 ## ============ ##
 
-echo "Job '${SLURM_JOB_NAME}' started at:"
-date -u
+# CHANGE THESE TO YOUR OWN CONFIG FILES
+source "/lustre/projects/Research_Project-MRC190311/scripts/integrative\
+/ChromHMM_OptimumStates/configuration/FilePaths.txt"
+source "/lustre/projects/Research_Project-MRC190311/scripts/integrative\
+/ChromHMM_OptimumStates/configuration/LogFileManagement.sh"
 
-start_time=$(date +%s)
-
-# Activate config.txt to access all file paths
-# CHANGE THIS TO YOUR OWN CONFIG FILE
-source "/lustre/projects/Research_Project-MRC190311\
-/scripts/integrative/ChromHMM_OptimumStates/config/config.txt"
-
-# Rename the output and error files to have format:
+# Output and error files renamed to:
 # [epigenetic mark name]~[job id]~[array id]~[date]-[time]
-# This requires a hard link as you cannot rename log files
-# whilst running the script without a wrapper function
-LOG_FILE_PATH="${LOG_DIR}/$SLURM_JOB_NAME/$USER"
-mkdir -p "${LOG_FILE_PATH}"
-timestamp=$(date -u +%Y.%m.%d-%H:%M)
 
 ln "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.log" \
-"${LOG_FILE_PATH}/$1~${SLURM_ARRAY_JOB_ID}~${SLURM_ARRAY_TASK_ID}~$timestamp.log"
+"${LOG_FILE_PATH}/$1~${SLURM_ARRAY_JOB_ID}~${SLURM_ARRAY_TASK_ID}~${timestamp:=}.log"
 ln "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err" \
 "${LOG_FILE_PATH}/$1~${SLURM_ARRAY_JOB_ID}~${SLURM_ARRAY_TASK_ID}~$timestamp.err"
 
-## ============================= ##
-##    VARIABLES AND FUNCTIONS    ##
-## ============================= ##
+## =============== ##
+##    VARIABLES    ##
+## =============== ##
 
 mark_name=$1
 minimum_tolerated_phred_score=$2
 RAW_FULL_FILE_PATH="${RAW_DIR}/${mark_name}"
 PROCESSED_FULL_FILE_PATH="${PROCESSED_DIR}/${mark_name}"
-
-## ====== FUNCTION : finishing_statement() ===========================================
-## Description: Delete temporary log and error files, give finishing message then exit
-## Globals: 
-##     SLURM_SUBMIT_DIR
-##     SLURM_ARRAY_JOB_ID
-##     SLURM_ARRAY_TASK_ID
-##     start_time
-## Locals:
-##     end_time
-##     time_taken
-## Arguments:
-##     exit code
-## ===================================================================================
-finishing_statement(){
-    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.log" 
-    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err"
-    echo "Job finished with exit code $1 at:"
-    date -u
-    local end_time
-    local time_taken
-    end_time=$(date +%s)
-    time_taken=$((end_time-start_time))
-    echo "Job took a total of: ${time_taken} seconds to finish."
-    exit "$1"
-}
 
 ## ====== DEFAULTS ====================================================================
 if ! [[ "${minimum_tolerated_phred_score}" =~ ^[0-9]+$ ]]; then
@@ -148,7 +113,7 @@ fi
 cd "${RAW_FULL_FILE_PATH}" || \
 { >&2 echo "ERROR: \${RAW_FULL_FILE_PATH} - ${RAW_FULL_FILE_PATH} \
 doesn't exist, make sure you typed the epigenetic mark correctly and that you \
-have ran 1_MoveFilesToSingleDirectory.sh first."; finishing_statement 1; }
+have ran 1_MoveFilesToSingleDirectory.sh first."; batch_finishing_statement 1; }
 
 # Get base name of the files in 3 steps
 # 1) Find all of the .bam files in the mark directory
@@ -207,7 +172,7 @@ module load SAMtools
 for file in ${files_to_process}; do
     echo "Processing ${file}.bam..."
     success=0
-    cd "${RAW_FULL_FILE_PATH}" || finishing_statement 1
+    cd "${RAW_FULL_FILE_PATH}" || batch_finishing_statement 1
     # 1)
     samtools index "${file}.bam" 
     samtools idxstats "${file}.bam" > "${file}.PerChromosomeStats.txt"
@@ -221,7 +186,7 @@ for file in ${files_to_process}; do
         success=1
     fi
     
-    cd "${PROCESSED_FULL_FILE_PATH}" || finishing_statement 1
+    cd "${PROCESSED_FULL_FILE_PATH}" || batch_finishing_statement 1
 
     # Need to use the -h option here to keep the headers 
     # so that the next samtools view can function properly
@@ -263,6 +228,6 @@ for file in ${files_to_process}; do
     fi
 done
 
-finishing_statement 0
+batch_finishing_statement 0
 
 
