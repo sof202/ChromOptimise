@@ -22,13 +22,11 @@ parent_directory=$(dirname "$(pwd)")
 script_list=$(find . -type f -name "*.sh")
 Rscript_list=$(find . -type f -name "*.R")
 
-
+# Using @ delimiter to avoid excessive escaping
 for file in $script_list; do
-    echo "$file"
     sed -i "s@/lustre/projects[^\\]*@${parent_directory}@g" "${file}"
 done
 for file in $Rscript_list; do
-    echo "$file"
     sed -i "s@/lustre/projects[^\\]*@${parent_directory}\")@g" "${file}"
 done
 
@@ -36,9 +34,7 @@ echo "Do you want to remove instances of \"module load\" and \"module purge\"? (
 read -r delete_module_lines
 
 if [[ "${delete_module_lines}" == "y" ]]; then
-    echo "doing it"
     for file in $script_list; do
-        echo "$file"
         sed -i "s@module load.*@@g" "${file}"
         sed -i "s@module purge@@g" "${file}"
     done
