@@ -1,0 +1,45 @@
+#!/bin/bash
+
+## =================================================================================##
+##                                                                                  ||
+##                                     PREAMBLE                                     ||
+##                                                                                  ||
+## =================================================================================##
+## PURPOSE:                                                                         ||
+## Renames all source commands in scripts to the correct directory for local        ||
+## machine (wherever the user clones it to).                                        ||
+## Also gives the user the option to remove any lines beginning with "module",      ||
+## these commands are unlikley to work on most systems. Ensure that the required    ||
+## software is installed on your machine.                                           ||
+## =================================================================================##
+## AUTHOR: Sam Fletcher                                                             ||
+## CONTACT: s.o.fletcher@exeter.ac.uk                                               ||
+## CREATED: January 2024                                                            ||
+## =================================================================================##
+
+parent_directory=$(dirname "$(pwd)")
+
+script_list=$(find . -type f -name "*.sh")
+Rscript_list=$(find . -type f -name "*.R")
+
+
+for file in $script_list; do
+    echo "$file"
+    sed -i "s@/lustre/projects[^\\]*@${parent_directory}@g" "${file}"
+done
+for file in $Rscript_list; do
+    echo "$file"
+    sed -i "s@/lustre/projects[^\\]*@${parent_directory}\")@g" "${file}"
+done
+
+echo "Do you want to remove instances of \"module load\" and \"module purge\"? (y/n)"
+read -r delete_module_lines
+
+if [[ "${delete_module_lines}" == "y" ]]; then
+    echo "doing it"
+    for file in $script_list; do
+        echo "$file"
+        sed -i "s@module load.*@@g" "${file}"
+        sed -i "s@module purge@@g" "${file}"
+    done
+fi
