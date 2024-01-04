@@ -22,20 +22,20 @@ After using this pipeline, the user will have greater knowledge over their datas
 ## Getting started
 1) Clone this repository
 2) Ensure all [required software](#software-requirements) is installed
-3) Generate the [file structure](https://github.com/sof202/ChromHMM_Optimum_States/blob/main/information/File_Structure_Schematic.pdf) 
-4) Create the configuration files using the [templates](https://github.com/sof202/ChromHMM_Optimum_States/wiki/Configuration-Files-Setup) provided
-5) Place configuration files in the [configuration](https://github.com/sof202/ChromHMM_Optimum_States/tree/main/configuration) directory
-6) Run the [`setup`](https://github.com/sof202/ChromHMM_Optimum_States/blob/main/setup) executable (You may need to use `chmod +x setup` first.)
+3) Generate the [file structure](https://github.com/sof202/ChromOptimise/blob/main/information/File_Structure_Schematic.pdf) 
+4) Create the configuration files using the [templates](https://github.com/sof202/ChromOptimise/wiki/Configuration-Files-Setup) provided
+5) Place configuration files in the [configuration](https://github.com/sof202/ChromOptimise/tree/main/configuration) directory
+6) Run the [`setup`](https://github.com/sof202/ChromOptimise/blob/main/setup) executable (You may need to use `chmod +x setup` first.)
 
 
 ## Usage
-After completing ['getting started'](#getting-started), run each of the shell scripts in [JobSubmission](https://github.com/sof202/ChromHMM_Optimum_States/tree/main/JobSubmission) sequentially. 
+After completing ['getting started'](#getting-started), run each of the shell scripts in [JobSubmission](https://github.com/sof202/ChromOptimise/tree/main/JobSubmission) sequentially. 
 \
 Depending on your chosen dataset, you may not need to run all scripts. For example:
 - If you are not downloading data from EGA, the first two scripts are not necessary. 
 - If your data is already processed (quality controlled), then start from the subsampling script.
 
-There also exists supplementary scripts for further information on your chosen data set. Most importantly, thresholds used in redundancy analysis can be inferred from the results of [Redundancy_Threshold_Optimisation](https://github.com/sof202/ChromHMM_Optimum_States/tree/main/supplementary/Redundancy_Threshold_Optimisation). Further details for these scripts can be found in the [wiki](https://github.com/sof202/ChromHMM_Optimum_States/wiki/Pipeline-Explanation). 
+There also exists supplementary scripts for further information on your chosen data set. Most importantly, thresholds used in redundancy analysis can be inferred from the results of [Redundancy_Threshold_Optimisation](https://github.com/sof202/ChromOptimise/tree/main/supplementary/Redundancy_Threshold_Optimisation). Further details for these scripts can be found in the [wiki](https://github.com/sof202/ChromOptimise/wiki/Pipeline-Explanation). 
 
 ## Important notes
 ### Note 1
@@ -60,7 +60,7 @@ This pipeline requires a unix-flavoured OS with the following software installed
 - [sed](https://www.gnu.org/software/sed/) (>=4.2.2)
 
 ## Further information
-Further information on the following topics can be found in the [wiki](https://github.com/sof202/ChromHMM_Optimum_States/wiki):
+Further information on the following topics can be found in the [wiki](https://github.com/sof202/ChromOptimise/wiki):
 - Specific information on how the pipeline works
 - Templates for the configuration files sourced in each script
 - The factors that are likely to affect the optimum number of states for the chosen dataset
