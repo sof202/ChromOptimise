@@ -72,7 +72,7 @@ likelihood_plot <- ggplot(likelihood_data,
                               y = Estimated_Log_Likelihood))
 
 likelihood_plot +
-  geom_smooth(formula = y ~ log(x), color = "blue", se = FALSE, span = 500) +
+  geom_smooth(formula = y ~ log(x), color = "blue", se = FALSE, span = 1.2) +
   theme_bw() +
   geom_point(shape = "square", color = "black")
 
