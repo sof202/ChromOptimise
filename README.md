@@ -11,7 +11,7 @@ ChromOptimise is a pipeline that identifies the optimum number of states that sh
 - [Further information](#further-information)
 
 ## About
-When using [ChromHMM](https://compbio.mit.edu/ChromHMM/#:~:text=ChromHMM%20is%20software%20for%20learning,and%20spatial%20patterns%20of%20marks.) to learn hidden Markov models for genomic data, it is often difficult to detemine how many states to include:
+When using [ChromHMM](https://compbio.mit.edu/ChromHMM/#:~:text=ChromHMM%20is%20software%20for%20learning,and%20spatial%20patterns%20of%20marks.) to learn hidden Markov models for genomic data, it is often difficult to determine how many states to include:
 - Including too many states will result in overfitting your data and introduces redundant states
 - Including too few states will result in underfitting your data and thus results in lower model accuracy
 
@@ -49,7 +49,7 @@ Some functionality of the main pipeline is designed with this dataset in mind, f
 To display a short version of the preamble for each script in the command line, run the script with a `-h` or `--help` flag.
 
 ## Software requirements
-This pipeline requires a unix-flavored OS with the following software installed:
+This pipeline requires a unix-flavoured OS with the following software installed:
 - [Bash](https://www.gnu.org/software/bash/) (>=4.2.46(2))
 - [SLURM Workload Manager](https://slurm.schedmd.com/overview.html) (>=20.02.3)
 - [SAMtools](http://www.htslib.org) (>=1.9)
@@ -63,7 +63,7 @@ This pipeline requires a unix-flavored OS with the following software installed:
 Further information on the following topics can be found in the [wiki](https://github.com/sof202/ChromHMM_Optimum_States/wiki):
 - Specific information on how the pipeline works
 - Templates for the configuration files sourced in each script
-- The factors that are likely to effect the optimum number of states for the chosen dataset
+- The factors that are likely to affect the optimum number of states for the chosen dataset
 - Estimated processing times for each script (subject to CPU performance) 
 - Estimated peak heap memory consumption for each script
 - Information on SLURM workload manager, which is used for job submission
