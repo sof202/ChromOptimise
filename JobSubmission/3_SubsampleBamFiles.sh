@@ -71,9 +71,9 @@ fi
 
 # CHANGE THESE TO YOUR OWN CONFIG FILES
 source "/lustre/projects/Research_Project-MRC190311/scripts/integrative\
-/ChromHMM_OptimumStates/configuration/FilePaths.txt"
+/ChromOptimise/configuration/FilePaths.txt"
 source "/lustre/projects/Research_Project-MRC190311/scripts/integrative\
-/ChromHMM_OptimumStates/configuration/LogFileManagement.sh"
+/ChromOptimise/configuration/LogFileManagement.sh"
 
 # Output and error files renamed to:
 # [epigenetic mark name]~[Sample size]~[job id]~[date]-[time]

@@ -37,7 +37,7 @@
 rm(list = ls())
 
 setwd("/lustre/projects/Research_Project-MRC190311/scripts/integrative")
-source("ChromHMM_OptimumStates/configuration/config.R")
+source("ChromOptimise/configuration/config.R")
 setwd(big_models_dir)
 
 if (!require("pracma", quietly = TRUE))

@@ -72,7 +72,7 @@ start_time=$(date +%s)
 
 # CHANGE THIS TO YOUR OWN CONFIG FILE
 source "/lustre/projects/Research_Project-MRC190311/scripts/integrative\
-/ChromHMM_OptimumStates/configuration/FilePaths.txt"
+/ChromOptimise/configuration/FilePaths.txt"
 
 LOG_FILE_PATH="${LOG_DIR}/$SLURM_JOB_NAME/$USER"
 mkdir -p "${LOG_FILE_PATH}"
