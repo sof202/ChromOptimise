@@ -25,7 +25,7 @@ After using this pipeline, the user will have greater knowledge over their datas
 3) Generate the [file structure](https://github.com/sof202/ChromHMM_Optimum_States/blob/main/information/File_Structure_Schematic.pdf) 
 4) Create the configuration files using the [templates](https://github.com/sof202/ChromHMM_Optimum_States/wiki/Configuration-Files-Setup) provided
 5) Place configuration files in the [configuration](https://github.com/sof202/ChromHMM_Optimum_States/tree/main/configuration) directory
-6) Run the [`setup`](https://github.com/sof202/ChromHMM_Optimum_States/blob/main/setup) executable
+6) Run the [`setup`](https://github.com/sof202/ChromHMM_Optimum_States/blob/main/setup) executable (You may need to use `chmod +x setup` first.)
 
 
 ## Usage
@@ -50,14 +50,14 @@ To display a short version of the preamble for each script in the command line, 
 
 ## Software requirements
 This pipeline requires a unix-flavored OS with the following software installed:
-- Bash (>=4.2.46(2))
-- SLURM Workload Manager (>=20.02.3)
-- SAMtools (>=1.9)
-- R (>=4.3.1)
-- Java (>= openjdk 13.0.2)
-- ChromHMM (>=1.23)
-- readlink (>= 8.22)
-- sed (>=4.2.2)
+- [Bash](https://www.gnu.org/software/bash/) (>=4.2.46(2))
+- [SLURM Workload Manager](https://slurm.schedmd.com/overview.html) (>=20.02.3)
+- [SAMtools](http://www.htslib.org) (>=1.9)
+- [R](https://www.r-project.org) (>=3.6.0)
+- [Java](https://www.java.com/en/) (>= openjdk 13.0.2)
+- [ChromHMM](https://compbio.mit.edu/ChromHMM/#:~:text=ChromHMM%20is%20software%20for%20learning,and%20spatial%20patterns%20of%20marks.) (>=1.23)
+- [readlink](https://github.com/coreutils/coreutils/tree/master) (>= 8.22)
+- [sed](https://www.gnu.org/software/sed/) (>=4.2.2)
 
 ## Further information
 Further information on the following topics can be found in the [wiki](https://github.com/sof202/ChromHMM_Optimum_States/wiki):
