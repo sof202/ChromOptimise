@@ -38,11 +38,11 @@ setwd(likelihood_dir)
 
 rm(list = ls())
 
-if (!require("wrapr", quietly = TRUE))
-  install.packages("wrapr")
+if (!require("dplyr", quietly = TRUE))
+  install.packages("dplyr")
 
 library("ggplot2")
-library("wrapr")
+library("dplyr")
 
 arguments <- commandArgs(trailingOnly = TRUE)
 bin_size <- arguments[1]
@@ -61,7 +61,6 @@ likelihood_data <- read.table(file_name)
 
 likelihood_data <- subset(likelihood_data, select = c(V5, V7))
 names(likelihood_data) <- c("Number_Of_States", "Estimated_Log_Likelihood")
-likelihood_data <- likelihood_data[orderv(likelihood_data), , drop = FALSE]
 
 
 ## ============== ##
