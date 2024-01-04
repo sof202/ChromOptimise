@@ -195,7 +195,7 @@ rm -r "${OPTIMUM_STATES_DIR}/temp"
 if [[ $(wc -l < "${output_directory}/OptimumNumberOfStates.txt") -eq 1 ]]; then
     { echo "${max_model_number} states may not be the optimum number of states."
     echo "Try increasing the size of the most complex model or increasing "\
-    "the thresholds in the config.r file." 
+    "the thresholds in the config.R file." 
     } >> "${output_directory}/OptimumNumberOfStates.txt"
 else
     echo "Optimum number of states for the data is: ${max_model_number}" >> \
