@@ -114,7 +114,7 @@ if ! [[ "${number_of_models_to_generate}" =~ ^[0-9]+$ ]]; then
     echo "Using the default value of: ${number_of_models_to_generate} instead."
 fi
 
-if [[ "${states_increment}" =~ ^[0-9]+$ ]]; then
+if ! [[ "${states_increment}" =~ ^[0-9]+$ ]]; then
     states_increment=1
     echo "State increment given is invalid."
     echo "Using the default value of ${states_increment} instead."
