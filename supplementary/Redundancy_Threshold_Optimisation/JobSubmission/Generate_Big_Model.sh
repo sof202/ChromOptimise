@@ -39,6 +39,7 @@
 ## INPUTS:                                                                          ||
 ## $1 -> Size of model (default: 20)                                                ||
 ## $2 -> Random seed (default: 1)                                                   ||
+## $3 -> The assembly to use (default: hg19)                                        ||
 ## =================================================================================##
 ## OUTPUTS:                                                                         ||
 ## The emission parameter matrix of the model (.png,.txt,.svg)                      ||
@@ -63,6 +64,7 @@ if [[ "$1" == "--help" || "$1" == "-h" ]]; then
     echo "Inputs:"
     echo "\$1 -> Size of model (default: 20)"
     echo "\$2 -> Random seed (default: 1)"
+    echo "\$3 -> The assembly to use (default: hg19)"
     echo "================================================================"
     exit 0
 fi
@@ -91,6 +93,7 @@ ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 
 model_size=$1
 seed=$2
+assembly=$3
 
 ## ====== DEFAULTS ====================================================================
 if ! [[ "${model_size}" =~ ^[0-9]+$ ]]; then
@@ -101,6 +104,11 @@ fi
 if ! [[ "$seed" =~ ^[0-9]+$ ]]; then
     seed=1
     echo "Random seed given is invalid, using defualt value of: ${seed}." 
+fi
+
+if [[ -z "${assembly}" ]]; then
+    assembly=hg19
+    echo "No assembly was given, using the default value of ${assembly} instead."
 fi
 # =====================================================================================
 
@@ -137,7 +145,7 @@ java -mx30G \
 -nobed \
 -init random \
 -s "${seed}" \
-"${BINARY_DIR}" "${BIG_MODELS_DIR}" "${model_size}" hg19 > \
+"${BINARY_DIR}" "${BIG_MODELS_DIR}" "${model_size}" "${assembly}" > \
 "ChromHMM.Output.ModelSize.${model_size}.txt"
 
 echo "Writing estimated log likelihood to: likelihood.ModelSize.${model_size}.txt..."

@@ -53,6 +53,7 @@
 ## INPUTS:                                                                          ||
 ## $1 -> Number of models to learn (default: 4)                                     ||
 ## $2 -> The increment to use between model sizes (default: 1)                      ||
+## $3 -> The assembly to use (default: hg19)                                        ||
 ## =================================================================================##
 ## OUTPUTS:                                                                         ||
 ## Emission parameter matrix for models (.png, .txt and .svg)                       ||
@@ -76,6 +77,7 @@ if [[ "$1" == "--help" || "$1" == "-h" ]]; then
     echo "Inputs:"
     echo "\$1 -> Number of models to learn (default: 4)"
     echo "\$2 -> The increment to use between model sizes (default: 1)"
+    echo "\$3 -> The assembly to use (default: hg19)"
     echo "Optional:"
     echo "Specify --array in sbatch options, to set a custom array size."
     echo "======================================================================"
@@ -106,6 +108,7 @@ ln "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err" \
 
 number_of_models_to_generate=$1
 states_increment=$2
+assembly=$3
 
 ## ====== DEFAULTS ====================================================================
 if ! [[ "${number_of_models_to_generate}" =~ ^[0-9]+$ ]]; then
@@ -118,6 +121,11 @@ if ! [[ "${states_increment}" =~ ^[0-9]+$ ]]; then
     states_increment=1
     echo "State increment given is invalid."
     echo "Using the default value of ${states_increment} instead."
+fi
+
+if [[ -z "${assembly}" ]]; then
+    assembly=hg19
+    echo "No assembly was given, using the default value of ${assembly} instead."
 fi
 # =====================================================================================
 
@@ -206,7 +214,7 @@ for numstates in ${sequence}; do
     -noautoopen \
     -nobed \
     -b "${bin_size}" \
-    "${BINARY_DIR}" "${MODEL_DIR}" "${numstates}" hg19 > \
+    "${BINARY_DIR}" "${MODEL_DIR}" "${numstates}" "${assembly}" > \
     "ChromHMM.Output.BinSize.${bin_size}.numstates.${numstates}.txt"
 
     echo -n "Writing estimated log likelihood to: "

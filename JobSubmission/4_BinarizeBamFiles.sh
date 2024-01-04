@@ -40,6 +40,7 @@
 ## INPUTS:                                                                          ||
 ## $1 -> Bin size to be used by BinarizeBam command (default: 200)                  ||
 ## $2 -> Sample size used in 3_SubsampleBamFiles.sh                                 ||
+## $3 -> The assembly to use (default: hg19)                                        ||
 ## =================================================================================##
 ## OUTPUTS:                                                                         ||
 ## Binary signal files for every chromosome in the dataset except for mitochondrial ||
@@ -60,6 +61,7 @@ if [[ "$1" == "--help" || "$1" == "-h" ]]; then
     echo "Inputs:"
     echo "\$1 -> Bin size to be used by BinarizeBam command (default: 200)"
     echo "\$2 -> Sample size used in 3_SubsampleBamFiles.sh"
+    echo "\$3 -> The assembly to use (default: hg19)"
     echo "================================================================"
     exit 0
 fi
@@ -88,6 +90,7 @@ ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 
 bin_size=$1
 sample_size=$2
+assembly=$3
 
 ## ====== DEFAULTS ====================================================================
 if ! [[ "${bin_size}" =~ ^[0-9]+$ ]]; then
@@ -108,6 +111,11 @@ fi
 if [[ -z "${sample_size}" ]]; then
     { >&2 echo -e "ERROR: No sample size even after fail safe. Please run "\
     "3_SubsampleBamFiles.sh before running this script." ;}
+fi
+
+if [[ -z "${assembly}" ]]; then
+    assembly=hg19
+    echo "No assembly was given, using the default value of ${assembly} instead."
 fi
 ## ====================================================================================
 
@@ -161,12 +169,11 @@ module purge
 module load Java
 
 # Binarize the files in the subsampled directory.
-# The blueprint data uses GChr37 assembly (which is equivalent to UCSC's hg19).
 java -mx4G \
 -jar "${CHROMHMM_MAIN_DIR}/ChromHMM.jar" BinarizeBam \
 -b "${bin_size}" \
 -gzip \
-"${CHROMHMM_CHROM_SIZES}/hg19.txt" "${SUBSAMPLED_DIR}" \
+"${CHROMHMM_CHROM_SIZES}/${assembly}.txt" "${SUBSAMPLED_DIR}" \
 "${SUBSAMPLED_DIR}/cellmarkfiletable.txt" "${BINARY_DIR}"
 
 # Optional: One may not want to keep the mitochondrial DNA in the analysis
