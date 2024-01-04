@@ -65,6 +65,8 @@ This pipeline requires a unix-flavoured OS with the following software installed
 Further information on the following topics can be found in the [wiki](https://github.com/sof202/ChromOptimise/wiki):
 - Specific information on how the pipeline works
 - Templates for the configuration files sourced in each script
+- Specific information on the supplementary scripts
+- What ChromHMM does
 - The factors that are likely to affect the optimum number of states for the chosen dataset
 - Estimated processing times for each script (subject to CPU performance) 
 - Estimated peak heap memory consumption for each script
