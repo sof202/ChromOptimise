@@ -21,18 +21,14 @@
 # repository.
 script_path=$(dirname "$(readlink -f "$0")")
 
-if [ ! "$(pwd)" == "$script_path" ]; then
-    echo "IMPORTANT: Please ensure that you execute the setup executable from the" \
-    "directory where the setup file is located."
-    exit 1
-fi
+cd "$script_path" || exit 1
 
 parent_directory=$(dirname "$(pwd)")
 
 script_list=$(find . -type f -name "*.sh")
 Rscript_list=$(find . -type f -name "*.R")
 
-# Using @ delimiter to avoid excessive escaping
+# Using @ delimiter to avoid excessive escaping of forward slashes in file paths
 for file in $script_list; do
     sed -i "s@/lustre/projects[^\\]*@${parent_directory}@g" "${file}"
 done
