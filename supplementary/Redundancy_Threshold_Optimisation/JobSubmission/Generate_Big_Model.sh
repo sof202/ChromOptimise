@@ -156,4 +156,9 @@ tail -1 | \
 awk '{print $2}' >> \
 "likelihood.ModelSize.${model_size}.txt" 
 
+grep "       " "ChromHMM.Output.ModelSize.${model_size}.txt" >> \
+"${LOG_FILE_PATH}/ModelSize-$1~${SLURM_JOB_ID}~${timestamp}.log"
+
+rm "ChromHMM.Output.ModelSize.${model_size}.txt"
+
 finishing_statement 0
