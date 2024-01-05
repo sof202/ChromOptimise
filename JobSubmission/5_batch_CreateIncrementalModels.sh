@@ -229,6 +229,9 @@ for numstates in ${sequence}; do
     awk '{print $2}' >> \
     "likelihood.BinSize.${bin_size}.SampleSize.${sample_size}.txt" 
 
+    grep "      " "ChromHMM.Output.BinSize.${bin_size}.numstates.${numstates}.txt" >> \
+    "${LOG_FILE_PATH}/${SLURM_ARRAY_JOB_ID}~${SLURM_ARRAY_TASK_ID}~${timestamp}.log"
+
     rm "ChromHMM.Output.BinSize.${bin_size}.numstates.${numstates}.txt"
 done
 
