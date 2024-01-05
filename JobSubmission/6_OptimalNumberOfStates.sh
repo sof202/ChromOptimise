@@ -162,7 +162,7 @@ while [[ ${max_model_number} -gt 2 ]]; do
     sort -g | \
     tail -1) 
 
-    echo "Running RedundantStateChecker.R for: ${max_model_number}..."
+    echo "Running RedundantStateChecker.R for: ${max_model_number} states..."
 
     Rscript RedundantStateChecker.R "${max_model_number}" "${bin_size}" \
     "${sample_size}" "${output_directory}"
