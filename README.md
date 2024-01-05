@@ -42,11 +42,7 @@ There also exists supplementary scripts for further information on your chosen d
 
 ## Important notes
 ### Note 1
-This pipeline was designed with a very large dataset in mind (the dataset being blueprint obtained from EGA). This particular dataset includes a large quantity of ChIP-Seq data from mature neutrophils in blood samples. 
-
-Some functionality of the main pipeline is designed with this dataset in mind, for example:
-- The subsampling stage (the dataset has hundreds of files for each epigenetic mark)
-- The assembly used with ChromHMM (hg19)
+This pipeline was designed with a very large dataset in mind (the dataset being blueprint obtained from EGA). This particular dataset includes a large quantity of ChIP-Seq data from mature neutrophils in blood samples. This is why a subsampling stage was implemented. This step of the pipeline might not be required if your dataset is relatively small. Regardless of this, please run the associated script still as subsequent scripts rely on a specific file structure.
 
 ### Note 2
 To display a short version of the preamble for each script in the command line, run the script with a `-h` or `--help` flag.
