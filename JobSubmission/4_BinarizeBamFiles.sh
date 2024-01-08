@@ -163,7 +163,11 @@ of: ${bin_size}."
 cd "${BINARY_DIR}" || \
 { echo "ERROR: [\${BINARY_DIR} - ${BINARY_DIR}] doesn't exist, \
 make sure config.txt is pointing to the correct directory"; finishing_statement 1; }
-rm ./*.txt*
+
+mkdir -p "BinSize_${bin_size}_SampleSize_${sample_size}"
+cd "BinSize_${bin_size}_SampleSize_${sample_size}" || finishing_statement 1
+
+rm -f ./*
 
 module purge
 module load Java
@@ -174,7 +178,8 @@ java -mx4G \
 -b "${bin_size}" \
 -gzip \
 "${CHROMHMM_CHROM_SIZES}/${assembly}.txt" "${SUBSAMPLED_DIR}" \
-"${SUBSAMPLED_DIR}/cellmarkfiletable.txt" "${BINARY_DIR}"
+"${SUBSAMPLED_DIR}/cellmarkfiletable.txt" \
+"${BINARY_DIR}/BinSize_${bin_size}_SampleSize_${sample_size}"
 
 # Optional: One may not want to keep the mitochondrial DNA in the analysis
 # rm "${BINARY_DIR}\

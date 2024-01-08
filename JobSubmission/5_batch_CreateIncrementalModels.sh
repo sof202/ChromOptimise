@@ -53,7 +53,9 @@
 ## INPUTS:                                                                          ||
 ## $1 -> Number of models to learn (default: 4)                                     ||
 ## $2 -> The increment to use between model sizes (default: 1)                      ||
-## $3 -> The assembly to use (default: hg19)                                        ||
+## $3 -> The bin size to use                                                        ||
+## $4 -> The sample size to use                                                     ||
+## $5 -> The assembly to use (default: hg19)                                        ||
 ## =================================================================================##
 ## OUTPUTS:                                                                         ||
 ## Emission parameter matrix for models (.png, .txt and .svg)                       ||
@@ -77,7 +79,9 @@ if [[ "$1" == "--help" || "$1" == "-h" ]]; then
     echo "Inputs:"
     echo "\$1 -> Number of models to learn (default: 4)"
     echo "\$2 -> The increment to use between model sizes (default: 1)"
-    echo "\$3 -> The assembly to use (default: hg19)"
+    echo "\$3 -> The bin size to use (default: 200)"
+    echo "\$4 -> The sample size to use (default: 50)"
+    echo "\$5 -> The assembly to use (default: hg19)"
     echo "Optional:"
     echo "Specify --array in sbatch options, to set a custom array size."
     echo "======================================================================"
@@ -108,7 +112,9 @@ ln "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err" \
 
 number_of_models_to_generate=$1
 states_increment=$2
-assembly=$3
+bin_size=$3
+sample_size=$4
+assembly=$5
 
 ## ====== DEFAULTS ====================================================================
 if ! [[ "${number_of_models_to_generate}" =~ ^[0-9]+$ ]]; then
@@ -123,30 +129,38 @@ if ! [[ "${states_increment}" =~ ^[0-9]+$ ]]; then
     echo "Using the default value of ${states_increment} instead."
 fi
 
+if ! [[ "${bin_size}" =~ ^[0-9]+$  || "${sample_size}" =~ ^[0-9]+$ ]]; then
+    bin_size=$(find . -type f -name "*.txt*.gz" | head -1 | cut -d "_" -f 6)
+    sample_size=$(find . -type f -name "*.txt*.gz" | head -1 | cut -d "_" -f 4)
+    echo "Bin size or sample size given is invalid."
+    echo "Using the default values instead."
+    echo "Bin size: ${bin_size}. Sample Size: ${sample_size}."
+fi
+
+
 if [[ -z "${assembly}" ]]; then
     assembly=hg19
     echo "No assembly was given, using the default value of ${assembly} instead."
 fi
 # =====================================================================================
 
-# Set bin/sample size by searching through the binary directory
 cd "${BINARY_DIR}" || \
 { >&2 echo "ERROR: [\${BINARY_DIR} - ${BINARY_DIR}] doesn't exist, \
 make sure config.txt is pointing to  the correct directory."
 batch_finishing_statement 1; }
 
-bin_size=$(find . -type f -name "*.txt*.gz" | head -1 | cut -d "_" -f 6)
-sample_size=$(find . -type f -name "*.txt*.gz" | head -1 | cut -d "_" -f 4)
+
 
 ## =============================== ##
 ##   CLEAN UP AND ERROR CATCHING   ##
 ## =============================== ##
 
-if [[ -z "$(ls -A)" ]]; then
-    { >&2 echo -e "ERROR: [\${BINARY_DIR} - ${BINARY_DIR}] is empty.\n"\
-    "Ensure that 4_BinarizeBamFiles.sh has been ran before this script."
-    batch_finishing_statement 1; }
-fi
+full_binary_path="${BINARY_DIR}/BinSize_${bin_size}_SampleSize_${sample_size}"
+
+cd "${full_binary_path}" || \
+{ >&2 echo -e "ERROR: Binary directory for bin/sample size is empty.\n" \
+"Ensure that 4_BinarizeBamFiles.sh has been ran before this script."
+batch_finishing_statement 1; }
 
 # Clean up from previous runs of script
 cd "${MODEL_DIR}" || \
@@ -214,7 +228,7 @@ for numstates in ${sequence}; do
     -noautoopen \
     -nobed \
     -b "${bin_size}" \
-    "${BINARY_DIR}" "${MODEL_DIR}" "${numstates}" "${assembly}" > \
+    "${full_binary_path}" "${MODEL_DIR}" "${numstates}" "${assembly}" > \
     "ChromHMM.Output.BinSize.${bin_size}.numstates.${numstates}.txt"
 
     echo -n "Writing estimated log likelihood to: "

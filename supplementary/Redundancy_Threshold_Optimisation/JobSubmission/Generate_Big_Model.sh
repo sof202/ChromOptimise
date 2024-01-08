@@ -39,7 +39,9 @@
 ## INPUTS:                                                                          ||
 ## $1 -> Size of model (default: 20)                                                ||
 ## $2 -> Random seed (default: 1)                                                   ||
-## $3 -> The assembly to use (default: hg19)                                        ||
+## $3 -> The bin size to use                                                        ||
+## $4 -> The sample size to use                                                     ||
+## $5 -> The assembly to use (default: hg19)                                        ||
 ## =================================================================================##
 ## OUTPUTS:                                                                         ||
 ## The emission parameter matrix of the model (.png,.txt,.svg)                      ||
@@ -64,7 +66,9 @@ if [[ "$1" == "--help" || "$1" == "-h" ]]; then
     echo "Inputs:"
     echo "\$1 -> Size of model (default: 20)"
     echo "\$2 -> Random seed (default: 1)"
-    echo "\$3 -> The assembly to use (default: hg19)"
+    echo "\$3 -> The bin size to use (default: 200)"
+    echo "\$4 -> The sample size to use (default: 50)"
+    echo "\$5 -> The assembly to use (default: hg19)"
     echo "================================================================"
     exit 0
 fi
@@ -93,7 +97,9 @@ ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 
 model_size=$1
 seed=$2
-assembly=$3
+bin_size=$3
+sample_size=$4
+assembly=$5
 
 ## ====== DEFAULTS ====================================================================
 if ! [[ "${model_size}" =~ ^[0-9]+$ ]]; then
@@ -104,6 +110,14 @@ fi
 if ! [[ "$seed" =~ ^[0-9]+$ ]]; then
     seed=1
     echo "Random seed given is invalid, using defualt value of: ${seed}." 
+fi
+
+if ! [[ "${bin_size}" =~ ^[0-9]+$  || "${sample_size}" =~ ^[0-9]+$ ]]; then
+    bin_size=$(find . -type f -name "*.txt*.gz" | head -1 | cut -d "_" -f 6)
+    sample_size=$(find . -type f -name "*.txt*.gz" | head -1 | cut -d "_" -f 4)
+    echo "Bin size or sample size given is invalid."
+    echo "Using the default values instead."
+    echo "Bin size: ${bin_size}. Sample Size: ${sample_size}."
 fi
 
 if [[ -z "${assembly}" ]]; then
@@ -120,11 +134,12 @@ cd "${BINARY_DIR}" || { >&2 echo "ERROR: [\${BINARY_DIR} - ${BINARY_DIR}] \
 doesn't exist, make sure config.txt is pointing to the correct directory."
 finishing_statement 1; }
 
-if [[ -z "$(ls -A)" ]]; then
-    { >&2 echo -e "ERROR: [\${BINARY_DIR} - ${BINARY_DIR}] is empty.\n"\
-    "Ensure that 4_BinarizeBamFiles.sh has been ran before this script."
-    finishing_statement 1; }
-fi
+full_binary_path="${BINARY_DIR}/BinSize_${bin_size}_SampleSize_${sample_size}"
+
+cd "${full_binary_path}" || \
+{ >&2 echo -e "ERROR: Binary directory for bin/sample size is empty.\n" \
+"Ensure that 4_BinarizeBamFiles.sh has been ran before this script."
+batch_finishing_statement 1; }
 
 ## ========== ##
 ##    MAIN    ##
@@ -145,7 +160,7 @@ java -mx30G \
 -nobed \
 -init random \
 -s "${seed}" \
-"${BINARY_DIR}" "${BIG_MODELS_DIR}" "${model_size}" "${assembly}" > \
+"${full_binary_path}" "${BIG_MODELS_DIR}" "${model_size}" "${assembly}" > \
 "ChromHMM.Output.ModelSize.${model_size}.txt"
 
 echo "Writing estimated log likelihood to: likelihood.ModelSize.${model_size}.txt..."
