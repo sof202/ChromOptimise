@@ -144,16 +144,14 @@ if [[ -z "${assembly}" ]]; then
 fi
 # =====================================================================================
 
+## =============================== ##
+##   CLEAN UP AND ERROR CATCHING   ##
+## =============================== ##
+
 cd "${BINARY_DIR}" || \
 { >&2 echo "ERROR: [\${BINARY_DIR} - ${BINARY_DIR}] doesn't exist, \
 make sure config.txt is pointing to  the correct directory."
 batch_finishing_statement 1; }
-
-
-
-## =============================== ##
-##   CLEAN UP AND ERROR CATCHING   ##
-## =============================== ##
 
 full_binary_path="${BINARY_DIR}/BinSize_${bin_size}_SampleSize_${sample_size}"
 
