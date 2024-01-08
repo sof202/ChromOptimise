@@ -142,7 +142,7 @@ fi
 # The only added level of complexity is obtaining the mark name from the file names.
 
 rm -f "cellmarkfiletable.txt" 
-for file in *.bam; do
+for file in *"${sample_size}"*.bam; do
     echo -ne "Mature_Neutorphil_SampleSize_${sample_size}_BinSize_${bin_size}\t" >>\
     "cellmarkfiletable.txt"
     # The subsampled files are named: subsampled.[SampleSize].[mark_name].bam. 
