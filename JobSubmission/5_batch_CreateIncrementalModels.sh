@@ -130,6 +130,10 @@ if ! [[ "${states_increment}" =~ ^[0-9]+$ ]]; then
 fi
 
 if ! [[ "${bin_size}" =~ ^[0-9]+$  || "${sample_size}" =~ ^[0-9]+$ ]]; then
+    cd "${BINARY_DIR}" || \
+    { >&2 echo "ERROR: [\${BINARY_DIR} - ${BINARY_DIR}] doesn't exist, \
+    make sure config.txt is pointing to  the correct directory."
+    batch_finishing_statement 1; }
     bin_size=$(find . -type f -name "*.txt*.gz" | head -1 | cut -d "_" -f 6)
     sample_size=$(find . -type f -name "*.txt*.gz" | head -1 | cut -d "_" -f 4)
     echo "Bin size or sample size given is invalid."
@@ -147,11 +151,6 @@ fi
 ## =============================== ##
 ##   CLEAN UP AND ERROR CATCHING   ##
 ## =============================== ##
-
-cd "${BINARY_DIR}" || \
-{ >&2 echo "ERROR: [\${BINARY_DIR} - ${BINARY_DIR}] doesn't exist, \
-make sure config.txt is pointing to  the correct directory."
-batch_finishing_statement 1; }
 
 full_binary_path="${BINARY_DIR}/BinSize_${bin_size}_SampleSize_${sample_size}"
 
