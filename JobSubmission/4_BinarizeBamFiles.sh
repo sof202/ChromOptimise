@@ -102,7 +102,7 @@ fi
 if [[ -z "${sample_size}" ]]; then
     cd "${SUBSAMPLED_DIR}" || \
     { >&2 echo "ERROR: [\${SUBSAMPLED_DIR} - ${SUBSAMPLED_DIR}] doesn't exist, make "\
-    "sure config.txt is pointing to the correct directory"; finishing_statement 1; }
+    "sure FilePaths.txt is pointing to the correct directory"; finishing_statement 1; }
 
     sample_size=$(find . -type f -name "Subsampled*" | head -1 | cut -d "." -f 3)
     echo -e "WARNING: No sample size was given.\n"\
@@ -125,7 +125,7 @@ fi
 
 cd "${SUBSAMPLED_DIR}" || \
 { >&2 echo "ERROR: [\${SUBSAMPLED_DIR} - ${SUBSAMPLED_DIR}] doesn't exist, make \
-sure config.txt is pointing to the correct directory"; finishing_statement 1; }
+sure FilePaths.txt is pointing to the correct directory"; finishing_statement 1; }
 
 if [[ -z "$(find . -type f -name "Subsampled.${sample_size}*")" ]]; then
     { >&2 echo -e "ERROR: [\${SUBSAMPLED_DIR} - ${SUBSAMPLED_DIR}] is empty.\n"\
@@ -162,7 +162,7 @@ of: ${bin_size}."
 
 cd "${BINARY_DIR}" || \
 { echo "ERROR: [\${BINARY_DIR} - ${BINARY_DIR}] doesn't exist, \
-make sure config.txt is pointing to the correct directory"; finishing_statement 1; }
+make sure FilePaths.txt is pointing to the correct directory"; finishing_statement 1; }
 
 mkdir -p "BinSize_${bin_size}_SampleSize_${sample_size}"
 cd "BinSize_${bin_size}_SampleSize_${sample_size}" || finishing_statement 1

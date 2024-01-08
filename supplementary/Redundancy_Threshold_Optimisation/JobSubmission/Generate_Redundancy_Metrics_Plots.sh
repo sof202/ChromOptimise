@@ -133,7 +133,7 @@ module load R/4.2.1-foss-2022a
 cd "${SUPPLEMENTARY_DIR}/Redundancy_Threshold_Optimisation/Rscripts" ||  \
 { >&2 echo "ERROR: ${SUPPLEMENTARY_DIR}/Redundancy_Threshold_Optimisation/Rscripts \
 doesn't exist, make sure [\${SUPPLEMENTARY_DIR} - ${SUPPLEMENTARY_DIR}] \
-in config.txt is pointing to the correct directory"; finishing_statement 1; }
+in FilePaths.txt is pointing to the correct directory"; finishing_statement 1; }
 
 Rscript HistogramPlotForEuclideanDistances.R \
 "${model_size}" "${seed}" "${model_file_dir}"
