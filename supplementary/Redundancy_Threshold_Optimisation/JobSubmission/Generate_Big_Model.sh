@@ -66,8 +66,8 @@ if [[ "$1" == "--help" || "$1" == "-h" ]]; then
     echo "Inputs:"
     echo "\$1 -> Size of model (default: 20)"
     echo "\$2 -> Random seed (default: 1)"
-    echo "\$3 -> The bin size to use (default: 200)"
-    echo "\$4 -> The sample size to use (default: 50)"
+    echo "\$3 -> The bin size to use"
+    echo "\$4 -> The sample size to use"
     echo "\$5 -> The assembly to use (default: hg19)"
     echo "================================================================"
     exit 0
@@ -116,7 +116,7 @@ if ! [[ "${bin_size}" =~ ^[0-9]+$  || "${sample_size}" =~ ^[0-9]+$ ]]; then
     bin_size=$(find . -type f -name "*.txt*.gz" | head -1 | cut -d "_" -f 6)
     sample_size=$(find . -type f -name "*.txt*.gz" | head -1 | cut -d "_" -f 4)
     echo "Bin size or sample size given is invalid."
-    echo "Using the default values instead."
+    echo "Using the following values instead."
     echo "Bin size: ${bin_size}. Sample Size: ${sample_size}."
 fi
 
