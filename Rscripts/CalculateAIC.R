@@ -14,7 +14,7 @@
 ## MODIFIED: Sam Fletcher (January 2024)                          ||
 ## ============================================================== ##
 ## PREREQUISITES:                                                 ||
-## Run 6_CompareModels.sh                                         ||
+## Run 5_batch_CreateIncrementalModels.sh                         ||
 ## ============================================================== ##
 ## INPUTS:                                                        ||
 ## $1 -> Bin size                                                 ||
@@ -90,5 +90,5 @@ setwd(output_file_path)
 ggsave(
   "Akaike_Information_Criterion.png"
 )
-write_csv(likelihood_data, "Akaike_Information_Criterion.csv")
+write.csv(likelihood_data, paste0(output_file_path,"/Akaike_Information_Criterion.csv"))
 

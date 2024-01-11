@@ -13,7 +13,7 @@
 ## CREATED: November 2023                                         ||
 ## ============================================================== ##
 ## PREREQUISITES:                                                 ||
-## Run 6_CompareModels.sh                                         ||
+## Run 5_batch_CreateIncrementalModels.sh                         ||
 ## ============================================================== ##
 ## INPUTS:                                                        ||
 ## $1 -> Bin size                                                 ||
