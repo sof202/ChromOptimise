@@ -60,7 +60,7 @@ file_name <- paste0(
 likelihood_data <- read.table(file_name)
 
 likelihood_data <- subset(likelihood_data, select = c(V5, V7))
-names(likelihood_data) <- c("Number_Of_States", "Estimated_Log_Likelihood")
+names(likelihood_data) <- c("number_of_states", "estimated_log_likelihood")
 
 
 ## ============== ##
@@ -68,13 +68,14 @@ names(likelihood_data) <- c("Number_Of_States", "Estimated_Log_Likelihood")
 ## ============== ##
 
 likelihood_plot <- ggplot(likelihood_data,
-                          aes(x = Number_Of_States,
-                              y = Estimated_Log_Likelihood))
+                          aes(x = number_of_states,
+                              y = estimated_log_likelihood))
 
 likelihood_plot +
   geom_smooth(formula = y ~ log(x), color = "blue", se = FALSE, span = 1.2) +
-  theme_bw() +
-  geom_point(shape = "square", color = "black")
+  geom_point(shape = "square", color = "black") +
+  labs(x = "Number of States", y = "Estimated Log likelihood") +
+  theme_bw()
 
 setwd(output_file_path)
 ggsave(
