@@ -36,8 +36,9 @@
 ## This then repeats, iterating across smaller and smaller models until no          ||
 ## no redundant states are found.                                                   ||
 ##                                                                                  ||
-## The script also creates a plot of the estimated log likelihood against the       ||
-## number of states in each model for human sense checking.                         ||
+## The script also creates a plot of the estimated log likelihood and the relative  ||
+## Akaike information critereon against the number of states in each model for      ||
+## further analysis.                                                                ||
 ##                                                                                  ||
 ## Note: If the largest model has no redundant states, the optimum model size may   ||
 ##       be larger than the largest model that was trained.                         ||
@@ -57,6 +58,7 @@
 ## File containing why models with too many states were rejected                    ||
 ## The optimum number of states to use with the data                                ||
 ## Plot between estimated log likelihood and number of states                       ||
+## Plot between relative Akaike information critereon and the number of states      ||
 ## =================================================================================##
 
 
@@ -209,6 +211,11 @@ fi
 # Plots the estimated log likelihood against the number of states across all models
 echo "Plotting the estimated log likelihoods of learned models against one another..."
 Rscript PlotLikelihoods.R "${bin_size}" "${sample_size}" "${output_directory}"
+
+# Plots the relative Akaike information critereon against the number of states
+# across all models. This information is also saved into a .csv file.
+echo "Processing the Akaike information critereon of learned models..."
+Rscript CalculateAIC.R "${bin_size}" "${sample_size}" "${output_directory}"
 
 finishing_statement 0
 
