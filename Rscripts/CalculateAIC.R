@@ -37,7 +37,6 @@ source("ChromOptimise/configuration/config.R")
 setwd(likelihood_dir)
 
 library(ggplot2)
-library(magrittr)
 
 arguments <- commandArgs(trailingOnly = TRUE)
 bin_size <- arguments[1]
@@ -65,8 +64,13 @@ names(likelihood_data) <- c("number_of_states", "estimated_log_likelihood")
 #      Which is size of emission matrix + size of transition matrix
 #      Which is (#states*#marks)+(#states)^2
 # L -> Likelihood function (output of chromHMM already in ln(L) form)
-likelihood_data$parameters <- (likelihood_data$number_of_states*number_of_marks)+(likelihood_data$number_of_states^2) 
-likelihood_data$aic <- (2*likelihood_data$parameters)-(2*likelihood_data$estimated_log_likelihood)
+likelihood_data$parameters <-
+  (likelihood_data$number_of_states * number_of_marks) +
+  (likelihood_data$number_of_states ^ 2)
+
+likelihood_data$aic <-
+  (2 * likelihood_data$parameters) -
+  (2 * likelihood_data$estimated_log_likelihood)
 
 # Relative AIC
 # These values are proportional to the probability that each model minimises
@@ -79,19 +83,22 @@ likelihood_data$relative_aic <- exp((min_aic - likelihood_data$aic) / 2)
 ##   OUTPUTS   ##
 ## =========== ##
 
-relative_aic_scatter <- 
-  ggplot(likelihood_data, aes(number_of_states, relative_aic)) 
+relative_aic_scatter <-
+  ggplot(likelihood_data, aes(number_of_states, relative_aic))
 
 relative_aic_scatter +
   geom_point() +
-  scale_x_continuous(breaks = seq(min(likelihood_data$number_of_states), max(likelihood_data$number_of_states), by = 1)) +
-  labs(title = "Akaike Information Critereon", x = "Number of States", y = "Relative AIC") +
+  scale_x_continuous(breaks = seq(min(likelihood_data$number_of_states),
+                                  max(likelihood_data$number_of_states),
+                                  by = 1)) +
+  labs(title = "Akaike Information Critereon",
+       x = "Number of States", y = "Relative AIC") +
   theme_bw() +
-  theme(plot.title = element_text(hjust = 0.5)) 
+  theme(plot.title = element_text(hjust = 0.5))
 
 setwd(output_file_path)
 ggsave(
   "Akaike_Information_Criterion.png"
 )
-write.csv(likelihood_data, paste0(output_file_path,"/Akaike_Information_Criterion.csv"))
-
+write.csv(likelihood_data,
+          paste0(output_file_path, "/Akaike_Information_Criterion.csv"))

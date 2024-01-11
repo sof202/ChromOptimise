@@ -37,7 +37,6 @@ source("ChromOptimise/configuration/config.R")
 setwd(likelihood_dir)
 
 library(ggplot2)
-library(magrittr)
 
 arguments <- commandArgs(trailingOnly = TRUE)
 bin_size <- arguments[1]
@@ -68,11 +67,16 @@ names(likelihood_data) <- c("number_of_states", "estimated_log_likelihood")
 # n -> Number of observations (total number of lines in binary files)
 # L -> Likelihood function (output of chromHMM already in ln(L) form)
 log_observations <- log(number_of_observations)
-likelihood_data$parameters <- (likelihood_data$number_of_states*number_of_marks)+(likelihood_data$number_of_states^2) 
-likelihood_data$bic <- (log_observations*likelihood_data$parameters)-(2*likelihood_data$estimated_log_likelihood)
+
+likelihood_data$parameters <-
+  (likelihood_data$number_of_states * number_of_marks) +
+  (likelihood_data$number_of_states ^ 2)
+
+likelihood_data$bic <- (log_observations * likelihood_data$parameters) -
+  (2 * likelihood_data$estimated_log_likelihood)
 
 # Relative BIC (to the maximum BIC)
-# Lower BIC is usally better,
+# Lower BIC is usally better, note that this is a heuristic not a metric
 min_bic <- min(likelihood_data$bic)
 likelihood_data$relative_bic <- likelihood_data$bic / min_bic
 
@@ -80,20 +84,23 @@ likelihood_data$relative_bic <- likelihood_data$bic / min_bic
 ##   OUTPUTS   ##
 ## =========== ##
 
-relative_bic_scatter <- 
-  ggplot(likelihood_data, aes(number_of_states, relative_bic)) 
+relative_bic_scatter <-
+  ggplot(likelihood_data, aes(number_of_states, relative_bic))
 
 relative_bic_scatter +
   geom_point() +
-  scale_x_continuous(breaks = seq(min(likelihood_data$number_of_states), max(likelihood_data$number_of_states), by = 1)) +
-  labs(title = "Bayesian Information Critereon", x = "Number of States", y = "BIC (relative to minimum BIC)") +
+  scale_x_continuous(breaks = seq(min(likelihood_data$number_of_states),
+                                  max(likelihood_data$number_of_states),
+                                  by = 1)) +
+  labs(title = "Bayesian Information Critereon",
+       x = "Number of States", y = "BIC (relative to minimum BIC)") +
   theme_bw() +
-  theme(plot.title = element_text(hjust = 0.5)) 
+  theme(plot.title = element_text(hjust = 0.5))
 
 
 setwd(output_file_path)
 ggsave(
   "Bayesian_Information_Criterion.png"
 )
-write.csv(likelihood_data, paste0(output_file_path,"/Bayesian_Information_Criterion.csv"))
-
+write.csv(likelihood_data, paste0(output_file_path,
+                                  "/Bayesian_Information_Criterion.csv"))
