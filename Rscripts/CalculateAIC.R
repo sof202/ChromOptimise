@@ -19,8 +19,7 @@
 ## INPUTS:                                                        ||
 ## $1 -> Bin size                                                 ||
 ## $2 -> Sample size                                              ||
-## $3 -> Number of epigenetic marks                               ||
-## $4 -> Directory to place output files into                     ||
+## $3 -> Directory to place output files into                     ||
 ## ============================================================== ##
 ## OUTPUTS:                                                       ||
 ## Scatter plot of relative AIC against number of states          ||
@@ -37,16 +36,13 @@ setwd("/lustre/projects/Research_Project-MRC190311/scripts/integrative")
 source("ChromOptimise/configuration/config.R")
 setwd(likelihood_dir)
 
-rm(list = ls())
-
 library(ggplot2)
 library(magrittr)
 
 arguments <- commandArgs(trailingOnly = TRUE)
 bin_size <- arguments[1]
 sample_size <- arguments[2]
-number_of_marks <- arguments[3]
-output_file_path <- arguments[4]
+output_file_path <- arguments[3]
 
 ## =============== ##
 ##   IMPORT DATA   ##
