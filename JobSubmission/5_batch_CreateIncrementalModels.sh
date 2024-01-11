@@ -235,12 +235,12 @@ for numstates in ${sequence}; do
 
     # grep removes the terminal logs associated with writing to files. 
     # The tail and awk locate the final estimated log likelihood.
-    grep "       " "ChromHMM.Output.BinSize.${bin_size}.numstates.${numstates}.txt" | \
+    grep "  " "ChromHMM.Output.BinSize.${bin_size}.numstates.${numstates}.txt" | \
     tail -1 | \
     awk '{print $2}' >> \
     "likelihood.BinSize.${bin_size}.SampleSize.${sample_size}.txt" 
 
-    grep "      " "ChromHMM.Output.BinSize.${bin_size}.numstates.${numstates}.txt" >> \
+    grep "  " "ChromHMM.Output.BinSize.${bin_size}.numstates.${numstates}.txt" >> \
     "${LOG_FILE_PATH}/${SLURM_ARRAY_JOB_ID}~${SLURM_ARRAY_TASK_ID}~${timestamp}.log"
 
     rm "ChromHMM.Output.BinSize.${bin_size}.numstates.${numstates}.txt"
@@ -257,7 +257,7 @@ batch_finishing_statement 1; }
 
 emission_files_to_rename=$(find . -type f -name "emissions*")
 for file in $emission_files_to_rename; do
-    file_ending=$(echo "$file" | cut -d "_" -f 2) 
+    file_ending=$(echo "$file" | cut -d "_" -f 2)
     mv "$file" \
     "Emissions_BinSize_${bin_size}_SampleSize_${sample_size}_States_${file_ending}"
 done
