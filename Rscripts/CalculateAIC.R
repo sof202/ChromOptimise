@@ -86,8 +86,8 @@ relative_aic_scatter +
   geom_point() +
   scale_x_continuous(breaks = seq(min(likelihood_data$number_of_states), max(likelihood_data$number_of_states), by = 1)) +
   labs(title = "Akaike Information Critereon", x = "Number of States", y = "Relative AIC") +
-  theme(plot.title = element_text(hjust = 0.5)) +
-  theme_bw()
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5)) 
 
 setwd(output_file_path)
 ggsave(
