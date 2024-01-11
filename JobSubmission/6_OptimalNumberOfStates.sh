@@ -37,8 +37,8 @@
 ## no redundant states are found.                                                   ||
 ##                                                                                  ||
 ## The script also creates a plot of the estimated log likelihood and the relative  ||
-## Akaike information critereon against the number of states in each model for      ||
-## further analysis.                                                                ||
+## Akaike/Bayesian information critereon against the number of states in each       ||
+## model for further analysis.                                                      ||
 ##                                                                                  ||
 ## Note: If the largest model has no redundant states, the optimum model size may   ||
 ##       be larger than the largest model that was trained.                         ||
@@ -59,6 +59,7 @@
 ## The optimum number of states to use with the data                                ||
 ## Plot between estimated log likelihood and number of states                       ||
 ## Plot between relative Akaike information critereon and the number of states      ||
+## Plot between relative Bayesian information critereon and the number of states    ||
 ## =================================================================================##
 
 
@@ -216,6 +217,23 @@ Rscript PlotLikelihoods.R "${bin_size}" "${sample_size}" "${output_directory}"
 # across all models. This information is also saved into a .csv file.
 echo "Processing the Akaike information critereon of learned models..."
 Rscript CalculateAIC.R "${bin_size}" "${sample_size}" "${output_directory}"
+
+# Plots the relative Bayesian information critereon against the number of states
+# across all models. This information is also saved into a .csv file.
+# BIC requires the number of observations, which is the total number of lines in each 
+# binary file minus 2 times the number of files (due to the headers in each file).
+full_binary_path="${BINARY_DIR}/BinSize_${bin_size}_SampleSize_${sample_size}"
+
+total_observations=0
+for file in "${full_binary_path}"/*_binary.txt*; do
+    observations=$(gzip -dc "$file" | wc -l)
+    total_observations=$((total_observations + observations - 2))
+done
+
+echo "Processing the Bayesian information critereon of learned models..."
+Rscript CalculateBIC.R "${bin_size}" "${sample_size}" "${total_observations}" \
+"${output_directory}"
+
 
 finishing_statement 0
 
