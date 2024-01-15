@@ -32,7 +32,7 @@ After using this pipeline, the user will have greater knowledge over their datas
 
 
 ## Usage
-After completing ['getting started'](#getting-started), run each of the shell scripts in [JobSubmission](https://github.com/sof202/ChromOptimise/tree/main/JobSubmission) sequentially. 
+After completing ['getting started'](#getting-started), run each of the shell scripts in [JobSubmission](https://github.com/sof202/ChromOptimise/tree/main/JobSubmission) sequentially for each epigenetic mark. For further information please consult the [wiki](https://github.com/sof202/ChromOptimise/wiki/Pipeline-Explanation) and the [related schematic representation](https://github.com/sof202/ChromOptimise/blob/main/information/Optimal_States_Analysis_Pipeline.pdf).
 \
 Depending on your chosen dataset, you may not need to run all scripts. For example:
 - If you are not downloading data from EGA, the first two scripts are not necessary. 
