@@ -35,7 +35,8 @@ After using this pipeline, the user will have greater knowledge over their datas
 After completing ['getting started'](#getting-started), run each of the shell scripts in [JobSubmission](https://github.com/sof202/ChromOptimise/tree/main/JobSubmission) sequentially for each epigenetic mark. For further information please consult the [wiki](https://github.com/sof202/ChromOptimise/wiki/Pipeline-Explanation) and the [related schematic representation](https://github.com/sof202/ChromOptimise/blob/main/information/Optimal_States_Analysis_Pipeline.pdf).
 \
 Depending on your chosen dataset, you may not need to run all scripts. For example:
-- If you are not downloading data from EGA, the first two scripts are not necessary. 
+- If you are not downloading data from EGA, the first two scripts are not necessary 
+    - Just ensure that `.bam` files are organised into directories named [[epigenetic mark name]] within the [raw files directory](https://github.com/sof202/ChromOptimise/wiki/Configuration-Files-Setup#data-directory-structure)
 - If your data is already processed (quality controlled), then start from the subsampling script.
 
 There also exists supplementary scripts for further information on your chosen data set. Most importantly, thresholds used in redundancy analysis can be inferred from the results of [Redundancy_Threshold_Optimisation](https://github.com/sof202/ChromOptimise/tree/main/supplementary/Redundancy_Threshold_Optimisation). Further details for these scripts can be found in the [wiki](https://github.com/sof202/ChromOptimise/wiki/Pipeline-Explanation). 
