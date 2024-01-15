@@ -5,3 +5,6 @@ FilePaths.txt
 LogFileManagement.sh
 *.log
 *.err
+
+# Ignore vscode project settings
+.vscode/*
