@@ -55,7 +55,7 @@ state_assignments <- read.table(state_assignments_file, skip = 2)
 ## ============================= ##
 
 check_upstream <- function(index, distance, reference_state) {
-  state <- state_assignments[index-distance, 1]
+  state <- state_assignments[index - distance, 1]
   if (state == reference_state) {
     return(distance - 1)
   }
@@ -63,7 +63,7 @@ check_upstream <- function(index, distance, reference_state) {
 }
 
 check_downstream <- function(index, distance, reference_state) {
-  state <- state_assignments[index+distance, 1]
+  state <- state_assignments[index + distance, 1]
   if (state == reference_state) {
     return(distance - 1)
   }
@@ -73,18 +73,18 @@ check_downstream <- function(index, distance, reference_state) {
 same_value_bin_distance <- function(index) {
   reference_state <- state_assignments[index, 1]
   distance <- check_upstream(index, 1, reference_state)
-  
+
   return(distance)
 }
 
 get_isolation_score <- function(indices) {
-  sum_of_distances = 0
+  sum_of_distances <- 0
   for (index in indices){
-    sum_of_distances = sum_of_distances + same_value_bin_distance(index)
+    sum_of_distances <- sum_of_distances + same_value_bin_distance(index)
   }
   sample_size <- length(indices)
   average_distance <- (sum_of_distances / sample_size)
-  
+
   return(average_distance)
 }
 
@@ -92,14 +92,14 @@ get_isolation_score <- function(indices) {
 ##   SUBSAMPLING FUNCTIONS   ##
 ## ========================= ##
 
-subsample_bins_with_target_value <- function(target_state, sample_percent) {
-  indices_with_target_value <- which(state_assignments[,1] == target_state)
-  
+subsample_target_bins <- function(target_state, sample_percent) {
+  indices_with_target_value <- which(state_assignments[, 1] == target_state)
+
   sample_size <- length(indices_with_target_value) * (sample_percent / 100)
-  
-  sample_indices_with_target_value <- sample(indices_with_target_value, sample_size)
-  
-  return(sample_indices_with_target_value)
+
+  sampled_indices <- sample(indices_with_target_value, sample_size)
+
+  return(sampled_indices)
 }
 
 ## ======== ##
@@ -109,13 +109,15 @@ subsample_bins_with_target_value <- function(target_state, sample_percent) {
 states <- unlist(unique(state_assignments))
 samples <- rep(sample_size, times = length(states))
 
-samples_of_indices <- mapply(subsample_bins_with_target_value, states, samples)
+samples_of_indices <- mapply(subsample_target_bins, states, samples)
 
 isolation_scores <- unlist(lapply(result, get_isolation_score))
 
-isolation_scores_output <- data.frame(states = states, isolation_scores = isolation_scores)
+isolation_scores_output <-
+  data.frame(states = states, isolation_scores = isolation_scores)
 
-sorted_isolation_scores <- isolation_scores_output[order(isolation_scores_output$states),]
+sorted_isolation_scores <-
+  isolation_scores_output[order(isolation_scores_output$states), ]
 
 ## =========== ##
 ##   OUTPUTS   ##
@@ -123,7 +125,7 @@ sorted_isolation_scores <- isolation_scores_output[order(isolation_scores_output
 
 setwd(output_file_path)
 
-isolation_scores_scatter <- 
+isolation_scores_scatter <-
   ggplot(sorted_isolation_scores, aes(x = states, y = isolation_scores)) +
   geom_point() +
   scale_x_continuous(breaks = seq(min(sorted_isolation_scores$states),
@@ -138,6 +140,3 @@ ggsave(
 )
 
 write.table(sorted_isolation_scores, "Isolation_Scores.txt", row.names = FALSE)
-
-
-
