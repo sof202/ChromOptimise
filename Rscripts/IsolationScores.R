@@ -149,7 +149,7 @@ subsample_target_bins <- function(target_state, sample_percent) {
 ## ======== ##
 
 states <- unlist(unique(state_assignments))
-samples <- rep(sample_size, times = length(states))
+samples <- rep(isolation_sample_size, times = length(states))
 
 bin_indices_sample <- mapply(subsample_target_bins, states, samples)
 
