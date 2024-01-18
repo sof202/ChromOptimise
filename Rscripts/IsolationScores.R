@@ -51,11 +51,18 @@ isolation_sample_size <- as.numeric(arguments[3])
 # Skipping first two rows of this file as the metadata is not required
 state_assignments <- read.table(state_assignments_file, skip = 2)
 
+max_bin_index <- nrow(state_assignments)
+
 ## ============================= ##
 ##   ISOLATION SCORE FUNCTIONS   ##
 ## ============================= ##
 
 check_upstream <- function(bin_index, distance, reference_state) {
+  # Check for if the search goes out of range of the data frame
+  if (bin_index - distance < 1) {
+    return(check_downstream(bin_index, distance, reference_state))
+  }
+
   comparison_state <- state_assignments[bin_index - distance, 1]
   if (comparison_state == reference_state) {
     # we return distance - 1 as we want the number of bins that
@@ -67,6 +74,11 @@ check_upstream <- function(bin_index, distance, reference_state) {
 }
 
 check_downstream <- function(bin_index, distance, reference_state) {
+  # Check for if the search goes out of range of the data frame
+  if (bin_index + distance > max_bin_index) {
+    return(check_upstream(bin_index, distance + 1, reference_state))
+  }
+
   comparison_state <- state_assignments[bin_index + distance, 1]
   if (comparison_state == reference_state) {
     return(distance - 1)
