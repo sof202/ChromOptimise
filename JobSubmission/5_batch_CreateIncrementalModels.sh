@@ -218,12 +218,14 @@ echo "Learning models using a bin size of ${bin_size}..."
 # Main loop
 for numstates in ${sequence}; do
     echo "Learning model with: ${numstates} states..."
-    # -nobed is used as genome browser files and segmentation files are not required.
-    # -noautoopen is used so html files are not opened after model learning finshes.
+    # -noautoopen used so html files are not opened after model learning finshes.
+    # -nobed used as genome browser files and segmentation files are not required.
+    # -printstatebyline used to get the state assignment for isolation metrics
     java -mx4G \
     -jar "${CHROMHMM_MAIN_DIR}/ChromHMM.jar" LearnModel \
     -noautoopen \
     -nobed \
+    -printstatebyline \
     -b "${bin_size}" \
     "${full_binary_path}" "${MODEL_DIR}" "${numstates}" "${assembly}" > \
     "ChromHMM.Output.BinSize.${bin_size}.numstates.${numstates}.txt"
