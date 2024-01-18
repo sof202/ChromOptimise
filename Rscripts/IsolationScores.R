@@ -59,48 +59,37 @@ max_bin_index <- nrow(state_assignments)
 ##   ISOLATION SCORE FUNCTIONS   ##
 ## ============================= ##
 
-check_upstream <- function(reference_bin_index, distance, reference_state) {
-  # Check for whether the search goes out of range of the data frame
-  if (reference_bin_index - distance < 1) {
-    return(check_downstream(reference_bin_index, distance, reference_state))
-  }
-
-  comparison_state <- state_assignments[reference_bin_index - distance, 1]
-  if (comparison_state == reference_state) {
-    # we return distance - 1 as we want the number of bins that
-    # separate the two bins with the same assignment (if they
-    # are adjacent, this value should be 0, not 1)
-    return(distance - 1)
-  }
-  return(check_downstream(reference_bin_index, distance, reference_state))
-}
-
-check_downstream <- function(reference_bin_index, distance, reference_state) {
-  # Check for whether the search goes out of range of the data frame
-  # This check is not strictly required as the following logic will fail
-  # anyways. Using an index higher than the max index results in 
-  # comparison_state being set to NA
-  if (reference_bin_index + distance > max_bin_index) {
-    return(check_upstream(reference_bin_index, distance + 1, reference_state))
-  }
-
-  comparison_state <- state_assignments[reference_bin_index + distance, 1]
-  if (comparison_state == reference_state) {
-    return(distance - 1)
-  }
-  return(check_upstream(reference_bin_index, distance + 1, reference_state))
-}
-
-# This function uses recursion, specifically check_(up/down)stream, 
-# to determine the number of bins separating the input bin index from 
-# the closest bin with the same state assignment.
 matching_bin_distance <- function(reference_bin_index) {
   reference_state <- state_assignments[reference_bin_index, 1]
   
-  # Start recursion by looking one bin upstream from reference index
-  distance <- check_upstream(reference_bin_index, 1, reference_state)
+  for (distance in 1:max_bin_index) {
+    # Check upstream of reference bin index
 
-  return(distance)
+    # If the comparison bin index is less than 1 it is out of range
+    if (reference_bin_index - distance >= 1) {
+      comparison_state <- state_assignments[reference_bin_index - distance, 1]
+      if (comparison_state == reference_state) {
+        # we return distance - 1 as we want the number of bins that
+        # separate the two bins with the same assignment (if they
+        # are adjacent, this value should be 0, not 1)
+        return(distance - 1)
+      }
+    }
+    
+    # Check downstream of reference bin index
+
+    # If the comparison bin index is greater than the max bin index
+    # it is out of range
+    if (reference_bin_index + distance <= max_bin_index) {
+      comparison_state <- state_assignments[reference_bin_index + distance, 1]
+      if (comparison_state == reference_state) {
+        return(distance - 1)
+      }
+    }
+  }
+  
+  # Error catching just in case no matching bin is found
+  return(NA)
 }
 
 # Isolation score is the average distance between two bins that have
