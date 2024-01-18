@@ -51,49 +51,54 @@ isolation_sample_size <- as.numeric(arguments[3])
 # Skipping first two rows of this file as the metadata is not required
 state_assignments <- read.table(state_assignments_file, skip = 2)
 
+# This variable is required for a check in check_downstream to avoid
+# unwanted behaviour when going out of range
 max_bin_index <- nrow(state_assignments)
 
 ## ============================= ##
 ##   ISOLATION SCORE FUNCTIONS   ##
 ## ============================= ##
 
-check_upstream <- function(bin_index, distance, reference_state) {
-  # Check for if the search goes out of range of the data frame
-  if (bin_index - distance < 1) {
-    return(check_downstream(bin_index, distance, reference_state))
+check_upstream <- function(reference_bin_index, distance, reference_state) {
+  # Check for whether the search goes out of range of the data frame
+  if (reference_bin_index - distance < 1) {
+    return(check_downstream(reference_bin_index, distance, reference_state))
   }
 
-  comparison_state <- state_assignments[bin_index - distance, 1]
+  comparison_state <- state_assignments[reference_bin_index - distance, 1]
   if (comparison_state == reference_state) {
     # we return distance - 1 as we want the number of bins that
     # separate the two bins with the same assignment (if they
-    # are adjacent, this value should be 0, not 1).
+    # are adjacent, this value should be 0, not 1)
     return(distance - 1)
   }
-  return(check_downstream(bin_index, distance, reference_state))
+  return(check_downstream(reference_bin_index, distance, reference_state))
 }
 
-check_downstream <- function(bin_index, distance, reference_state) {
-  # Check for if the search goes out of range of the data frame
-  if (bin_index + distance > max_bin_index) {
-    return(check_upstream(bin_index, distance + 1, reference_state))
+check_downstream <- function(reference_bin_index, distance, reference_state) {
+  # Check for whether the search goes out of range of the data frame
+  # This check is not strictly required as the following logic will fail
+  # anyways. Using an index higher than the max index results in 
+  # comparison_state being set to NA
+  if (reference_bin_index + distance > max_bin_index) {
+    return(check_upstream(reference_bin_index, distance + 1, reference_state))
   }
 
-  comparison_state <- state_assignments[bin_index + distance, 1]
+  comparison_state <- state_assignments[reference_bin_index + distance, 1]
   if (comparison_state == reference_state) {
     return(distance - 1)
   }
-  return(check_upstream(bin_index, distance + 1, reference_state))
+  return(check_upstream(reference_bin_index, distance + 1, reference_state))
 }
 
-# This function utilises recursion of check_(up/down)stream to
-# find the closest bin that has the same state assignment to the
-# input bin index
-matching_bin_distance <- function(bin_index) {
-  reference_state <- state_assignments[bin_index, 1]
+# This function uses recursion, specifically check_(up/down)stream, 
+# to determine the number of bins separating the input bin index from 
+# the closest bin with the same state assignment.
+matching_bin_distance <- function(reference_bin_index) {
+  reference_state <- state_assignments[reference_bin_index, 1]
   
   # Start recursion by looking one bin upstream from reference index
-  distance <- check_upstream(bin_index, 1, reference_state)
+  distance <- check_upstream(reference_bin_index, 1, reference_state)
 
   return(distance)
 }
@@ -102,6 +107,7 @@ matching_bin_distance <- function(bin_index) {
 # the same state assignment. A higher value indicates that a state is
 # more isolated in the state assignment and therefore less stable.
 get_isolation_score <- function(bin_indicies) {
+  # Check for if the state is only assigned once in the state assignment
   if (all(is.na(bin_indicies))) {
     return(NA)
   }
@@ -111,8 +117,7 @@ get_isolation_score <- function(bin_indicies) {
     sum_of_distances <- sum_of_distances + matching_bin_distance(bin_index)
   }
 
-  sample_size <- length(bin_indicies)
-  average_distance <- (sum_of_distances / sample_size)
+  average_distance <- (sum_of_distances / length(bin_indicies))
 
   return(average_distance)
 }
@@ -130,6 +135,8 @@ subsample_target_bins <- function(target_state, sample_percent) {
     return(NA)
   }
 
+  # We want a representative sample for each state, some states will be
+  # assigned to a much larger number of bins than others
   sample_size <- length(bins_with_target_value) * (sample_percent / 100)
 
   sampled_bin_indices <- sample(bins_with_target_value, sample_size)
@@ -151,6 +158,7 @@ isolation_scores <- unlist(lapply(bin_indices_sample, get_isolation_score))
 isolation_scores_output <-
   data.frame(states = states, isolation_scores = isolation_scores)
 
+# This is purely so that the output text file is easier to read
 sorted_isolation_scores <-
   isolation_scores_output[order(isolation_scores_output$states), ]
 
