@@ -61,7 +61,7 @@ max_bin_index <- nrow(state_assignments)
 
 matching_bin_distance <- function(reference_bin_index) {
   reference_state <- state_assignments[reference_bin_index, 1]
-  
+
   for (distance in 1:max_bin_index) {
     # Check upstream of reference bin index
 
@@ -75,7 +75,7 @@ matching_bin_distance <- function(reference_bin_index) {
         return(distance - 1)
       }
     }
-    
+
     # Check downstream of reference bin index
 
     # If the comparison bin index is greater than the max bin index
@@ -87,7 +87,7 @@ matching_bin_distance <- function(reference_bin_index) {
       }
     }
   }
-  
+
   # Error catching just in case no matching bin is found
   return(NA)
 }
