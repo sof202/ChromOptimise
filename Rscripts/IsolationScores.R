@@ -56,16 +56,19 @@ state_assignments <- read.table(state_assignments_file, skip = 2)
 ## ============================= ##
 
 check_upstream <- function(bin_index, distance, reference_state) {
-  state <- state_assignments[bin_index - distance, 1]
-  if (state == reference_state) {
+  comparison_state <- state_assignments[bin_index - distance, 1]
+  if (comparison_state == reference_state) {
+    # we return distance - 1 as we want the number of bins that
+    # separate the two bins with the same assignment (if they
+    # are adjacent, this value should be 0, not 1).
     return(distance - 1)
   }
   return(check_downstream(bin_index, distance, reference_state))
 }
 
 check_downstream <- function(bin_index, distance, reference_state) {
-  state <- state_assignments[bin_index + distance, 1]
-  if (state == reference_state) {
+  comparison_state <- state_assignments[bin_index + distance, 1]
+  if (comparison_state == reference_state) {
     return(distance - 1)
   }
   return(check_upstream(bin_index, distance + 1, reference_state))
@@ -76,6 +79,8 @@ check_downstream <- function(bin_index, distance, reference_state) {
 # input bin index
 matching_bin_distance <- function(bin_index) {
   reference_state <- state_assignments[bin_index, 1]
+  
+  # Start recursion by looking one bin upstream from reference index
   distance <- check_upstream(bin_index, 1, reference_state)
 
   return(distance)
@@ -85,10 +90,15 @@ matching_bin_distance <- function(bin_index) {
 # the same state assignment. A higher value indicates that a state is
 # more isolated in the state assignment and therefore less stable.
 get_isolation_score <- function(bin_indicies) {
+  if (all(is.na(bin_indicies))) {
+    return(NA)
+  }
+
   sum_of_distances <- 0
   for (bin_index in bin_indicies){
     sum_of_distances <- sum_of_distances + matching_bin_distance(bin_index)
   }
+
   sample_size <- length(bin_indicies)
   average_distance <- (sum_of_distances / sample_size)
 
@@ -101,6 +111,12 @@ get_isolation_score <- function(bin_indicies) {
 
 subsample_target_bins <- function(target_state, sample_percent) {
   bins_with_target_value <- which(state_assignments[, 1] == target_state)
+
+  # If only one bin has been assigned with the target state the recursion
+  # will not halt. This is a flag to prevent this scenario.
+  if (length(bins_with_target_value) == 1) {
+    return(NA)
+  }
 
   sample_size <- length(bins_with_target_value) * (sample_percent / 100)
 
