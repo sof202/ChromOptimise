@@ -113,7 +113,7 @@ get_isolation_score <- function(bin_indicies) {
   }
 
   average_distance <- (sum_of_distances / length(bin_indicies))
-
+  
   return(average_distance)
 }
 
