@@ -37,7 +37,7 @@ source("ChromOptimise/configuration/config.R")
 
 setwd(model_dir)
 
-library("ggplot2")
+library(ggplot2)
 
 arguments <- commandArgs(trailingOnly = TRUE)
 state_assignments_file <- arguments[1]
