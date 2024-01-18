@@ -70,6 +70,9 @@ check_downstream <- function(index, distance, reference_state) {
   return(check_upstream(index, distance + 1, reference_state))
 }
 
+# This function utilises recursion of check_(up/down)stream to
+# find the closest bin that has the same state assignment to the
+# input bin index
 same_value_bin_distance <- function(index) {
   reference_state <- state_assignments[index, 1]
   distance <- check_upstream(index, 1, reference_state)
@@ -77,6 +80,9 @@ same_value_bin_distance <- function(index) {
   return(distance)
 }
 
+# Isolation score is the average distance between two bins that have
+# the same state assignment. A higher value indicates that a state is
+# more isolated in the state assignment and therefore less stable.
 get_isolation_score <- function(indices) {
   sum_of_distances <- 0
   for (index in indices){
