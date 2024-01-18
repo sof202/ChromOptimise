@@ -48,34 +48,35 @@ isolation_sample_size <- as.numeric(arguments[3])
 ##   FILE PROCESSING   ##
 ## =================== ##
 
+# Skipping first two rows of this file as the metadata is not required
 state_assignments <- read.table(state_assignments_file, skip = 2)
 
 ## ============================= ##
 ##   ISOLATION SCORE FUNCTIONS   ##
 ## ============================= ##
 
-check_upstream <- function(index, distance, reference_state) {
-  state <- state_assignments[index - distance, 1]
+check_upstream <- function(bin_index, distance, reference_state) {
+  state <- state_assignments[bin_index - distance, 1]
   if (state == reference_state) {
     return(distance - 1)
   }
-  return(check_downstream(index, distance, reference_state))
+  return(check_downstream(bin_index, distance, reference_state))
 }
 
-check_downstream <- function(index, distance, reference_state) {
-  state <- state_assignments[index + distance, 1]
+check_downstream <- function(bin_index, distance, reference_state) {
+  state <- state_assignments[bin_index + distance, 1]
   if (state == reference_state) {
     return(distance - 1)
   }
-  return(check_upstream(index, distance + 1, reference_state))
+  return(check_upstream(bin_index, distance + 1, reference_state))
 }
 
 # This function utilises recursion of check_(up/down)stream to
 # find the closest bin that has the same state assignment to the
 # input bin index
-same_value_bin_distance <- function(index) {
-  reference_state <- state_assignments[index, 1]
-  distance <- check_upstream(index, 1, reference_state)
+matching_bin_distance <- function(bin_index) {
+  reference_state <- state_assignments[bin_index, 1]
+  distance <- check_upstream(bin_index, 1, reference_state)
 
   return(distance)
 }
@@ -83,12 +84,12 @@ same_value_bin_distance <- function(index) {
 # Isolation score is the average distance between two bins that have
 # the same state assignment. A higher value indicates that a state is
 # more isolated in the state assignment and therefore less stable.
-get_isolation_score <- function(indices) {
+get_isolation_score <- function(bin_indicies) {
   sum_of_distances <- 0
-  for (index in indices){
-    sum_of_distances <- sum_of_distances + same_value_bin_distance(index)
+  for (bin_index in bin_indicies){
+    sum_of_distances <- sum_of_distances + matching_bin_distance(bin_index)
   }
-  sample_size <- length(indices)
+  sample_size <- length(bin_indicies)
   average_distance <- (sum_of_distances / sample_size)
 
   return(average_distance)
@@ -99,13 +100,13 @@ get_isolation_score <- function(indices) {
 ## ========================= ##
 
 subsample_target_bins <- function(target_state, sample_percent) {
-  indices_with_target_value <- which(state_assignments[, 1] == target_state)
+  bins_with_target_value <- which(state_assignments[, 1] == target_state)
 
-  sample_size <- length(indices_with_target_value) * (sample_percent / 100)
+  sample_size <- length(bins_with_target_value) * (sample_percent / 100)
 
-  sampled_indices <- sample(indices_with_target_value, sample_size)
+  sampled_bin_indices <- sample(bins_with_target_value, sample_size)
 
-  return(sampled_indices)
+  return(sampled_bin_indices)
 }
 
 ## ======== ##
@@ -115,9 +116,9 @@ subsample_target_bins <- function(target_state, sample_percent) {
 states <- unlist(unique(state_assignments))
 samples <- rep(sample_size, times = length(states))
 
-samples_of_indices <- mapply(subsample_target_bins, states, samples)
+bin_indices_sample <- mapply(subsample_target_bins, states, samples)
 
-isolation_scores <- unlist(lapply(result, get_isolation_score))
+isolation_scores <- unlist(lapply(bin_indices_sample, get_isolation_score))
 
 isolation_scores_output <-
   data.frame(states = states, isolation_scores = isolation_scores)
