@@ -62,7 +62,12 @@ max_bin_index <- nrow(state_assignments)
 matching_bin_distance <- function(reference_bin_index) {
   reference_state <- state_assignments[reference_bin_index, 1]
 
-  for (distance in 1:max_bin_index) {
+  # The maximum possible distance between two bins with the same state is
+  # the number of bins between the reference bin index and the two ends of the
+  # dataset
+  max_distance <- max(max_bin_index - reference_bin_index, reference_bin_index - 1)
+
+  for (distance in 1:max_distance) {
     # Check upstream of reference bin index
 
     # If the comparison bin index is less than 1 it is out of range
