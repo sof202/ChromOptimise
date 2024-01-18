@@ -17,10 +17,9 @@
 ## Run 5_batch_CreateIncrementalModels.sh                         ||
 ## ============================================================== ##
 ## INPUTS:                                                        ||
-## $1 -> Bin size                                                 ||
-## $2 -> Sample size                                              ||
-## $3 -> State assignments file                                   ||
-## $4 -> Sample size for isolation score                          ||
+## $1 -> State assignments file                                   ||
+## $2 -> Output file path                                         ||
+## $3 -> Sample size for isolation score                          ||
 ## ============================================================== ##
 ## OUTPUTS:                                                       ||
 ## Plot of isolation score for each state                         ||
@@ -33,15 +32,23 @@
 
 rm(list = ls())
 
+setwd("/lustre/projects/Research_Project-MRC190311/scripts/integrative")
+source("ChromOptimise/configuration/config.R")
+
+setwd(model_dir)
+
 library("ggplot2")
 
-sample_size <- 100
+arguments <- commandArgs(trailingOnly = TRUE)
+state_assignments_file <- arguments[1]
+output_file_path <- arguments[2]
+isolation_sample_size <- as.numeric(arguments[3])
 
 ## =================== ##
 ##   FILE PROCESSING   ##
 ## =================== ##
 
-state_assignments <- read.table("test_file.txt", skip = 2)
+state_assignments <- read.table(state_assignments_file, skip = 2)
 
 ## ============================= ##
 ##   ISOLATION SCORE FUNCTIONS   ##
@@ -113,6 +120,8 @@ sorted_isolation_scores <- isolation_scores_output[order(isolation_scores_output
 ## =========== ##
 ##   OUTPUTS   ##
 ## =========== ##
+
+setwd(output_file_path)
 
 isolation_scores_scatter <- 
   ggplot(sorted_isolation_scores, aes(x = states, y = isolation_scores)) +
