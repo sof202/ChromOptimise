@@ -133,8 +133,11 @@ isolation_scores_scatter <-
   theme_bw() +
   theme(plot.title = element_text(hjust = 0.5))
 
+ggsave(
+  "Isolation_Scores.png"
+)
 
-write.table(sorted_isolation_scores, "isolation_scores.txt", row.names = FALSE)
+write.table(sorted_isolation_scores, "Isolation_Scores.txt", row.names = FALSE)
 
 
 
