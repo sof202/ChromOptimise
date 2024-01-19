@@ -19,7 +19,7 @@ body:
     id: Suggestion
     attributes:
       label: Suggestion
-      description: Also tell us, why do you want to see this?
+      description: What is your suggestion, and why would it be useful to you?
       placeholder: Tell us what you see!
       value: "My suggestion for an enhancement is..."
     validations:
