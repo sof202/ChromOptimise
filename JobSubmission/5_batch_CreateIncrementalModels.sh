@@ -134,8 +134,15 @@ if ! [[ "${bin_size}" =~ ^[0-9]+$  || "${sample_size}" =~ ^[0-9]+$ ]]; then
     { >&2 echo "ERROR: [\${BINARY_DIR} - ${BINARY_DIR}] doesn't exist, \
     make sure FilePaths.txt is pointing to  the correct directory."
     batch_finishing_statement 1; }
-    bin_size=$(find . -type f -name "*.txt*.gz" | head -1 | cut -d "_" -f 6)
-    sample_size=$(find . -type f -name "*.txt*.gz" | head -1 | cut -d "_" -f 4)
+
+    # The bin size and sample size are given in the file names of the binary
+    # files. The following two commands find the first binary file in the
+    # binary directory and extract the bin and sample size. Which, given
+    # the directory structure, will be the 9th and 7th fields respectively
+    # of the file path when delimited by underscores.
+    bin_size=$(find . -type f -name "*.txt*.gz" | head -1 | cut -d "_" -f 9)
+    sample_size=$(find . -type f -name "*.txt*.gz" | head -1 | cut -d "_" -f 7)
+    
     echo "Bin size or sample size given is invalid."
     echo "Using the following values instead."
     echo "Bin size: ${bin_size}. Sample Size: ${sample_size}."
