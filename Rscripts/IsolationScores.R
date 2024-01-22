@@ -22,7 +22,6 @@
 ## $3 -> Sample size for isolation score                          ||
 ## ============================================================== ##
 ## OUTPUTS:                                                       ||
-## Plot of isolation score for each state                         ||
 ## Text file containing isolation scores for each state           ||
 ## ============================================================== ##
 
