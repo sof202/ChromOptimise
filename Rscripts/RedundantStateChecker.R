@@ -143,7 +143,10 @@ low_transition_states <- low_transition_probabilites[, 1]
 
 
 ## States with a high isolation score or no isolation score ##
-isolated_states_data <- isolation_data[isolation_data$isolation_scores > isolation_threshold & !is.na(isolation_data$isolation_scores), ]
+isolated_states_data <- isolation_data[
+  isolation_data$isolation_scores > isolation_threshold &
+    !is.na(isolation_data$isolation_scores),
+]
 
 isolated_states <- isolated_states_data[, 1]
 
@@ -152,8 +155,8 @@ unassigned_states <- setdiff((1:model_size), isolation_data[[1]])
 isolated_states <- append(isolated_states, unassigned_states)
 
 # Finds all states that were only assigned once (resulting in NA)
-single_assigned_states <- 
-  isolation_data$states[isolation_data$isolation_scores %in% NA]
+single_assigned_states <-
+  isolation_data$states[is.na(isolation_data$isolation_scores)]
 isolated_states <- append(isolated_states, single_assigned_states)
 
 
@@ -163,7 +166,7 @@ isolated_states <- append(isolated_states, single_assigned_states)
 # (iii) High isolation
 redundant_states <- c()
 for (state in low_transition_states){
-  if (state %in% similar_states_list & state %in% isolated_states) {
+  if (state %in% similar_states_list && state %in% isolated_states) {
     redundant_states <- append(redundant_states, state)
   }
 }
