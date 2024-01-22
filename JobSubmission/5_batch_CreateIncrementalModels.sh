@@ -268,25 +268,26 @@ cd "${MODEL_DIR}" || \
 make sure FilePaths.txt is pointing to the correct directory."
 batch_finishing_statement 1; }
 
-emission_files_to_rename=$(find . -type f -name "emissions*")
-for file in $emission_files_to_rename; do
-    file_ending=$(echo "$file" | cut -d "_" -f 2)
-    mv "$file" \
-    "Emissions_BinSize_${bin_size}_SampleSize_${sample_size}_States_${file_ending}"
-done
+# html files are not required for subsequent analysis
+rm ./*.html
 
-transistion_files_to_rename=$(find . -type f -name "transitions*")
-for file in $transistion_files_to_rename; do
-    file_ending=$(echo "$file" | cut -d "_" -f 2)
-    mv "$file" \
-    "Transitions_BinSize_${bin_size}_SampleSize_${sample_size}_States_${file_ending}"
-done
+# Find all files in model directory, but not the state assignment files
+files_to_rename=$(find . -maxdepth 1 -type f)
 
-model_files_to_rename=$(find . -type f -name "model*")
-for file in $model_files_to_rename; do
-    file_ending=$(echo "$file" | cut -d "_" -f 2)
-    mv "$file" \
-    "Model_BinSize_${bin_size}_SampleSize_${sample_size}_States_${file_ending}"
+# files will be named [emissions/transitions/Model] (file start) followed by
+# information about the file (file middle) followed by the number of states
+# and file extension (file end)
+file_middle="_BinSize_${bin_size}_SampleSize_${sample_size}_States_"
+
+for file in $files_to_rename; do
+    # files are originally in the form 
+    # [file type]_[state_number].[file extension]
+    # We want to split this into the type of the file (file start) and the 
+    # number of states and file extension (file end)
+    file_start=$(echo "$file" | cut -d "_" -f 1)
+    file_end=$(echo "$file" | cut -d "_" -f 2)
+
+    mv "$file" "${file_start}${file_middle}${file_end}"
 done
 
 batch_finishing_statement 0
