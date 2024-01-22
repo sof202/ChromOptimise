@@ -211,7 +211,7 @@ write.table(isolated_states_data, file = output_file,
             append = TRUE, row.names = FALSE, col.names = FALSE)
 write(separator, file = output_file, append = TRUE)
 
-write("\nStates with no assignment:\n"
+write("\nStates with no/single assignment:\n"
       , file = output_file, append = TRUE)
 write(separator, file = output_file, append = TRUE)
 
