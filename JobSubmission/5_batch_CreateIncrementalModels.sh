@@ -142,7 +142,7 @@ if ! [[ "${bin_size}" =~ ^[0-9]+$  || "${sample_size}" =~ ^[0-9]+$ ]]; then
     # of the file path when delimited by underscores.
     bin_size=$(find . -type f -name "*.txt*.gz" | head -1 | cut -d "_" -f 9)
     sample_size=$(find . -type f -name "*.txt*.gz" | head -1 | cut -d "_" -f 7)
-
+    
     echo "Bin size or sample size given is invalid."
     echo "Using the following values instead."
     echo "Bin size: ${bin_size}. Sample Size: ${sample_size}."
