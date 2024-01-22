@@ -173,6 +173,10 @@ make sure FilePaths.txt is pointing to the correct directory."
 batch_finishing_statement 1; }
 rm -f ./*
 
+cd STATEBYLINE || { batch_finishing_statement 1; }
+rm -f ./*
+
+
 ## ========================== ##
 ##   PARALLELISATION SET UP   ##
 ## ========================== ##
