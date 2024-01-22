@@ -178,21 +178,29 @@ separator <- "<------------------------------------------------------------>"
 write("States with similar emission probabilities:\n",
       file = output_file)
 write(separator, file = output_file, append = TRUE)
+
 write("|Similar state pairs| |Euclidean distance between states|",
       file = output_file, append = TRUE)
 write(separator, file = output_file, append = TRUE)
+
 write.table(low_euclidean_distances, file = output_file,
             append = TRUE, row.names = FALSE, col.names = FALSE)
 write(separator, file = output_file, append = TRUE)
+
+
 write("\nStates with low transition probability towards them:\n"
       , file = output_file, append = TRUE)
 write(separator, file = output_file, append = TRUE)
+
 write("|State| |Maximum probability of transitioning towards state|",
       file = output_file, append = TRUE)
 write(separator, file = output_file, append = TRUE)
+
 write.table(low_transition_probabilites, file = output_file,
             append = TRUE, row.names = FALSE, col.names = FALSE)
 write(separator, file = output_file, append = TRUE)
+
+
 write("\nDetermined redundant states:", file = output_file, append = TRUE)
 if (length(redundant_states) == 0) {
   write("NONE", file = output_file, append = TRUE)
