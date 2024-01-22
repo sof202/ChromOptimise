@@ -272,7 +272,10 @@ batch_finishing_statement 1; }
 rm ./*.html
 
 # Find all files in model directory, but not the state assignment files
-files_to_rename=$(find . -maxdepth 1 -type f)
+# We specifically want the model files that have yet to be renamed
+# renamed files' first word will be in captials, so this find statement will
+# not find the renamed files.
+files_to_rename=$(find . -maxdepth 1 -type f -name "*ions_*")
 
 # files will be named [emissions/transitions/Model] (file start) followed by
 # information about the file (file middle) followed by the number of states
@@ -287,7 +290,9 @@ for file in $files_to_rename; do
     file_start=$(echo "$file" | cut -d "_" -f 1)
     file_end=$(echo "$file" | cut -d "_" -f 2)
 
-    mv "$file" "${file_start}${file_middle}${file_end}"
+    # We use the ^^ expansion of file start to ensure that the files are not 
+    # renamed multiple times
+    mv "$file" "${file_start^^}${file_middle}${file_end}"
 done
 
 batch_finishing_statement 0

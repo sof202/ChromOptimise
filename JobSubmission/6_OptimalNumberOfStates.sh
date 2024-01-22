@@ -128,7 +128,7 @@ cd "${MODEL_DIR}" || \
 { >&2 echo "ERROR: [\${MODEL_DIR} - ${MODEL_DIR}] doesn't exist, \
 make sure FilePaths.txt is pointing to the correct directory."; finishing_statement 1; }
 
-emission_text_files=$(find . -type f -name "Emissions*.txt")
+emission_text_files=$(find . -type f -name "EMISSIONS*.txt")
 for file in $emission_text_files; do
     cp "$file" "${OPTIMUM_STATES_DIR}/temp"
 done
