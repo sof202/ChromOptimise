@@ -132,10 +132,6 @@ emission_text_files=$(find . -type f -name "EMISSIONS*.txt")
 for file in $emission_text_files; do
     cp "$file" "${OPTIMUM_STATES_DIR}/temp"
 done
-transition_text_files=$(find . -type f -name "Transitions*.txt")
-for file in $transition_text_files; do
-    cp "$file" "${OPTIMUM_STATES_DIR}/temp"
-done
 
 ## =============== ##
 ##    MAIN LOOP    ##
