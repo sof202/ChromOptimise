@@ -72,6 +72,8 @@ transitions_file <- paste0("Transitions_BinSize_", bin_size, "_SampleSize_",
 transitions_data <- read.table(transitions_file, skip = 1)
 transitions_data <- subset(transitions_data, select = -V1)
 
+# Isolation scores are already in the output file path from IsolationScores.R
+setwd(output_file_path)
 isolation_data <- read.table(Isolation_Scores.txt, header = TRUE)
 
 ## =================================== ##
