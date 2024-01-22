@@ -211,6 +211,16 @@ write.table(isolated_states_data, file = output_file,
             append = TRUE, row.names = FALSE, col.names = FALSE)
 write(separator, file = output_file, append = TRUE)
 
+write("\nStates with no assignment:\n"
+      , file = output_file, append = TRUE)
+write(separator, file = output_file, append = TRUE)
+
+write.table(single_assigned_states, file = output_file,
+            append = TRUE, row.names = FALSE, col.names = FALSE)
+write.table(unassigned_states, file = output_file,
+            append = TRUE, row.names = FALSE, col.names = FALSE)
+write(separator, file = output_file, append = TRUE)
+
 
 write("\nDetermined redundant states:", file = output_file, append = TRUE)
 if (length(redundant_states) == 0) {
