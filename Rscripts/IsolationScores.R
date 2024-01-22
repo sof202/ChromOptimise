@@ -35,8 +35,6 @@ rm(list = ls())
 setwd("/lustre/projects/Research_Project-MRC190311/scripts/integrative")
 source("ChromOptimise/configuration/config.R")
 
-setwd(model_dir)
-
 library(ggplot2)
 
 arguments <- commandArgs(trailingOnly = TRUE)
