@@ -143,8 +143,10 @@ low_transition_states <- low_transition_probabilites[, 1]
 
 
 ## States with a high isolation score or no isolation score ##
-isolated_states <- 
-  isolation_data$states[isolation_data$isolation_scores > isolation_threshold & ! is.na(isolation_data$isolation_scores)]
+isolated_states_data <- 
+  isolation_data[isolation_data$isolation_scores > isolation_threshold & ! is.na(isolation_data$isolation_scores)]
+
+isolated_states <- isolated_states_data[, 1]
 
 # Finds all states that have no isolation score (implying they are unassigned)
 unassigned_states <- setdiff((1:model_size), isolation_data[[1]])
@@ -197,6 +199,15 @@ write("|State| |Maximum probability of transitioning towards state|",
 write(separator, file = output_file, append = TRUE)
 
 write.table(low_transition_probabilites, file = output_file,
+            append = TRUE, row.names = FALSE, col.names = FALSE)
+write(separator, file = output_file, append = TRUE)
+
+
+write("\nStates with high isolation score:\n"
+      , file = output_file, append = TRUE)
+write(separator, file = output_file, append = TRUE)
+
+write.table(isolated_states_data, file = output_file,
             append = TRUE, row.names = FALSE, col.names = FALSE)
 write(separator, file = output_file, append = TRUE)
 
