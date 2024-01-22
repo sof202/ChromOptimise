@@ -27,8 +27,8 @@
 ## OUTPUTS:                                                       ||
 ## Boolean response for the presence of redundant states          ||
 ## List of states with similar emission parameters                ||
-## List of states with low bin assignment                         ||
-##     (poor transition probabilities towards the state)          ||
+## List of states with low transition probabilities towards them  ||
+## List of states with high isolation scores (or no assignment)   ||
 ## List of states that are considered redundant                   ||
 ## ============================================================== ##
 
@@ -174,6 +174,7 @@ for (state in low_transition_states){
 output_file <- paste0("Redundant_States_Modelsize_", model_size, ".txt")
 setwd(output_file_path)
 separator <- "<------------------------------------------------------------>"
+
 write("States with similar emission probabilities:\n",
       file = output_file)
 write(separator, file = output_file, append = TRUE)
