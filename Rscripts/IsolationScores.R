@@ -161,18 +161,4 @@ sorted_isolation_scores <-
 
 setwd(output_file_path)
 
-isolation_scores_scatter <-
-  ggplot(sorted_isolation_scores, aes(x = states, y = isolation_scores)) +
-  geom_point() +
-  scale_x_continuous(breaks = seq(min(sorted_isolation_scores$states),
-                                  max(sorted_isolation_scores$states),
-                                  by = 1)) +
-  labs(title = "Isolation scores", x = "State number", y = "Isolation score") +
-  theme_bw() +
-  theme(plot.title = element_text(hjust = 0.5))
-
-ggsave(
-  "Isolation_Scores.png"
-)
-
 write.table(sorted_isolation_scores, "Isolation_Scores.txt", row.names = FALSE)
