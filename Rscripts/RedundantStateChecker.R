@@ -72,6 +72,8 @@ transitions_file <- paste0("Transitions_BinSize_", bin_size, "_SampleSize_",
 transitions_data <- read.table(transitions_file, skip = 1)
 transitions_data <- subset(transitions_data, select = -V1)
 
+isolation_data <- read.table(Isolation_Scores.txt, header = TRUE)
+
 ## =================================== ##
 ##   EUCLIDEAN DISTANCE CALCULATIONS   ##
 ## =================================== ##
@@ -114,13 +116,10 @@ for (state in 1:model_size){
 ##   IDENTIFICATION OF REDUNDANT STATES   ##
 ## ====================================== ##
 
+## Similar state pairings ##
 low_euclidean_distances <-
   euclidean_distances[euclidean_distances[, 2]
                       < emissions_threshold, ]
-
-low_transition_probabilites <-
-  max_transition_towards_states[max_transition_towards_states[, 2]
-                                < transitions_threshold, ]
 
 # Extract states from state pairs in low euclidean distances
 similar_state_pairs <- low_euclidean_distances[, 1]
@@ -131,13 +130,37 @@ for (state_pair in similar_state_pairs){
 }
 similar_states_list <- unique(similar_states)
 
-low_assignment_states <- low_transition_probabilites[, 1]
 
-# Check for redundant states by using critereon 
-# low assignment and similar state exists
+## States with low max transition probability towards them ##
+low_transition_probabilites <-
+  max_transition_towards_states[max_transition_towards_states[, 2]
+                                < transitions_threshold, ]
+
+
+low_transition_states <- low_transition_probabilites[, 1]
+
+
+## States with a high isolation score or no isolation score ##
+isolated_states <- 
+  isolation_data$states[isolation_data$isolation_scores > isolation_threshold & ! is.na(isolation_data$isolation_scores)]
+
+# Finds all states that have no isolation score (implying they are unassigned)
+unassigned_states <- setdiff((1:model_size), isolation_data[[1]])
+isolated_states <- append(isolated_states, unassigned_states)
+
+# Finds all states that were only assigned once (resulting in NA)
+single_assigned_states <- 
+  isolation_data$states[isolation_data$isolation_scores %in% NA]
+isolated_states <- append(isolated_states, single_assigned_states)
+
+
+## Check for redundant states by using critereon ##
+# (i) Similar state pair existence
+# (ii) Low maximum transition probability
+# (iii) High isolation
 redundant_states <- c()
-for (state in low_assignment_states){
-  if (state %in% similar_states_list) {
+for (state in low_transition_states){
+  if (state %in% similar_states_list & state %in% isolated_states) {
     redundant_states <- append(redundant_states, state)
   }
 }
