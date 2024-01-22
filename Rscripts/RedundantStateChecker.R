@@ -169,9 +169,9 @@ for (state in low_transition_states){
   }
 }
 
-## ========== ##
-##   OUPUTS   ##
-## ========== ##
+## =========== ##
+##   OUTPUTS   ##
+## =========== ##
 
 output_file <- paste0("Redundant_States_Modelsize_", model_size, ".txt")
 setwd(output_file_path)
