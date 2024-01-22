@@ -165,6 +165,17 @@ while [[ ${max_model_number} -gt 2 ]]; do
     sort -g | \
     tail -1) 
 
+    echo "Running IsolationScores.R for: ${max_model_number} states..."
+
+    # State assignments are named:
+    # CellType_SampleSize_BinSize_ModelSize_Chromosome_statebyline.txt
+    state_assignment_file=$(find "${MODEL_DIR}" -name "*${max_model_number}_chr1_*")
+
+    # IsolationScores.R is ran with a sample size of 100% (all data is considered)
+    # This is because the slow down is not that significant for most datasets
+    Rscript IsolationScores.R "${state_assignment_file}" "${output_directory}" \
+    100
+
     echo "Running RedundantStateChecker.R for: ${max_model_number} states..."
 
     Rscript RedundantStateChecker.R "${max_model_number}" "${bin_size}" \
@@ -186,6 +197,7 @@ while [[ ${max_model_number} -gt 2 ]]; do
 done
 
 rm -r "${OPTIMUM_STATES_DIR}/temp"
+rm "${output_directory}/Isolation_Scores.txt"
 
 ## ========================= ##
 ##   OPTIMUM STATES CHECK    ##

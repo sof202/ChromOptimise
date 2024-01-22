@@ -157,6 +157,7 @@ java -mx30G \
 -jar "${CHROMHMM_MAIN_DIR}/ChromHMM.jar" LearnModel \
 -noautoopen \
 -nobed \
+-printstatebyline \
 -init random \
 -s "${seed}" \
 "${full_binary_path}" "${BIG_MODELS_DIR}" "${model_size}" "${assembly}" > \

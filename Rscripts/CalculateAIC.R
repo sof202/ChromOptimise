@@ -102,3 +102,5 @@ ggsave(
 )
 write.csv(likelihood_data,
           paste0(output_file_path, "/Akaike_Information_Criterion.csv"))
+
+a <- 2
