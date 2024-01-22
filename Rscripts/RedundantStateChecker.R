@@ -74,7 +74,7 @@ transitions_data <- subset(transitions_data, select = -V1)
 
 # Isolation scores are already in the output file path from IsolationScores.R
 setwd(output_file_path)
-isolation_data <- read.table(Isolation_Scores.txt, header = TRUE)
+isolation_data <- read.table("Isolation_Scores.txt", header = TRUE)
 
 ## =================================== ##
 ##   EUCLIDEAN DISTANCE CALCULATIONS   ##
