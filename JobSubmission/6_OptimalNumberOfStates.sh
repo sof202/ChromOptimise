@@ -197,6 +197,7 @@ while [[ ${max_model_number} -gt 2 ]]; do
 done
 
 rm -r "${OPTIMUM_STATES_DIR}/temp"
+rm "${output_directory}/Isolation_Scores.txt"
 
 ## ========================= ##
 ##   OPTIMUM STATES CHECK    ##
