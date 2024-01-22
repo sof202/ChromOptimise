@@ -206,6 +206,10 @@ write("\nStates with high isolation score:\n"
       , file = output_file, append = TRUE)
 write(separator, file = output_file, append = TRUE)
 
+write("|State| |Isolation Score|",
+      file = output_file, append = TRUE)
+write(separator, file = output_file, append = TRUE)
+
 write.table(isolated_states_data, file = output_file,
             append = TRUE, row.names = FALSE, col.names = FALSE)
 write(separator, file = output_file, append = TRUE)
