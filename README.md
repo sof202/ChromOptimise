@@ -2,7 +2,7 @@
 
 ChromOptimise is a pipeline that identifies the optimum number of states that should be used with [ChromHMM](https://compbio.mit.edu/ChromHMM/#:~:text=ChromHMM%20is%20software%20for%20learning,and%20spatial%20patterns%20of%20marks.)'s `LearnModel` command for a particular genomic dataset.
 
-For more information, please head over to the [wiki](https://sof202.github.io/ChromOptimise/)
+For more information, please head over to the [wiki](https://sof202.github.io/ChromOptimise/).
 
 ## Table of contents
 - [About](#About)
