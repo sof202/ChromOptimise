@@ -1,0 +1,26 @@
+{
+  "id": "ChromOptimise/Supplementary-pipeline-explanation",
+  "title": "Supplementary pipeline explanation",
+  "description": "There are additional scripts that are given with ChromOptimise that are not directly a part of the main pipeline. However, these scripts proved useful in constructing the pipeline and so were elected to be included in this repository.",
+  "source": "@site/docs/ChromOptimise/Supplementary-pipeline-explanation.md",
+  "sourceDirName": "ChromOptimise",
+  "slug": "/ChromOptimise/Supplementary-pipeline-explanation",
+  "permalink": "/ChromOptimise/ChromOptimise/Supplementary-pipeline-explanation",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 4,
+  "frontMatter": {
+    "sidebar_position": 4
+  },
+  "sidebar": "documentationSidebar",
+  "previous": {
+    "title": "Pipeline explanation",
+    "permalink": "/ChromOptimise/ChromOptimise/Pipeline-Explanation"
+  },
+  "next": {
+    "title": "Factors that affect the output",
+    "permalink": "/ChromOptimise/ChromOptimise/Factors-that-affect-the-output"
+  }
+}

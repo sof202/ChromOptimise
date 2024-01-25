@@ -1,0 +1,26 @@
+{
+  "id": "ChromOptimise/ChromHMM-overview",
+  "title": "ChromHMM overview",
+  "description": "ChromHMM is a tool created by Jason Ernst and Manolis Kellis. It uses the Baum-Welch algorithm to train a hidden Markov model to help characterise chromatin states for a genomic dataset (specifically one that can be peak called). This page covers what a hidden Markov model actually is and how the model is trained.",
+  "source": "@site/docs/ChromOptimise/ChromHMM-overview.md",
+  "sourceDirName": "ChromOptimise",
+  "slug": "/ChromOptimise/ChromHMM-overview",
+  "permalink": "/ChromOptimise/ChromOptimise/ChromHMM-overview",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 1,
+  "frontMatter": {
+    "sidebar_position": 1
+  },
+  "sidebar": "documentationSidebar",
+  "previous": {
+    "title": "ChromOptimise Documentation",
+    "permalink": "/ChromOptimise/category/chromoptimise-documentation"
+  },
+  "next": {
+    "title": "Configuration files setup",
+    "permalink": "/ChromOptimise/ChromOptimise/Configuration-Files-Setup"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "id": "ChromOptimise/Pipeline-Explanation",
+  "title": "Pipeline explanation",
+  "description": "The main pipeline is split into 3 main steps:",
+  "source": "@site/docs/ChromOptimise/Pipeline-Explanation.md",
+  "sourceDirName": "ChromOptimise",
+  "slug": "/ChromOptimise/Pipeline-Explanation",
+  "permalink": "/ChromOptimise/ChromOptimise/Pipeline-Explanation",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 3,
+  "frontMatter": {
+    "sidebar_position": 3
+  },
+  "sidebar": "documentationSidebar",
+  "previous": {
+    "title": "Configuration files setup",
+    "permalink": "/ChromOptimise/ChromOptimise/Configuration-Files-Setup"
+  },
+  "next": {
+    "title": "Supplementary pipeline explanation",
+    "permalink": "/ChromOptimise/ChromOptimise/Supplementary-pipeline-explanation"
+  }
+}

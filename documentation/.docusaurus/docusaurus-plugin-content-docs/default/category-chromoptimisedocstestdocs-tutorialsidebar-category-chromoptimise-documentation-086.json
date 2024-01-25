@@ -1,0 +1,16 @@
+{
+  "title": "ChromOptimise Documentation",
+  "description": "This is the documentation for ChromOptimise.",
+  "slug": "/category/chromoptimise-documentation",
+  "permalink": "/ChromOptimiseDocsTest/docs/category/chromoptimise-documentation",
+  "navigation": {
+    "previous": {
+      "title": "Welcome to the ChromOptimise wiki!",
+      "permalink": "/ChromOptimiseDocsTest/docs/"
+    },
+    "next": {
+      "title": "ChromHMM overview",
+      "permalink": "/ChromOptimiseDocsTest/docs/ChromOptimise/ChromHMM-overview"
+    }
+  }
+}

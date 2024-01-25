@@ -1,0 +1,142 @@
+{
+  "pluginId": "default",
+  "version": "current",
+  "label": "Next",
+  "banner": null,
+  "badge": false,
+  "noIndex": false,
+  "className": "docs-version-current",
+  "isLast": true,
+  "docsSidebars": {
+    "documentationSidebar": [
+      {
+        "type": "link",
+        "label": "Welcome to the ChromOptimise wiki!",
+        "href": "/ChromOptimise/",
+        "docId": "intro",
+        "unlisted": false
+      },
+      {
+        "type": "category",
+        "label": "ChromOptimise Documentation",
+        "collapsible": true,
+        "collapsed": true,
+        "items": [
+          {
+            "type": "link",
+            "label": "ChromHMM overview",
+            "href": "/ChromOptimise/ChromOptimise/ChromHMM-overview",
+            "docId": "ChromOptimise/ChromHMM-overview",
+            "unlisted": false
+          },
+          {
+            "type": "link",
+            "label": "Configuration files setup",
+            "href": "/ChromOptimise/ChromOptimise/Configuration-Files-Setup",
+            "docId": "ChromOptimise/Configuration-Files-Setup",
+            "unlisted": false
+          },
+          {
+            "type": "link",
+            "label": "Pipeline explanation",
+            "href": "/ChromOptimise/ChromOptimise/Pipeline-Explanation",
+            "docId": "ChromOptimise/Pipeline-Explanation",
+            "unlisted": false
+          },
+          {
+            "type": "link",
+            "label": "Supplementary pipeline explanation",
+            "href": "/ChromOptimise/ChromOptimise/Supplementary-pipeline-explanation",
+            "docId": "ChromOptimise/Supplementary-pipeline-explanation",
+            "unlisted": false
+          },
+          {
+            "type": "link",
+            "label": "Factors that affect the output",
+            "href": "/ChromOptimise/ChromOptimise/Factors-that-affect-the-output",
+            "docId": "ChromOptimise/Factors-that-affect-the-output",
+            "unlisted": false
+          },
+          {
+            "type": "link",
+            "label": "Processing times",
+            "href": "/ChromOptimise/ChromOptimise/Processing-Times",
+            "docId": "ChromOptimise/Processing-Times",
+            "unlisted": false
+          },
+          {
+            "type": "link",
+            "label": "Memory profiling",
+            "href": "/ChromOptimise/ChromOptimise/Memory-Profiling",
+            "docId": "ChromOptimise/Memory-Profiling",
+            "unlisted": false
+          },
+          {
+            "type": "link",
+            "label": "SLURM information",
+            "href": "/ChromOptimise/ChromOptimise/SLURM-Workload-Manager-Information",
+            "docId": "ChromOptimise/SLURM-Workload-Manager-Information",
+            "unlisted": false
+          }
+        ],
+        "href": "/ChromOptimise/category/chromoptimise-documentation"
+      }
+    ]
+  },
+  "docs": {
+    "ChromOptimise/ChromHMM-overview": {
+      "id": "ChromOptimise/ChromHMM-overview",
+      "title": "ChromHMM overview",
+      "description": "ChromHMM is a tool created by Jason Ernst and Manolis Kellis. It uses the Baum-Welch algorithm to train a hidden Markov model to help characterise chromatin states for a genomic dataset (specifically one that can be peak called). This page covers what a hidden Markov model actually is and how the model is trained.",
+      "sidebar": "documentationSidebar"
+    },
+    "ChromOptimise/Configuration-Files-Setup": {
+      "id": "ChromOptimise/Configuration-Files-Setup",
+      "title": "Configuration files setup",
+      "description": "You will need to create three configuration files for this pipeline to work:",
+      "sidebar": "documentationSidebar"
+    },
+    "ChromOptimise/Factors-that-affect-the-output": {
+      "id": "ChromOptimise/Factors-that-affect-the-output",
+      "title": "Factors that affect the output",
+      "description": "The optimum number of states to use with your dataset will likely change depending on the quality of your data and the user inputs during the pipeline. Below are some examples of this.",
+      "sidebar": "documentationSidebar"
+    },
+    "ChromOptimise/Memory-Profiling": {
+      "id": "ChromOptimise/Memory-Profiling",
+      "title": "Memory profiling",
+      "description": "To gain insights into the peak heap consumption of each script in the pipeline, we utilized the tool Heaptrack. This allowed for the estimation of memory consumption based on unit tests (albeit only with relatively small amounts of data). Utilizing this information will empower the user to make well-informed decisions regarding the allocation of memory for the scripts involved in the pipeline and ChromHMM.",
+      "sidebar": "documentationSidebar"
+    },
+    "ChromOptimise/Pipeline-Explanation": {
+      "id": "ChromOptimise/Pipeline-Explanation",
+      "title": "Pipeline explanation",
+      "description": "The main pipeline is split into 3 main steps:",
+      "sidebar": "documentationSidebar"
+    },
+    "ChromOptimise/Processing-Times": {
+      "id": "ChromOptimise/Processing-Times",
+      "title": "Processing times",
+      "description": "SLURM workload manager has the feature of introducing a maximum wall time into each script. The default maximum wall time is set in the #SBATCH section of each script and can be overridden when setting the --time option when using sbatch. If the time of execution for a script exceeds this maximum wall time, it will terminate early. This is useful as it helps with workload management on HPCs that a large number of users have access to, and also reduces the effects of non-halting programs.",
+      "sidebar": "documentationSidebar"
+    },
+    "ChromOptimise/SLURM-Workload-Manager-Information": {
+      "id": "ChromOptimise/SLURM-Workload-Manager-Information",
+      "title": "SLURM information",
+      "description": "The scripts included in this repository were designed to be used with SLURM workload manager. As such, many elements of the scripts will not work if one does not run them through SLURM's sbatch command.",
+      "sidebar": "documentationSidebar"
+    },
+    "ChromOptimise/Supplementary-pipeline-explanation": {
+      "id": "ChromOptimise/Supplementary-pipeline-explanation",
+      "title": "Supplementary pipeline explanation",
+      "description": "There are additional scripts that are given with ChromOptimise that are not directly a part of the main pipeline. However, these scripts proved useful in constructing the pipeline and so were elected to be included in this repository.",
+      "sidebar": "documentationSidebar"
+    },
+    "intro": {
+      "id": "intro",
+      "title": "Welcome to the ChromOptimise wiki!",
+      "description": "ChromOptimise is a pipeline that identifies the optimum number of states that should be used with ChromHMM's LearnModel command for a particular genomic dataset.",
+      "sidebar": "documentationSidebar"
+    }
+  }
+}

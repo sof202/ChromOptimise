@@ -1,0 +1,26 @@
+{
+  "id": "ChromOptimise/Configuration-Files-Setup",
+  "title": "Configuration files setup",
+  "description": "You will need to create three configuration files for this pipeline to work:",
+  "source": "@site/docs/ChromOptimise/Configuration-Files-Setup.md",
+  "sourceDirName": "ChromOptimise",
+  "slug": "/ChromOptimise/Configuration-Files-Setup",
+  "permalink": "/ChromOptimise/ChromOptimise/Configuration-Files-Setup",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 2,
+  "frontMatter": {
+    "sidebar_position": 2
+  },
+  "sidebar": "documentationSidebar",
+  "previous": {
+    "title": "ChromHMM overview",
+    "permalink": "/ChromOptimise/ChromOptimise/ChromHMM-overview"
+  },
+  "next": {
+    "title": "Pipeline explanation",
+    "permalink": "/ChromOptimise/ChromOptimise/Pipeline-Explanation"
+  }
+}
