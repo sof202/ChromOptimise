@@ -33,9 +33,10 @@ jobs:
           cd documentation
           npm run build
 
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+      # Popular action to deploy to GitHub Pages:
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4.3.3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: documentation/build
+          branch: gh-pages # The branch the action should deploy to.
+          #folder: 01-getting-starter/ # The folder the action should deploy.
+          folder: documentation/build # The folder the action should deploy.
