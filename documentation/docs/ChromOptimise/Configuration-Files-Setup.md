@@ -132,7 +132,7 @@ start_time=$(date +%s)
 
 LOG_FILE_PATH="${LOG_DIR}/$SLURM_JOB_NAME/$USER"
 mkdir -p "${LOG_FILE_PATH}"
-timestamp=$(date -u +%Y.%m.%d-%H:%M)
+timestamp=$(date -u +%Y.%m.%d-%H_%M)
 export timestamp
 
 ## ============= ##
