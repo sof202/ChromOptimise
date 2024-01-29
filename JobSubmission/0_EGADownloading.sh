@@ -40,6 +40,7 @@
 ## =================================================================================##
 ## INPUTS:                                                                          ||
 ## $1 -> File of file names to download from EGA.                                   ||
+## $2 -> Full file path to your conda environment for pyega3                        || 
 ## =================================================================================##
 ## OUTPUTS:                                                                         ||
 ## NONE                                                                             ||
@@ -70,7 +71,6 @@ date -u
 
 start_time=$(date +%s)
 
-# CHANGE THIS TO YOUR OWN CONFIG FILE
 source "/lustre/projects/Research_Project-MRC190311/scripts/integrative\
 /ChromOptimise/configuration/FilePaths.txt"
 
@@ -81,9 +81,9 @@ timestamp=$(date -u +%Y.%m.%d-%H:%M)
 # Output and error files renamed to:
 # [file name]~[job id]~[date]-[time]
 
-ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" \
+mv "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" \
 "${LOG_FILE_PATH}/File-$1~${SLURM_JOB_ID}~$timestamp.log"
-ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
+mv "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 "${LOG_FILE_PATH}/File-$1~${SLURM_JOB_ID}~$timestamp.err"
 
 ## =============== ##
@@ -105,8 +105,7 @@ module load Miniconda3
 # Using the conda shell script in the [conda]/etc folder is a work around for this.
 source /lustre/home/sof202/miniconda3/etc/profile.d/conda.sh 
 
-# CHANGE THIS TO YOUR CONDA ENVIRONMENT PATH/NAME
-conda activate /lustre/home/sof202/miniconda3/envs/pyega
+conda activate "$2"
 
 mkdir -p "${DOWNLOAD_DIR}"
 # Read each line of text file
