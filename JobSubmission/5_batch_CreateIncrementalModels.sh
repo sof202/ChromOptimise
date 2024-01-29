@@ -277,7 +277,7 @@ rm ./*.html
 # not find the renamed files.
 files_to_rename=$(find . -maxdepth 1 -type f -name "*ions_*")
 
-# files will be named [emissions/transitions/Model] (file start) followed by
+# files will be named [emissions/transitions] (file start) followed by
 # information about the file (file middle) followed by the number of states
 # and file extension (file end)
 file_middle="_BinSize_${bin_size}_SampleSize_${sample_size}_States_"
@@ -290,9 +290,9 @@ for file in $files_to_rename; do
     file_start=$(echo "$file" | cut -d "_" -f 1)
     file_end=$(echo "$file" | cut -d "_" -f 2)
 
-    # We use the ^^ expansion of file start to ensure that the files are not 
+    # We use the ^ expansion of file start to ensure that the files are not 
     # renamed multiple times
-    mv "$file" "${file_start^^}${file_middle}${file_end}"
+    mv "$file" "${file_start^}${file_middle}${file_end}"
 done
 
 batch_finishing_statement 0
