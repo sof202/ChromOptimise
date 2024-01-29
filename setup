@@ -1,4 +1,6 @@
 #!/bin/bash
+# File is not using .sh extension to avoid changing its own contents during
+# sed lines.
 
 ## =================================================================================##
 ##                                                                                  ||
@@ -17,7 +19,7 @@
 ## CREATED: January 2024                                                            ||
 ## =================================================================================##
 
-# Fail safe in case this file is not executed from the main directory of this
+# Failsafe in case this file is not executed from the main directory of this
 # repository.
 script_path=$(dirname "$(readlink -f "$0")")
 
