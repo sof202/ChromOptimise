@@ -104,9 +104,6 @@ mkdir -p "${RAW_DIR}/${mark_name}"
 
 echo "Moving .bam files to ${RAW_DIR}/${mark_name}..."
 
-for file in ${list_of_files_with_mark_name}; do
-    echo "Moving file ${file}..."
-    mv "${file}" "${RAW_DIR}/${mark_name}"
-done
+mv -t "${RAW_DIR}/${mark_name}" "${list_of_files_with_mark_name}"
 
 finishing_statement 0
