@@ -108,9 +108,10 @@ if [[ -z "${sample_size}" ]]; then
     echo -e "WARNING: No sample size was given.\n"\
     "Assuming that ${sample_size} is the desired sample size..."
 fi
+# If no sample size was found, then the sample stage likely wasn't ran
 if [[ -z "${sample_size}" ]]; then
     { >&2 echo -e "ERROR: No sample size even after fail safe. Please run "\
-    "3_SubsampleBamFiles.sh before running this script." ;}
+    "3_SubsampleBamFiles.sh before running this script." ; finishing_statement 1; }
 fi
 
 if [[ -z "${assembly}" ]]; then
