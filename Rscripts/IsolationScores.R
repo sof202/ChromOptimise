@@ -119,7 +119,7 @@ get_isolation_score <- function(bin_indicies) {
 ## ========================= ##
 
 subsample_target_bins <- function(target_state, sample_percent) {
-  bins_with_target_value <- which(state_assignments[, 1] == target_state)
+  bins_with_target_value <- which(state_assignments[[1]] == target_state)
 
   # If only one bin has been assigned with the target state the recursion
   # will not halt. This is a flag to prevent this scenario.
@@ -129,8 +129,11 @@ subsample_target_bins <- function(target_state, sample_percent) {
 
   # We want a representative sample for each state, some states will be
   # assigned to a much larger number of bins than others
-  sample_size <- length(bins_with_target_value) * (sample_percent / 100)
+  sample_size <- ceiling(length(bins_with_target_value) * (sample_percent / 100))
 
+  if (sample_size > length(bins_with_target_value)) {
+    sample_size <- length(bins_with_target_value)
+  }
   sampled_bin_indices <- sample(bins_with_target_value, sample_size)
 
   return(sampled_bin_indices)
