@@ -24,13 +24,12 @@ After using this pipeline, the user will have greater knowledge over their datas
 ## Getting started
 1) Clone this repository
 2) Ensure all [required software](#software-requirements) is installed
-3) Generate the [file structure](https://sof202.github.io/ChromOptimise/ChromOptimise/Configuration-Files-Setup#data-directory-structure)) 
-4) Run the [`setup`](https://github.com/sof202/ChromOptimise/blob/main/setup) executable 
+3) Run the [`setup`](https://github.com/sof202/ChromOptimise/blob/main/setup) executable 
     - You may need to use `chmod +x setup` first
     - The user will be prompted for whether they want to remove lines beginning with `module` (artefact of HPC system used at UoE)
-5) Create the configuration files using the [templates](https://sof202.github.io/ChromOptimise/ChromOptimise/Configuration-Files-Setup) provided
-6) Place configuration files in the [configuration](https://github.com/sof202/ChromOptimise/tree/main/configuration) directory
-7) Run [`Create_File_Structure.sh`](https://github.com/sof202/ChromOptimise/blob/main/Create_File_Structure.sh) executable.
+4) Create the configuration files using the [templates](https://sof202.github.io/ChromOptimise/ChromOptimise/Configuration-Files-Setup) provided
+5) Place configuration files in the [configuration](https://github.com/sof202/ChromOptimise/tree/main/configuration) directory
+6) Run [`Create_File_Structure.sh`](https://github.com/sof202/ChromOptimise/blob/main/Create_File_Structure.sh) executable.
 
 
 
