@@ -98,7 +98,7 @@ sbatch --array=1-4 2_batch_ProcessBamFiles.sh H3K27me3 30
 
 This merges all of the processed `.bam` files from the previous step using `samtools merge` and subsequently subsamples this file using `samtools view -s`.
 \
-**Note**: samtools had a known bug in version 0.1.18 where subsampling would fail if the sample size was above 50%, ensure that your version of samtools satisfies the [software requirements](https://github.com/sof202/ChromOptimise?tab=readme-ov-file#software-requirements).
+**Note**: samtools had a known bug in version 0.1.18 where subsampling would fail if the sample size was above 50%, ensure that your version of samtools satisfies the [software requirements](../intro.md#software-requirements).
 
 The reason for merging files and subsampling instead of simply subsampling the original files is that it is unlikely that every processed `.bam` file is of the same size. If the `.bam` files are of different sizes, then different subsamples with the same number of files can have different sizes.
 \
