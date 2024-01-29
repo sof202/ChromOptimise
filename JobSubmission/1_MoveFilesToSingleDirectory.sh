@@ -94,14 +94,7 @@ list_of_files_with_mark_name=\
 $(find . -type f -name "*${mark_name}*.bam")
 
 # If the above list is empty then the epigenetic mark must not exist.
-number_of_files_to_move=\
-$(find . -type f -name "*${mark_name}*.bam" | wc -l)
-
-echo "Number of .bam files to be moved is: ${number_of_files_to_move}."
-
-# Exit here if there are no files.
-# There is no point in generating a folder if the mark doesn't exist
-if [[ "${number_of_files_to_move}" -eq 0 ]]; then
+if [[ -z ${list_of_files_with_mark_name} ]]; then
     { >&2 echo -e "ERROR: No files with epigenetic mark: ${mark_name} were found.\n"\
     "Please input a epigenetic mark name that exists (note that this is "\
     "case sensitive)."; finishing_statement 1; }
