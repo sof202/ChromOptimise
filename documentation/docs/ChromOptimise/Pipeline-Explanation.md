@@ -61,6 +61,10 @@ Again, this is an artefact of the pipeline originally being built for the bluepr
 
 The downloaded files from EGA will be in separate directories (as each directory has its own checksum file to validate the downloads). For easier file manipulation later in the pipeline, these files are collated into folders denoted by the epigenetic mark they contain information on.
 
+:::warning[Important]
+This script relies on the `.bam` files containing the epigenetic mark in the file names. Please ensure this is the case for your raw files.
+:::
+
 Example:
 
 ```shell
