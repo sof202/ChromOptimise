@@ -89,9 +89,7 @@ relative_bic_scatter <-
 
 relative_bic_scatter +
   geom_point() +
-  scale_x_continuous(breaks = seq(min(likelihood_data$number_of_states),
-                                  max(likelihood_data$number_of_states),
-                                  by = 1)) +
+  scale_x_continuous(breaks = seq_along(likelihood_data$number_of_states)) +
   labs(title = "Bayesian Information Critereon",
        x = "Number of States", y = "BIC (relative to minimum BIC)") +
   theme_bw() +
