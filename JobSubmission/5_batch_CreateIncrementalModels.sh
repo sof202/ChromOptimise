@@ -22,7 +22,7 @@
 #SBATCH --output=temp%A_%a.log
 # Temporary error file, later to be removed
 #SBATCH --error=temp%A_%a.err
-#SBATCH --job-name=Model_Learning
+#SBATCH --job-name=5_Model_Learning
 
 ## =================================================================================##
 ##                                                                                  ||

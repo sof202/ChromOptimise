@@ -21,7 +21,7 @@
 #SBATCH --output=temp%A_%a.log
 # Temporary error file, later to be removed
 #SBATCH --error=temp%A_%a.err
-#SBATCH --job-name=Processing
+#SBATCH --job-name=2_Processing
 
 ## =================================================================================##
 ##                                                                                  ||

@@ -16,7 +16,7 @@
 #SBATCH --output=temp%j.log
 # Temporary error file, later to be removed
 #SBATCH --error=temp%j.err
-#SBATCH --job-name=Merging_and_Subsampling
+#SBATCH --job-name=3_Merging_and_Subsampling
 
 ## =================================================================================##
 ##                                                                                  ||

@@ -14,7 +14,7 @@
 #SBATCH --output=temp%j.log
 # Temporary error file, later to be removed
 #SBATCH --error=temp%j.err
-#SBATCH --job-name=Download_Files
+#SBATCH --job-name=0_Download_Files
 
 ## =================================================================================##
 ##                                                                                  ||
