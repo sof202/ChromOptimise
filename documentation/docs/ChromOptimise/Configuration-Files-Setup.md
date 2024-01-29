@@ -119,7 +119,7 @@ number_of_marks=VALUE
 
 ## LogFileManagement.sh
 
-This file is essential for managing the temporary log files that are produced when sending the jobs through SLURM workload manager. On top of this, the script will produce information on the time for the script to complete.
+This script will produce information on the time for the script to complete, reducing repetition of code
 \
 (Alternatively you can use the `time` command with the scripts, this is not available on our HPC).
 
@@ -144,10 +144,8 @@ export timestamp
 ## ============= ##
 
 ## ====== FUNCTION : finishing_statement() ===========================================
-## Description: Delete temporary log and error files, give finishing message then exit
+## Description: Give finishing message then exit
 ## Globals: 
-##     SLURM_SUBMIT_DIR
-##     SLURM_JOB_ID
 ##     start_time
 ## Locals:
 ##     end_time
@@ -156,34 +154,6 @@ export timestamp
 ##     exit code
 ## ===================================================================================
 finishing_statement(){
-    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" 
-    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err"
-    echo "Job finished with exit code $1 at:"
-    date -u
-    local end_time
-    local time_taken
-    end_time=$(date +%s)
-    time_taken=$((end_time-start_time))
-    echo "Job took a total of: ${time_taken} seconds to finish."
-    exit "$1"
-}
-
-## ====== FUNCTION : batch_finishing_statement() ======================================
-## Description: Delete temporary log and error files, give finishing message then exit
-## Globals: 
-##     SLURM_SUBMIT_DIR
-##     SLURM_ARRAY_JOB_ID
-##     SLURM_ARRAY_TASK_ID
-##     start_time
-## Locals:
-##     end_time
-##     time_taken
-## Arguments:
-##     exit code
-## ===================================================================================
-batch_finishing_statement(){
-    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.log" 
-    rm "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err"
     echo "Job finished with exit code $1 at:"
     date -u
     local end_time
