@@ -29,7 +29,7 @@ After using this pipeline, the user will have greater knowledge over their datas
     - The user will be prompted for whether they want to remove lines beginning with `module` (artefact of HPC system used at UoE)
 4) Create the configuration files using the [templates](https://sof202.github.io/ChromOptimise/ChromOptimise/Configuration-Files-Setup) provided
 5) Place configuration files in the [configuration](https://github.com/sof202/ChromOptimise/tree/main/configuration) directory
-6) Run [`Create_File_Structure.sh`](https://github.com/sof202/ChromOptimise/blob/main/Create_File_Structure.sh) executable.
+6) Run [`Create_File_Structure.sh`](https://github.com/sof202/ChromOptimise/blob/main/Create_File_Structure.sh) executable
 
 
 
