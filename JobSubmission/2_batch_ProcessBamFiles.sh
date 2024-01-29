@@ -113,7 +113,7 @@ fi
 cd "${RAW_FULL_FILE_PATH}" || \
 { >&2 echo "ERROR: [\${RAW_FULL_FILE_PATH} - ${RAW_FULL_FILE_PATH}] \
 doesn't exist, make sure you typed the epigenetic mark correctly and that you \
-have ran 1_MoveFilesToSingleDirectory.sh first."; batch_finishing_statement 1; }
+have ran 1_MoveFilesToSingleDirectory.sh first."; finishing_statement 1; }
 
 # Get base name of the files in 3 steps
 # 1) Find all of the .bam files in the mark directory
@@ -172,7 +172,7 @@ module load SAMtools
 for file in ${files_to_process}; do
     echo "Processing ${file}.bam..."
     success=0
-    cd "${RAW_FULL_FILE_PATH}" || batch_finishing_statement 1
+    cd "${RAW_FULL_FILE_PATH}" || finishing_statement 1
     # 1)
     samtools index "${file}.bam" 
     samtools idxstats "${file}.bam" > "${file}.PerChromosomeStats.txt"
@@ -186,7 +186,7 @@ for file in ${files_to_process}; do
         success=1
     fi
     
-    cd "${PROCESSED_FULL_FILE_PATH}" || batch_finishing_statement 1
+    cd "${PROCESSED_FULL_FILE_PATH}" || finishing_statement 1
 
     # Need to use the -h option here to keep the headers 
     # so that the next samtools view can function properly
@@ -228,6 +228,6 @@ for file in ${files_to_process}; do
     fi
 done
 
-batch_finishing_statement 0
+finishing_statement 0
 
 

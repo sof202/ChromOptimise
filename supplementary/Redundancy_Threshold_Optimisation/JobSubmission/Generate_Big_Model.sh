@@ -138,7 +138,7 @@ full_binary_path="${BINARY_DIR}/BinSize_${bin_size}_SampleSize_${sample_size}"
 cd "${full_binary_path}" || \
 { >&2 echo -e "ERROR: Binary directory for bin/sample size is empty.\n" \
 "Ensure that 4_BinarizeBamFiles.sh has been ran before this script."
-batch_finishing_statement 1; }
+finishing_statement 1; }
 
 ## ========== ##
 ##    MAIN    ##
