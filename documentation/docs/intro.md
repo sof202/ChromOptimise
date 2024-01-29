@@ -19,25 +19,24 @@ After using this pipeline, the user will have greater knowledge over their datas
 ## Getting started
 1) Clone this repository
 2) Ensure all [required software](#software-requirements) is installed
-3) Generate the [file structure](https://github.com/sof202/ChromOptimise/wiki/Configuration-Files-Setup#data-directory-structure) 
-4) Run the [`setup`](https://github.com/sof202/ChromOptimise/blob/main/setup) executable 
+3) Run the [`setup`](https://github.com/sof202/ChromOptimise/blob/main/setup) executable 
     - You may need to use `chmod +x setup` first
     - The user will be prompted for whether they want to remove lines beginning with `module` (artefact of HPC system used at UoE)
-5) Create the configuration files using the [templates](https://github.com/sof202/ChromOptimise/wiki/Configuration-Files-Setup) provided
-6) Place configuration files in the [configuration](https://github.com/sof202/ChromOptimise/tree/main/configuration) directory
-7) Run [`Create_File_Structure.sh`](https://github.com/sof202/ChromOptimise/blob/main/Create_File_Structure.sh) executable.
+4) Create the configuration files using the [templates](./ChromOptimise/Configuration-Files-Setup.md) provided
+5) Place configuration files in the [configuration](https://github.com/sof202/ChromOptimise/tree/main/configuration) directory
+6) Run [`Create_File_Structure.sh`](https://github.com/sof202/ChromOptimise/blob/main/Create_File_Structure.sh) executable
 
 
 ## Usage
-After completing ['getting started'](#getting-started), run each of the shell scripts in [JobSubmission](https://github.com/sof202/ChromOptimise/tree/main/JobSubmission) sequentially for each epigenetic mark. For further information and **example code** please consult the [wiki](https://github.com/sof202/ChromOptimise/wiki/Pipeline-Explanation) and the [related schematic representation](https://github.com/sof202/ChromOptimise/blob/main/information/Optimal_States_Analysis_Pipeline.pdf).
+After completing ['getting started'](#getting-started), run each of the shell scripts in [JobSubmission](https://github.com/sof202/ChromOptimise/tree/main/JobSubmission) sequentially for each epigenetic mark. For further information and **example code** please consult the [pipeline explanation page](./ChromOptimise/Pipeline-Explanation.md) and the [related schematic representation](https://github.com/sof202/ChromOptimise/blob/main/information/Optimal_States_Analysis_Pipeline.pdf).
 \
 Depending on your chosen dataset, you may not need to run all scripts. For example:
 - If you are not downloading data from EGA, the first two scripts are not necessary 
-    - Just ensure that `.bam` files are organised into directories named [[epigenetic mark name]] within the [raw files directory](https://github.com/sof202/ChromOptimise/wiki/Configuration-Files-Setup#data-directory-structure)
+    - Just ensure that `.bam` files are organised into directories named [[epigenetic mark name]] within the [raw files directory](./ChromOptimise/Configuration-Files-Setup.md#data-directory-structure)
 - If your data is already processed (quality controlled), then start from the subsampling script.
-    - Again, ensure that `.bam` files are organised into directories named [[epigenetic mark name]] within the [Processed files directory](https://github.com/sof202/ChromOptimise/wiki/Configuration-Files-Setup#data-directory-structure)
+    - Again, ensure that `.bam` files are organised into directories named [[epigenetic mark name]] within the [Processed files directory](./ChromOptimise/Configuration-Files-Setup.md#data-directory-structure)
 
-There also exists supplementary scripts for further information on your chosen data set. Most importantly, thresholds used in redundancy analysis can be inferred from the results of [Redundancy_Threshold_Optimisation](https://github.com/sof202/ChromOptimise/tree/main/supplementary/Redundancy_Threshold_Optimisation). Further details for these scripts can be found in the [wiki](https://github.com/sof202/ChromOptimise/wiki/Pipeline-Explanation). 
+There also exists supplementary scripts for further information on your chosen data set. Most importantly, thresholds used in redundancy analysis can be inferred from the results of [Redundancy_Threshold_Optimisation](https://github.com/sof202/ChromOptimise/tree/main/supplementary/Redundancy_Threshold_Optimisation). Further details for these scripts can be found in the [supplementary pipeline explanation](./ChromOptimise/Supplementary-pipeline-explanation.md). 
 
 ## Important notes
 ### Note 1
