@@ -91,6 +91,7 @@ mv "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 ## =============== ##
 
 text_file_containing_inodes=$1
+conda_environment=$2
 
 ## ========== ##
 ##    MAIN    ##
@@ -105,9 +106,8 @@ module load Miniconda3
 # Using the conda shell script in the [conda]/etc folder is a work around for this.
 source /lustre/home/sof202/miniconda3/etc/profile.d/conda.sh 
 
-conda activate "$2"
+conda activate "${conda_environment}"
 
-mkdir -p "${DOWNLOAD_DIR}"
 # Read each line of text file
 # [[ -n "$line" ]] handles the last line that has no newline character
 while IFS= read -r line || [[ -n "$line" ]]; do
@@ -127,7 +127,3 @@ date -u
 end_time=$(date +%s)
 time_taken=$((end_time-start_time))
 echo "Job took a total of: ${time_taken} seconds to finish."
-
-rm "${SLURM_SUBMIT_DIR}/pyega3_output.log"
-rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log"
-rm "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err"
