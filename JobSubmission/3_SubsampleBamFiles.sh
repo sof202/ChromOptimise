@@ -143,10 +143,8 @@ sample_size_decimal=$(echo "scale=2; $sample_size /100" | bc)
 echo "Subsampling merged .bam file with sample size ${sample_size}%..."
 
 # Ensure headers are kept in subsampled file to avoid errors later in pipeline
-samtools view -H "${output_file_path}" \
+samtools view -s "${sample_size_decimal}" -h "${output_file_path}" \
 > "Subsampled.${sample_size}.${mark_name}.bam"
-samtools view -s "${sample_size_decimal}" "${output_file_path}" \
->> "Subsampled.${sample_size}.${mark_name}.bam"
 
 rm "FullMerged.${mark_name}.bam"
 cd "${PROCESSED_FULL_FILE_PATH}" || finishing_statement 1
