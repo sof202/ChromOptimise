@@ -122,6 +122,9 @@ fi
 
 mkdir -p "${OPTIMUM_STATES_DIR}/temp"
 cd "${OPTIMUM_STATES_DIR}/temp" || finishing_statement 1
+
+# Although we delete the temporary directory later, we still remove the contents
+# of the directory in case a previous job was cancelled/halted early.
 rm -f ./*
 
 cd "${MODEL_DIR}" || \
