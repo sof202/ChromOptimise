@@ -101,9 +101,9 @@ source "/lustre/projects/Research_Project-MRC190311/scripts/integrative\
 # Output and error files renamed to:
 # [job id]~[array id]~[date]-[time]
 
-mv "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.log" \
+ln "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.log" \
 "${LOG_FILE_PATH}/${SLURM_ARRAY_JOB_ID}~${SLURM_ARRAY_TASK_ID}~${timestamp:=}.log"
-mv "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err" \
+ln "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err" \
 "${LOG_FILE_PATH}/${SLURM_ARRAY_JOB_ID}~${SLURM_ARRAY_TASK_ID}~$timestamp.err"
 
 ## =============== ##
@@ -133,7 +133,7 @@ if ! [[ "${bin_size}" =~ ^[0-9]+$  || "${sample_size}" =~ ^[0-9]+$ ]]; then
     cd "${BINARY_DIR}" || \
     { >&2 echo "ERROR: [\${BINARY_DIR} - ${BINARY_DIR}] doesn't exist, \
     make sure FilePaths.txt is pointing to  the correct directory."
-    finishing_statement 1; }
+    batch_finishing_statement 1; }
 
     # The bin size and sample size are given in the file names of the binary
     # files. The following two commands find the first binary file in the
@@ -164,16 +164,16 @@ full_binary_path="${BINARY_DIR}/BinSize_${bin_size}_SampleSize_${sample_size}"
 cd "${full_binary_path}" || \
 { >&2 echo -e "ERROR: Binary directory for bin/sample size is empty.\n" \
 "Ensure that 4_BinarizeBamFiles.sh has been ran before this script."
-finishing_statement 1; }
+batch_finishing_statement 1; }
 
 # Clean up from previous runs of script
 cd "${MODEL_DIR}" || \
 { >&2 echo "ERROR: [\${MODEL_DIR} - ${MODEL_DIR}] doesn't exist, \
 make sure FilePaths.txt is pointing to the correct directory."
-finishing_statement 1; }
+batch_finishing_statement 1; }
 rm -f ./*
 
-cd STATEBYLINE || { finishing_statement 1; }
+cd STATEBYLINE || { batch_finishing_statement 1; }
 rm -f ./*
 
 
@@ -211,7 +211,7 @@ module purge
 module load Java
 
 mkdir -p "${OPTIMUM_STATES_DIR}/Likelihood_Values"
-cd "${OPTIMUM_STATES_DIR}/Likelihood_Values" || finishing_statement 1
+cd "${OPTIMUM_STATES_DIR}/Likelihood_Values" || batch_finishing_statement 1
 
 # Job is to be submitted as an array so we only want to 
 # remake likelihood files for one of the array tasks, not all of them.
@@ -266,7 +266,7 @@ done
 cd "${MODEL_DIR}" || \
 { >&2 echo "ERROR: [\${MODEL_DIR} - ${MODEL_DIR}] doesn't exist, \
 make sure FilePaths.txt is pointing to the correct directory."
-finishing_statement 1; }
+batch_finishing_statement 1; }
 
 # html files are not required for subsequent analysis
 rm ./*.html
@@ -295,4 +295,4 @@ for file in $files_to_rename; do
     mv "$file" "${file_start^}${file_middle}${file_end}"
 done
 
-finishing_statement 0
+batch_finishing_statement 0

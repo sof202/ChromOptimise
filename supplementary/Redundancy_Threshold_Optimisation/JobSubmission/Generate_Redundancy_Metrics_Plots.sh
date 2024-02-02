@@ -80,9 +80,9 @@ source "/lustre/projects/Research_Project-MRC190311/scripts/integrative\
 # Output and error files renamed to:
 # ModelSize-[model size]~[job id]~[date]-[time]
 
-mv "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" \
+ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" \
 "${LOG_FILE_PATH}/ModelSize-$1~${SLURM_JOB_ID}~${timestamp:=}.log"
-mv "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
+ln "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 "${LOG_FILE_PATH}/ModelSize-$1~${SLURM_JOB_ID}~$timestamp.err"
 
 ## =============== ##
