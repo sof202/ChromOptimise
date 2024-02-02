@@ -82,9 +82,9 @@ timestamp=$(date -u +%Y.%m.%d-%H:%M)
 # [file name]~[job id]~[date]-[time]
 
 mv "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" \
-"${LOG_FILE_PATH}/File-$1~${SLURM_JOB_ID}~$timestamp.log"
+"${LOG_FILE_PATH}/${SLURM_JOB_ID}~$timestamp.log"
 mv "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
-"${LOG_FILE_PATH}/File-$1~${SLURM_JOB_ID}~$timestamp.err"
+"${LOG_FILE_PATH}/${SLURM_JOB_ID}~$timestamp.err"
 
 ## =============== ##
 ##    VARIABLES    ##
