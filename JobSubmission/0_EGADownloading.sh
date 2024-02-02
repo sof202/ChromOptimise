@@ -122,6 +122,7 @@ done < "${text_file_containing_inodes}"
 ##   FINISHING STATEMENT   ##
 ## ======================= ##
 
+rm "${SLURM_SUBMIT_DIR}/pyega3_output.log"
 echo "Job finished with exit code 0 at:"
 date -u
 end_time=$(date +%s)
