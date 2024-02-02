@@ -76,7 +76,7 @@ source "/lustre/projects/Research_Project-MRC190311/scripts/integrative\
 
 LOG_FILE_PATH="${LOG_DIR}/$SLURM_JOB_NAME/$USER"
 mkdir -p "${LOG_FILE_PATH}"
-timestamp=$(date -u +%Y.%m.%d-%H:%M)
+timestamp=$(date -u +%Y.%m.%d-%H_%M)
 
 # Output and error files renamed to:
 # [file name]~[job id]~[date]-[time]
