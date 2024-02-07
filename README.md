@@ -55,7 +55,6 @@ This pipeline requires a unix-flavoured OS with the following software installed
 - [R](https://www.r-project.org) (>=3.6.0)
 - [Java](https://www.java.com/en/) (>= openjdk 13.0.2)
 - [ChromHMM](https://compbio.mit.edu/ChromHMM/#:~:text=ChromHMM%20is%20software%20for%20learning,and%20spatial%20patterns%20of%20marks.) (>=1.23)
-- [readlink](https://github.com/coreutils/coreutils/tree/master) (>= 8.22)
 - [sed](https://www.gnu.org/software/sed/) (>=4.2.2)
 
 ## Further information
