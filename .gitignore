@@ -10,10 +10,10 @@ LogFileManagement.sh
 .vscode
 
 # Dependencies
-/documentation/node_modules
+documentation/node_modules
 
 # Production
-/documentation/build
+documentation/build
 
 # Generated files
 documentation/.docusaurus
