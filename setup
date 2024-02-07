@@ -18,7 +18,7 @@
 ## DEPENDENCIES: sed                                                                ||
 ## =================================================================================##
 ## INPUTS:                                                                          ||
-## $1 -> Location of configuation file directory                                    ||
+## $1 -> Full (or relative) file path for configuation file directory               ||
 ## =================================================================================##
 
 # Configuration file is required for file paths

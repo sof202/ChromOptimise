@@ -40,7 +40,7 @@
 ## DEPENDENCIES: Samtools                                                           ||
 ## =================================================================================##
 ## INPUTS:                                                                          ||
-## $1 -> Location of configuation file directory                                    ||
+## $1 -> Full (or relative) file path for configuation file directory               ||
 ## $2 -> Epigenetic mark to process                                                 ||
 ## $3 -> Sample size as a percentage (default : 50)                                 ||
 ## =================================================================================##
@@ -53,17 +53,17 @@
 ## ======================== ##
 
 if [[ "$1" == "--help" || "$1" == "-h" ]]; then
-    echo "===================================================="
+    echo "==================================================================="
     echo "Purpose: Merges and subsamples processed .bam files."
     echo "present in specified folder"
     echo "Author: Sam Fletcher"
     echo "Contact: s.o.fletcher@exeter.ac.uk"
     echo "Dependencies: Samtools"
     echo "Inputs:"
-    echo "\$1 -> Location of configuration file directory"
+    echo "\$1 -> Full (or relative) file path for configuation file directory"
     echo "\$2 -> Name of epigenetic mark"
     echo "\$3 -> Sample size as a percentage (default : 50)"
-    echo "===================================================="
+    echo "==================================================================="
     exit 0
 fi
 

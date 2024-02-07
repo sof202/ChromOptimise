@@ -37,7 +37,7 @@
 ## DEPENDENCIES: Java, ChromHMM                                                     ||
 ## =================================================================================##
 ## INPUTS:                                                                          ||
-## $1 -> Location of configuation file directory                                    ||
+## $1 -> Full (or relative) file path for configuation file directory               ||
 ## $2 -> Size of model (default: 20)                                                ||
 ## $3 -> Random seed (default: 1)                                                   ||
 ## $4 -> The bin size to use                                                        ||
@@ -58,20 +58,20 @@
 ## ======================== ##
 
 if [[ "$1" == "--help" || "$1" == "-h" ]]; then
-    echo "================================================================"
+    echo "==================================================================="
     echo "Purpose: Generates a model unrestricted by ChromHMM LearnModel's"
     echo "default size limits by using random initialisation."
     echo "Author: Sam Fletcher"
     echo "Contact: s.o.fletcher@exeter.ac.uk"
     echo "Dependencies: Java, ChromHMM"
     echo "Inputs:"
-    echo "\$1 -> Location of configuration file directory"
+    echo "\$1 -> Full (or relative) file path for configuation file directory"
     echo "\$2 -> Size of model (default: 20)"
     echo "\$3 -> Random seed (default: 1)"
     echo "\$4 -> The bin size to use"
     echo "\$5 -> The sample size to use"
     echo "\$6 -> The assembly to use (default: hg19)"
-    echo "================================================================"
+    echo "==================================================================="
     exit 0
 fi
 

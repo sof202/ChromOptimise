@@ -42,7 +42,7 @@
 ## DEPENDENCIES: Samtools                                                           ||
 ## =================================================================================##
 ## INPUTS:                                                                          ||
-## $1 -> Location of configuation file directory                                    ||
+## $1 -> Full (or relative) file path for configuation file directory               ||
 ## $2 -> Epigenetic mark to process                                                 ||
 ## $3 -> Phred score threshold value (default: 20)                                  ||
 ## =================================================================================##
@@ -57,19 +57,19 @@
 ## ======================== ##
 
 if [[ "$1" == "--help" || "$1" == "-h" ]]; then
-    echo "=============================================================="
+    echo "==================================================================="
     echo "Purpose: Processes .bam files by removing duplicates,"
     echo "filtering out poor quality reads and sorting."
     echo "Author: Sam Fletcher"
     echo "Contact: s.o.fletcher@exeter.ac.uk"
     echo "Dependencies: Samtools"
     echo "Inputs:"
-    echo "\$1 -> Location of configuration file directory"
+    echo "\$1 -> Full (or relative) file path for configuation file directory"
     echo "\$2 -> Name of epigenetic mark"
     echo "\$3 -> Phred score threshold value (default: 20)"
     echo "Optional:"
     echo "Specify --array in sbatch options, to set a custom array size."
-    echo "=============================================================="
+    echo "==================================================================="
     exit 0
 fi
 

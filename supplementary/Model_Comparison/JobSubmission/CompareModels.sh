@@ -40,7 +40,7 @@
 ## DEPENDENCIES: Java, ChromHMM                                                     ||
 ## =================================================================================##
 ## INPUTS:                                                                          ||
-## $1 -> Location of configuation file directory                                    ||
+## $1 -> Full (or relative) file path for configuation file directory               ||
 ## =================================================================================##
 ## OUTPUTS:                                                                         ||
 ## Model comparison files in (.txt,.svg,.png) format                                ||
@@ -57,7 +57,7 @@ if [[ "$1" == "--help" || "$1" == "-h" ]]; then
     echo "Contact: s.o.fletcher@exeter.ac.uk"
     echo "Dependencies: Java, ChromHMM"
     echo "Inputs:"
-    echo "\$1 -> Location of configuration file directory"
+    echo "\$1 -> Full (or relative) file path for configuation file directory"
     echo "==========================================================================="
     exit 0
 fi

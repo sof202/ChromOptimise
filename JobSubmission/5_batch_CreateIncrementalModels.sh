@@ -51,7 +51,7 @@
 ## DEPENDENCIES: Java, ChromHMM                                                     ||
 ## =================================================================================##
 ## INPUTS:                                                                          ||
-## $1 -> Location of configuation file directory                                    ||
+## $1 -> Full (or relative) file path for configuation file directory               ||
 ## $2 -> Number of models to learn (default: 4)                                     ||
 ## $3 -> The increment to use between model sizes (default: 1)                      ||
 ## $4 -> The bin size to use                                                        ||
@@ -78,7 +78,7 @@ if [[ "$1" == "--help" || "$1" == "-h" ]]; then
     echo "Contact: s.o.fletcher@exeter.ac.uk"
     echo "Dependencies: Java, ChromHMM"
     echo "Inputs:"
-    echo "\$1 -> Location of configuration file directory"
+    echo "\$1 -> Full (or relative) file path for configuation file directory"
     echo "\$2 -> Number of models to learn (default: 4)"
     echo "\$3 -> The increment to use between model sizes (default: 1)"
     echo "\$4 -> The bin size to use"

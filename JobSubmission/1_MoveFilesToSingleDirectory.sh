@@ -35,7 +35,7 @@
 ## DEPENDENCIES: NONE                                                               ||
 ## =================================================================================##
 ## INPUTS:                                                                          ||
-## $1 -> Location of configuation file directory                                    ||
+## $1 -> Full (or relative) file path for configuation file directory               ||
 ## $2 -> Epigenetic Mark to process                                                 ||
 ## =================================================================================##
 ## OUTPUTS:                                                                         ||
@@ -47,16 +47,16 @@
 ## ======================== ##
 
 if [[ "$1" == "--help" || "$1" == "-h" ]]; then
-    echo "==========================================================="
+    echo "===================================================================="
     echo "Purpose: Moves .bam files that include the epigenetic mark."
     echo "into a single folder."
     echo "Author: Sam Fletcher"
     echo "Contact: s.o.fletcher@exeter.ac.uk"
     echo "Dependencies: NONE"
     echo "Inputs:"
-    echo "\$1 -> Location of configuration file directory"
+    echo "\$1 -> Full (or relative) file path for configuation file directory"
     echo "\$2 -> Epigenetic mark name"
-    echo "==========================================================="
+    echo "===================================================================="
     exit 0
 fi
 

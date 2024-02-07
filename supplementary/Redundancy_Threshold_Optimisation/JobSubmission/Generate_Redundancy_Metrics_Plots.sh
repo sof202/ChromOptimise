@@ -36,7 +36,7 @@
 ## DEPENDENCIES: R                                                                  ||
 ## =================================================================================##
 ## INPUTS:                                                                          ||
-## $1 -> Location of configuation file directory                                    ||
+## $1 -> Full (or relative) file path for configuation file directory               ||
 ## $2 -> Size of model (default: 20)                                                ||
 ## $3 -> Random seed (default: 1)                                                   ||
 ## $4 -> Path to directory containing the model files                               ||
@@ -60,7 +60,7 @@ if [[ "$1" == "--help" || "$1" == "-h" ]]; then
     echo "Contact: s.o.fletcher@exeter.ac.uk"
     echo "Dependencies: R"
     echo "Inputs:"
-    echo "\$1 -> Location of configuration file directory"
+    echo "\$1 -> Full (or relative) file path for configuation file directory"
     echo "\$2 -> Size of model (default: 20)"
     echo "\$3 -> Random seed (default: 1)"
     echo "\$4 -> Path to directory containing the model files"

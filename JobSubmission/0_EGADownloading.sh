@@ -39,7 +39,7 @@
 ## Pyega3                                                                           ||
 ## =================================================================================##
 ## INPUTS:                                                                          ||
-## $1 -> Location of configuation file directory                                    ||
+## $1 -> Full (or relative) file path for configuation file directory               ||
 ## $2 -> File of file names to download from EGA.                                   ||
 ## $3 -> Full file path to your conda environment for pyega3                        || 
 ## =================================================================================##
@@ -58,7 +58,7 @@ if [[ "$1" == "--help" || "$1" == "-h" ]]; then
     echo "Contact: s.o.fletcher@exeter.ac.uk"
     echo "Dependencies: Miniconda/Conda/Anaconda, EGA login credentials, Python"
     echo "Inputs:"
-    echo "\$1 -> Location of configuration file directory"
+    echo "\$1 -> Full (or relative) file path for configuation file directory"
     echo "\$2 -> File of file names to download from EGA."
     echo "======================================================================="
     exit 0

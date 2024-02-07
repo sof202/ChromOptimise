@@ -38,7 +38,7 @@
 ## DEPENDENCIES: Java, ChromHMM                                                     ||
 ## =================================================================================##
 ## INPUTS:                                                                          ||
-## $1 -> Location of configuation file directory                                    ||
+## $1 -> Full (or relative) file path for configuation file directory               ||
 ## $2 -> Bin size to be used by BinarizeBam command (default: 200)                  ||
 ## $3 -> Sample size used in 3_SubsampleBamFiles.sh                                 ||
 ## $4 -> The assembly to use (default: hg19)                                        ||
@@ -53,18 +53,18 @@
 ## ======================== ##
 
 if [[ "$1" == "--help" || "$1" == "-h" ]]; then
-    echo "================================================================"
+    echo "==================================================================="
     echo "Purpose: Creates a 'cell mark file table' and uses"
     echo "ChromHMM's BinarizeBam command to binarize bam files."
     echo "Author: Sam Fletcher"
     echo "Contact: s.o.fletcher@exeter.ac.uk"
     echo "Dependencies: Java, ChromHMM"
     echo "Inputs:"
-    echo "\$1 -> Location of configuration file directory"
+    echo "\$1 -> Full (or relative) file path for configuation file directory"
     echo "\$2 -> Bin size to be used by BinarizeBam command (default: 200)"
     echo "\$3 -> Sample size used in 3_SubsampleBamFiles.sh"
     echo "\$4 -> The assembly to use (default: hg19)"
-    echo "================================================================"
+    echo "==================================================================="
     exit 0
 fi
 
