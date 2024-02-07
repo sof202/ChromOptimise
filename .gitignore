@@ -7,19 +7,17 @@ LogFileManagement.sh
 *.err
 
 # Ignore vscode project settings
-.vscode/*
+.vscode
 
 # Dependencies
-/node_modules
+/documentation/node_modules
 
 # Production
 /documentation/build
 
 # Generated files
-.docusaurus
+documentation/.docusaurus
 .cache-loader
-/documentation/node_modules/.cache/webpack/client-production-en/*
-/documentation/node_modules/.cache/webpack/server-production-en/*
 
 # Misc
 .DS_Store
