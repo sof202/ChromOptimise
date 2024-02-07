@@ -83,11 +83,16 @@ fi
 ##    SET UP    ##
 ## ============ ##
 
-# CHANGE THESE TO YOUR OWN CONFIG FILES
+# Configuration files are required for file paths and log file management
 configuration_directory=$1
 
-source "${configuration_directory}/FilePaths.txt"
-source "${configuration_directory}/LogFileManagement.sh"
+source "${configuration_directory}/FilePaths.txt" || \
+{ echo "The configuration file does not exist in the specified location: \
+${configuration_directory}"; exit 1; }
+
+source "${configuration_directory}/LogFileManagement.sh" || \
+{ echo "The log file management script does not exist in the specified \
+location: ${configuration_directory}"; exit 1; }
 
 
 # Output and error files renamed to:

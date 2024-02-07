@@ -73,9 +73,13 @@ date -u
 
 start_time=$(date +%s)
 
+# Configuration file is required for file paths
+
 configuration_directory=$1
 
-source "${configuration_directory}/FilePaths.txt"
+source "${configuration_directory}/FilePaths.txt" || \
+{ echo "The configuration file does not exist in the specified location: \
+${configuration_directory}"; exit 1; }
 
 
 LOG_FILE_PATH="${LOG_DIR}/$SLURM_JOB_NAME/$USER"

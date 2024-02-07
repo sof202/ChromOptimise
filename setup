@@ -21,6 +21,8 @@
 ## $1 -> Location of configuation file directory                                    ||
 ## =================================================================================##
 
+# Configuration file is required for file paths
+
 configuration_directory=$1
 
 source "${configuration_directory}/FilePaths.txt" || \
