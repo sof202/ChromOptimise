@@ -8,42 +8,47 @@
 ##                                                                                  ||
 ## =================================================================================##
 ## PURPOSE:                                                                         ||
-## Renames all source commands in scripts to the correct directory for local        ||
-## machine (wherever the user clones it to).                                        ||
-## Also gives the user the option to remove any lines beginning with "module",      ||
-## these commands are unlikley to work on most systems. Ensure that the required    ||
-## software is installed on your machine.                                           ||
+## Creates directory structure given in the FilePaths.txt and allows the user to    ||
+## remove any mention of 'module load' or 'module purge'.                           ||
 ## =================================================================================##
 ## AUTHOR: Sam Fletcher                                                             ||
 ## CONTACT: s.o.fletcher@exeter.ac.uk                                               ||
 ## CREATED: January 2024                                                            ||
 ## =================================================================================##
+## DEPENDENCIES: sed                                                                ||
+## =================================================================================##
+## INPUTS:                                                                          ||
+## $1 -> Location of configuation file directory                                    ||
+## =================================================================================##
 
-# Failsafe in case this file is not executed from the main directory of this
-# repository.
-script_path=$(dirname "$(readlink -f "$0")")
+configuration_directory=$1
 
-cd "$script_path" || exit 1
+source "${configuration_directory}/FilePaths.txt" || \
+{ echo "The configuration file does not exist in the specified location: \
+${configuration_directory}"; exit 1; }
 
-parent_directory=$(dirname "$(pwd)")
+mkdir -p "${DOWNLOAD_DIR}"
+mkdir -p "${RAW_DIR}"
+mkdir -p "${PROCESSED_DIR}"
+mkdir -p "${SUBSAMPLED_DIR}"
+mkdir -p "${BINARY_DIR}"
+mkdir -p "${MODEL_DIR}"
+mkdir -p "${OPTIMUM_STATES_DIR}"
+mkdir -p "${COMPARE_DIR}"
+mkdir -p "${BIG_MODELS_DIR}"
+
+cd "${SCRIPT_DIR}" || \
+{ echo "The configuration file does not point to the correct script directory: \
+${SCRIPT_DIR}"; exit 1; }
 
 script_list=$(find . -type f -name "*.sh")
-Rscript_list=$(find . -type f -name "*.R")
-
-# Using @ delimiter to avoid excessive escaping of forward slashes in file paths
-for file in $script_list; do
-    sed -i "s@/lustre/projects[^\\]*@${parent_directory}@g" "${file}"
-done
-for file in $Rscript_list; do
-    sed -i "s@/lustre/projects[^\\\"]*@${parent_directory}@g" "${file}"
-done
 
 echo "Do you want to remove instances of \"module load\" and \"module purge\"? (y/n)"
 read -r delete_module_lines
 
 if [[ "${delete_module_lines}" == "y" ]]; then
     for file in $script_list; do
-        sed -i "s@module load.*@@g" "${file}"
-        sed -i "s@module purge@@g" "${file}"
+        sed -i "s/module load.*//g" "${file}"
+        sed -i "s/module purge//g" "${file}"
     done
 fi
