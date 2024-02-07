@@ -16,9 +16,10 @@
 ## Run 5_batch_CreateIncrementalModels.sh                         ||
 ## ============================================================== ##
 ## INPUTS:                                                        ||
-## $1 -> Bin size                                                 ||
-## $2 -> Sample size                                              ||
-## $3 -> Directory to place output files into                     ||
+## $1 -> Location of configuation file                            ||
+## $2 -> Bin size                                                 ||
+## $3 -> Sample size                                              ||
+## $4 -> Directory to place output files into                     ||
 ## ============================================================== ##
 ## OUTPUTS:                                                       ||
 ## Line plot of estimated log likelihoods against the number      ||
@@ -32,12 +33,6 @@
 
 rm(list = ls())
 
-setwd("/lustre/projects/Research_Project-MRC190311/scripts/integrative")
-source("ChromOptimise/configuration/config.R")
-setwd(likelihood_dir)
-
-rm(list = ls())
-
 if (!require("dplyr", quietly = TRUE))
   install.packages("dplyr")
 
@@ -45,10 +40,13 @@ library("ggplot2")
 library("dplyr")
 
 arguments <- commandArgs(trailingOnly = TRUE)
-bin_size <- arguments[1]
-sample_size <- arguments[2]
-output_file_path <- arguments[3]
+config_file_location <- arguments[1]
+bin_size <- arguments[2]
+sample_size <- arguments[3]
+output_file_path <- arguments[4]
 
+source(config_file_location)
+setwd(likelihood_dir)
 
 ## ============== ##
 ##   PROCESSING   ##

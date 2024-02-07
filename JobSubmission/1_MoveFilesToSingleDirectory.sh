@@ -35,7 +35,8 @@
 ## DEPENDENCIES: NONE                                                               ||
 ## =================================================================================##
 ## INPUTS:                                                                          ||
-## $1 -> Epigenetic Mark to process                                                 ||
+## $1 -> Location of configuation file directory                                    ||
+## $2 -> Epigenetic Mark to process                                                 ||
 ## =================================================================================##
 ## OUTPUTS:                                                                         ||
 ## NONE                                                                             ||
@@ -53,7 +54,8 @@ if [[ "$1" == "--help" || "$1" == "-h" ]]; then
     echo "Contact: s.o.fletcher@exeter.ac.uk"
     echo "Dependencies: NONE"
     echo "Inputs:"
-    echo "\$1 -> Epigenetic mark name"
+    echo "\$1 -> Location of configuration file directory"
+    echo "\$2 -> Epigenetic mark name"
     echo "==========================================================="
     exit 0
 fi
@@ -63,10 +65,11 @@ fi
 ## ============ ##
 
 # CHANGE THESE TO YOUR OWN CONFIG FILES
-source "/lustre/projects/Research_Project-MRC190311/scripts/integrative\
-/ChromOptimise/configuration/FilePaths.txt"
-source "/lustre/projects/Research_Project-MRC190311/scripts/integrative\
-/ChromOptimise/configuration/LogFileManagement.sh"
+configuration_directory=$1
+
+source "${configuration_directory}/FilePaths.txt"
+source "${configuration_directory}/LogFileManagement.sh"
+
 
 # Output and error files renamed to:
 # [epigenetic mark name]~[job id]~[date]-[time]
@@ -80,7 +83,7 @@ mv "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 ##    VARIABLES    ##
 ## =============== ##
 
-mark_name=$1
+mark_name=$2
 
 ## ================== ##
 ##    MOVING FILES    ##

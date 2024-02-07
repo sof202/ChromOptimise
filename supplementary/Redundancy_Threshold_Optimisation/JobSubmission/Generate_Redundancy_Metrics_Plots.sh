@@ -36,9 +36,10 @@
 ## DEPENDENCIES: R                                                                  ||
 ## =================================================================================##
 ## INPUTS:                                                                          ||
-## $1 -> Size of model (default: 20)                                                ||
-## $2 -> Random seed (default: 1)                                                   ||
-## $3 -> Path to directory containing the model files                               ||
+## $1 -> Location of configuation file directory                                    ||
+## $2 -> Size of model (default: 20)                                                ||
+## $3 -> Random seed (default: 1)                                                   ||
+## $4 -> Path to directory containing the model files                               ||
 ##       (default: \${BIG_MODELS_DIR} in FilePaths.txt)                             ||
 ## =================================================================================##
 ## OUTPUTS:                                                                         ||
@@ -59,9 +60,10 @@ if [[ "$1" == "--help" || "$1" == "-h" ]]; then
     echo "Contact: s.o.fletcher@exeter.ac.uk"
     echo "Dependencies: R"
     echo "Inputs:"
-    echo "\$1 -> Size of model (default: 20)"
-    echo "\$2 -> Random seed (default: 1)"
-    echo "\$3 -> Path to directory containing the model files"
+    echo "\$1 -> Location of configuration file directory"
+    echo "\$2 -> Size of model (default: 20)"
+    echo "\$3 -> Random seed (default: 1)"
+    echo "\$4 -> Path to directory containing the model files"
     echo "       (default: \${BIG_MODELS_DIR} in FilePaths.txt)"
     echo "======================================================================="
     exit 0
@@ -71,11 +73,10 @@ fi
 ##    SET UP    ##
 ## ============ ##
 
-# CHANGE THESE TO YOUR OWN CONFIG FILES
-source "/lustre/projects/Research_Project-MRC190311/scripts/integrative\
-/ChromOptimise/configuration/FilePaths.txt"
-source "/lustre/projects/Research_Project-MRC190311/scripts/integrative\
-/ChromOptimise/configuration/LogFileManagement.sh"
+configuration_directory=$1
+
+source "${configuration_directory}/FilePaths.txt"
+source "${configuration_directory}/LogFileManagement.sh"
 
 # Output and error files renamed to:
 # ModelSize-[model size]~[job id]~[date]-[time]
@@ -89,9 +90,9 @@ mv "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 ##    VARIABLES    ##
 ## =============== ##
 
-model_size=$1
-seed=$2
-model_file_dir=$3
+model_size=$2
+seed=$3
+model_file_dir=$4
 
 ## ====== DEFAULTS ====================================================================
 if [[ -z "$model_file_dir" ]]; then
@@ -135,10 +136,10 @@ cd "${SUPPLEMENTARY_DIR}/Redundancy_Threshold_Optimisation/Rscripts" ||  \
 doesn't exist, make sure [\${SUPPLEMENTARY_DIR} - ${SUPPLEMENTARY_DIR}] \
 in FilePaths.txt is pointing to the correct directory"; finishing_statement 1; }
 
-Rscript HistogramPlotForEuclideanDistances.R \
-"${model_size}" "${seed}" "${model_file_dir}"
+Rscript HistogramPlotForEuclideanDistances.R "${configuration_directory}/config.R" \
+"${model_size}" "${seed}" "${model_file_dir}" 
 
-Rscript ScatterPlotForTransitionMaxima.R \
-"${model_size}" "${seed}" "${model_file_dir}"
+Rscript ScatterPlotForTransitionMaxima.R "${configuration_directory}/config.R" \
+"${model_size}" "${seed}" "${model_file_dir}" 
 
 finishing_statement 0

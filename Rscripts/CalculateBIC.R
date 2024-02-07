@@ -16,10 +16,11 @@
 ## Run 6_CompareModels.sh                                         ||
 ## ============================================================== ##
 ## INPUTS:                                                        ||
-## $1 -> Bin size                                                 ||
-## $2 -> Sample size                                              ||
-## $3 -> Total size of binary files                               ||
-## $4 -> Directory to place output files into                     ||
+## $1 -> Location of configuation file                            ||
+## $2 -> Bin size                                                 ||
+## $3 -> Sample size                                              ||
+## $4 -> Total size of binary files                               ||
+## $5 -> Directory to place output files into                     ||
 ## ============================================================== ##
 ## OUTPUTS:                                                       ||
 ## Scatter plot of relative BIC against number of states          ||
@@ -32,17 +33,17 @@
 
 rm(list = ls())
 
-setwd("/lustre/projects/Research_Project-MRC190311/scripts/integrative")
-source("ChromOptimise/configuration/config.R")
-setwd(likelihood_dir)
-
 library(ggplot2)
 
 arguments <- commandArgs(trailingOnly = TRUE)
-bin_size <- arguments[1]
-sample_size <- arguments[2]
-number_of_observations <- as.numeric(arguments[3])
-output_file_path <- arguments[4]
+config_file_location <- arguments[1]
+bin_size <- arguments[2]
+sample_size <- arguments[3]
+number_of_observations <- as.numeric(arguments[4])
+output_file_path <- arguments[5]
+
+source(config_file_location)
+setwd(likelihood_dir)
 
 ## =============== ##
 ##   IMPORT DATA   ##

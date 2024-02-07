@@ -39,8 +39,9 @@
 ## Pyega3                                                                           ||
 ## =================================================================================##
 ## INPUTS:                                                                          ||
-## $1 -> File of file names to download from EGA.                                   ||
-## $2 -> Full file path to your conda environment for pyega3                        || 
+## $1 -> Location of configuation file directory                                    ||
+## $2 -> File of file names to download from EGA.                                   ||
+## $3 -> Full file path to your conda environment for pyega3                        || 
 ## =================================================================================##
 ## OUTPUTS:                                                                         ||
 ## NONE                                                                             ||
@@ -57,7 +58,8 @@ if [[ "$1" == "--help" || "$1" == "-h" ]]; then
     echo "Contact: s.o.fletcher@exeter.ac.uk"
     echo "Dependencies: Miniconda/Conda/Anaconda, EGA login credentials, Python"
     echo "Inputs:"
-    echo "\$1 -> File of file names to download from EGA."
+    echo "\$1 -> Location of configuration file directory"
+    echo "\$2 -> File of file names to download from EGA."
     echo "======================================================================="
     exit 0
 fi
@@ -71,8 +73,10 @@ date -u
 
 start_time=$(date +%s)
 
-source "/lustre/projects/Research_Project-MRC190311/scripts/integrative\
-/ChromOptimise/configuration/FilePaths.txt"
+configuration_directory=$1
+
+source "${configuration_directory}/FilePaths.txt"
+
 
 LOG_FILE_PATH="${LOG_DIR}/$SLURM_JOB_NAME/$USER"
 mkdir -p "${LOG_FILE_PATH}"
@@ -90,8 +94,8 @@ mv "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 ##    VARIABLES    ##
 ## =============== ##
 
-text_file_containing_inodes=$1
-conda_environment=$2
+text_file_containing_inodes=$2
+conda_environment=$3
 
 ## ========== ##
 ##    MAIN    ##

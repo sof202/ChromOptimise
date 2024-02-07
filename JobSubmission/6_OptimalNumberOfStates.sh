@@ -52,7 +52,7 @@
 ## DEPENDENCIES: R                                                                  ||
 ## =================================================================================##
 ## INPUTS:                                                                          ||
-## NONE                                                                             ||
+## $1 -> Location of configuation file directory                                    ||
 ## =================================================================================##
 ## OUTPUTS:                                                                         ||
 ## File containing why models with too many states were rejected                    ||
@@ -74,7 +74,7 @@ if [[ "$1" == "--help" || "$1" == "-h" ]]; then
     echo "Contact: s.o.fletcher@exeter.ac.uk"
     echo "Dependencies: R"
     echo "Inputs:"
-    echo "NONE"
+    echo "\$1 -> Location of configuration file directory"
     echo "======================================================================"
     exit 0
 fi
@@ -84,10 +84,11 @@ fi
 ## ============ ##
 
 # CHANGE THESE TO YOUR OWN CONFIG FILES
-source "/lustre/projects/Research_Project-MRC190311/scripts/integrative\
-/ChromOptimise/configuration/FilePaths.txt"
-source "/lustre/projects/Research_Project-MRC190311/scripts/integrative\
-/ChromOptimise/configuration/LogFileManagement.sh"
+configuration_directory=$1
+
+source "${configuration_directory}/FilePaths.txt"
+source "${configuration_directory}/LogFileManagement.sh"
+
 
 # Output and error files renamed to:
 # [job id]~[date]-[time]
@@ -172,13 +173,13 @@ while [[ ${max_model_number} -gt 2 ]]; do
 
     # IsolationScores.R is ran with a sample size of 100% (all data is considered)
     # This is because the slow down is not that significant for most datasets
-    Rscript IsolationScores.R "${state_assignment_file}" "${output_directory}" \
-    100
+    Rscript IsolationScores.R "${configuration_directory}/config.R" \
+    "${state_assignment_file}" "${output_directory}" 100 
 
     echo "Running RedundantStateChecker.R for: ${max_model_number} states..."
 
-    Rscript RedundantStateChecker.R "${max_model_number}" "${bin_size}" \
-    "${sample_size}" "${output_directory}"
+    Rscript RedundantStateChecker.R "${configuration_directory}/config.R" \
+    "${max_model_number}" "${bin_size}" "${sample_size}" "${output_directory}"
 
     redundant_states=$(tail -1 \
     "${output_directory}/Redundant_States_Modelsize_${max_model_number}.txt")
@@ -222,12 +223,14 @@ fi
 
 # Plots the estimated log likelihood against the number of states across all models
 echo "Plotting the estimated log likelihoods of learned models against one another..."
-Rscript PlotLikelihoods.R "${bin_size}" "${sample_size}" "${output_directory}"
+Rscript PlotLikelihoods.R "${configuration_directory}/config.R" \
+"${bin_size}" "${sample_size}" "${output_directory}"
 
 # Plots the relative Akaike information critereon against the number of states
 # across all models. This information is also saved into a .csv file.
 echo "Processing the Akaike information critereon of learned models..."
-Rscript CalculateAIC.R "${bin_size}" "${sample_size}" "${output_directory}"
+Rscript CalculateAIC.R "${configuration_directory}/config.R" \
+"${bin_size}" "${sample_size}" "${output_directory}"
 
 # Plots the relative Bayesian information critereon against the number of states
 # across all models. This information is also saved into a .csv file.
@@ -242,8 +245,8 @@ for file in "${full_binary_path}"/*_binary.txt*; do
 done
 
 echo "Processing the Bayesian information critereon of learned models..."
-Rscript CalculateBIC.R "${bin_size}" "${sample_size}" "${total_observations}" \
-"${output_directory}"
+Rscript CalculateBIC.R "${configuration_directory}/config.R" \
+"${bin_size}" "${sample_size}" "${total_observations}" "${output_directory}"
 
 
 finishing_statement 0

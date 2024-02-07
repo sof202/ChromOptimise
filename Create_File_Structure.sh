@@ -14,8 +14,10 @@
 ## CREATED: January 2024                                                            ||
 ## =================================================================================##
 
-source "/lustre/projects/Research_Project-MRC190311/scripts/integrative\
-/ChromOptimise/configuration/FilePaths.txt"
+configuration_directory=$1
+
+source "${configuration_directory}/FilePaths.txt"
+
 
 # Create each data directory sequentially
 mkdir -p "${DOWNLOAD_DIR}"

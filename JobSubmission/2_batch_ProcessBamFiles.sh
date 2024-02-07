@@ -42,8 +42,9 @@
 ## DEPENDENCIES: Samtools                                                           ||
 ## =================================================================================##
 ## INPUTS:                                                                          ||
-## $1 -> Epigenetic mark to process                                                 ||
-## $2 -> Phred score threshold value (default: 20)                                  ||
+## $1 -> Location of configuation file directory                                    ||
+## $2 -> Epigenetic mark to process                                                 ||
+## $3 -> Phred score threshold value (default: 20)                                  ||
 ## =================================================================================##
 ## OUTPUTS:                                                                         ||
 ## Processed .bam files                                                             ||
@@ -63,8 +64,9 @@ if [[ "$1" == "--help" || "$1" == "-h" ]]; then
     echo "Contact: s.o.fletcher@exeter.ac.uk"
     echo "Dependencies: Samtools"
     echo "Inputs:"
-    echo "\$1 -> Name of epigenetic mark"
-    echo "\$2 -> Phred score threshold value (default: 20)"
+    echo "\$1 -> Location of configuration file directory"
+    echo "\$2 -> Name of epigenetic mark"
+    echo "\$3 -> Phred score threshold value (default: 20)"
     echo "Optional:"
     echo "Specify --array in sbatch options, to set a custom array size."
     echo "=============================================================="
@@ -76,10 +78,11 @@ fi
 ## ============ ##
 
 # CHANGE THESE TO YOUR OWN CONFIG FILES
-source "/lustre/projects/Research_Project-MRC190311/scripts/integrative\
-/ChromOptimise/configuration/FilePaths.txt"
-source "/lustre/projects/Research_Project-MRC190311/scripts/integrative\
-/ChromOptimise/configuration/LogFileManagement.sh"
+configuration_directory=$1
+
+source "${configuration_directory}/FilePaths.txt"
+source "${configuration_directory}/LogFileManagement.sh"
+
 
 # Output and error files renamed to:
 # [epigenetic mark name]~[job id]~[array id]~[date]-[time]
@@ -93,8 +96,8 @@ mv "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err" \
 ##    VARIABLES    ##
 ## =============== ##
 
-mark_name=$1
-minimum_tolerated_phred_score=$2
+mark_name=$2
+minimum_tolerated_phred_score=$3
 RAW_FULL_FILE_PATH="${RAW_DIR}/${mark_name}"
 PROCESSED_FULL_FILE_PATH="${PROCESSED_DIR}/${mark_name}"
 

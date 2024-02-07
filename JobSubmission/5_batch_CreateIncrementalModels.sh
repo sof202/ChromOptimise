@@ -51,11 +51,12 @@
 ## DEPENDENCIES: Java, ChromHMM                                                     ||
 ## =================================================================================##
 ## INPUTS:                                                                          ||
-## $1 -> Number of models to learn (default: 4)                                     ||
-## $2 -> The increment to use between model sizes (default: 1)                      ||
-## $3 -> The bin size to use                                                        ||
-## $4 -> The sample size to use                                                     ||
-## $5 -> The assembly to use (default: hg19)                                        ||
+## $1 -> Location of configuation file directory                                    ||
+## $2 -> Number of models to learn (default: 4)                                     ||
+## $3 -> The increment to use between model sizes (default: 1)                      ||
+## $4 -> The bin size to use                                                        ||
+## $5 -> The sample size to use                                                     ||
+## $6 -> The assembly to use (default: hg19)                                        ||
 ## =================================================================================##
 ## OUTPUTS:                                                                         ||
 ## Emission parameter matrix for models (.png, .txt and .svg)                       ||
@@ -77,11 +78,12 @@ if [[ "$1" == "--help" || "$1" == "-h" ]]; then
     echo "Contact: s.o.fletcher@exeter.ac.uk"
     echo "Dependencies: Java, ChromHMM"
     echo "Inputs:"
-    echo "\$1 -> Number of models to learn (default: 4)"
-    echo "\$2 -> The increment to use between model sizes (default: 1)"
-    echo "\$3 -> The bin size to use"
-    echo "\$4 -> The sample size to use"
-    echo "\$5 -> The assembly to use (default: hg19)"
+    echo "\$1 -> Location of configuration file directory"
+    echo "\$2 -> Number of models to learn (default: 4)"
+    echo "\$3 -> The increment to use between model sizes (default: 1)"
+    echo "\$4 -> The bin size to use"
+    echo "\$5 -> The sample size to use"
+    echo "\$6 -> The assembly to use (default: hg19)"
     echo "Optional:"
     echo "Specify --array in sbatch options, to set a custom array size."
     echo "======================================================================"
@@ -93,10 +95,11 @@ fi
 ## ============ ##
 
 # CHANGE THESE TO YOUR OWN CONFIG FILES
-source "/lustre/projects/Research_Project-MRC190311/scripts/integrative\
-/ChromOptimise/configuration/FilePaths.txt"
-source "/lustre/projects/Research_Project-MRC190311/scripts/integrative\
-/ChromOptimise/configuration/LogFileManagement.sh"
+configuration_directory=$1
+
+source "${configuration_directory}/FilePaths.txt"
+source "${configuration_directory}/LogFileManagement.sh"
+
 
 # Output and error files renamed to:
 # [job id]~[array id]~[date]-[time]
@@ -110,11 +113,11 @@ mv "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err" \
 ##    VARIABLES    ##
 ## =============== ##
 
-number_of_models_to_generate=$1
-states_increment=$2
-bin_size=$3
-sample_size=$4
-assembly=$5
+number_of_models_to_generate=$2
+states_increment=$3
+bin_size=$4
+sample_size=$5
+assembly=$6
 
 ## ====== DEFAULTS ====================================================================
 if ! [[ "${number_of_models_to_generate}" =~ ^[0-9]+$ ]]; then

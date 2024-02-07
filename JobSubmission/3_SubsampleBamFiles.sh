@@ -40,8 +40,9 @@
 ## DEPENDENCIES: Samtools                                                           ||
 ## =================================================================================##
 ## INPUTS:                                                                          ||
-## $1 -> Epigenetic mark to process                                                 ||
-## $2 -> Sample size as a percentage (default : 50)                                 ||
+## $1 -> Location of configuation file directory                                    ||
+## $2 -> Epigenetic mark to process                                                 ||
+## $3 -> Sample size as a percentage (default : 50)                                 ||
 ## =================================================================================##
 ## OUTPUTS:                                                                         ||
 ## Subsampled .bam files                                                            ||
@@ -59,8 +60,9 @@ if [[ "$1" == "--help" || "$1" == "-h" ]]; then
     echo "Contact: s.o.fletcher@exeter.ac.uk"
     echo "Dependencies: Samtools"
     echo "Inputs:"
-    echo "\$1 -> Name of epigenetic mark"
-    echo "\$2 -> Sample size as a percentage (default : 50)"
+    echo "\$1 -> Location of configuration file directory"
+    echo "\$2 -> Name of epigenetic mark"
+    echo "\$3 -> Sample size as a percentage (default : 50)"
     echo "===================================================="
     exit 0
 fi
@@ -70,10 +72,11 @@ fi
 ## ============ ##
 
 # CHANGE THESE TO YOUR OWN CONFIG FILES
-source "/lustre/projects/Research_Project-MRC190311/scripts/integrative\
-/ChromOptimise/configuration/FilePaths.txt"
-source "/lustre/projects/Research_Project-MRC190311/scripts/integrative\
-/ChromOptimise/configuration/LogFileManagement.sh"
+configuration_directory=$1
+
+source "${configuration_directory}/FilePaths.txt"
+source "${configuration_directory}/LogFileManagement.sh"
+
 
 # Output and error files renamed to:
 # [epigenetic mark name]~[Sample size]~[job id]~[date]-[time]
@@ -87,8 +90,8 @@ mv "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 ##    VARIABLES    ##
 ## =============== ##
 
-mark_name=$1
-sample_size=$2
+mark_name=$2
+sample_size=$3
 PROCESSED_FULL_FILE_PATH="${PROCESSED_DIR}/${mark_name}"
 
 if [[ -z "${mark_name}" ]]; then

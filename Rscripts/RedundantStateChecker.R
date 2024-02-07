@@ -19,10 +19,11 @@
 ## Run 5_batch_CreateIncrementalModels.sh                         ||
 ## ============================================================== ##
 ## INPUTS:                                                        ||
-## $1 -> Model size                                               ||
-## $2 -> Bin size                                                 ||
-## $3 -> Sample size                                              ||
-## $4 -> Directory to place output files into                     ||
+## $1 -> Location of configuation file                            ||
+## $2 -> Model size                                               ||
+## $3 -> Bin size                                                 ||
+## $4 -> Sample size                                              ||
+## $5 -> Directory to place output files into                     ||
 ## ============================================================== ##
 ## OUTPUTS:                                                       ||
 ## Boolean response for the presence of redundant states          ||
@@ -41,15 +42,15 @@ rm(list = ls())
 
 library("stringr")
 
-setwd("/lustre/projects/Research_Project-MRC190311/scripts/integrative")
-source("ChromOptimise/configuration/config.R")
-setwd(model_dir)
-
 arguments <- commandArgs(trailingOnly = TRUE)
-model_size <- as.numeric(arguments[1])
-bin_size <- arguments[2]
-sample_size <- arguments[3]
-output_file_path <- arguments[4]
+config_file_location <- arguments[1]
+model_size <- as.numeric(arguments[2])
+bin_size <- arguments[3]
+sample_size <- arguments[4]
+output_file_path <- arguments[5]
+
+source(config_file_location)
+setwd(model_dir)
 
 euclidean_distance <- function(vector_a, vector_b) {
   sqrt(sum((vector_a - vector_b) ^ 2))

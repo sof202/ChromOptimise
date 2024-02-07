@@ -21,9 +21,10 @@
 ## Run Generate_Big_Model.sh or ChromHMM's LearnModel Command     ||
 ## ============================================================== ##
 ## INPUTS:                                                        ||
-## $1 -> Model size                                               ||
-## $2 -> Random seed                                              ||
-## $3 -> Path to directory containing the model files             ||
+## $1 -> Location of configuation file                            ||
+## $2 -> Model size                                               ||
+## $3 -> Random seed                                              ||
+## $4 -> Path to directory containing the model files             ||
 ## ============================================================== ##
 ## OUTPUTS:                                                       ||
 ## A scatter plot displaying the maxima for the columns seen in   ||
@@ -38,13 +39,13 @@ rm(list = ls())
 
 library("ggplot2")
 
-setwd("/lustre/projects/Research_Project-MRC190311/scripts/integrative")
-source("ChromOptimise/configuration/config.R")
-
 arguments <- commandArgs(trailingOnly = TRUE)
-model_size <- as.numeric(arguments[1])
-seed <- arguments[2]
-input_path <- arguments[3]
+config_file_location <- arguments[1]
+model_size <- as.numeric(arguments[2])
+seed <- arguments[3]
+input_path <- arguments[4]
+
+source(config_file_location)
 
 setwd(input_path)
 

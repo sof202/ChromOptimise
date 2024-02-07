@@ -38,9 +38,10 @@
 ## DEPENDENCIES: Java, ChromHMM                                                     ||
 ## =================================================================================##
 ## INPUTS:                                                                          ||
-## $1 -> Bin size to be used by BinarizeBam command (default: 200)                  ||
-## $2 -> Sample size used in 3_SubsampleBamFiles.sh                                 ||
-## $3 -> The assembly to use (default: hg19)                                        ||
+## $1 -> Location of configuation file directory                                    ||
+## $2 -> Bin size to be used by BinarizeBam command (default: 200)                  ||
+## $3 -> Sample size used in 3_SubsampleBamFiles.sh                                 ||
+## $4 -> The assembly to use (default: hg19)                                        ||
 ## =================================================================================##
 ## OUTPUTS:                                                                         ||
 ## Binary signal files for every chromosome in the dataset except for mitochondrial ||
@@ -59,9 +60,10 @@ if [[ "$1" == "--help" || "$1" == "-h" ]]; then
     echo "Contact: s.o.fletcher@exeter.ac.uk"
     echo "Dependencies: Java, ChromHMM"
     echo "Inputs:"
-    echo "\$1 -> Bin size to be used by BinarizeBam command (default: 200)"
-    echo "\$2 -> Sample size used in 3_SubsampleBamFiles.sh"
-    echo "\$3 -> The assembly to use (default: hg19)"
+    echo "\$1 -> Location of configuration file directory"
+    echo "\$2 -> Bin size to be used by BinarizeBam command (default: 200)"
+    echo "\$3 -> Sample size used in 3_SubsampleBamFiles.sh"
+    echo "\$4 -> The assembly to use (default: hg19)"
     echo "================================================================"
     exit 0
 fi
@@ -71,10 +73,11 @@ fi
 ## ============ ##
 
 # CHANGE THESE TO YOUR OWN CONFIG FILES
-source "/lustre/projects/Research_Project-MRC190311/scripts/integrative\
-/ChromOptimise/configuration/FilePaths.txt"
-source "/lustre/projects/Research_Project-MRC190311/scripts/integrative\
-/ChromOptimise/configuration/LogFileManagement.sh"
+configuration_directory=$1
+
+source "${configuration_directory}/FilePaths.txt"
+source "${configuration_directory}/LogFileManagement.sh"
+
 
 # Output and error files renamed to:
 # BinSize-[bin size]~[job id]~[date]-[time]
@@ -88,9 +91,9 @@ mv "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 ##    VARIABLES    ##
 ## =============== ##
 
-bin_size=$1
-sample_size=$2
-assembly=$3
+bin_size=$2
+sample_size=$3
+assembly=$4
 
 ## ====== DEFAULTS ====================================================================
 if ! [[ "${bin_size}" =~ ^[0-9]+$ ]]; then

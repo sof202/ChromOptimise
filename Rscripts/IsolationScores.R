@@ -17,9 +17,10 @@
 ## Run 5_batch_CreateIncrementalModels.sh                         ||
 ## ============================================================== ##
 ## INPUTS:                                                        ||
-## $1 -> State assignments file                                   ||
-## $2 -> Output file path                                         ||
-## $3 -> Sample size for isolation score                          ||
+## $1 -> Location of configuation file                            ||
+## $2 -> State assignments file                                   ||
+## $3 -> Output file path                                         ||
+## $4 -> Sample size for isolation score                          ||
 ## ============================================================== ##
 ## OUTPUTS:                                                       ||
 ## Text file containing isolation scores for each state           ||
@@ -31,15 +32,15 @@
 
 rm(list = ls())
 
-setwd("/lustre/projects/Research_Project-MRC190311/scripts/integrative")
-source("ChromOptimise/configuration/config.R")
-
 library(ggplot2)
 
 arguments <- commandArgs(trailingOnly = TRUE)
-state_assignments_file <- arguments[1]
-output_file_path <- arguments[2]
-isolation_sample_size <- as.numeric(arguments[3])
+config_file_location <- arguments[1]
+state_assignments_file <- arguments[2]
+output_file_path <- arguments[3]
+isolation_sample_size <- as.numeric(arguments[4])
+
+source(config_file_location)
 
 ## =================== ##
 ##   FILE PROCESSING   ##

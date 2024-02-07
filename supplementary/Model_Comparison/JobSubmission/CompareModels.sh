@@ -40,7 +40,7 @@
 ## DEPENDENCIES: Java, ChromHMM                                                     ||
 ## =================================================================================##
 ## INPUTS:                                                                          ||
-## NONE                                                                             ||
+## $1 -> Location of configuation file directory                                    ||
 ## =================================================================================##
 ## OUTPUTS:                                                                         ||
 ## Model comparison files in (.txt,.svg,.png) format                                ||
@@ -57,7 +57,7 @@ if [[ "$1" == "--help" || "$1" == "-h" ]]; then
     echo "Contact: s.o.fletcher@exeter.ac.uk"
     echo "Dependencies: Java, ChromHMM"
     echo "Inputs:"
-    echo "NONE"
+    echo "\$1 -> Location of configuration file directory"
     echo "==========================================================================="
     exit 0
 fi
@@ -67,10 +67,11 @@ fi
 ## ============ ##
 
 # CHANGE THESE TO YOUR OWN CONFIG FILES
-source "/lustre/projects/Research_Project-MRC190311/scripts/integrative\
-/ChromOptimise/configuration/FilePaths.txt"
-source "/lustre/projects/Research_Project-MRC190311/scripts/integrative\
-/ChromOptimise/configuration/LogFileManagement.sh"
+configuration_directory=$1
+
+source "${configuration_directory}/FilePaths.txt"
+source "${configuration_directory}/LogFileManagement.sh"
+
 
 # Output and error files renamed to:
 # [job id]~[date]-[time]
