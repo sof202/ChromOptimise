@@ -101,9 +101,19 @@ source "${configuration_directory}/FilePaths.txt" || \
 { echo "The configuration file does not exist in the specified location: \
 ${configuration_directory}"; exit 1; }
 
+# If a configuration file is changed during analysis, it is hard to tell
+# what configuration was used for a specific run through, below accounts for 
+# this
+echo "Configuration file used with this script: \
+${configuration_directory}/FilePaths.txt"
+echo ""
+cat "${configuration_directory}/FilePaths.txt"
+echo ""
+
 source "${configuration_directory}/LogFileManagement.sh" || \
 { echo "The log file management script does not exist in the specified \
 location: ${configuration_directory}"; exit 1; }
+
 
 
 # Output and error files renamed to:
