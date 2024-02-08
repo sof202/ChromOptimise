@@ -97,9 +97,9 @@ location: ${configuration_directory}"; exit 1; }
 # BinSize-[bin size]~[job id]~[date]-[time]
 
 mv "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" \
-"${LOG_FILE_PATH}/BinSize-$1~${SLURM_JOB_ID}~${timestamp:=}.log"
+"${LOG_FILE_PATH}/BinSize-$2~${SLURM_JOB_ID}~${timestamp:=}.log"
 mv "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
-"${LOG_FILE_PATH}/BinSize-$1~${SLURM_JOB_ID}~$timestamp.err"
+"${LOG_FILE_PATH}/BinSize-$2~${SLURM_JOB_ID}~$timestamp.err"
 
 ## =============== ##
 ##    VARIABLES    ##
