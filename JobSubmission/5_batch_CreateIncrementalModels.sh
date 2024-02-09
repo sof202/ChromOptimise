@@ -290,10 +290,10 @@ finishing_statement 1; }
 rm ./*.html
 
 # Find all files in model directory, but not the state assignment files
-# We specifically want the model files that have yet to be renamed
-# renamed files' first word will be in captials, so this find statement will
-# not find the renamed files.
-files_to_rename=$(find . -maxdepth 1 -type f -name "*ions_*")
+# We specifically want the model files that have yet to be renamed.
+# Renamed files will have the the second word as 'BinSize' instead of a number
+# so they will not be found by this command
+files_to_rename=$(find . -maxdepth 1 -type f -name "*ions_[0-9]*")
 
 # files will be named [emissions/transitions] (file start) followed by
 # information about the file (file middle) followed by the number of states
