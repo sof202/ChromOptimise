@@ -128,8 +128,13 @@ cd "${MODEL_DIR}" || \
 { >&2 echo "ERROR: [\${MODEL_DIR} - ${MODEL_DIR}] doesn't exist, \
 make sure FilePaths.txt is pointing to the correct directory."; finishing_statement 1; }
 
-bin_size=$(find . -type f -name "*.txt" | head -1 | cut -d "_" -f 3)
-sample_size=$(find . -type f -name "*.txt" | head -1 | cut -d "_" -f 5)
+# Specifically we want to find the bin and sample size from the emissions
+# or transitions files (and not the model or statebyline files)
+# Hence we look for text files that have the word 'states' in them
+# (due to the renaming that happened in model learning script).
+# File names are "." separated with 3rd field bin size and 5th field sample size
+bin_size=$(find . -type f -name "*States*.txt" | head -1 | cut -d "_" -f 3)
+sample_size=$(find . -type f -name "*States*.txt" | head -1 | cut -d "_" -f 5)
 
 ## =================== ##
 ##   FILE MANAGEMENT   ##
@@ -152,6 +157,8 @@ cd "${MODEL_DIR}" || \
 { >&2 echo "ERROR: [\${MODEL_DIR} - ${MODEL_DIR}] doesn't exist, \
 make sure FilePaths.txt is pointing to the correct directory."; finishing_statement 1; }
 
+# We will use the emission files specifically so that we always know the max
+# model number for each loop
 emission_text_files=$(find . -type f -name "EMISSIONS*.txt")
 for file in $emission_text_files; do
     cp "$file" "${OPTIMUM_STATES_DIR}/temp"
