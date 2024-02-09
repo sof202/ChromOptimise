@@ -60,7 +60,7 @@ Main_Data_Directory
 
 ## FilePaths.txt
 
-```text
+```text title="FilePaths.txt"
 ## Data directories
 
 export MAIN_DIR="full/path/to/main/directory"
@@ -91,7 +91,7 @@ export CHROMHMM_CHROM_SIZES="${CHROMHMM_MAIN_DIR}/path/to/chromosome/sizes"
 
 To get a good value for the thresholds in the redundancy parameters section, please consult the [supplementary pipeline](./Supplementary-pipeline-explanation.md).
 
-```R
+```R title="config.R"
 ## Data Directories
 
 main_dir="path/to/main/directory"
@@ -123,7 +123,7 @@ This script will produce information on the time for the script to complete, red
 \
 (Alternatively you can use the `time` command with the scripts, this is not available on our HPC).
 
-```shell
+```shell title="LogFileManagement.sh"
 #!/bin/bash
 ## ============= ##
 ##   JOB START   ##
@@ -163,4 +163,47 @@ finishing_statement(){
     echo "Job took a total of: ${time_taken} seconds to finish."
     exit "$1"
 }
+```
+
+
+## ChromOptimiseConfig.txt
+
+This is the configuration file that enables the user to run all of the files in the [main pipeline](./Pipeline-Explanation.md) sequentially. Options are briefly described in comments here, but for a better picture of what to put here we recommend looking at the [documentation](./Pipeline-Explanation.md). If you do not plan on using certain scripts at all (which is likely the case for 0_EGADownloading.sh for example) you can just remove the options section for those selected scripts.
+
+```text title="ChromOptimiseConfig.txt"
+# Which shell script to start from (provide a number from 0 to 6)
+export starting_script=VALUE
+
+# This is the list of marks that you intend to use in the analysis
+# Please provide this as a white space separated array
+export LIST_OF_MARKS=(mark1 mark2 mark3 etc.)
+
+# This is a FULL file path to the FOFN which contains files you want to
+# download using the pyega3 client
+export FILE_OF_FILE_NAMES=path/to/file
+
+# This is a threshold for the Phred score used in the processing stage
+# (which reads to discard due to low base accuracy)
+export PRED_SCORE_THRESHOLD=VALUE
+
+# This is the sample size (as a percentage) to use in the subsampling stage
+# If your data is small in size, the recommended value is 100
+export SAMPLE_SIZE=VALUE
+
+# This is the bin size to use during the binarization stage
+# ChromHMM recommends a default of 200
+export BIN_SIZE=VALUE
+
+# This is the assembly that your data is alligned to.
+ASSEMBLY=VALUE
+
+# This is the number of models you wish to create in the model learning stage
+# Read the documentation on 5_batch_CreateIncrementalModel.sh for help
+# here
+export NUMBER_OF_MODELS=VALUE
+
+# This is the increment in the number of states to use between models.
+# For most cases this will likely be 1. However, if you have lots of marks
+# in your dataset a larger value might be more appropriate
+export STATE_INCREMENT=VALUE
 ```
