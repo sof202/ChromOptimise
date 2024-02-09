@@ -305,8 +305,8 @@ for file in $files_to_rename; do
     # [file type]_[state_number].[file extension]
     # We want to split this into the type of the file (file start) and the 
     # number of states and file extension (file end)
-    file_start=$(echo "$file" | cut -d "_" -f 1)
-    file_end=$(echo "$file" | cut -d "_" -f 2)
+    file_start=$(basename "$file" | cut -d "_" -f 1)
+    file_end=$(basename "$file" | cut -d "_" -f 2)
 
     # We use the ^ expansion of file start to ensure that the files are not 
     # renamed multiple times
