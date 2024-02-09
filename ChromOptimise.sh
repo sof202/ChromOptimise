@@ -63,6 +63,11 @@ source "${configuration_directory}/ChromOptimiseConfig.txt" || \
 { echo "The configuration file does not exist in the specified location: \
 ${configuration_directory}/ChromOptimiseConfig.txt"; exit 1; }
 
+echo "Configuration file used with ChromOptimise master script"
+echo ""
+cat "${configuration_directory}/ChromOptimiseConfig.txt"
+echo ""
+
 ## ===================== ##
 ##   RUN CHROMOPTIMISE   ##
 ## ===================== ##
@@ -102,7 +107,7 @@ if [[ "${STARTING_SCRIPT}" -eq 1 ]]; then
         awk '{print $4}' \
         )
 
-        echo "Submitted 1_MoveFilesToSingleDirectory.sh under job ID:"
+        echo "Submitted 1_MoveFilesToSingleDirectory.sh for $mark under job ID:"
         echo "${jobID[$array_index_move]}"
     done
    
@@ -120,7 +125,7 @@ elif [[ "${STARTING_SCRIPT}" -lt 1 ]]; then
         awk '{print $4}' \
         )
 
-        echo "Submitted 1_MoveFilesToSingleDirectory.sh under job ID:"
+        echo "Submitted 1_MoveFilesToSingleDirectory.sh for $mark under job ID:"
         echo "${jobID[$array_index_move]}"
     done
 fi
@@ -143,7 +148,7 @@ if [[ "${STARTING_SCRIPT}" -eq 2 ]]; then
         awk '{print $4}' \
         )
 
-        echo "Submitted 2_batch_ProcessBamFiles.sh under job ID:"
+        echo "Submitted 2_batch_ProcessBamFiles.sh for $mark under job ID:"
         echo "${jobID[$array_index_process]}"
     done
    
@@ -164,7 +169,7 @@ elif [[ "${STARTING_SCRIPT}" -lt 2 ]]; then
         awk '{print $4}' \
         )
 
-        echo "Submitted 2_batch_ProcessBamFiles.sh under job ID:"
+        echo "Submitted 2_batch_ProcessBamFiles.sh for $mark under job ID:"
         echo "${jobID[$array_index_process]}"
     done
 fi
@@ -187,7 +192,7 @@ if [[ "${STARTING_SCRIPT}" -eq 3 ]]; then
         awk '{print $4}' \
         )
         
-        echo "Submitted 3_SubsampleBamFiles.sh under job ID:"
+        echo "Submitted 3_SubsampleBamFiles.sh for $mark under job ID:"
         echo "${jobID[$array_index_merge]}"
     done
    
@@ -208,7 +213,7 @@ elif [[ "${STARTING_SCRIPT}" -lt 3 ]]; then
         awk '{print $4}' \
         )
 
-        echo "Submitted 3_SubsampleBamFiles.sh under job ID:"
+        echo "Submitted 3_SubsampleBamFiles.sh for $mark under job ID:"
         echo "${jobID[$array_index_merge]}"
     done
 fi
