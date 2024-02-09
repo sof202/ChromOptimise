@@ -60,14 +60,14 @@ euclidean_distance <- function(vector_a, vector_b) {
 ##   LOADING FILES   ##
 ## ================= ##
 
-emissions_file <- paste0("Emissions_BinSize_", bin_size, "_SampleSize_",
+emissions_file <- paste0("emissions_BinSize_", bin_size, "_SampleSize_",
                          sample_size, "_States_", model_size, ".txt")
 
 emissions_data <- read.table(emissions_file, skip = 1)
 emissions_data <- subset(emissions_data, select = -V1)
 
 
-transitions_file <- paste0("Transitions_BinSize_", bin_size, "_SampleSize_",
+transitions_file <- paste0("transitions_BinSize_", bin_size, "_SampleSize_",
                            sample_size, "_States_", model_size, ".txt")
 
 transitions_data <- read.table(transitions_file, skip = 1)

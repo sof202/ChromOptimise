@@ -122,16 +122,12 @@ cd "${MODEL_DIR}" || \
 { >&2 echo "ERROR: [\${MODEL_DIR} - ${MODEL_DIR}] doesn't exist, \
 make sure FilePaths.txt is pointing to the correct directory."; finishing_statement 1; }
 
-emission_text_files=$(find . -type f -name "Emission*.txt")
+emission_text_files=$(find . -type f -name "emission*.txt")
 
 echo "Copying all found emission files to a temporary directory..."
 for file in $emission_text_files; do
     echo "Copying ${file}..."
-
-    # ChromHMM's CompareModels requires files to start with 'emissions'
-    # This is case sensitive, hence we need to convert to lower case.
-    new_file_name=$(echo "$file" | tr '[:upper:]' '[:lower:]')
-    cp "$file" "${COMPARE_DIR}/temp/${new_file_name}"
+    cp "$file" "${COMPARE_DIR}/temp/"
 done
 
 ## -------------------- ##

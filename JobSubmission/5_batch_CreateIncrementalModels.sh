@@ -281,6 +281,11 @@ done
 ##   RENAMING OUTPUT FILES   ##
 ## ========================= ##
 
+# ChromHMM's output file names are not particularly descriptive for this
+# pipeline. A key feature of this pipeline is the bin and sample size used
+# The below code is in place to rename our output files so that this information
+# can be inferred from the file names.
+
 cd "${MODEL_DIR}" || \
 { >&2 echo "ERROR: [\${MODEL_DIR} - ${MODEL_DIR}] doesn't exist, \
 make sure FilePaths.txt is pointing to the correct directory."
@@ -308,9 +313,7 @@ for file in $files_to_rename; do
     file_start=$(basename "$file" | cut -d "_" -f 1)
     file_end=$(basename "$file" | cut -d "_" -f 2)
 
-    # We use the ^ expansion of file start to ensure that the files are not 
-    # renamed multiple times
-    mv "$file" "${file_start^}${file_middle}${file_end}"
+    mv "$file" "${file_start}${file_middle}${file_end}"
 done
 
 finishing_statement 0
