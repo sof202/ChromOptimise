@@ -159,7 +159,7 @@ make sure FilePaths.txt is pointing to the correct directory."; finishing_statem
 
 # We will use the emission files specifically so that we always know the max
 # model number for each loop
-emission_text_files=$(find . -type f -name "EMISSIONS*.txt")
+emission_text_files=$(find . -type f -name "emissions*.txt")
 for file in $emission_text_files; do
     cp "$file" "${OPTIMUM_STATES_DIR}/temp"
 done
