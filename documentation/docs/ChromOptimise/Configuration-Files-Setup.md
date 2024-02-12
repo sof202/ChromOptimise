@@ -206,4 +206,23 @@ export NUMBER_OF_MODELS=VALUE
 # For most cases this will likely be 1. However, if you have lots of marks
 # in your dataset a larger value might be more appropriate
 export STATE_INCREMENT=VALUE
+
+# The following are the time you wish to allocate to each job (without this
+# jobs have no maximum walltime and can run forever).
+# Variables are numbered by their corresponding script number 
+# (0 -> EGADownloading.sh)
+0_MAXTIME=hh:mm:ss
+1_MAXTIME=hh:mm:ss
+2_MAXTIME=hh:mm:ss
+3_MAXTIME=hh:mm:ss
+4_MAXTIME=hh:mm:ss
+5_MAXTIME=hh:mm:ss
+6_MAXTIME=hh:mm:ss
+
+
+# The following are the array sizes you wish to use for batch jobs (processing
+# and model learning scripts). Using a number larger than the number of cores
+# on your system is not recommended
+PROCESSING_ARRAY_SIZE=VALUE
+MODEL_LEARNING_ARRAY_SIZE=VALUE
 ```

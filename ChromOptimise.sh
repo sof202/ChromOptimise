@@ -80,6 +80,7 @@ echo ""
 if [[ "${STARTING_SCRIPT:=10}" -eq 0 ]]; then
     jobID[Download]=$( \
     sbatch \
+    --time="${0_MAXTIME}" \
     "0_EGADownloading.sh" \
     "${configuration_directory}" \
     "${FILE_OF_FILE_NAMES}" | \
@@ -101,6 +102,7 @@ if [[ "${STARTING_SCRIPT}" -eq 1 ]]; then
 
         jobID[$array_index_move]=$( \
         sbatch \
+        --time="${1_MAXTIME}" \
         "1_MoveFilesToSingleDirectory.sh" \
         "${configuration_directory}" \
         "${mark}" | \
@@ -118,6 +120,7 @@ elif [[ "${STARTING_SCRIPT}" -lt 1 ]]; then
         # This script depends on the downloading script being finished
         jobID[$array_index_move]=$( \
         sbatch \
+        --time="${1_MAXTIME}" \
         --dependency=afterok:"${jobID[0]}" \
         "1_MoveFilesToSingleDirectory.sh" \
         "${configuration_directory}" \
@@ -141,6 +144,8 @@ if [[ "${STARTING_SCRIPT}" -eq 2 ]]; then
 
         jobID[$array_index_process]=$( \
         sbatch \
+        --time="${2_MAXTIME}" \
+        --array=1-"${PROCESSING_ARRAY_SIZE}" \
         "2_batch_ProcessBamFiles.sh" \
         "${configuration_directory}" \
         "${mark}" \
@@ -161,6 +166,8 @@ elif [[ "${STARTING_SCRIPT}" -lt 2 ]]; then
         # the correct place in the file structure
         jobID[$array_index_process]=$( \
         sbatch \
+        --time="${2_MAXTIME}" \
+        --array=1-"${PROCESSING_ARRAY_SIZE}" \
         --dependency=afterok:"${jobID[${array_index_move}]}" \
         "2_batch_ProcessBamFiles.sh" \
         "${configuration_directory}" \
@@ -185,6 +192,7 @@ if [[ "${STARTING_SCRIPT}" -eq 3 ]]; then
 
         jobID[$array_index_merge]=$( \
         sbatch \
+        --time="${3_MAXTIME}" \
         "3_SubsampleBamFiles.sh" \
         "${configuration_directory}" \
         "${mark}" \
@@ -205,6 +213,7 @@ elif [[ "${STARTING_SCRIPT}" -lt 3 ]]; then
         # processed (and with a specific file name)
         jobID[$array_index_merge]=$( \
         sbatch \
+        --time="${3_MAXTIME}" \
         --dependency=afterok:"${jobID[${array_index_process}]}" \
         "3_SubsampleBamFiles.sh" \
         "${configuration_directory}" \
@@ -224,6 +233,7 @@ fi
 if [[ "${STARTING_SCRIPT}" -eq 4 ]]; then
     jobID[binarization]=$(
     sbatch \
+    --time="${4_MAXTIME}" \
     "4_BinarizeBamFiles.sh" \
     "${configuration_directory}" \
     "${BIN_SIZE}" \
@@ -242,9 +252,14 @@ if [[ "${STARTING_SCRIPT}" -eq 4 ]]; then
 # Hence we use a checkpoint script that only terminates once the subsampled
 # directory has the correct number of files in it (for the sample size given).
 elif [[ "${STARTING_SCRIPT}" -lt 4 ]]; then
-    # Checkpoint script should 
+    # Checkpoint script should not finish searching until all subsampling has
+    # finished. The maximum time this can take is the addition of max
+    # wall times for previous scripts
+    wall_time=$((1_MAXTIME + 2_MAXTIME + 3_MAXTIME))
+    
     jobID[checkpoint]=$(
     sbatch \
+    --time="${wall_time}" \
     --dependency=afterok:"${jobID[${array_index_process}]}" \
     "$CHROMOPTIMISE_DIR/ChromOptimiseCheckpoints/Subsampling_Checkpoint.sh" \
     "${configuration_directory}" \
@@ -260,6 +275,7 @@ elif [[ "${STARTING_SCRIPT}" -lt 4 ]]; then
     
     jobID[binarization]=$(
     sbatch \
+    --time="${4_MAXTIME}" \
     --dependency=afterok:"${jobID[checkpoint]}" \
     "4_BinarizeBamFiles.sh" \
     "${configuration_directory}" \
@@ -278,6 +294,8 @@ fi
 if [[ "${STARTING_SCRIPT}" -eq 5 ]]; then
     jobID[Model_Learning]=$( \
     sbatch \
+    --time="${5_MAXTIME}" \
+    --array=1-"${MODEL_LEARNING_ARRAY_SIZE}" \
     "5_batch_CreateIncrementalModels.sh" \
     "${configuration_directory}" \
     "${NUMBER_OF_MODELS}" \
@@ -293,6 +311,8 @@ if [[ "${STARTING_SCRIPT}" -eq 5 ]]; then
 elif [[ "${STARTING_SCRIPT}" -lt 5 ]]; then
     jobID[Model_Learning]=$( \
     sbatch \
+    --time="${5_MAXTIME}" \
+    --array=1-"${MODEL_LEARNING_ARRAY_SIZE}" \
     --dependency=afterok:"${jobID[binarization]}" \
     "5_batch_CreateIncrementalModels.sh" \
     "${configuration_directory}" \
@@ -313,6 +333,7 @@ fi
 if [[ "${STARTING_SCRIPT}" -eq 6 ]]; then
     jobID[Optimal_States]=$( \
     sbatch \
+    --time="${6_MAXTIME}" \
     "6_OptimalNumberOfStates.sh" \
     "${configuration_directory}" \
     )
@@ -323,6 +344,7 @@ if [[ "${STARTING_SCRIPT}" -eq 6 ]]; then
 elif [[ "${STARTING_SCRIPT}" -lt 6 ]]; then
     jobID[Optimal_States]=$( \
     sbatch \
+    --time="${6_MAXTIME}" \
     --dependency=afterok:"${jobID[Model_Learning]}" \
     "6_OptimalNumberOfStates.sh" \
     "${configuration_directory}" \
