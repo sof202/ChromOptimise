@@ -133,11 +133,7 @@ cd "${RAW_FULL_FILE_PATH}" || \
 doesn't exist, make sure you typed the epigenetic mark correctly and that you \
 have ran 1_MoveFilesToSingleDirectory.sh first."; finishing_statement 1; }
 
-# Get base name of the files in 3 steps
-# 1) Find all of the .bam files in the mark directory
-# 2) Remove the "./" at the start of these file paths
-# 3) Remove the .bam found at the end of these file names using substition
-list_of_files=$(find . -type f -name "*.bam" | cut -d "/" -f 2 | sed 's/.bam//')
+list_of_files=$(find . -type f -name "*.bam")
 mkdir -p "${PROCESSED_FULL_FILE_PATH}"
 
 
@@ -188,19 +184,25 @@ module load SAMtools
 # 4) Create an index file, an index stats file and a stats file for the processed files
 
 for file in ${files_to_process}; do
-    echo "Processing ${file}.bam..."
+    echo "Processing ${file}..."
+
+    base_name=$( basename "${file}" .bam)
+
+    # Processing includes multiple steps, we use the 'success' variable to
+    # keep track of any failures in the pipeline (overall errors for a file).
+    # to make error files easier to read.
     success=0
     cd "${RAW_FULL_FILE_PATH}" || finishing_statement 1
     # 1)
-    samtools index "${file}.bam" 
-    samtools idxstats "${file}.bam" > "${file}.PerChromosomeStats.txt"
-    samtools stats "${file}.bam" > "${file}.stats"
+    samtools index "${base_name}.bam" 
+    samtools idxstats "${base_name}.bam" > "${base_name}.PerChromosomeStats.txt"
+    samtools stats "${base_name}.bam" > "${base_name}.stats"
 
     # 2)
-    samtools sort "${file}.bam" > \
-    "${PROCESSED_FULL_FILE_PATH}/${file}.sorted.bam"
+    samtools sort "${base_name}.bam" > \
+    "${PROCESSED_FULL_FILE_PATH}/${base_name}.sorted.bam"
     if [[ $? == 1 ]]; then 
-        { >&2 echo "Sorting failed for ${file}."; }
+        { >&2 echo "Sorting failed for ${base_name}."; }
         success=1
     fi
     
@@ -208,10 +210,10 @@ for file in ${files_to_process}; do
 
     # Need to use the -h option here to keep the headers 
     # so that the next samtools view can function properly
-    samtools view -q "${minimum_tolerated_phred_score}" -h "${file}.sorted.bam" | \
-    samtools sort /dev/stdin -o "${file}.sorted.filtered.bam"
+    samtools view -q "${minimum_tolerated_phred_score}" -h "${base_name}.sorted.bam" | \
+    samtools sort /dev/stdin -o "${base_name}.sorted.filtered.bam"
     if (( PIPESTATUS[0] != 0 || PIPESTATUS[1] != 0 )); then 
-        { >&2 echo "Filtering failed for ${file}."; }
+        { >&2 echo "Filtering failed for ${base_name}."; }
         success=1
     fi
 
@@ -219,29 +221,29 @@ for file in ${files_to_process}; do
     # The -F 1796 exludes reads with the following flags: 
     # a) unmapped reads b) non-primary alignment reads 
     # c) Reads that fail PCR/vendor checks d) Reads that are PCR/optical duplicates
-    samtools view -F 1796 -h "${file}.sorted.filtered.bam" > \
-    "${file}.sorted.filtered.noDuplicates.bam"
+    samtools view -F 1796 -h "${base_name}.sorted.filtered.bam" > \
+    "${base_name}.sorted.filtered.noDuplicates.bam"
     if [[ $? == 1 ]]; then 
-        { >&2 echo "Remove duplicates failed for ${file}."; }
+        { >&2 echo "Remove duplicates failed for ${base_name}."; }
         success=1
     fi
 
     # 3)
-    rm "${file}.sorted.bam"
-    rm "${file}.sorted.filtered.bam"
+    rm "${base_name}.sorted.bam"
+    rm "${base_name}.sorted.filtered.bam"
 
     # 4)
-    samtools index "${file}.sorted.filtered.noDuplicates.bam"
-    samtools idxstats "${file}.sorted.filtered.noDuplicates.bam" > \
-    "${file}.sorted.filtered.noDuplicates.PerChromosomeStats.txt"
-    samtools stats "${file}.sorted.filtered.noDuplicates.bam" > \
-    "${file}.sorted.filtered.noDuplicates.stats"
+    samtools index "${base_name}.sorted.filtered.noDuplicates.bam"
+    samtools idxstats "${base_name}.sorted.filtered.noDuplicates.bam" > \
+    "${base_name}.sorted.filtered.noDuplicates.PerChromosomeStats.txt"
+    samtools stats "${base_name}.sorted.filtered.noDuplicates.bam" > \
+    "${base_name}.sorted.filtered.noDuplicates.stats"
 
     if [[ success -eq 0 ]]; then
-        echo "${file}.bam processed successfully."
+        echo "${file} processed successfully."
     else
-        { echo -e "${file}.bam had an error during processing. Check error log:\n\
-        ${LOG_FILE_PATH}/$1~${SLURM_ARRAY_JOB_ID\
+        { echo -e "${file} had an error during processing. Check error log:\n\
+        ${LOG_FILE_PATH}/$2~${SLURM_ARRAY_JOB_ID\
         }~${SLURM_ARRAY_TASK_ID}~$timestamp.err"; }
     fi
 done
