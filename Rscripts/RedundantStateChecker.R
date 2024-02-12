@@ -40,8 +40,6 @@
 
 rm(list = ls())
 
-library("stringr")
-
 arguments <- commandArgs(trailingOnly = TRUE)
 config_file_location <- arguments[1]
 model_size <- as.numeric(arguments[2])
@@ -126,11 +124,8 @@ low_euclidean_distances <-
 
 # Extract states from state pairs in low euclidean distances
 similar_state_pairs <- low_euclidean_distances[, 1]
-similar_states <- c()
-for (state_pair in similar_state_pairs){
-  similar_states <- append(similar_states, substring(state_pair, 1, 1))
-  similar_states <- append(similar_states, substring(state_pair, 3, 3))
-}
+similar_states <- strsplit(similar_state_pairs, " ")
+similar_states <- unlist(lapply(similar_states, function(x) as.numeric(x)))
 similar_states_list <- unique(similar_states)
 
 
