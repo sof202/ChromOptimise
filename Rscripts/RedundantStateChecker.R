@@ -165,12 +165,8 @@ isolated_states <- append(isolated_states, single_assigned_states)
 # (i) Similar state pair existence
 # (ii) Low maximum transition probability
 # (iii) High isolation
-redundant_states <- c()
-for (state in low_transition_states){
-  if (state %in% similar_states_list && state %in% isolated_states) {
-    redundant_states <- append(redundant_states, state)
-  }
-}
+redundant_states <-
+  intersect(isolated_states, intersect(low_transition_states, similar_states))
 
 ## =========== ##
 ##   OUTPUTS   ##
