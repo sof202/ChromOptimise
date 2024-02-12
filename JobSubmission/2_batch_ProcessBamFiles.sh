@@ -186,7 +186,7 @@ module load SAMtools
 for file in ${files_to_process}; do
     echo "Processing ${file}..."
 
-    base_name=$( basename "${file}" .bam)
+    base_name=$(basename "${file}" .bam)
 
     # Processing includes multiple steps, we use the 'success' variable to
     # keep track of any failures in the pipeline (overall errors for a file).
@@ -202,7 +202,7 @@ for file in ${files_to_process}; do
     samtools sort "${base_name}.bam" > \
     "${PROCESSED_FULL_FILE_PATH}/${base_name}.sorted.bam"
     if [[ $? == 1 ]]; then 
-        { >&2 echo "Sorting failed for ${base_name}."; }
+        { >&2 echo "Sorting failed for ${file}."; }
         success=1
     fi
     
@@ -213,7 +213,7 @@ for file in ${files_to_process}; do
     samtools view -q "${minimum_tolerated_phred_score}" -h "${base_name}.sorted.bam" | \
     samtools sort /dev/stdin -o "${base_name}.sorted.filtered.bam"
     if (( PIPESTATUS[0] != 0 || PIPESTATUS[1] != 0 )); then 
-        { >&2 echo "Filtering failed for ${base_name}."; }
+        { >&2 echo "Filtering failed for ${file}."; }
         success=1
     fi
 
@@ -224,7 +224,7 @@ for file in ${files_to_process}; do
     samtools view -F 1796 -h "${base_name}.sorted.filtered.bam" > \
     "${base_name}.sorted.filtered.noDuplicates.bam"
     if [[ $? == 1 ]]; then 
-        { >&2 echo "Remove duplicates failed for ${base_name}."; }
+        { >&2 echo "Remove duplicates failed for ${file}."; }
         success=1
     fi
 
