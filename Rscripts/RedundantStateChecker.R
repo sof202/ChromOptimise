@@ -157,11 +157,12 @@ isolated_states <- append(isolated_states, single_assigned_states)
 
 
 ## Check for redundant states by using critereon ##
-# (i) Similar state pair existence
+# (i) Existence of a similar state (emission parameters)
+# At least one of:
 # (ii) Low maximum transition probability
 # (iii) High isolation
-redundant_states <-
-  intersect(isolated_states, intersect(low_transition_states, similar_states))
+redundant_states <- union(intersect(isolated_states, similar_states),
+                          intersect(low_transition_states, similar_states))
 
 ## =========== ##
 ##   OUTPUTS   ##
