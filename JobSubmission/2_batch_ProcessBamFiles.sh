@@ -148,11 +148,11 @@ total_number_of_files=$(echo "${list_of_files}" | wc -w)
 # files won't be processed if each array element processes the same number of files.
 # The remaining files are processed in the highest indexed array using logic below.
 
-number_of_files_for_each_array=$((total_number_of_files / SLURM_ARRAY_TASK_COUNT))
-start_file_index=$((SLURM_ARRAY_TASK_ID * number_of_files_for_each_array))
+number_files_for_each_array=$((total_number_of_files / SLURM_ARRAY_TASK_MAX))
+start_file_index=$((SLURM_ARRAY_TASK_ID * number_files_for_each_array))
 
 remainder=$((total_number_of_files % SLURM_ARRAY_TASK_COUNT)) 
-left_over_files=$((remainder + number_of_files_for_each_array))
+left_over_files=$((remainder + number_files_for_each_array))
 
 
 if [[ "${SLURM_ARRAY_TASK_ID}" -eq "${SLURM_ARRAY_TASK_COUNT}" ]]; then
@@ -165,7 +165,7 @@ else
     cut -d "/" -f 2 | \
     sed 's/.bam//' | \
     head -$start_file_index | \
-    tail -$number_of_files_for_each_array )
+    tail -$number_files_for_each_array )
 fi
 
 ## ====================== ##
