@@ -253,12 +253,6 @@ echo "Plotting the estimated log likelihoods of learned models against one anoth
 Rscript PlotLikelihoods.R "${configuration_directory}/config.R" \
 "${bin_size}" "${sample_size}" "${output_directory}"
 
-# Plots the relative Akaike information critereon against the number of states
-# across all models. This information is also saved into a .csv file.
-echo "Processing the Akaike information critereon of learned models..."
-Rscript CalculateAIC.R "${configuration_directory}/config.R" \
-"${bin_size}" "${sample_size}" "${output_directory}"
-
 # Plots the relative Bayesian information critereon against the number of states
 # across all models. This information is also saved into a .csv file.
 # BIC requires the number of observations, which is the total number of lines in each 
