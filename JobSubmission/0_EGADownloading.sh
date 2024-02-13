@@ -30,38 +30,65 @@
 ## =================================================================================##
 ## PREREQUISITES:                                                                   ||
 ## Create a conda environement that has pyega3 installed in it                      ||
-## Change source file in |MAIN| to be your personal etc/profile.d/conda.sh file     ||
 ## Create a .json file containing your EGA login credentials                        ||
 ## =================================================================================##
 ## DEPENDENCIES:                                                                    ||
 ## Miniconda/Conda/Anaconda                                                         ||
-## Python                                                                           ||
-## Pyega3                                                                           ||
+## Pyega3 conda environment                                                         ||
 ## =================================================================================##
 ## INPUTS:                                                                          ||
-## $1 -> Full (or relative) file path for configuation file directory               ||
-## $2 -> File of file names to download from EGA.                                   ||
+## -c|--config -> Full/relative file path for configuation file directory           ||
+## -f|--file -> File of file names to download from EGA.                            ||
 ## =================================================================================##
 ## OUTPUTS:                                                                         ||
 ## NONE                                                                             ||
 ## =================================================================================##
 
-## ======================== ##
-##    HELP FUNCTIONALITY    ##
-## ======================== ##
+## ===================== ##
+##   ARGUMENT PARSING    ##
+## ===================== ##
 
-if [[ "$1" == "--help" || "$1" == "-h" ]]; then
-    echo "======================================================================="
-    echo "Purpose: Downloads files from EGA using a list of file/directory names."
-    echo "Author: Sam Fletcher"
-    echo "Contact: s.o.fletcher@exeter.ac.uk"
-    echo "Dependencies: Miniconda/Conda/Anaconda, EGA login credentials, Python"
-    echo "Inputs:"
-    echo "\$1 -> Full (or relative) file path for configuation file directory"
-    echo "\$2 -> File of file names to download from EGA."
-    echo "======================================================================="
+usage() {
+cat <<EOF
+=======================================================================
+0_EGADownloading
+=======================================================================
+Purpose: Downloads files from EGA using a list of file/directory names.
+Author: Sam Fletcher
+Contact: s.o.fletcher@exeter.ac.uk
+Dependencies: Conda, EGA login credentials, Pyega3 conda environment
+Inputs:
+-c|--config -> Full/relative file path for configuation file directory
+-f|--file -> File of file names to download from EGA.
+=======================================================================
+EOF
     exit 0
+}
+
+if [[ $# -eq 0 ]]; then
+    usage
 fi
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -c|--config)
+        if [[ "$2" != -* && -n "$2" ]]; then 
+            configuration_directory="$2"; shift 2
+        else 
+            shift 1
+        fi
+        ;;
+        -f|--file)
+        if [[ "$2" != -* && -n "$2" ]]; then 
+            text_file_containing_inodes="$2"; shift 2
+        else 
+            shift 1
+        fi
+        ;;
+        *)
+        usage
+    esac
+done
 
 ## ============ ##
 ##    SET UP    ##
@@ -71,10 +98,6 @@ echo "Job '${SLURM_JOB_NAME}' started at:"
 date -u
 
 start_time=$(date +%s)
-
-# Configuration file is required for file paths
-
-configuration_directory=$1
 
 source "${configuration_directory}/FilePaths.txt" || \
 { echo "The configuration file does not exist in the specified location: \
@@ -92,12 +115,6 @@ mv "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" \
 "${LOG_FILE_PATH}/${SLURM_JOB_ID}~$timestamp.log"
 mv "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 "${LOG_FILE_PATH}/${SLURM_JOB_ID}~$timestamp.err"
-
-## =============== ##
-##    VARIABLES    ##
-## =============== ##
-
-text_file_containing_inodes=$2
 
 ## ========== ##
 ##    MAIN    ##
