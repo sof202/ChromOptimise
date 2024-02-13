@@ -29,6 +29,10 @@ source "${configuration_directory}/FilePaths.txt" || \
 { echo "The configuration file does not exist in the specified location: \
 ${configuration_directory}"; exit 1; }
 
+## ============================== ##
+##   CREATION OF FILE STRUCTURE   ##
+## ============================== ##
+
 mkdir -p "${DOWNLOAD_DIR}"
 mkdir -p "${RAW_DIR}"
 mkdir -p "${PROCESSED_DIR}"
@@ -39,18 +43,34 @@ mkdir -p "${OPTIMUM_STATES_DIR}"
 mkdir -p "${COMPARE_DIR}"
 mkdir -p "${BIG_MODELS_DIR}"
 
+## ============================= ##
+##   DELETE UOE SPECIFIC LINES   ##
+## ============================= ##
+
 cd "${SCRIPT_DIR}" || \
 { echo "The configuration file does not point to the correct script directory: \
 ${SCRIPT_DIR}"; exit 1; }
 
 script_list=$(find . -type f -name "*.sh")
 
-echo "Do you want to remove instances of \"module load\" and \"module purge\"? (y/n)"
+echo "Do you want to remove instances of \"module load\" and \"module purge\"?"
+echo "[Recommended] (y/n)"
 read -r delete_module_lines
 
 if [[ "${delete_module_lines}" == "y" ]]; then
     for file in $script_list; do
         sed -i "s/module load.*//g" "${file}"
         sed -i "s/module purge//g" "${file}"
+    done
+fi
+
+echo "Do you want to remove SLURM directives associated with UoE's HPC?"
+echo "[Recommended] (y/n)"
+read -r delete_slurm_directives
+
+if [[ "${delete_slurm_directives}" == "y" ]]; then
+    for file in $script_list; do
+        sed -i "s/#SBATCH -A Research_Project-MRC190311//g" "${file}"
+        sed -i "s/#SBATCH -p mrcq//g" "${file}"
     done
 fi
