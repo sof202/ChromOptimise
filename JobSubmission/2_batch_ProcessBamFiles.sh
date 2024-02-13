@@ -133,9 +133,18 @@ cd "${RAW_FULL_FILE_PATH}" || \
 doesn't exist, make sure you typed the epigenetic mark correctly and that you \
 have ran 1_MoveFilesToSingleDirectory.sh first."; finishing_statement 1; }
 
+# This is in place in case a previous run of this script timed out or was
+# cancelled
+rm ./*samtools*tmp*.bam
+
 list_of_files=$(find . -type f -name "*.bam")
 mkdir -p "${PROCESSED_FULL_FILE_PATH}"
 
+cd "${PROCESSED_FULL_FILE_PATH}" || finishing_statement 1
+
+# We want to remove any files from previous runs in case this script previously
+# timed out or was cancelled (helps with later scripts) 
+rm ./*
 
 ## =============================== ##
 ##    PARALLEL PROCESSING LOGIC    ##
