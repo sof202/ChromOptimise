@@ -41,7 +41,6 @@
 ## INPUTS:                                                                          ||
 ## $1 -> Full (or relative) file path for configuation file directory               ||
 ## $2 -> File of file names to download from EGA.                                   ||
-## $3 -> Full file path to your conda environment for pyega3                        || 
 ## =================================================================================##
 ## OUTPUTS:                                                                         ||
 ## NONE                                                                             ||
@@ -99,7 +98,6 @@ mv "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 ## =============== ##
 
 text_file_containing_inodes=$2
-conda_environment=$3
 
 ## ========== ##
 ##    MAIN    ##
@@ -112,9 +110,13 @@ module load Miniconda3
 # However, running this will result in a new shell being created.
 # This means one cannot have their environment activatable and activate it
 # Using the conda shell script in the [conda]/etc folder is a work around for this.
-source /lustre/home/sof202/miniconda3/etc/profile.d/conda.sh 
+source "${CONDA_SHELL}/profile.d/conda.sh" || \
+{ echo "profile.d/conda.sh does not exist in specified location: \
+[\${CONDA_SHELL} - ${CONDA_SHELL}]"; exit 1; }
 
-conda activate "${conda_environment}"
+conda activate "${PYEGA_ENVIRONMENT}" || \
+{ echo "conda environment does not exist in specified location: \
+[\${PYEGA_ENVIRONMENT} - ${PYEGA_ENVIRONMENT}]"; exit 1; }
 
 # Read each line of text file
 # [[ -n "$line" ]] handles the last line that has no newline character

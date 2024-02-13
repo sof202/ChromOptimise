@@ -81,6 +81,12 @@ export RSCRIPTS_DIR="${SCRIPTS_DIR}/Rscripts"
 export SUPPLEMENTARY_DIR="${SCRIPTS_DIR}/supplementary"
 export LOG_DIR="${SCRIPTS_DIR}/LogFiles"
 
+## Pyega3/conda directories
+
+export CONDA_SHELL="path/to/conda/etc/profile.d/conda.sh"
+export PYEGA_ENVIRONMENT="path/to/pyega3/conda/environment"
+export CREDENTIALS="path/to/EGA/credentials"
+
 ## ChromHMM file locations
 
 export CHROMHMM_MAIN_DIR="/path/to/ChromHMM/main/directory"
