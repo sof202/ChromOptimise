@@ -94,25 +94,28 @@ done
 ##    SET UP    ##
 ## ============ ##
 
-echo "Job '${SLURM_JOB_NAME}' started at:"
-date -u
-
-start_time=$(date +%s)
-
 source "${configuration_directory}/FilePaths.txt" || \
 { echo "The configuration file does not exist in the specified location: \
 ${configuration_directory}"; exit 1; }
 
+# If a configuration file is changed during analysis, it is hard to tell
+# what configuration was used for a specific run through, below accounts for 
+# this
+echo "Configuration file used with this script: \
+${configuration_directory}/FilePaths.txt"
+echo ""
+cat "${configuration_directory}/FilePaths.txt"
+echo ""
 
-LOG_FILE_PATH="${LOG_DIR}/$SLURM_JOB_NAME/$USER"
-mkdir -p "${LOG_FILE_PATH}"
-timestamp=$(date -u +%Y.%m.%d-%H_%M)
+source "${configuration_directory}/LogFileManagement.sh" || \
+{ echo "The log file management script does not exist in the specified \
+location: ${configuration_directory}"; exit 1; }
 
 # Output and error files renamed to:
 # [file name]~[job id]~[date]-[time]
 
 mv "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" \
-"${LOG_FILE_PATH}/${SLURM_JOB_ID}~$timestamp.log"
+"${LOG_FILE_PATH}/${SLURM_JOB_ID}~${timestamp:=}.log"
 mv "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 "${LOG_FILE_PATH}/${SLURM_JOB_ID}~$timestamp.err"
 
@@ -129,29 +132,20 @@ module load Miniconda3
 # Using the conda shell script in the [conda]/etc folder is a work around for this.
 source "${CONDA_SHELL}/profile.d/conda.sh" || \
 { echo "profile.d/conda.sh does not exist in specified location: \
-[\${CONDA_SHELL} - ${CONDA_SHELL}]"; exit 1; }
+[\${CONDA_SHELL} - ${CONDA_SHELL}]"; finishing_statement 1; }
 
 conda activate "${PYEGA_ENVIRONMENT}" || \
 { echo "conda environment does not exist in specified location: \
-[\${PYEGA_ENVIRONMENT} - ${PYEGA_ENVIRONMENT}]"; exit 1; }
+[\${PYEGA_ENVIRONMENT} - ${PYEGA_ENVIRONMENT}]"; finishing_statement 1; }
 
 # Read each line of text file
 # [[ -n "$line" ]] handles the last line that has no newline character
 while IFS= read -r line || [[ -n "$line" ]]; do
     # CHANGE "egaConfig.json" TO FILE WITH EGA LOGIN CREDENTIALS
     # -c 5 -> Failed downloads are retried 5 times before moving on to next file
-    pyega3 -c 5 -cf ~/Tools/pyegaDownloading/egaConfig.json fetch \
+    pyega3 -c 5 -cf "${CREDENTIALS}" fetch \
     "$line" --output-dir "${DOWNLOAD_DIR}"
 done < "${text_file_containing_inodes}"
 
-
-## ======================= ##
-##   FINISHING STATEMENT   ##
-## ======================= ##
-
 rm "${SLURM_SUBMIT_DIR}/pyega3_output.log"
-echo "Job finished with exit code 0 at:"
-date -u
-end_time=$(date +%s)
-time_taken=$((end_time-start_time))
-echo "Job took a total of: ${time_taken} seconds to finish."
+finishing_statement 1
