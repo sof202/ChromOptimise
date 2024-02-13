@@ -30,42 +30,68 @@
 ## CONTACT: s.o.fletcher@exeter.ac.uk                                               ||
 ## CREATED: November 2023                                                           ||
 ## =================================================================================##
-## PREREQUISITES: Downloaded files from EGA                                         ||
+## PREREQUISITES: Downloaded files                                                  ||
 ## =================================================================================##
 ## DEPENDENCIES: NONE                                                               ||
 ## =================================================================================##
 ## INPUTS:                                                                          ||
-## $1 -> Full (or relative) file path for configuation file directory               ||
-## $2 -> Epigenetic Mark to process                                                 ||
+## -c|--config -> Full/relative file path for configuation file directory           ||
+## -m|--mark -> Epigenetic mark name                                                ||
 ## =================================================================================##
 ## OUTPUTS:                                                                         ||
 ## NONE                                                                             ||
 ## =================================================================================##
 
-## ======================== ##
-##    HELP FUNCTIONALITY    ##
-## ======================== ##
+## ===================== ##
+##   ARGUMENT PARSING    ##
+## ===================== ##
 
-if [[ "$1" == "--help" || "$1" == "-h" ]]; then
-    echo "===================================================================="
-    echo "Purpose: Moves .bam files that include the epigenetic mark."
-    echo "into a single folder."
-    echo "Author: Sam Fletcher"
-    echo "Contact: s.o.fletcher@exeter.ac.uk"
-    echo "Dependencies: NONE"
-    echo "Inputs:"
-    echo "\$1 -> Full (or relative) file path for configuation file directory"
-    echo "\$2 -> Epigenetic mark name"
-    echo "===================================================================="
+usage() {
+cat <<EOF
+=======================================================================
+1_MoveFilesToSingleDirectory
+=======================================================================
+Purpose: Moves .bam files that include the epigenetic mark in their
+name into a single labeled folder.
+Author: Sam Fletcher
+Contact: s.o.fletcher@exeter.ac.uk
+Dependencies: NONE
+Inputs:
+-c|--config -> Full/relative file path for configuation file directory
+-m|--mark -> Epigenetic mark name
+=======================================================================
+EOF
     exit 0
+}
+
+if [[ $# -eq 0 ]]; then
+    usage
 fi
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -c|--config)
+        if [[ "$2" != -* && -n "$2" ]]; then 
+            configuration_directory="$2"; shift 2
+        else 
+            shift 1
+        fi
+        ;;
+        -m|--mark)
+        if [[ "$2" != -* && -n "$2" ]]; then 
+            mark_name="$2"; shift 2
+        else 
+            shift 1
+        fi
+        ;;
+        *)
+        usage
+    esac
+done
 
 ## ============ ##
 ##    SET UP    ##
 ## ============ ##
-
-# Configuration files are required for file paths and log file management
-configuration_directory=$1
 
 source "${configuration_directory}/FilePaths.txt" || \
 { echo "The configuration file does not exist in the specified location: \
@@ -93,12 +119,6 @@ mv "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" \
 "${LOG_FILE_PATH}/$2~${SLURM_JOB_ID}~${timestamp:=}.log"
 mv "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 "${LOG_FILE_PATH}/$2~${SLURM_JOB_ID}~$timestamp.err"
-
-## =============== ##
-##    VARIABLES    ##
-## =============== ##
-
-mark_name=$2
 
 ## ================== ##
 ##    MOVING FILES    ##
