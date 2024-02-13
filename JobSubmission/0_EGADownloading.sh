@@ -16,33 +16,33 @@
 #SBATCH --error=temp%j.err
 #SBATCH --job-name=0_Download_Files
 
-## =================================================================================##
-##                                                                                  ||
-##                                     PREAMBLE                                     ||
-##                                                                                  ||
-## =================================================================================##
-## PURPOSE:                                                                         ||
-## Downloads files from EGA using pyega3.                                           ||
-## =================================================================================##
-## AUTHOR: Sam Fletcher                                                             ||
-## CONTACT: s.o.fletcher@exeter.ac.uk                                               ||
-## CREATED: November 2023                                                           ||
-## =================================================================================##
-## PREREQUISITES:                                                                   ||
-## Create a conda environement that has pyega3 installed in it                      ||
-## Create a .json file containing your EGA login credentials                        ||
-## =================================================================================##
-## DEPENDENCIES:                                                                    ||
-## Miniconda/Conda/Anaconda                                                         ||
-## Pyega3 conda environment                                                         ||
-## =================================================================================##
-## INPUTS:                                                                          ||
-## -c|--config -> Full/relative file path for configuation file directory           ||
-## -f|--file -> File of file names to download from EGA.                            ||
-## =================================================================================##
-## OUTPUTS:                                                                         ||
-## NONE                                                                             ||
-## =================================================================================##
+## ===========================================================================##
+##                                                                            ||
+##                                  PREAMBLE                                  ||
+##                                                                            ||
+## ===========================================================================##
+## PURPOSE:                                                                   ||
+## Downloads files from EGA using pyega3.                                     ||
+## ===========================================================================##
+## AUTHOR: Sam Fletcher                                                       ||
+## CONTACT: s.o.fletcher@exeter.ac.uk                                         ||
+## CREATED: November 2023                                                     ||
+## ===========================================================================##
+## PREREQUISITES:                                                             ||
+## Create a conda environement that has pyega3 installed in it                ||
+## Create a .json file containing your EGA login credentials                  ||
+## ===========================================================================##
+## DEPENDENCIES:                                                              ||
+## Miniconda/Conda/Anaconda                                                   ||
+## Pyega3 conda environment                                                   ||
+## ===========================================================================##
+## INPUTS:                                                                    ||
+## -c|--config -> Full/relative file path for configuation file directory     ||
+## -f|--file -> File of file names to download from EGA.                      ||
+## ===========================================================================##
+## OUTPUTS:                                                                   ||
+## NONE                                                                       ||
+## ===========================================================================##
 
 ## ===================== ##
 ##   ARGUMENT PARSING    ##
@@ -129,7 +129,7 @@ module load Miniconda3
 # Conda environments will not be activated until one uses `conda init bash`
 # However, running this will result in a new shell being created.
 # This means one cannot have their environment activatable and activate it
-# Using the conda shell script in the [conda]/etc folder is a work around for this.
+# Using the conda shell script in [conda]/etc is a work around for this.
 source "${CONDA_SHELL}/profile.d/conda.sh" || \
 { echo "profile.d/conda.sh does not exist in specified location: \
 [\${CONDA_SHELL} - ${CONDA_SHELL}]"; finishing_statement 1; }
@@ -141,7 +141,6 @@ conda activate "${PYEGA_ENVIRONMENT}" || \
 # Read each line of text file
 # [[ -n "$line" ]] handles the last line that has no newline character
 while IFS= read -r line || [[ -n "$line" ]]; do
-    # CHANGE "egaConfig.json" TO FILE WITH EGA LOGIN CREDENTIALS
     # -c 5 -> Failed downloads are retried 5 times before moving on to next file
     pyega3 -c 5 -cf "${CREDENTIALS}" fetch \
     "$line" --output-dir "${DOWNLOAD_DIR}"
