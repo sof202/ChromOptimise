@@ -160,6 +160,17 @@ Rscript HistogramPlotForEuclideanDistances.R "${configuration_directory}/config.
 "${model_size}" "${seed}" "${model_file_dir}" 
 
 Rscript ScatterPlotForTransitionMaxima.R "${configuration_directory}/config.R" \
-"${model_size}" "${seed}" "${model_file_dir}" 
+"${model_size}" "${seed}" "${model_file_dir}"
+
+cd "${RSCRIPTS_DIR}" || \
+{ >&2 echo "ERROR: make sure [\${RSCRIPTS_DIR} - ${RSCRIPTS_DIR}] \
+in FilePaths.txt is pointing to the correct directory"; finishing_statement 1; }
+
+mkdir -p "${model_file_dir}/IsolationScores"
+state_assignment_file=$(find "${model_file_dir}" -name "*${model_size}_${seed}_chr1_*")
+
+Rscript IsolationScores.R "${configuration_directory}/config.R" \
+"${state_assignment_file}" "${model_file_dir}/IsolationScores" 100
+
 
 finishing_statement 0
