@@ -18,29 +18,30 @@
 #SBATCH --error=temp%j.err
 #SBATCH --job-name=1_Moving_Files
 
-## =================================================================================##
-##                                                                                  ||
-##                                     PREAMBLE                                     ||
-##                                                                                  ||
-## =================================================================================##
-## PURPOSE:                                                                         ||
-## Moves .bam files that include the inputted epigenetic mark into a single folder. ||
-## =================================================================================##
-## AUTHOR: Sam Fletcher                                                             ||
-## CONTACT: s.o.fletcher@exeter.ac.uk                                               ||
-## CREATED: November 2023                                                           ||
-## =================================================================================##
-## PREREQUISITES: Downloaded files                                                  ||
-## =================================================================================##
-## DEPENDENCIES: NONE                                                               ||
-## =================================================================================##
-## INPUTS:                                                                          ||
-## -c|--config -> Full/relative file path for configuation file directory           ||
-## -m|--mark -> Epigenetic mark name                                                ||
-## =================================================================================##
-## OUTPUTS:                                                                         ||
-## NONE                                                                             ||
-## =================================================================================##
+## ===========================================================================##
+##                                                                            ||
+##                                  PREAMBLE                                  ||
+##                                                                            ||
+## ===========================================================================##
+## PURPOSE:                                                                   ||
+## Moves .bam files that include the inputted epigenetic mark into a single   || 
+## folder.                                                                    ||
+## ===========================================================================##
+## AUTHOR: Sam Fletcher                                                       ||
+## CONTACT: s.o.fletcher@exeter.ac.uk                                         ||
+## CREATED: November 2023                                                     ||
+## ===========================================================================##
+## PREREQUISITES: Downloaded files                                            ||
+## ===========================================================================##
+## DEPENDENCIES: NONE                                                         ||
+## ===========================================================================##
+## INPUTS:                                                                    ||
+## -c|--config -> Full/relative file path for configuation file directory     ||
+## -m|--mark -> Epigenetic mark name                                          ||
+## ===========================================================================##
+## OUTPUTS:                                                                   ||
+## NONE                                                                       ||
+## ===========================================================================##
 
 ## ===================== ##
 ##   ARGUMENT PARSING    ##
@@ -126,14 +127,15 @@ mv "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 
 cd "${MAIN_DIR}" || \
 { >&2 echo "ERROR: [\${MAIN_DIR} - ${MAIN_DIR}] doesn't exist, \
-make sure FilePaths.txt is pointing to the correct directory"; finishing_statement 1; }
+make sure FilePaths.txt is pointing to the correct directory"
+finishing_statement 1; }
 
 list_of_files_with_mark_name=\
 $(find . -type f -name "*${mark_name}*.bam")
 
 # If the above list is empty then the epigenetic mark must not exist.
 if [[ -z ${list_of_files_with_mark_name} ]]; then
-    { >&2 echo -e "ERROR: No files with epigenetic mark: ${mark_name} were found.\n"\
+    { >&2 echo "ERROR: No files with epigenetic mark: ${mark_name} were found."\
     "Please input a epigenetic mark name that exists (note that this is "\
     "case sensitive)."; finishing_statement 1; }
 fi
@@ -143,7 +145,7 @@ mkdir -p "${RAW_DIR}/${mark_name}"
 echo "Moving .bam files to ${RAW_DIR}/${mark_name}..."
 
 for file in ${list_of_files_with_mark_name}; do
-  mv "${file}" "${RAW_DIR}/${mark_name}"
+    mv "${file}" "${RAW_DIR}/${mark_name}"
 done
 
 finishing_statement 0
