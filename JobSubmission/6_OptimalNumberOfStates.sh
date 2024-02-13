@@ -155,14 +155,17 @@ rm -f ./*
 
 cd "${MODEL_DIR}" || \
 { >&2 echo "ERROR: [\${MODEL_DIR} - ${MODEL_DIR}] doesn't exist, \
-make sure FilePaths.txt is pointing to the correct directory."; finishing_statement 1; }
+make sure FilePaths.txt is pointing to the correct directory."
+finishing_statement 1; }
 
-# We will use the emission files specifically so that we always know the max
-# model number for each loop
-emission_text_files=$(find . -type f -name "emissions*.txt")
-for file in $emission_text_files; do
-    cp "$file" "${OPTIMUM_STATES_DIR}/temp"
-done
+# Using the emission files here for the model numbers is arbitrary, model
+# or transition files could have been used just the same.
+# We reverse the order as we plan on working from the most complex model
+# to the least until a model with no redundant states is found.
+model_sizes=$( \
+find . -type f -name "emissions*.txt" | \
+grep -oP "\d+(?=.txt)" | \
+sort -gr)
 
 ## =============== ##
 ##    MAIN LOOP    ##
@@ -173,53 +176,47 @@ module load R/4.2.1-foss-2022a
 
 cd "${RSCRIPTS_DIR}" || \
 { >&2 echo "ERROR: [\${RSCRIPTS_DIR} - ${RSCRIPTS_DIR}] doesn't exist, \
-make sure FilePaths.txt is pointing to the correct directory"; finishing_statement 1; }
-
-max_model_number=$(find "${OPTIMUM_STATES_DIR}/temp" -type f -name "*.txt" | \
-grep -oP "\d+(?=.txt)"| \
-sort -g | \
-tail -1) 
+make sure FilePaths.txt is pointing to the correct directory"
+finishing_statement 1; }
 
 output_directory="${OPTIMUM_STATES_DIR}\
-/BinSize_${bin_size}_SampleSize_${sample_size}_MaxModelSize_${max_model_number}"
+/BinSize_${bin_size}_SampleSize_${sample_size}_MaxModelSize_${model_number}"
 
 mkdir -p "${output_directory}"
 rm -f "${output_directory}"/*
 
-while [[ ${max_model_number} -gt 2 ]]; do
-    max_model_number=$(find "${OPTIMUM_STATES_DIR}/temp" -type f -name "*.txt" | \
-    grep -oP "\d+(?=.txt)"| \
-    sort -g | \
-    tail -1) 
-
-    echo "Running IsolationScores.R for: ${max_model_number} states..."
+for model_number in ${model_sizes}; do
+    echo "Running IsolationScores.R for: ${model_number} states..."
 
     # State assignments are named:
     # CellType_SampleSize_BinSize_ModelSize_Chromosome_statebyline.txt
-    state_assignment_file=$(find "${MODEL_DIR}" -name "*${max_model_number}_chr1_*")
+    state_assignment_file=$(find "${MODEL_DIR}" -name "*_${model_number}_chr1_*")
 
     # IsolationScores.R is ran with a sample size of 100% (all data is considered)
     # This is because the slow down is not that significant for most datasets
     Rscript IsolationScores.R "${configuration_directory}/config.R" \
     "${state_assignment_file}" "${output_directory}" 100 
 
-    echo "Running RedundantStateChecker.R for: ${max_model_number} states..."
+    echo "Running RedundantStateChecker.R for: ${model_number} states..."
 
     Rscript RedundantStateChecker.R "${configuration_directory}/config.R" \
-    "${max_model_number}" "${bin_size}" "${sample_size}" "${output_directory}"
+    "${model_number}" "${bin_size}" "${sample_size}" "${output_directory}"
 
-    redundant_states=$(tail -1 \
-    "${output_directory}/Redundant_States_Modelsize_${max_model_number}.txt")
+    redundant_states_found=$(tail -1 \
+    "${output_directory}/Redundant_States_Modelsize_${model_number}.txt")
 
-    if [[ "$redundant_states" == "NONE" ]]; then
-        echo "Model with ${max_model_number} states has no redundant states." >> \
+    if [[ "${redundant_states_found}" == "NONE" ]]; then
+        echo "Model with ${model_number} states has no redundant states." >> \
         "${output_directory}/OptimumNumberOfStates.txt"
         break
     else
-        rm -f "${OPTIMUM_STATES_DIR}"/temp/*"${max_model_number}".txt
-        echo -n "Model with ${max_model_number} states has redundant states: " >> \
+        rm -f "${OPTIMUM_STATES_DIR}"/temp/*"${model_number}".txt
+        
+        echo -n "Model with ${model_number} states has redundant states: " >> \
         "${output_directory}/OptimumNumberOfStates.txt"
-        echo "${redundant_states}" >> "${output_directory}/OptimumNumberOfStates.txt"
+        
+        echo "${redundant_states_found}" >> \
+        "${output_directory}/OptimumNumberOfStates.txt"
     fi
 done
 
@@ -235,12 +232,12 @@ rm "${output_directory}/Isolation_Scores.txt"
 # section checks for this scenario.
 
 if [[ $(wc -l < "${output_directory}/OptimumNumberOfStates.txt") -eq 1 ]]; then
-    { echo "${max_model_number} states may not be the optimum number of states."
+    { echo "${model_number} states may not be the optimum number of states."
     echo "Try increasing the size of the most complex model or increasing "\
     "the thresholds in the config.R file." 
     } >> "${output_directory}/OptimumNumberOfStates.txt"
 else
-    echo "Optimum number of states for the data is: ${max_model_number}" >> \
+    echo "Optimum number of states for the data is: ${model_number}" >> \
     "${output_directory}/OptimumNumberOfStates.txt"
 fi
 
