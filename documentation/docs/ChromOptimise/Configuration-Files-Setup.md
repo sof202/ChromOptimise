@@ -83,7 +83,7 @@ export LOG_DIR="${SCRIPTS_DIR}/LogFiles"
 
 ## Pyega3/conda directories
 
-export CONDA_SHELL="path/to/conda/etc/profile.d/conda.sh"
+export CONDA_SHELL="path/to/conda/etc/folder"
 export PYEGA_ENVIRONMENT="path/to/pyega3/conda/environment"
 export CREDENTIALS="path/to/EGA/credentials"
 
