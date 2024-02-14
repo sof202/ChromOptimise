@@ -178,11 +178,12 @@ This is the configuration file that enables the user to run all of the files in 
 
 ```text title="ChromOptimiseConfig.txt"
 # Which shell script to start from (provide a number from 0 to 6)
-export starting_script=VALUE
+export starting_script=
 
 # This is the list of marks that you intend to use in the analysis
 # Please provide this as a white space separated array
-export LIST_OF_MARKS=(mark1 mark2 mark3 etc.)
+# i.e. (mark1 mark2 mark3 mark4 ...)
+export LIST_OF_MARKS=
 
 # This is a FULL file path to the FOFN which contains files you want to
 # download using the pyega3 client
@@ -190,45 +191,51 @@ export FILE_OF_FILE_NAMES=path/to/file
 
 # This is a threshold for the Phred score used in the processing stage
 # (which reads to discard due to low base accuracy)
-export PRED_SCORE_THRESHOLD=VALUE
+export PRED_SCORE_THRESHOLD=20
 
 # This is the sample size (as a percentage) to use in the subsampling stage
 # If your data is small in size, the recommended value is 100
-export SAMPLE_SIZE=VALUE
+export SAMPLE_SIZE=50
 
 # This is the bin size to use during the binarization stage
 # ChromHMM recommends a default of 200
-export BIN_SIZE=VALUE
+export BIN_SIZE=200
 
 # This is the assembly that your data is alligned to.
-ASSEMBLY=VALUE
+export ASSEMBLY=hg19
 
 # This is the number of models you wish to create in the model learning stage
 # Read the documentation on 5_batch_CreateIncrementalModel.sh for help
 # here
-export NUMBER_OF_MODELS=VALUE
+export NUMBER_OF_MODELS=4
 
 # This is the increment in the number of states to use between models.
 # For most cases this will likely be 1. However, if you have lots of marks
 # in your dataset a larger value might be more appropriate
-export STATE_INCREMENT=VALUE
+export STATE_INCREMENT=1
+
+# This is the chromosome identifier (1-22, x,y,m) for the chromosome that is
+# to be used with the isolation metric (see Pipeline-explanation). Unless
+# this matters for your analysis, keep this at 1.
+export CHROMOSOME_IDENTIFIER=1
 
 # The following are the time you wish to allocate to each job (without this
 # jobs have no maximum walltime and can run forever).
 # Variables are numbered by their corresponding script number 
 # (0 -> EGADownloading.sh)
-0_MAXTIME=hh:mm:ss
-1_MAXTIME=hh:mm:ss
-2_MAXTIME=hh:mm:ss
-3_MAXTIME=hh:mm:ss
-4_MAXTIME=hh:mm:ss
-5_MAXTIME=hh:mm:ss
-6_MAXTIME=hh:mm:ss
+# Times must be in the format: hh:mm:ss
+export 0_MAXTIME=96:00:00
+export 1_MAXTIME=00:30:00
+export 2_MAXTIME=12:00:00
+export 3_MAXTIME=12:00:00
+export 4_MAXTIME=04:00:00
+export 5_MAXTIME=12:00:00
+export 6_MAXTIME=00:10:00
 
 
 # The following are the array sizes you wish to use for batch jobs (processing
 # and model learning scripts). Using a number larger than the number of cores
 # on your system is not recommended
-PROCESSING_ARRAY_SIZE=VALUE
-MODEL_LEARNING_ARRAY_SIZE=VALUE
+export PROCESSING_ARRAY_SIZE=4
+export MODEL_LEARNING_ARRAY_SIZE=4
 ```
