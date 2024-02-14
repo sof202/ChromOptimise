@@ -110,9 +110,9 @@ location: ${configuration_directory}"; exit 1; }
 
 
 
-# Output and error files renamed to:
-# [job id]~[date]-[time]
-
+# Temporary log files are moved like this as SLURM cannot create directories.
+# The alternative would be forcing the user to create the file structure
+# themselves and using full file paths in the SLURM directives (bad)
 mv "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" \
 "${LOG_FILE_PATH}/${SLURM_JOB_ID}~${timestamp:=}.log"
 mv "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \

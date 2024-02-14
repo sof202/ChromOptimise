@@ -119,13 +119,13 @@ source "${configuration_directory}/LogFileManagement.sh" || \
 location: ${configuration_directory}"; exit 1; }
 
 
-# Output and error files renamed to:
-# BinSize-[bin size]~[job id]~[date]-[time]
-
+# Temporary log files are moved like this as SLURM cannot create directories.
+# The alternative would be forcing the user to create the file structure
+# themselves and using full file paths in the SLURM directives (bad)
 mv "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" \
-"${LOG_FILE_PATH}/BinSize-$2~${SLURM_JOB_ID}~${timestamp:=}.log"
+"${LOG_FILE_PATH}/BinSize-${bin_size:=200}~${SLURM_JOB_ID}~${timestamp:=}.log"
 mv "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
-"${LOG_FILE_PATH}/BinSize-$2~${SLURM_JOB_ID}~$timestamp.err"
+"${LOG_FILE_PATH}/BinSize-${bin_size:=200}~${SLURM_JOB_ID}~$timestamp.err"
 
 ## =============== ##
 ##    VARIABLES    ##
