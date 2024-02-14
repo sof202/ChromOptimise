@@ -19,32 +19,32 @@
 #SBATCH --error=temp%j.err
 #SBATCH --job-name=Model_Comparing
 
-## =================================================================================##
-##                                                                                  ||
-##                                     PREAMBLE                                     ||
-##                                                                                  ||
-## =================================================================================##
-## PURPOSE:                                                                         ||
-## Compares models produced by 5_batch_CreateIncrementalModels.sh using ChromHMM's  ||
-## CompareModels command. The base model used for comparing is the most complex     ||                       
-## model. The emission file for the most complex model is then deleted and the      ||
-## process is repeated for the next most complex model.                             ||
-## This continues until all emission files have been deleted.                       ||
-## =================================================================================##
-## AUTHOR: Sam Fletcher                                                             ||
-## CONTACT: s.o.fletcher@exeter.ac.uk                                               ||
-## CREATED: November 2023                                                           ||
-## =================================================================================##
-## PREREQUISITES: Run: 5_batch_CreateIncrementalModels.sh                           ||
-## =================================================================================##
-## DEPENDENCIES: Java, ChromHMM                                                     ||
-## =================================================================================##
-## INPUTS:                                                                          ||
-## -c|--config= -> Full/relative file path for configuation file directory          ||
-## =================================================================================##
-## OUTPUTS:                                                                         ||
-## Model comparison files in (.txt,.svg,.png) format                                ||
-## =================================================================================##
+## ===========================================================================##
+##                                                                            ||
+##                                  PREAMBLE                                  ||
+##                                                                            ||
+## ===========================================================================##
+## PURPOSE:                                                                   ||
+## Compares models produced by 5_batch_CreateIncrementalModels.sh using       ||
+## ChromHMM's CompareModels command. The base model used for comparing is the ||                       
+## most complex model. The emission file for the most complex model is then   ||
+## deleted and the process is repeated for the next most complex model.       ||
+## This continues until all emission files have been deleted.                 ||
+## ===========================================================================##
+## AUTHOR: Sam Fletcher                                                       ||
+## CONTACT: s.o.fletcher@exeter.ac.uk                                         ||
+## CREATED: November 2023                                                     ||
+## ===========================================================================##
+## PREREQUISITES: Run: 5_batch_CreateIncrementalModels.sh                     ||
+## ===========================================================================##
+## DEPENDENCIES: Java, ChromHMM                                               ||
+## ===========================================================================##
+## INPUTS:                                                                    ||
+## -c|--config= -> Full/relative file path for configuation file directory    ||
+## ===========================================================================##
+## OUTPUTS:                                                                   ||
+## Model comparison files in (.txt,.svg,.png) format                          ||
+## ===========================================================================##
 
 ## ===================== ##
 ##   ARGUMENT PARSING    ##
@@ -53,7 +53,7 @@
 usage() {
 cat <<EOF
 ===========================================================================
-6_OptimalNumberOfStates
+CompareModels
 ===========================================================================
 Purpose: Uses ChromHMM's CompareModels to compare model files sequentially.
 Author: Sam Fletcher
@@ -124,7 +124,8 @@ mv "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 
 cd "${MODEL_DIR}" || \
 { >&2 echo "ERROR: [\${MODEL_DIR} - ${MODEL_DIR}] doesn't exist, \
-make sure FilePaths.txt is pointing to the correct directory."; finishing_statement 1; }
+make sure FilePaths.txt is pointing to the correct directory."
+finishing_statement 1; }
 
 if [[ -z "$(ls -A)" ]]; then
     { echo -e "ERROR: [\${MODEL_DIR} - ${MODEL_DIR}] is empty.\n"\
@@ -142,7 +143,8 @@ rm ./*
 
 cd "${MODEL_DIR}" || \
 { >&2 echo "ERROR: [\${MODEL_DIR} - ${MODEL_DIR}] doesn't exist, \
-make sure FilePaths.txt is pointing to the correct directory."; finishing_statement 1; }
+make sure FilePaths.txt is pointing to the correct directory."
+finishing_statement 1; }
 
 emission_text_files=$(find . -type f -name "emission*.txt")
 
