@@ -41,8 +41,8 @@
 ## DEPENDENCIES: Samtools                                                     ||
 ## ===========================================================================##
 ## INPUTS:                                                                    ||
-## -c|--config= -> Full/relative file path for configuation file directory    ||
-## -m|--mark= -> Epigenetic mark to process                                   ||
+## -c|--config=     -> Full/relative file path for configuation file directory||
+## -m|--mark=       -> Epigenetic mark to process                             ||
 ## -s|--samplesize= -> Sample size as a percentage (default : 50)             ||
 ## ===========================================================================##
 ## OUTPUTS:                                                                   ||
