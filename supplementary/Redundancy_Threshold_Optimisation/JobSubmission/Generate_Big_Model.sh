@@ -37,12 +37,12 @@
 ## DEPENDENCIES: Java, ChromHMM                                                     ||
 ## =================================================================================##
 ## INPUTS:                                                                          ||
-## $1 -> Full (or relative) file path for configuation file directory               ||
-## $2 -> Size of model (default: 20)                                                ||
-## $3 -> Random seed (default: 1)                                                   ||
-## $4 -> The bin size to use                                                        ||
-## $5 -> The sample size to use                                                     ||
-## $6 -> The assembly to use (default: hg19)                                        ||
+## -c|--config=     -> Full/relative file path for configuation file directory
+## -n|--size=       -> Size of model (default: 20)
+## -r|--seed=       -> Random seed (default: 1)
+## -b|--binsize=    -> The bin size to use
+## -s|--samplesize= -> The sample size to use
+## -a|--assembly=   -> The assembly to use (default: hg19)
 ## =================================================================================##
 ## OUTPUTS:                                                                         ||
 ## The emission parameter matrix of the model (.png,.txt,.svg)                      ||
@@ -53,34 +53,62 @@
 ## The maximum achieved estimated log likelihood achieved by the model              ||
 ## =================================================================================##
 
-## ======================== ##
-##    HELP FUNCTIONALITY    ##
-## ======================== ##
+## ===================== ##
+##   ARGUMENT PARSING    ##
+## ===================== ##
 
-if [[ "$1" == "--help" || "$1" == "-h" ]]; then
-    echo "==================================================================="
-    echo "Purpose: Generates a model unrestricted by ChromHMM LearnModel's"
-    echo "default size limits by using random initialisation."
-    echo "Author: Sam Fletcher"
-    echo "Contact: s.o.fletcher@exeter.ac.uk"
-    echo "Dependencies: Java, ChromHMM"
-    echo "Inputs:"
-    echo "\$1 -> Full (or relative) file path for configuation file directory"
-    echo "\$2 -> Size of model (default: 20)"
-    echo "\$3 -> Random seed (default: 1)"
-    echo "\$4 -> The bin size to use"
-    echo "\$5 -> The sample size to use"
-    echo "\$6 -> The assembly to use (default: hg19)"
-    echo "==================================================================="
+usage() {
+cat <<EOF
+===========================================================================
+Execture_Redundancy_Metrics
+===================================================================
+Purpose: Generates a model unrestricted by ChromHMM LearnModel's
+default size limits by using random initialisation.
+Author: Sam Fletcher
+Contact: s.o.fletcher@exeter.ac.uk
+Dependencies: Java, ChromHMM
+Inputs:
+-c|--config=     -> Full/relative file path for configuation file directory
+-n|--size=       -> Size of model (default: 20)
+-r|--seed=       -> Random seed (default: 1)
+-b|--binsize=    -> The bin size to use
+-s|--samplesize= -> The sample size to use
+-a|--assembly=   -> The assembly to use (default: hg19)
+==================================================================="
+EOF
     exit 0
-fi
+}
+
+needs_argument() {
+    # Required check in case user uses -a -b or -b -a (no argument given).
+    if [[ -z "$OPTARG" || "${OPTARG:0:1}" == - ]]; then usage; fi
+}
+
+while getopts c:n:s:o:-: OPT; do
+    # Adds support for long options by reformulating OPT and OPTARG
+    # This assumes that long options are in the form: "--long=option"
+    if [ "$OPT" = "-" ]; then
+        OPT="${OPTARG%%=*}"
+        OPTARG="${OPTARG#"$OPT"}"
+        OPTARG="${OPTARG#=}"
+    fi
+    case "$OPT" in
+        c | config )      needs_argument; configuration_directory="$OPTARG" ;;
+        n | size )        needs_argument; model_size="$OPTARG" ;;
+        r | seed )        needs_argument; seed="$OPTARG" ;;
+        b | binsize )     needs_argument; bin_size="$OPTARG" ;;
+        s | samplesize )  needs_argument; sample_size="$OPTARG" ;;
+        a | assembly )    needs_argument; assembly="$OPTARG" ;;
+        \? )              usage ;;  # Illegal short options are caught by getopts
+        * )               usage ;;  # Illegal long option
+    esac
+done
+shift $((OPTIND-1))
+
 
 ## ============ ##
 ##    SET UP    ##
 ## ============ ##
-
-# Configuration files are required for file paths and log file management
-configuration_directory=$1
 
 source "${configuration_directory}/FilePaths.txt" || \
 { echo "The configuration file does not exist in the specified location: \
@@ -112,12 +140,6 @@ mv "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 ## ============== ##
 ##    VARIABLES   ##
 ## ============== ##
-
-model_size=$2
-seed=$3
-bin_size=$4
-sample_size=$5
-assembly=$6
 
 ## ====== DEFAULTS ====================================================================
 if ! [[ "${model_size}" =~ ^[0-9]+$ ]]; then
