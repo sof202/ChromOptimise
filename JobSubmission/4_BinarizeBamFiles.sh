@@ -18,35 +18,36 @@
 #SBATCH --error=temp%j.err
 #SBATCH --job-name=4_Binarization
 
-## =================================================================================##
-##                                                                                  ||
-##                                     PREAMBLE                                     ||
-##                                                                                  ||
-## =================================================================================##
-## PURPOSE:                                                                         ||
-## The subsampled files for each mark will now be binarized through the use of      ||
-## ChromHMM's BinarizeBam command. This script is to be ran after all of the        ||
-## epigenetic marks that one wants to inspect have been subsampled. The .bam files  ||
-## need to be binarized before they can be used by ChromHMM's LearnModel command.   ||
-## =================================================================================##
-## AUTHOR: Sam Fletcher                                                             ||
-## CONTACT: s.o.fletcher@exeter.ac.uk                                               ||
-## CREATED: November 2023                                                           ||
-## =================================================================================##
-## PREREQUISITES: Run: 3_SubsampleBamFiles.sh                                       ||
-## =================================================================================##
-## DEPENDENCIES: Java, ChromHMM                                                     ||
-## =================================================================================##
-## INPUTS:                                                                          ||
-## -c|--config=     -> Full/relative file path for configuation file directory      ||
-## -b|--binsize=    -> Bin size to be used by BinarizeBam command (default: 200)    ||
-## -s|--samplesize= -> Sample size used in 3_SubsampleBamFiles.sh                   ||
-## -a|--assembly=   -> The assembly to use (default: hg19)                          ||
-## =================================================================================##
-## OUTPUTS:                                                                         ||
-## Binary signal files for every chromosome in the dataset except for mitochondrial ||
-## DNA                                                                              ||
-## =================================================================================##
+## ===========================================================================##
+##                                                                            ||
+##                                  PREAMBLE                                  ||
+##                                                                            ||
+## ===========================================================================##
+## PURPOSE:                                                                   ||
+## The subsampled files for each mark will now be binarized through the use   ||
+## of ChromHMM's BinarizeBam command. This script is to be ran after all of   ||
+## the epigenetic marks that one wants to inspect have been subsampled. The   ||
+## .bam files need to be binarized before they can be used by ChromHMM's      ||
+## LearnModel command.                                                        ||
+## ===========================================================================##
+## AUTHOR: Sam Fletcher                                                       ||
+## CONTACT: s.o.fletcher@exeter.ac.uk                                         ||
+## CREATED: November 2023                                                     ||
+## ===========================================================================##
+## PREREQUISITES: Run: 3_SubsampleBamFiles.sh                                 ||
+## ===========================================================================##
+## DEPENDENCIES: Java, ChromHMM                                               ||
+## ===========================================================================##
+## INPUTS:                                                                    ||
+## -c|--config=     -> Full/relative file path for configuation file directory||
+## -b|--binsize=    -> Bin size to be used by BinarizeBam command             ||
+##                     (default: 200)                                         ||
+## -s|--samplesize= -> Sample size used in 3_SubsampleBamFiles.sh             ||
+## -a|--assembly=   -> The assembly to use (default: hg19)                    ||
+## ===========================================================================##
+## OUTPUTS:                                                                   ||
+## Binary signal files for every chromosome in the dataset                    ||
+## ===========================================================================##
 
 ## ===================== ##
 ##   ARGUMENT PARSING    ##
@@ -130,41 +131,53 @@ mv "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 ##    VARIABLES    ##
 ## =============== ##
 
-## ====== DEFAULTS ====================================================================
+## ====== DEFAULTS =============================================================
 if ! [[ "${bin_size}" =~ ^[0-9]+$ ]]; then
     bin_size=200
-    echo "Invalid bin size given, using the default value of ${bin_size} instead."
+    echo "Invalid bin size given, using the default value of ${bin_size}" \
+    "instead."
 fi
 
-# 'Intelligently' find the sample size using first file name in subsampled directory
+# 'Intelligently' find the sample size using first file name in the 
+# subsampled directory
 if [[ -z "${sample_size}" ]]; then
     cd "${SUBSAMPLED_DIR}" || \
-    { >&2 echo "ERROR: [\${SUBSAMPLED_DIR} - ${SUBSAMPLED_DIR}] doesn't exist, make "\
-    "sure FilePaths.txt is pointing to the correct directory"; finishing_statement 1; }
+    { >&2 echo "ERROR: \
+    [\${SUBSAMPLED_DIR} - ${SUBSAMPLED_DIR}] doesn't exist, make "\
+    "sure FilePaths.txt is pointing to the correct directory"
+    finishing_statement 1; }
 
-    sample_size=$(find . -type f -name "Subsampled*" | head -1 | cut -d "." -f 3)
+    sample_size=$(find . -type f -name "Subsampled*" | \
+    head -1 | \
+    cut -d "." -f 3)
+
     echo -e "WARNING: No sample size was given.\n"\
     "Assuming that ${sample_size} is the desired sample size..."
 fi
-# If no sample size was found, then the sample stage likely wasn't ran
+
+# If no sample size was found, then the sampling script likely hasn't ran yet
 if [[ -z "${sample_size}" ]]; then
     { >&2 echo -e "ERROR: No sample size even after fail safe. Please run "\
-    "3_SubsampleBamFiles.sh before running this script." ; finishing_statement 1; }
+    "3_SubsampleBamFiles.sh before running this script."
+    finishing_statement 1; }
 fi
 
 if [[ -z "${assembly}" ]]; then
     assembly=hg19
-    echo "No assembly was given, using the default value of ${assembly} instead."
+    echo "No assembly was given, using the default value of" \
+    "${assembly} instead."
 fi
-## ====================================================================================
+## =============================================================================
 
 ## ================== ##
 ##   FILE EXISTENCE   ##
 ## ================== ##
 
 cd "${SUBSAMPLED_DIR}" || \
-{ >&2 echo "ERROR: [\${SUBSAMPLED_DIR} - ${SUBSAMPLED_DIR}] doesn't exist, make \
-sure FilePaths.txt is pointing to the correct directory"; finishing_statement 1; }
+{ >&2 echo "ERROR: \
+[\${SUBSAMPLED_DIR} - ${SUBSAMPLED_DIR}] doesn't exist, make \
+sure FilePaths.txt is pointing to the correct directory"
+finishing_statement 1; }
 
 if [[ -z "$(find . -type f -name "Subsampled.${sample_size}*")" ]]; then
     { >&2 echo -e "ERROR: [\${SUBSAMPLED_DIR} - ${SUBSAMPLED_DIR}] is empty.\n"\
@@ -176,13 +189,13 @@ fi
 ##    CREATE A CELL MARK FILE TABLE    ##
 ## =================================== ##
 
-# As we have already merged files in 3_SubsampleBamFiles.sh, 
-# the cell mark file table will just be 1 file for each mark that has been processed
-# The only added level of complexity is obtaining the mark name from the file names.
+# As we have already merged files in 3_SubsampleBamFiles.sh, the cell mark
+# file table will just be 1 file for each mark that has been processed. The
+# only added level of complexity is obtaining the mark name from the file names.
 
 rm -f "cellmarkfiletable.txt" 
 for file in *"${sample_size}"*.bam; do
-    echo -ne "Mature_Neutorphil_SampleSize_${sample_size}_BinSize_${bin_size}\t" >>\
+    echo -ne "Mature_Neutorphil_SampleSize_${sample_size}_BinSize_${bin_size}\t" >> \
     "cellmarkfiletable.txt"
     # The subsampled files are named: subsampled.[SampleSize].[mark_name].bam. 
     # Below extracts the mark name
@@ -201,7 +214,8 @@ of: ${bin_size}."
 
 cd "${BINARY_DIR}" || \
 { echo "ERROR: [\${BINARY_DIR} - ${BINARY_DIR}] doesn't exist, \
-make sure FilePaths.txt is pointing to the correct directory"; finishing_statement 1; }
+make sure FilePaths.txt is pointing to the correct directory"
+finishing_statement 1; }
 
 mkdir -p "BinSize_${bin_size}_SampleSize_${sample_size}"
 cd "BinSize_${bin_size}_SampleSize_${sample_size}" || finishing_statement 1
@@ -219,9 +233,5 @@ java -mx4G \
 "${CHROMHMM_CHROM_SIZES}/${assembly}.txt" "${SUBSAMPLED_DIR}" \
 "${SUBSAMPLED_DIR}/cellmarkfiletable.txt" \
 "${BINARY_DIR}/BinSize_${bin_size}_SampleSize_${sample_size}"
-
-# Optional: One may not want to keep the mitochondrial DNA in the analysis
-# rm "${BINARY_DIR}\
-# /Mature_Neutorphil_SampleSize_${sample_size}_BinSize_${bin_size}_chrM_binary.txt.gz"
 
 finishing_statement 0
