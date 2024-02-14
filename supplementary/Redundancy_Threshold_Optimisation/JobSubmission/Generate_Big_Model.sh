@@ -18,40 +18,40 @@
 #SBATCH --error=temp%j.err
 #SBATCH --job-name=Big_Model
 
-## =================================================================================##
-##                                                                                  ||
-##                                     PREAMBLE                                     ||
-##                                                                                  ||
-## =================================================================================##
-## PURPOSE:                                                                         ||
-## Generate a very large model using the binarized data generated in                ||
-## 4_BinarizeBamFiles.sh with a random initialisation of parameters                 ||
-## (with a set seed).                                                               ||
-## =================================================================================##
-## AUTHOR: Sam Fletcher                                                             ||
-## CONTACT: s.o.fletcher@exeter.ac.uk                                               ||
-## CREATED: November 2023                                                           ||
-## =================================================================================##
-## PREREQUISITES: Run 4_BinarizeBamFiles.sh                                         ||
-## =================================================================================##
-## DEPENDENCIES: Java, ChromHMM                                                     ||
-## =================================================================================##
-## INPUTS:                                                                          ||
-## -c|--config=     -> Full/relative file path for configuation file directory
-## -n|--size=       -> Size of model (default: 20)
-## -r|--seed=       -> Random seed (default: 1)
-## -b|--binsize=    -> The bin size to use
-## -s|--samplesize= -> The sample size to use
-## -a|--assembly=   -> The assembly to use (default: hg19)
-## =================================================================================##
-## OUTPUTS:                                                                         ||
-## The emission parameter matrix of the model (.png,.txt,.svg)                      ||
-## The transition parameter matrix of the model (.png,.txt,.svg)                    ||
-## Full model file                                                                  ||
-## The overlap and fold enrichment files for existing genomic annotations           ||
-## The log files produced by ChromHMM.jar                                           ||
-## The maximum achieved estimated log likelihood achieved by the model              ||
-## =================================================================================##
+## ===========================================================================##
+##                                                                            ||
+##                                  PREAMBLE                                  ||
+##                                                                            ||
+## ===========================================================================##
+## PURPOSE:                                                                   ||
+## Generate a very large model using the binarized data generated in          ||
+## 4_BinarizeBamFiles.sh with a random initialisation of parameters           ||
+## (with a set seed).                                                         ||
+## ===========================================================================##
+## AUTHOR: Sam Fletcher                                                       ||
+## CONTACT: s.o.fletcher@exeter.ac.uk                                         ||
+## CREATED: November 2023                                                     ||
+## ===========================================================================##
+## PREREQUISITES: Run 4_BinarizeBamFiles.sh                                   ||
+## ===========================================================================##
+## DEPENDENCIES: Java, ChromHMM                                               ||
+## ===========================================================================##
+## INPUTS:                                                                    ||
+## -c|--config=     -> Full/relative file path for configuation file directory||
+## -n|--size=       -> Size of model (default: 20)                            ||
+## -r|--seed=       -> Random seed (default: 1)                               ||
+## -b|--binsize=    -> The bin size to use                                    ||
+## -s|--samplesize= -> The sample size to use                                 ||
+## -a|--assembly=   -> The assembly to use (default: hg19)                    ||
+## ===========================================================================##
+## OUTPUTS:                                                                   ||
+## The emission parameter matrix of the model (.png,.txt,.svg)                ||
+## The transition parameter matrix of the model (.png,.txt,.svg)              ||
+## Full model file                                                            ||
+## The overlap and fold enrichment files for existing genomic annotations     ||
+## The log files produced by ChromHMM.jar                                     ||
+## The maximum achieved estimated log likelihood achieved by the model        ||
+## ===========================================================================##
 
 ## ===================== ##
 ##   ARGUMENT PARSING    ##
@@ -60,8 +60,8 @@
 usage() {
 cat <<EOF
 ===========================================================================
-Execture_Redundancy_Metrics
-===================================================================
+Generate_Big_Model
+===========================================================================
 Purpose: Generates a model unrestricted by ChromHMM LearnModel's
 default size limits by using random initialisation.
 Author: Sam Fletcher
@@ -74,7 +74,7 @@ Inputs:
 -b|--binsize=    -> The bin size to use
 -s|--samplesize= -> The sample size to use
 -a|--assembly=   -> The assembly to use (default: hg19)
-==================================================================="
+===========================================================================
 EOF
     exit 0
 }
@@ -141,7 +141,7 @@ mv "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 ##    VARIABLES   ##
 ## ============== ##
 
-## ====== DEFAULTS ====================================================================
+## ====== DEFAULTS =============================================================
 if ! [[ "${model_size}" =~ ^[0-9]+$ ]]; then
     model_size=20
     echo "Model size given is invalid, using default value of: ${model_size}."
@@ -153,9 +153,11 @@ if ! [[ "$seed" =~ ^[0-9]+$ ]]; then
 fi
 
 if ! [[ "${bin_size}" =~ ^[0-9]+$  || "${sample_size}" =~ ^[0-9]+$ ]]; then
-    cd "${BINARY_DIR}" || { >&2 echo "ERROR: [\${BINARY_DIR} - ${BINARY_DIR}] \
-    doesn't exist, make sure FilePaths.txt is pointing to the correct directory."
+    cd "${BINARY_DIR}" || \
+    { >&2 echo "ERROR: [\${BINARY_DIR} - ${BINARY_DIR}] doesn't exist, \
+    make sure FilePaths.txt is pointing to the correct directory."
     finishing_statement 1; }
+
     bin_size=$(find . -type f -name "*.txt*.gz" | head -1 | cut -d "_" -f 6)
     sample_size=$(find . -type f -name "*.txt*.gz" | head -1 | cut -d "_" -f 4)
     echo "Bin size or sample size given is invalid."
@@ -165,9 +167,10 @@ fi
 
 if [[ -z "${assembly}" ]]; then
     assembly=hg19
-    echo "No assembly was given, using the default value of ${assembly} instead."
+    echo "No assembly was given, using the default value of" \
+    "${assembly} instead."
 fi
-# =====================================================================================
+# ==============================================================================
 
 ## ================== ##
 ##   FILE EXISTANCE   ##
@@ -184,12 +187,13 @@ finishing_statement 1; }
 ##    MAIN    ##
 ## ========== ##
 
-echo "Learning a model with: ${model_size} states and with random seed: ${seed}..."
+echo "Learning a model with ${model_size} states and random seed: ${seed}..."
 
 module purge
 module load Java
 
-cd "${BIG_MODELS_DIR}" || { >&2 echo "ERROR: [\${BIG_MODELS_DIR} - ${BIG_MODELS_DIR}] \
+cd "${BIG_MODELS_DIR}" || \
+{ >&2 echo "ERROR: [\${BIG_MODELS_DIR} - ${BIG_MODELS_DIR}] \
 doesn't exist, make sure FilePaths.txt is pointing to the correct directory."
 finishing_statement 1; }
 
@@ -203,7 +207,6 @@ java -mx30G \
 "${full_binary_path}" "${BIG_MODELS_DIR}" "${model_size}" "${assembly}" > \
 "ChromHMM.Output.ModelSize.${model_size}.txt"
 
-echo "Writing estimated log likelihood to: likelihood.ModelSize.${model_size}.txt..."
 # grep removes the terminal logs associated with writing to files.
 # The tail and awk locate the final estimated log likelihood
 grep "       " "ChromHMM.Output.ModelSize.${model_size}.txt" | \
