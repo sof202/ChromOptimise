@@ -79,8 +79,8 @@ while getopts f:c:-: OPT; do
     OPTARG="${OPTARG#=}"
   fi
   case "$OPT" in
-    f | file )    needs_argurment; text_file_containing_inodes="$OPTARG" ;;
     c | config )  needs_argurment; configuration_directory="$OPTARG" ;;
+    f | file )    needs_argurment; text_file_containing_inodes="$OPTARG" ;;
     \? )          usage ;;  # Illegal short options are caught by getopts
     * )           usage ;;  # bad long option
   esac
