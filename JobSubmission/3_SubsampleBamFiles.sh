@@ -8,7 +8,8 @@
 #SBATCH -A Research_Project-MRC190311 
 #SBATCH --nodes=1 
 #SBATCH --ntasks-per-node=16 
-# Predicted that memory consumption will rise massively when merging lots of files
+# Predicted that memory consumption will rise massively 
+# when merging lots of files (hundreds)
 #SBATCH --mem=10G 
 # Send an email after the job is done
 #SBATCH --mail-type=END 
@@ -18,61 +19,84 @@
 #SBATCH --error=temp%j.err
 #SBATCH --job-name=3_Merging_and_Subsampling
 
-## =================================================================================##
-##                                                                                  ||
-##                                     PREAMBLE                                     ||
-##                                                                                  ||
-## =================================================================================##
-## PURPOSE:                                                                         ||
-## Obtain a sample of the bam files. The bam files have varying sizes due to the    ||
-## number of reads. Sampling the files produced in 2_ProcessBamFiles.sh will lead   ||
-## to samples with the same number of files that contain a different number of      ||
-## reads. This removes the reproducability of the proceedure. To get around         ||
-## this, this script merges all of the processed .bam files and subsequently        ||
-## samples this larger file randomly. To save space, the merged file is deleted.    ||
-## =================================================================================##
-## AUTHOR: Sam Fletcher                                                             ||
-## CONTACT: s.o.fletcher@exeter.ac.uk                                               ||
-## CREATED: November 2023                                                           ||
-## =================================================================================##
-## PREREQUISITES: Run 2_batch_ProcessBamFiles.sh                                    ||
-## =================================================================================##
-## DEPENDENCIES: Samtools                                                           ||
-## =================================================================================##
-## INPUTS:                                                                          ||
-## $1 -> Full (or relative) file path for configuation file directory               ||
-## $2 -> Epigenetic mark to process                                                 ||
-## $3 -> Sample size as a percentage (default : 50)                                 ||
-## =================================================================================##
-## OUTPUTS:                                                                         ||
-## Subsampled .bam files                                                            ||
-## =================================================================================##
+## ===========================================================================##
+##                                                                            ||
+##                                  PREAMBLE                                  ||
+##                                                                            ||
+## ===========================================================================##
+## PURPOSE:                                                                   ||
+## Obtain a sample of the bam files. The bam files have varying sizes due to  ||
+## the number of reads. Sampling the files produced in 2_ProcessBamFiles.sh   ||
+## will lead to samples with the same number of files that contain a different||
+## number of reads. This removes the reproducability of the proceedure.       ||
+## To get around this, this script merges all of the processed .bam files and ||
+## subsequently samples this larger file randomly.                            ||
+## ===========================================================================##
+## AUTHOR: Sam Fletcher                                                       ||
+## CONTACT: s.o.fletcher@exeter.ac.uk                                         ||
+## CREATED: November 2023                                                     ||
+## ===========================================================================##
+## PREREQUISITES: Run 2_batch_ProcessBamFiles.sh                              ||
+## ===========================================================================##
+## DEPENDENCIES: Samtools                                                     ||
+## ===========================================================================##
+## INPUTS:                                                                    ||
+## -c|--config=     -> Full/relative file path for configuation file directory||
+## -m|--mark=       -> Epigenetic mark to process                             ||
+## -s|--samplesize= -> Sample size as a percentage (default : 50)             ||
+## ===========================================================================##
+## OUTPUTS:                                                                   ||
+## Subsampled .bam files                                                      ||
+## ===========================================================================##
 
-## ======================== ##
-##    HELP FUNCTIONALITY    ##
-## ======================== ##
+## ===================== ##
+##   ARGUMENT PARSING    ##
+## ===================== ##
 
-if [[ "$1" == "--help" || "$1" == "-h" ]]; then
-    echo "==================================================================="
-    echo "Purpose: Merges and subsamples processed .bam files."
-    echo "present in specified folder"
-    echo "Author: Sam Fletcher"
-    echo "Contact: s.o.fletcher@exeter.ac.uk"
-    echo "Dependencies: Samtools"
-    echo "Inputs:"
-    echo "\$1 -> Full (or relative) file path for configuation file directory"
-    echo "\$2 -> Name of epigenetic mark"
-    echo "\$3 -> Sample size as a percentage (default : 50)"
-    echo "==================================================================="
+usage() {
+cat <<EOF
+================================================================================
+3_SubsampleBamFiles
+================================================================================
+Purpose: Merges and subsamples processed .bam files present in specified folder.
+Author: Sam Fletcher
+Contact: s.o.fletcher@exeter.ac.uk
+Dependencies: Samtools
+Inputs:
+-c|--config=     -> Full/relative file path for configuation file directory
+-m|--mark=       -> Epigenetic mark to process
+-s|--samplesize= -> Sample size as a percentage (default : 50) 
+================================================================================
+EOF
     exit 0
-fi
+}
+
+needs_argument() {
+    # Required check in case user uses -a -b or -b -a (no argument given).
+    if [[ -z "$OPTARG" || "${OPTARG:0:1}" == - ]]; then usage; fi
+}
+
+while getopts c:m:s:-: OPT; do
+    # Adds support for long options by reformulating OPT and OPTARG
+    # This assumes that long options are in the form: "--long=option"
+    if [ "$OPT" = "-" ]; then
+        OPT="${OPTARG%%=*}"
+        OPTARG="${OPTARG#"$OPT"}"
+        OPTARG="${OPTARG#=}"
+    fi
+    case "$OPT" in
+        c | config )       needs_argument; configuration_directory="$OPTARG" ;;
+        m | mark )         needs_argument; mark_name="$OPTARG" ;;
+        s | samplesize )   needs_argument; sample_size="$OPTARG" ;;
+        \? )               usage ;;  # Illegal short options are caught by getopts
+        * )                usage ;;  # Illegal long option
+    esac
+done
+shift $((OPTIND-1))
 
 ## ============ ##
 ##    SET UP    ##
 ## ============ ##
-
-# Configuration files are required for file paths and log file management
-configuration_directory=$1
 
 source "${configuration_directory}/FilePaths.txt" || \
 { echo "The configuration file does not exist in the specified location: \
@@ -93,32 +117,31 @@ location: ${configuration_directory}"; exit 1; }
 
 
 
-# Output and error files renamed to:
-# [epigenetic mark name]~[Sample size]~[job id]~[date]-[time]
-
+# Temporary log files are moved like this as SLURM cannot create directories.
+# The alternative would be forcing the user to create the file structure
+# themselves and using full file paths in the SLURM directives (bad)
 mv "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" \
-"${LOG_FILE_PATH}/$2~$3~${SLURM_JOB_ID}~${timestamp:=}.log"
+"${LOG_FILE_PATH}/${mark_name}~${sample_size:=50}~${SLURM_JOB_ID}~${timestamp:=}.log"
 mv "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
-"${LOG_FILE_PATH}/$2~$3~${SLURM_JOB_ID}~$timestamp.err"
+"${LOG_FILE_PATH}/${mark_name}~${sample_size:=50}~${SLURM_JOB_ID}~$timestamp.err"
 
 ## =============== ##
 ##    VARIABLES    ##
 ## =============== ##
 
-mark_name=$2
-sample_size=$3
 PROCESSED_FULL_FILE_PATH="${PROCESSED_DIR}/${mark_name}"
 
 if [[ -z "${mark_name}" ]]; then
-    { >&2 echo -e "ERROR: No epigenetic mark name given.\n\
-    Ensure that the first argument is the name of a processed epigenetic mark." ; \
+    { >&2 echo  "ERROR: No epigenetic mark name given. Ensure that the first" \
+    "argument is the name of a processed epigenetic mark."
     finishing_statement 1; }
 fi
 
-## ====== DEFAULTS ====================================================================
+## ====== DEFAULTS =============================================================
 if ! [[ "${sample_size}" =~ ^[0-9]+$ ]]; then
     sample_size=50
-    echo "Invalid sample size was given, using the default value of: ${sample_size}%."
+    echo "Invalid sample size was given, using the default value of:" \
+    "${sample_size}%."
 fi
 
 if [[ "${sample_size}" -gt 100 || "${sample_size}" -le 0 ]]; then
@@ -126,14 +149,15 @@ if [[ "${sample_size}" -gt 100 || "${sample_size}" -le 0 ]]; then
     sample_size=50
     echo "Using the default value of: ${sample_size}% instead."
 fi
-## ====================================================================================
+## =============================================================================
 
 ## ========================= ##
 ##   MERGING OF .BAM FILES   ##
 ## ========================= ##
 
 cd "${PROCESSED_FULL_FILE_PATH}" || \
-{ >&2 echo "ERROR: [\${PROCESSED_DIR}/\${mark_name} - ${PROCESSED_DIR}/${mark_name}] \
+{ >&2 echo "ERROR:" \
+"[\${PROCESSED_DIR}/\${mark_name} - ${PROCESSED_DIR}/${mark_name}] \
 doesn't exist, make sure that you typed the epigenetic mark correctly and that \
 FilePaths.txt is pointing to the correct directory."; finishing_statement 1; }
 
@@ -155,7 +179,8 @@ samtools merge -b List_Of_Bam_Files_To_Merge.txt "${output_file_path}"
 
 cd "${SUBSAMPLED_DIR}" || \
 { >&2 echo "ERROR: [\${SUBSAMPLED_DIR} - ${SUBSAMPLED_DIR} doesn't exist,] \
-make sure FilePaths.txt is pointing to the correct directory"; finishing_statement 1; }
+make sure FilePaths.txt is pointing to the correct directory"
+finishing_statement 1; }
 
 sample_size_decimal=$(echo "scale=2; $sample_size /100" | bc)
 echo "Subsampling merged .bam file with sample size ${sample_size}%..."

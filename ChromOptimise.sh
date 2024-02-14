@@ -80,10 +80,10 @@ echo ""
 if [[ "${STARTING_SCRIPT:=10}" -eq 0 ]]; then
     jobID[Download]=$( \
     sbatch \
-    --time="${0_MAXTIME}" \
+    --time="${0_MAXTIME:=96:00:00}" \
     "0_EGADownloading.sh" \
-    "${configuration_directory}" \
-    "${FILE_OF_FILE_NAMES}" | \
+    --config="${configuration_directory}" \
+    --file="${FILE_OF_FILE_NAMES}" | \
     awk '{print $4}' \
     )
 
@@ -102,10 +102,10 @@ if [[ "${STARTING_SCRIPT}" -eq 1 ]]; then
 
         jobID[$array_index_move]=$( \
         sbatch \
-        --time="${1_MAXTIME}" \
+        --time="${1_MAXTIME:=00:30:00}" \
         "1_MoveFilesToSingleDirectory.sh" \
-        "${configuration_directory}" \
-        "${mark}" | \
+        --config="${configuration_directory}" \
+        --mark="${mark}" | \
         awk '{print $4}' \
         )
 
@@ -120,11 +120,11 @@ elif [[ "${STARTING_SCRIPT}" -lt 1 ]]; then
         # This script depends on the downloading script being finished
         jobID[$array_index_move]=$( \
         sbatch \
-        --time="${1_MAXTIME}" \
+        --time="${1_MAXTIME:=00:30:00}" \
         --dependency=afterok:"${jobID[0]}" \
         "1_MoveFilesToSingleDirectory.sh" \
-        "${configuration_directory}" \
-        "${mark}" | \
+        --config="${configuration_directory}" \
+        --mark="${mark}" | \
         awk '{print $4}' \
         )
 
@@ -144,12 +144,12 @@ if [[ "${STARTING_SCRIPT}" -eq 2 ]]; then
 
         jobID[$array_index_process]=$( \
         sbatch \
-        --time="${2_MAXTIME}" \
-        --array=1-"${PROCESSING_ARRAY_SIZE}" \
+        --time="${2_MAXTIME:=12:00:00}" \
+        --array=1-"${PROCESSING_ARRAY_SIZE:=4}" \
         "2_batch_ProcessBamFiles.sh" \
-        "${configuration_directory}" \
-        "${mark}" \
-        "${PRED_SCORE_THRESHOLD}" | \
+        --config="${configuration_directory}" \
+        --mark="${mark}" \
+        --phred="${PRED_SCORE_THRESHOLD:=20}" | \
         awk '{print $4}' \
         )
 
@@ -166,13 +166,13 @@ elif [[ "${STARTING_SCRIPT}" -lt 2 ]]; then
         # the correct place in the file structure
         jobID[$array_index_process]=$( \
         sbatch \
-        --time="${2_MAXTIME}" \
-        --array=1-"${PROCESSING_ARRAY_SIZE}" \
+        --time="${2_MAXTIME:=12:00:00}" \
+        --array=1-"${PROCESSING_ARRAY_SIZE:=4}" \
         --dependency=afterok:"${jobID[${array_index_move}]}" \
         "2_batch_ProcessBamFiles.sh" \
-        "${configuration_directory}" \
-        "${mark}" \
-        "${PRED_SCORE_THRESHOLD}" | \
+        --config="${configuration_directory}" \
+        --mark="${mark}" \
+        --phred="${PRED_SCORE_THRESHOLD:=20}" | \
         awk '{print $4}' \
         )
 
@@ -192,11 +192,11 @@ if [[ "${STARTING_SCRIPT}" -eq 3 ]]; then
 
         jobID[$array_index_merge]=$( \
         sbatch \
-        --time="${3_MAXTIME}" \
+        --time="${3_MAXTIME:=12:00:00}" \
         "3_SubsampleBamFiles.sh" \
-        "${configuration_directory}" \
-        "${mark}" \
-        "${SAMPLE_SIZE}" | \
+        --config="${configuration_directory}" \
+        --mark="${mark}" \
+        --samplesize="${SAMPLE_SIZE:=50}" | \
         awk '{print $4}' \
         )
         
@@ -213,12 +213,12 @@ elif [[ "${STARTING_SCRIPT}" -lt 3 ]]; then
         # processed (and with a specific file name)
         jobID[$array_index_merge]=$( \
         sbatch \
-        --time="${3_MAXTIME}" \
+        --time="${3_MAXTIME:=12:00:00}" \
         --dependency=afterok:"${jobID[${array_index_process}]}" \
         "3_SubsampleBamFiles.sh" \
-        "${configuration_directory}" \
-        "${mark}" \
-        "${SAMPLE_SIZE}" | \
+        --config="${configuration_directory}" \
+        --mark="${mark}" \
+        --samplesize="${SAMPLE_SIZE:=50}" | \
         awk '{print $4}' \
         )
 
@@ -233,12 +233,12 @@ fi
 if [[ "${STARTING_SCRIPT}" -eq 4 ]]; then
     jobID[binarization]=$(
     sbatch \
-    --time="${4_MAXTIME}" \
+    --time="${4_MAXTIME:=04:00:00}" \
     "4_BinarizeBamFiles.sh" \
-    "${configuration_directory}" \
-    "${BIN_SIZE}" \
-    "${SAMPLE_SIZE}" \
-    "${ASSEMBLY}" \
+    --config="${configuration_directory}" \
+    --binsize="${BIN_SIZE}" \
+    --samplesize="${SAMPLE_SIZE}" \
+    --assembly="${ASSEMBLY:=hg19}" \
     )
 
     echo "Submitted 4_BinarizeBamFiles.sh under job ID:"
@@ -263,7 +263,7 @@ elif [[ "${STARTING_SCRIPT}" -lt 4 ]]; then
     --dependency=afterok:"${jobID[${array_index_process}]}" \
     "$CHROMOPTIMISE_DIR/ChromOptimiseCheckpoints/Subsampling_Checkpoint.sh" \
     "${configuration_directory}" \
-    "${SAMPLE_SIZE}" \
+    "${SAMPLE_SIZE:=50}" \
     "${LIST_OF_MARKS[@]}" | \
     awk '{print $4}' \
     )
@@ -275,13 +275,13 @@ elif [[ "${STARTING_SCRIPT}" -lt 4 ]]; then
     
     jobID[binarization]=$(
     sbatch \
-    --time="${4_MAXTIME}" \
+    --time="${4_MAXTIME:=04:00:00}" \
     --dependency=afterok:"${jobID[checkpoint]}" \
     "4_BinarizeBamFiles.sh" \
-    "${configuration_directory}" \
-    "${BIN_SIZE}" \
-    "${SAMPLE_SIZE}" \
-    "${ASSEMBLY}" \
+    --config="${configuration_directory}" \
+    --binsize="${BIN_SIZE}" \
+    --samplesize="${SAMPLE_SIZE:=50}" \
+    --assembly="${ASSEMBLY:=hg19}" \
     )
 
     echo "Submitted 4_BinarizeBamFiles.sh under job ID:"
@@ -294,15 +294,15 @@ fi
 if [[ "${STARTING_SCRIPT}" -eq 5 ]]; then
     jobID[Model_Learning]=$( \
     sbatch \
-    --time="${5_MAXTIME}" \
-    --array=1-"${MODEL_LEARNING_ARRAY_SIZE}" \
+    --time="${5_MAXTIME:=12:00:00}" \
+    --array=1-"${MODEL_LEARNING_ARRAY_SIZE:=4}" \
     "5_batch_CreateIncrementalModels.sh" \
-    "${configuration_directory}" \
-    "${NUMBER_OF_MODELS}" \
-    "${STATE_INCREMENT}" \
-    "${BIN_SIZE}" \
-    "${SAMPLE_SIZE}" \
-    "${ASSEMBLY}" \
+    --config="${configuration_directory}" \
+    --nummodels="${NUMBER_OF_MODELS:=4}" \
+    --increment="${STATE_INCREMENT:=1}" \
+    --binsize="${BIN_SIZE}" \
+    --samplesize="${SAMPLE_SIZE}" \
+    --assembly="${ASSEMBLY:=hg19}" \
     )
 
     echo "Submitted 5_batch_CreateIncrementalModels.sh under job ID:"
@@ -311,16 +311,16 @@ if [[ "${STARTING_SCRIPT}" -eq 5 ]]; then
 elif [[ "${STARTING_SCRIPT}" -lt 5 ]]; then
     jobID[Model_Learning]=$( \
     sbatch \
-    --time="${5_MAXTIME}" \
-    --array=1-"${MODEL_LEARNING_ARRAY_SIZE}" \
+    --time="${5_MAXTIME:=12:00:00}" \
+    --array=1-"${MODEL_LEARNING_ARRAY_SIZE:=4}" \
     --dependency=afterok:"${jobID[binarization]}" \
     "5_batch_CreateIncrementalModels.sh" \
-    "${configuration_directory}" \
-    "${NUMBER_OF_MODELS}" \
-    "${STATE_INCREMENT}" \
-    "${BIN_SIZE}" \
-    "${SAMPLE_SIZE}" \
-    "${ASSEMBLY}" \
+    --config="${configuration_directory}" \
+    --nummodels="${NUMBER_OF_MODELS:=4}" \
+    --increment="${STATE_INCREMENT:=1}" \
+    --binsize="${BIN_SIZE}" \
+    --samplesize="${SAMPLE_SIZE}" \
+    --assembly="${ASSEMBLY:=hg19}" \
     )
 
     echo "Submitted 5_batch_CreateIncrementalModels.sh under job ID:"
@@ -333,9 +333,10 @@ fi
 if [[ "${STARTING_SCRIPT}" -eq 6 ]]; then
     jobID[Optimal_States]=$( \
     sbatch \
-    --time="${6_MAXTIME}" \
+    --time="${6_MAXTIME:=00:10:00}" \
     "6_OptimalNumberOfStates.sh" \
-    "${configuration_directory}" \
+    --config="${configuration_directory}" \
+    --chromosome="${CHROMOSOME_IDENTIFIER:=1}" \
     )
 
     echo "Submitted 6_OptimalNumberOfStates.sh under job ID:"
@@ -344,10 +345,11 @@ if [[ "${STARTING_SCRIPT}" -eq 6 ]]; then
 elif [[ "${STARTING_SCRIPT}" -lt 6 ]]; then
     jobID[Optimal_States]=$( \
     sbatch \
-    --time="${6_MAXTIME}" \
+    --time="${6_MAXTIME:=00:10:00}" \
     --dependency=afterok:"${jobID[Model_Learning]}" \
     "6_OptimalNumberOfStates.sh" \
-    "${configuration_directory}" \
+    --config="${configuration_directory}" \
+    --chromosome="${CHROMOSOME_IDENTIFIER:=1}" \
     )
 
     echo "Submitted 6_OptimalNumberOfStates.sh under job ID:"

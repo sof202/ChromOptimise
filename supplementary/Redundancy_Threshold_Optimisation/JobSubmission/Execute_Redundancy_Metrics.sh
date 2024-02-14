@@ -17,63 +17,92 @@
 #SBATCH --error=temp%j.err
 #SBATCH --job-name=Redundancy_Threshold_Plotting
 
-## =================================================================================##
-##                                                                                  ||
-##                                     PREAMBLE                                     ||
-##                                                                                  ||
-## =================================================================================##
-## PURPOSE:                                                                         ||
-## Generate plots for the euclidean distances between the emission parameters (for  ||
-## pairs of states) and the maximum transition probability towards each state in    ||
-## the selected model.                                                              ||
-## =================================================================================##
-## AUTHOR: Sam Fletcher                                                             ||
-## CONTACT: s.o.fletcher@exeter.ac.uk                                               ||
-## CREATED: December 2023                                                           ||
-## =================================================================================##
-## PREREQUISITES: Run Generate_Big_Model.sh or ChromHMM's LearnModel command        ||
-## =================================================================================##
-## DEPENDENCIES: R                                                                  ||
-## =================================================================================##
-## INPUTS:                                                                          ||
-## $1 -> Full (or relative) file path for configuation file directory               ||
-## $2 -> Size of model (default: 20)                                                ||
-## $3 -> Random seed (default: 1)                                                   ||
-## $4 -> Path to directory containing the model files                               ||
-##       (default: \${BIG_MODELS_DIR} in FilePaths.txt)                             ||
-## =================================================================================##
-## OUTPUTS:                                                                         ||
-## Histogram plot of Euclidean distances between emission parameters of pairs       ||
-## of states. A threshold suggestion value is also given.                           ||
-## A scatter plot of the maximum transition probabilitites towards each state.      ||
-## =================================================================================##
+## ===========================================================================##
+##                                                                            ||
+##                                  PREAMBLE                                  ||
+##                                                                            ||
+## ===========================================================================##
+## PURPOSE:                                                                   ||
+## Generate plots for the euclidean distances between the emission parameters ||
+## (for pairs of states) and the maximum transition probability towards each  ||
+## state in the selected model.                                               ||
+## ===========================================================================##
+## AUTHOR: Sam Fletcher                                                       ||
+## CONTACT: s.o.fletcher@exeter.ac.uk                                         ||
+## CREATED: December 2023                                                     ||
+## ===========================================================================##
+## PREREQUISITES: Run Generate_Big_Model.sh or ChromHMM's LearnModel command  ||
+## ===========================================================================##
+## DEPENDENCIES: R                                                            ||
+## ===========================================================================##
+## INPUTS:                                                                    ||
+## -c|--config= -> Full/relative file path for configuation file directory    ||
+## -n|--size=   -> Size of model (default: 20)                                ||
+## -s|--seed=   -> Random seed (default: 1)                                   ||
+## -o|--output  -> Path to directory containing the model files               ||
+##                 (default: \${BIG_MODELS_DIR} in FilePaths.txt)             ||
+## ===========================================================================##
+## OUTPUTS:                                                                   ||
+## Histogram plot of Euclidean distances between emission parameters of pairs ||
+## of states. A threshold suggestion value is also given.                     ||
+## A scatter plot of the maximum transition probabilitites towards each state.||
+## ===========================================================================##
 
-## ======================== ##
-##    HELP FUNCTIONALITY    ##
-## ======================== ##
+## ===================== ##
+##   ARGUMENT PARSING    ##
+## ===================== ##
 
-if [[ "$1" == "--help" || "$1" == "-h" ]]; then
-    echo "======================================================================="
-    echo "Purpose: Generates plots to aid in thresholds used in config.R which"
-    echo "are used in 6_OptimumNumberOfStates.sh in determining redundant states."
-    echo "Author: Sam Fletcher"
-    echo "Contact: s.o.fletcher@exeter.ac.uk"
-    echo "Dependencies: R"
-    echo "Inputs:"
-    echo "\$1 -> Full (or relative) file path for configuation file directory"
-    echo "\$2 -> Size of model (default: 20)"
-    echo "\$3 -> Random seed (default: 1)"
-    echo "\$4 -> Path to directory containing the model files"
-    echo "       (default: \${BIG_MODELS_DIR} in FilePaths.txt)"
-    echo "======================================================================="
+usage() {
+cat <<EOF
+===========================================================================
+Execture_Redundancy_Metrics
+===========================================================================
+Purpose: Generates plots to aid in thresholds used in config.R which
+are used in 6_OptimumNumberOfStates.sh in determining redundant states.
+Author: Sam Fletcher
+Contact: s.o.fletcher@exeter.ac.uk
+Dependencies: R
+Inputs:
+-c|--config=     -> Full/relative file path for configuation file directory
+-n|--size=       -> Size of model (default: 20)
+-s|--seed=       -> Random seed (default: 1)
+-h|--chromosome= -> The chromosome to look at the isolation score for 
+                    (default:1)
+-o|--output      -> Path to directory containing the model files
+                    (default: \${BIG_MODELS_DIR} in FilePaths.txt)
+===========================================================================
+EOF
     exit 0
-fi
+}
+
+needs_argument() {
+    # Required check in case user uses -a -b or -b -a (no argument given).
+    if [[ -z "$OPTARG" || "${OPTARG:0:1}" == - ]]; then usage; fi
+}
+
+while getopts c:n:s:o:-: OPT; do
+    # Adds support for long options by reformulating OPT and OPTARG
+    # This assumes that long options are in the form: "--long=option"
+    if [ "$OPT" = "-" ]; then
+        OPT="${OPTARG%%=*}"
+        OPTARG="${OPTARG#"$OPT"}"
+        OPTARG="${OPTARG#=}"
+    fi
+    case "$OPT" in
+        c | config )    needs_argument; configuration_directory="$OPTARG" ;;
+        n | size )      needs_argument; model_size="$OPTARG" ;;
+        s | seed )      needs_argument; seed="$OPTARG" ;;
+        h | chromosome) needs_argument; chromosome_identifier="$OPTARG" ;;
+        o | ouput )     needs_argument; model_file_dir="$OPTARG" ;;
+        \? )            usage ;;  # Illegal short options are caught by getopts
+        * )             usage ;;  # Illegal long option
+    esac
+done
+shift $((OPTIND-1))
 
 ## ============ ##
 ##    SET UP    ##
 ## ============ ##
-
-configuration_directory=$1
 
 source "${configuration_directory}/FilePaths.txt" || \
 { echo "The configuration file does not exist in the specified location: \
@@ -98,26 +127,23 @@ source "${configuration_directory}/LogFileManagement.sh" || \
 location: ${configuration_directory}"; exit 1; }
 
 
-# Output and error files renamed to:
-# ModelSize-[model size]~[job id]~[date]-[time]
-
+# Temporary log files are moved like this as SLURM cannot create directories.
+# The alternative would be forcing the user to create the file structure
+# themselves and using full file paths in the SLURM directives (bad)
 mv "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" \
-"${LOG_FILE_PATH}/ModelSize-$2~${SLURM_JOB_ID}~${timestamp:=}.log"
+"${LOG_FILE_PATH}/ModelSize-${model_size:=20}~${SLURM_JOB_ID}~${timestamp:=}.log"
 mv "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
-"${LOG_FILE_PATH}/ModelSize-$2~${SLURM_JOB_ID}~$timestamp.err"
+"${LOG_FILE_PATH}/ModelSize--${model_size:=20}~${SLURM_JOB_ID}~$timestamp.err"
 
 ## =============== ##
 ##    VARIABLES    ##
 ## =============== ##
 
-model_size=$2
-seed=$3
-model_file_dir=$4
-
-## ====== DEFAULTS ====================================================================
+## ====== DEFAULTS =============================================================
 if [[ -z "$model_file_dir" ]]; then
     model_file_dir="${BIG_MODELS_DIR}"
-    echo "Model file directory was not given, using the default of: ${BIG_MODELS_DIR}"
+    echo "Model file directory was not given, using the default of:" \
+    "${BIG_MODELS_DIR}"
 fi
 
 if ! [[ "${model_size}" =~ ^[0-9]+$ ]]; then
@@ -129,14 +155,21 @@ if ! [[ "$seed" =~ ^[0-9]+$ ]]; then
     seed=1
     echo "Random seed given is invalid, using defualt value of: ${seed}." 
 fi
-# =====================================================================================
+
+if [[ -z "${chromosome_identifier}" ]]; then
+    chromosome_identifier=1
+    echo "No chromosome identifier was given, using the default value of:" \
+    "${chromosome_identifier} instead."
+fi
+# ==============================================================================
 
 ## ================== ##
 ##   FILE EXISTANCE   ##
 ## ================== ##
 
 cd "${model_file_dir}" ||  { >&2 echo "ERROR: ${model_file_dir} doesn't exist, \
-ensure that the directory exists before running this script."; finishing_statement 1; }
+ensure that the directory exists before running this script."
+finishing_statement 1; }
 
 if [[ -z $(find . -type f -name "emissions*") ]]; then
     { >&2 echo -e "ERROR: No model files were found in ${model_file_dir}.\n"\
@@ -152,14 +185,17 @@ module purge
 module load R/4.2.1-foss-2022a
 
 cd "${SUPPLEMENTARY_DIR}/Redundancy_Threshold_Optimisation/Rscripts" ||  \
-{ >&2 echo "ERROR: ${SUPPLEMENTARY_DIR}/Redundancy_Threshold_Optimisation/Rscripts \
+{ >&2 echo "ERROR: \
+${SUPPLEMENTARY_DIR}/Redundancy_Threshold_Optimisation/Rscripts \
 doesn't exist, make sure [\${SUPPLEMENTARY_DIR} - ${SUPPLEMENTARY_DIR}] \
 in FilePaths.txt is pointing to the correct directory"; finishing_statement 1; }
 
-Rscript HistogramPlotForEuclideanDistances.R "${configuration_directory}/config.R" \
+Rscript HistogramPlotForEuclideanDistances.R \
+"${configuration_directory}/config.R" \
 "${model_size}" "${seed}" "${model_file_dir}" 
 
-Rscript ScatterPlotForTransitionMaxima.R "${configuration_directory}/config.R" \
+Rscript ScatterPlotForTransitionMaxima.R \
+"${configuration_directory}/config.R" \
 "${model_size}" "${seed}" "${model_file_dir}"
 
 cd "${RSCRIPTS_DIR}" || \
@@ -167,7 +203,25 @@ cd "${RSCRIPTS_DIR}" || \
 in FilePaths.txt is pointing to the correct directory"; finishing_statement 1; }
 
 mkdir -p "${model_file_dir}/IsolationScores"
-state_assignment_file=$(find "${model_file_dir}" -name "*${model_size}_${seed}_chr1_*")
+
+# State assignments are named:
+# CellType_SampleSize_BinSize_ModelSize_Seed_Chromosome_statebyline.txt
+
+# We only look at one chromosome as the decision of how to handle the
+# following case is rather arbitrary (see wiki): 
+# "A state is not assigned on one chromosome but has dense assignment
+# on another"
+state_assignment_file=$( \
+find "${model_file_dir}" \
+-name "*${model_size}_${seed}_chr${chromosome_identifier}_*" \
+)
+
+if [[ -z "$state_assignment_file" ]]; then
+    { >&2 echo "ERROR: No state assignment file found for chromosome:" \
+    "${chromosome_identifier}, please check ${model_file_dir}/STATEBYLINE for" \
+    "the existence of this state assignment file"; finishing_statement 1; }
+fi
+
 
 Rscript IsolationScores.R "${configuration_directory}/config.R" \
 "${state_assignment_file}" "${model_file_dir}/IsolationScores" 100

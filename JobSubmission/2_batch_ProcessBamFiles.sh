@@ -23,62 +23,85 @@
 #SBATCH --error=temp%A_%a.err
 #SBATCH --job-name=2_Processing
 
-## =================================================================================##
-##                                                                                  ||
-##                                     PREAMBLE                                     ||
-##                                                                                  ||
-## =================================================================================##
-## PURPOSE:                                                                         ||
-## 1_RawBamFiles contains .bam files for each epigentic mark, however these have    ||
-## yet to be processed, they still contain duplicates, multimapped fragments and    ||
-## low quality reads. This script processes the bam files.                          ||
-## =================================================================================##
-## AUTHOR: Sam Fletcher                                                             ||
-## CONTACT: s.o.fletcher@exeter.ac.uk                                               ||
-## CREATED: November 2023                                                           ||
-## =================================================================================##
-## PREREQUISITES: All .bam files for a specific epigenetic mark must be in 1 folder ||
-## =================================================================================##
-## DEPENDENCIES: Samtools                                                           ||
-## =================================================================================##
-## INPUTS:                                                                          ||
-## $1 -> Full (or relative) file path for configuation file directory               ||
-## $2 -> Epigenetic mark to process                                                 ||
-## $3 -> Phred score threshold value (default: 20)                                  ||
-## =================================================================================##
-## OUTPUTS:                                                                         ||
-## Processed .bam files                                                             ||
-## Index files for raw .bam files and processed .bam files                          ||
-## Per chromosome stats and general stats for raw and processed .bam files          ||
-## =================================================================================##
+## ===========================================================================##
+##                                                                            ||
+##                                  PREAMBLE                                  ||
+##                                                                            ||
+## ===========================================================================##
+## PURPOSE:                                                                   ||
+## 1_RawBamFiles contains .bam files for each epigentic mark, however these   ||
+## have yet to be processed, they still contain duplicates, multimapped       ||
+## fragments and low quality reads. This script processes the bam files.      ||
+## ===========================================================================##
+## AUTHOR: Sam Fletcher                                                       ||
+## CONTACT: s.o.fletcher@exeter.ac.uk                                         ||
+## CREATED: November 2023                                                     ||
+## ===========================================================================##
+## PREREQUISITES: All .bam files for a specific epigenetic mark must be       ||
+## in a single folder (with name "epigenetic mark name")                      ||
+## ===========================================================================##
+## DEPENDENCIES: Samtools                                                     ||
+## ===========================================================================##
+## INPUTS:                                                                    ||
+## -c|--config= -> Full/relative file path for configuation file directory    ||
+## -m|--mark=   -> Epigenetic mark name                                       ||
+## -p|--phred=  -> Phred score threshold value (default: 20)                  ||
+## ===========================================================================##
+## OUTPUTS:                                                                   ||
+## Processed .bam files                                                       ||
+## Index files for raw .bam files and processed .bam files                    ||
+## Per chromosome stats and general stats for raw and processed .bam files    ||
+## ===========================================================================##
 
-## ======================== ##
-##    HELP FUNCTIONALITY    ##
-## ======================== ##
+## ===================== ##
+##   ARGUMENT PARSING    ##
+## ===================== ##
 
-if [[ "$1" == "--help" || "$1" == "-h" ]]; then
-    echo "==================================================================="
-    echo "Purpose: Processes .bam files by removing duplicates,"
-    echo "filtering out poor quality reads and sorting."
-    echo "Author: Sam Fletcher"
-    echo "Contact: s.o.fletcher@exeter.ac.uk"
-    echo "Dependencies: Samtools"
-    echo "Inputs:"
-    echo "\$1 -> Full (or relative) file path for configuation file directory"
-    echo "\$2 -> Name of epigenetic mark"
-    echo "\$3 -> Phred score threshold value (default: 20)"
-    echo "Optional:"
-    echo "Specify --array in sbatch options, to set a custom array size."
-    echo "==================================================================="
+usage() {
+cat <<EOF
+=======================================================================
+2_batch_ProcessBamFiles
+=======================================================================
+Purpose: Processes .bam files by removing duplicates,
+filtering out poor quality reads and sorting.
+Author: Sam Fletcher
+Contact: s.o.fletcher@exeter.ac.uk
+Dependencies: Samtools
+Inputs:
+-c|--config= -> Full/relative file path for configuation file directory
+-m|--mark=   -> Epigenetic mark name
+-p|--phred=  -> Phred score threshold value (default: 20)
+=======================================================================
+EOF
     exit 0
-fi
+}
+
+needs_argument() {
+    # Required check in case user uses -a -b or -b -a (no argument given).
+    if [[ -z "$OPTARG" || "${OPTARG:0:1}" == - ]]; then usage; fi
+}
+
+while getopts c:m:p:-: OPT; do
+    # Adds support for long options by reformulating OPT and OPTARG
+    # This assumes that long options are in the form: "--long=option"
+    if [ "$OPT" = "-" ]; then
+        OPT="${OPTARG%%=*}"
+        OPTARG="${OPTARG#"$OPT"}"
+        OPTARG="${OPTARG#=}"
+    fi
+    case "$OPT" in
+        c | config )  needs_argument; configuration_directory="$OPTARG" ;;
+        m | mark )    needs_argument; mark_name="$OPTARG" ;;
+        p | phred )   needs_argument; minimum_tolerated_phred_score="$OPTARG" ;;
+        \? )          usage ;;  # Illegal short options are caught by getopts
+        * )           usage ;;  # Illegal long option
+    esac
+done
+shift $((OPTIND-1))
 
 ## ============ ##
 ##    SET UP    ##
 ## ============ ##
-
-# Configuration files are required for file paths and log file management
-configuration_directory=$1
 
 source "${configuration_directory}/FilePaths.txt" || \
 { echo "The configuration file does not exist in the specified location: \
@@ -98,31 +121,28 @@ source "${configuration_directory}/LogFileManagement.sh" || \
 location: ${configuration_directory}"; exit 1; }
 
 
-
-# Output and error files renamed to:
-# [epigenetic mark name]~[job id]~[array id]~[date]-[time]
-
+# Temporary log files are moved like this as SLURM cannot create directories.
+# The alternative would be forcing the user to create the file structure
+# themselves and using full file paths in the SLURM directives (bad)
 mv "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.log" \
-"${LOG_FILE_PATH}/$2~${SLURM_ARRAY_JOB_ID}~${SLURM_ARRAY_TASK_ID}~${timestamp:=}.log"
+"${LOG_FILE_PATH}/${mark_name}~${SLURM_ARRAY_JOB_ID}~${SLURM_ARRAY_TASK_ID}~${timestamp:=}.log"
 mv "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err" \
-"${LOG_FILE_PATH}/$2~${SLURM_ARRAY_JOB_ID}~${SLURM_ARRAY_TASK_ID}~$timestamp.err"
+"${LOG_FILE_PATH}/${mark_name}~${SLURM_ARRAY_JOB_ID}~${SLURM_ARRAY_TASK_ID}~$timestamp.err"
 
 ## =============== ##
 ##    VARIABLES    ##
 ## =============== ##
 
-mark_name=$2
-minimum_tolerated_phred_score=$3
 RAW_FULL_FILE_PATH="${RAW_DIR}/${mark_name}"
 PROCESSED_FULL_FILE_PATH="${PROCESSED_DIR}/${mark_name}"
 
-## ====== DEFAULTS ====================================================================
+## ====== DEFAULTS =============================================================
 if ! [[ "${minimum_tolerated_phred_score}" =~ ^[0-9]+$ ]]; then
     minimum_tolerated_phred_score=20
     echo "Phred score threshold given is invalid, "\
     "using the default value of ${minimum_tolerated_phred_score}."
 fi
-## ====================================================================================
+## =============================================================================
 
 ## ===================== ##
 ##    FILE MANAGEMENT    ##
@@ -154,8 +174,9 @@ rm ./*
 total_number_of_files=$(echo "${list_of_files}" | wc -w)
 
 # In the event that the number of files is not a multiple of the array size some
-# files won't be processed if each array element processes the same number of files.
-# The remaining files are processed in the highest indexed array using logic below.
+# files won't be processed if each array element processes the same number of 
+# files. The remaining files are processed in the highest indexed array
+# using the modular arithmetic logic below.
 
 number_files_for_each_array=$((total_number_of_files / SLURM_ARRAY_TASK_MAX))
 start_file_index=$((SLURM_ARRAY_TASK_ID * number_files_for_each_array))
@@ -185,12 +206,13 @@ module purge
 module load SAMtools
 
 # The processing is split into 4 steps:
-# 1) Create an index file, an index stats file and a stats file for the original files
+# 1) Create an index, index stats and samtools stats file for the original files
 # 2) Sort the .bam files and remove reads with a phred score that is below
-#    $minimum_tolerated_phred_score [Note that blueprint files have already processed 
-#    to remove reads with phred score below 15]   
+#    $minimum_tolerated_phred_score [Note: blueprint files have already been
+#    processed to remove reads with phred score below 15]   
 # 3) Delete intermediate files
-# 4) Create an index file, an index stats file and a stats file for the processed files
+# 4) Create an index, index stats and samtools stats file for the 
+#    processed files
 
 for file in ${files_to_process}; do
     echo "Processing ${file}..."
@@ -219,8 +241,11 @@ for file in ${files_to_process}; do
 
     # Need to use the -h option here to keep the headers 
     # so that the next samtools view can function properly
-    samtools view -q "${minimum_tolerated_phred_score}" -h "${base_name}.sorted.bam" | \
+    samtools view \
+    -q "${minimum_tolerated_phred_score}" \
+    -h "${base_name}.sorted.bam" | \
     samtools sort /dev/stdin -o "${base_name}.sorted.filtered.bam"
+
     if (( PIPESTATUS[0] != 0 || PIPESTATUS[1] != 0 )); then 
         { >&2 echo "Filtering failed for ${file}."; }
         success=1
@@ -228,8 +253,10 @@ for file in ${files_to_process}; do
 
     # The -h option here it to ensure the idxstats can be completed in step 4.  
     # The -F 1796 exludes reads with the following flags: 
-    # a) unmapped reads b) non-primary alignment reads 
-    # c) Reads that fail PCR/vendor checks d) Reads that are PCR/optical duplicates
+    # a) unmapped reads 
+    # b) non-primary alignment reads 
+    # c) Reads that fail PCR/vendor checks 
+    # d) Reads that are PCR/optical duplicates
     samtools view -F 1796 -h "${base_name}.sorted.filtered.bam" > \
     "${base_name}.sorted.filtered.noDuplicates.bam"
     if [[ $? == 1 ]]; then 

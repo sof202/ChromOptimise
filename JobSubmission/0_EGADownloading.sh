@@ -16,88 +16,106 @@
 #SBATCH --error=temp%j.err
 #SBATCH --job-name=0_Download_Files
 
-## =================================================================================##
-##                                                                                  ||
-##                                     PREAMBLE                                     ||
-##                                                                                  ||
-## =================================================================================##
-## PURPOSE:                                                                         ||
-## Downloads files from EGA using pyega3.                                           ||
-## =================================================================================##
-## AUTHOR: Sam Fletcher                                                             ||
-## CONTACT: s.o.fletcher@exeter.ac.uk                                               ||
-## CREATED: November 2023                                                           ||
-## =================================================================================##
-## PREREQUISITES:                                                                   ||
-## Create a conda environement that has pyega3 installed in it                      ||
-## Change source file in |MAIN| to be your personal etc/profile.d/conda.sh file     ||
-## Create a .json file containing your EGA login credentials                        ||
-## =================================================================================##
-## DEPENDENCIES:                                                                    ||
-## Miniconda/Conda/Anaconda                                                         ||
-## Python                                                                           ||
-## Pyega3                                                                           ||
-## =================================================================================##
-## INPUTS:                                                                          ||
-## $1 -> Full (or relative) file path for configuation file directory               ||
-## $2 -> File of file names to download from EGA.                                   ||
-## =================================================================================##
-## OUTPUTS:                                                                         ||
-## NONE                                                                             ||
-## =================================================================================##
+## ===========================================================================##
+##                                                                            ||
+##                                  PREAMBLE                                  ||
+##                                                                            ||
+## ===========================================================================##
+## PURPOSE:                                                                   ||
+## Downloads files from EGA using pyega3.                                     ||
+## ===========================================================================##
+## AUTHOR: Sam Fletcher                                                       ||
+## CONTACT: s.o.fletcher@exeter.ac.uk                                         ||
+## CREATED: November 2023                                                     ||
+## ===========================================================================##
+## PREREQUISITES:                                                             ||
+## Create a conda environement that has pyega3 installed in it                ||
+## Create a .json file containing your EGA login credentials                  ||
+## ===========================================================================##
+## DEPENDENCIES:                                                              ||
+## Miniconda/Conda/Anaconda                                                   ||
+## Pyega3 conda environment                                                   ||
+## ===========================================================================##
+## INPUTS:                                                                    ||
+## -c|--config= -> Full/relative file path for configuation file directory    ||
+## -f|--file=   -> File of file names to download from EGA.                   ||
+## ===========================================================================##
+## OUTPUTS:                                                                   ||
+## NONE                                                                       ||
+## ===========================================================================##
 
-## ======================== ##
-##    HELP FUNCTIONALITY    ##
-## ======================== ##
+## ===================== ##
+##   ARGUMENT PARSING    ##
+## ===================== ##
 
-if [[ "$1" == "--help" || "$1" == "-h" ]]; then
-    echo "======================================================================="
-    echo "Purpose: Downloads files from EGA using a list of file/directory names."
-    echo "Author: Sam Fletcher"
-    echo "Contact: s.o.fletcher@exeter.ac.uk"
-    echo "Dependencies: Miniconda/Conda/Anaconda, EGA login credentials, Python"
-    echo "Inputs:"
-    echo "\$1 -> Full (or relative) file path for configuation file directory"
-    echo "\$2 -> File of file names to download from EGA."
-    echo "======================================================================="
+usage() {
+cat <<EOF
+=======================================================================
+0_EGADownloading
+=======================================================================
+Purpose: Downloads files from EGA using a list of file/directory names.
+Author: Sam Fletcher
+Contact: s.o.fletcher@exeter.ac.uk
+Dependencies: Conda, EGA login credentials, Pyega3 conda environment
+Inputs:
+-c|--config= -> Full/relative file path for configuation file directory
+-f|--file=   -> File of file names to download from EGA.
+=======================================================================
+EOF
     exit 0
-fi
+}
+
+needs_argument() {
+    # Required check in case user uses -a -b or -b -a (no argument given).
+    if [[ -z "$OPTARG" || "${OPTARG:0:1}" == - ]]; then usage; fi
+}
+
+while getopts c:f:-: OPT; do
+    # Adds support for long options by reformulating OPT and OPTARG
+    # This assumes that long options are in the form: "--long=option"
+    if [ "$OPT" = "-" ]; then
+        OPT="${OPTARG%%=*}"
+        OPTARG="${OPTARG#"$OPT"}"
+        OPTARG="${OPTARG#=}"
+    fi
+    case "$OPT" in
+        c | config )  needs_argument; configuration_directory="$OPTARG" ;;
+        f | file )    needs_argument; text_file_containing_inodes="$OPTARG" ;;
+        \? )          usage ;;  # Illegal short options are caught by getopts
+        * )           usage ;;  # Illegal long option
+    esac
+done
+shift $((OPTIND-1))
 
 ## ============ ##
 ##    SET UP    ##
 ## ============ ##
 
-echo "Job '${SLURM_JOB_NAME}' started at:"
-date -u
-
-start_time=$(date +%s)
-
-# Configuration file is required for file paths
-
-configuration_directory=$1
-
 source "${configuration_directory}/FilePaths.txt" || \
 { echo "The configuration file does not exist in the specified location: \
 ${configuration_directory}"; exit 1; }
 
+# If a configuration file is changed during analysis, it is hard to tell
+# what configuration was used for a specific run through, below accounts for 
+# this
+echo "Configuration file used with this script: \
+${configuration_directory}/FilePaths.txt"
+echo ""
+cat "${configuration_directory}/FilePaths.txt"
+echo ""
 
-LOG_FILE_PATH="${LOG_DIR}/$SLURM_JOB_NAME/$USER"
-mkdir -p "${LOG_FILE_PATH}"
-timestamp=$(date -u +%Y.%m.%d-%H_%M)
+source "${configuration_directory}/LogFileManagement.sh" || \
+{ echo "The log file management script does not exist in the specified \
+location: ${configuration_directory}"; exit 1; }
 
-# Output and error files renamed to:
-# [file name]~[job id]~[date]-[time]
 
+# Temporary log files are moved like this as SLURM cannot create directories.
+# The alternative would be forcing the user to create the file structure
+# themselves and using full file paths in the SLURM directives (bad)
 mv "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" \
-"${LOG_FILE_PATH}/${SLURM_JOB_ID}~$timestamp.log"
+"${LOG_FILE_PATH}/${SLURM_JOB_ID}~${timestamp:=}.log"
 mv "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 "${LOG_FILE_PATH}/${SLURM_JOB_ID}~$timestamp.err"
-
-## =============== ##
-##    VARIABLES    ##
-## =============== ##
-
-text_file_containing_inodes=$2
 
 ## ========== ##
 ##    MAIN    ##
@@ -109,32 +127,22 @@ module load Miniconda3
 # Conda environments will not be activated until one uses `conda init bash`
 # However, running this will result in a new shell being created.
 # This means one cannot have their environment activatable and activate it
-# Using the conda shell script in the [conda]/etc folder is a work around for this.
+# Using the conda shell script in [conda]/etc is a work around for this.
 source "${CONDA_SHELL}/profile.d/conda.sh" || \
 { echo "profile.d/conda.sh does not exist in specified location: \
-[\${CONDA_SHELL} - ${CONDA_SHELL}]"; exit 1; }
+[\${CONDA_SHELL} - ${CONDA_SHELL}]"; finishing_statement 1; }
 
 conda activate "${PYEGA_ENVIRONMENT}" || \
 { echo "conda environment does not exist in specified location: \
-[\${PYEGA_ENVIRONMENT} - ${PYEGA_ENVIRONMENT}]"; exit 1; }
+[\${PYEGA_ENVIRONMENT} - ${PYEGA_ENVIRONMENT}]"; finishing_statement 1; }
 
 # Read each line of text file
 # [[ -n "$line" ]] handles the last line that has no newline character
 while IFS= read -r line || [[ -n "$line" ]]; do
-    # CHANGE "egaConfig.json" TO FILE WITH EGA LOGIN CREDENTIALS
     # -c 5 -> Failed downloads are retried 5 times before moving on to next file
-    pyega3 -c 5 -cf ~/Tools/pyegaDownloading/egaConfig.json fetch \
+    pyega3 -c 5 -cf "${CREDENTIALS}" fetch \
     "$line" --output-dir "${DOWNLOAD_DIR}"
 done < "${text_file_containing_inodes}"
 
-
-## ======================= ##
-##   FINISHING STATEMENT   ##
-## ======================= ##
-
 rm "${SLURM_SUBMIT_DIR}/pyega3_output.log"
-echo "Job finished with exit code 0 at:"
-date -u
-end_time=$(date +%s)
-time_taken=$((end_time-start_time))
-echo "Job took a total of: ${time_taken} seconds to finish."
+finishing_statement 1
