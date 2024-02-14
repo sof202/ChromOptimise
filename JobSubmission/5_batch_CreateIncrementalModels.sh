@@ -51,12 +51,12 @@
 ## DEPENDENCIES: Java, ChromHMM                                                     ||
 ## =================================================================================##
 ## INPUTS:                                                                          ||
-## $1 -> Full (or relative) file path for configuation file directory               ||
-## $2 -> Number of models to learn (default: 4)                                     ||
-## $3 -> The increment to use between model sizes (default: 1)                      ||
-## $4 -> The bin size to use                                                        ||
-## $5 -> The sample size to use                                                     ||
-## $6 -> The assembly to use (default: hg19)                                        ||
+## -c|--config=     -> Full/relative file path for configuation file directory      ||
+## -n|--nummodels=  -> Number of models to learn (default: 4)                       ||
+## -i|--increment=  -> The increment to use between model sizes (default: 1)        ||
+## -b|--binsize=    -> The bin size used in 4_BinarizeBamFiles                      ||
+## -s|--samplesize= -> The sample size used in 3_SubsampleBamFiles                  ||
+## -a|--assembly=   -> The assembly to use (default: hg19)                          ||
 ## =================================================================================##
 ## OUTPUTS:                                                                         ||
 ## Emission parameter matrix for models (.png, .txt and .svg)                       ||
@@ -66,36 +66,61 @@
 ## The maximum achieved estimated log likelihood achieved by each model             ||
 ## =================================================================================##
 
-## ======================== ##
-##    HELP FUNCTIONALITY    ##
-## ======================== ##
+## ===================== ##
+##   ARGUMENT PARSING    ##
+## ===================== ##
 
-if [[ "$1" == "--help" || "$1" == "-h" ]]; then
-    echo "======================================================================"
-    echo "Purpose: Uses ChromHMM's LearnModel command to generate several models"
-    echo "with increasing numbers of states."
-    echo "Author: Sam Fletcher"
-    echo "Contact: s.o.fletcher@exeter.ac.uk"
-    echo "Dependencies: Java, ChromHMM"
-    echo "Inputs:"
-    echo "\$1 -> Full (or relative) file path for configuation file directory"
-    echo "\$2 -> Number of models to learn (default: 4)"
-    echo "\$3 -> The increment to use between model sizes (default: 1)"
-    echo "\$4 -> The bin size to use"
-    echo "\$5 -> The sample size to use"
-    echo "\$6 -> The assembly to use (default: hg19)"
-    echo "Optional:"
-    echo "Specify --array in sbatch options, to set a custom array size."
-    echo "======================================================================"
+usage() {
+cat <<EOF
+===========================================================================
+4_BinarizeBamFiles.sh
+===========================================================================
+Purpose: Uses ChromHMM's LearnModel command to generate several models
+with increasing numbers of states.
+Author: Sam Fletcher
+Contact: s.o.fletcher@exeter.ac.uk
+Dependencies: Java, ChromHMM
+Inputs:
+-c|--config=     -> Full/relative file path for configuation file directory
+-n|--nummodels=  -> Number of models to learn (default: 4)
+-i|--increment=  -> The increment to use between model sizes (default: 1)
+-b|--binsize=    -> The bin size used in 4_BinarizeBamFiles
+-s|--samplesize= -> The sample size used in 3_SubsampleBamFiles
+-a|--assembly=   -> The assembly to use (default: hg19)
+===========================================================================
+EOF
     exit 0
-fi
+}
+
+needs_argument() {
+    # Required check in case user uses -a -b or -b -a (no argument given).
+    if [[ -z "$OPTARG" || "${OPTARG:0:1}" == - ]]; then usage; fi
+}
+
+while getopts f:c:-: OPT; do
+    # Adds support for long options by reformulating OPT and OPTARG
+    # This assumes that long options are in the form: "--long=option"
+    if [ "$OPT" = "-" ]; then
+        OPT="${OPTARG%%=*}"
+        OPTARG="${OPTARG#"$OPT"}"
+        OPTARG="${OPTARG#=}"
+    fi
+    case "$OPT" in
+        c | config )       needs_argument; configuration_directory="$OPTARG" ;;
+        n | nummodels)     needs_argument; number_of_models_to_generate="$OPTARG" ;;
+        i | increment)     needs_argument; states_increment="$OPTARG" ;;
+        b | binsize )      needs_argument; bin_size="$OPTARG" ;;
+        s | samplesize )   needs_argument; sample_size="$OPTARG" ;;
+        a | assembly )     needs_argument; assembly="$OPTARG" ;;
+        \? )               usage ;;  # Illegal short options are caught by getopts
+        * )                usage ;;  # Illegal long option
+    esac
+done
+shift $((OPTIND-1))
 
 ## ============ ##
 ##    SET UP    ##
 ## ============ ##
-
-# Configuration files are required for file paths and log file management
-configuration_directory=$1
 
 source "${configuration_directory}/FilePaths.txt" || \
 { echo "The configuration file does not exist in the specified location: \
@@ -127,12 +152,6 @@ mv "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err" \
 ## =============== ##
 ##    VARIABLES    ##
 ## =============== ##
-
-number_of_models_to_generate=$2
-states_increment=$3
-bin_size=$4
-sample_size=$5
-assembly=$6
 
 ## ====== DEFAULTS ====================================================================
 if ! [[ "${number_of_models_to_generate}" =~ ^[0-9]+$ ]]; then
