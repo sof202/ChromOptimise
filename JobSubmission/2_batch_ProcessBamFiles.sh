@@ -60,7 +60,7 @@
 usage() {
 cat <<EOF
 =======================================================================
-2_batch_ProcessBamFiles.sh
+2_batch_ProcessBamFiles
 =======================================================================
 Purpose: Processes .bam files by removing duplicates,
 filtering out poor quality reads and sorting.

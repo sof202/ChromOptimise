@@ -56,7 +56,7 @@
 usage() {
 cat <<EOF
 ================================================================================
-3_SubsampleBamFiles.sh
+3_SubsampleBamFiles
 ================================================================================
 Purpose: Merges and subsamples processed .bam files present in specified folder.
 Author: Sam Fletcher

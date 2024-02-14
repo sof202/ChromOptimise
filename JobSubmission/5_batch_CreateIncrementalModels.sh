@@ -76,7 +76,7 @@
 usage() {
 cat <<EOF
 ===========================================================================
-5_batch_CreateIncrementalModels.sh
+5_batch_CreateIncrementalModels
 ===========================================================================
 Purpose: Uses ChromHMM's LearnModel command to generate several models
 with increasing numbers of states.
