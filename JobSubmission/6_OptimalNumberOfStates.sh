@@ -19,48 +19,48 @@
 #SBATCH --error=temp%j.err
 #SBATCH --job-name=6_Optimal_States
 
-## =================================================================================##
-##                                                                                  ||
-##                                     PREAMBLE                                     ||
-##                                                                                  ||
-## =================================================================================##
-## PURPOSE:                                                                         ||
-## Determines the optimum number of states by searching for redundant states in     ||
-## the model files (starting with most complex). Redundant states are states that   ||
-## satisfy the following criteria:                                                  ||
-##  (i) The state's emissions parameter vector is close to another state's under    ||
-##      the Euclidean distance metric,                                              ||
-## (ii) The state's transition parameter vector (towards the state) has a low       ||
-##      maximum value.                                                              ||
-## If a model has redundant states it is rejected in favour of a simpler model.     ||
-## This then repeats, iterating across smaller and smaller models until no          ||
-## no redundant states are found.                                                   ||
-##                                                                                  ||
-## The script also creates a plot of the estimated log likelihood and the relative  ||
-## Akaike/Bayesian information critereon against the number of states in each       ||
-## model for further analysis.                                                      ||
-##                                                                                  ||
-## Note: If the largest model has no redundant states, the optimum model size may   ||
-##       be larger than the largest model that was trained.                         ||
-## =================================================================================##
-## AUTHOR: Sam Fletcher                                                             ||
-## CONTACT: s.o.fletcher@exeter.ac.uk                                               ||
-## CREATED: December 2023                                                           ||
-## =================================================================================##
-## PREREQUISITES: Run: 5_batch_CreateIncrementalModels.sh                           ||
-## =================================================================================##
-## DEPENDENCIES: R                                                                  ||
-## =================================================================================##
-## INPUTS:                                                                          ||
-## -c|--config= -> Full/relative file path for configuation file directory          ||
-## =================================================================================##
-## OUTPUTS:                                                                         ||
-## File containing why models with too many states were rejected                    ||
-## The optimum number of states to use with the data                                ||
-## Plot between estimated log likelihood and number of states                       ||
-## Plot between relative Akaike information critereon and the number of states      ||
-## Plot between relative Bayesian information critereon and the number of states    ||
-## =================================================================================##
+## ===========================================================================##
+##                                                                            ||
+##                                  PREAMBLE                                  ||
+##                                                                            ||
+## ===========================================================================##
+## PURPOSE:                                                                   ||
+## Determines the optimum number of states by searching for redundant states  ||
+## in the model files (starting with most complex). Redundant states are      ||
+## states that satisfy the following criteria:                                ||
+##  (i) The state's emissions parameter vector is close to another state's    ||
+##      under the Euclidean distance metric,                                  ||
+## (ii) The state's transition parameter vector (towards the state) has a low ||
+##      maximum value.                                                        ||
+##                                                                            ||
+## If a model has redundant states it is rejected in favour of a simpler      ||
+## model. This then repeats, iterating across smaller and smaller models      ||
+## until no no redundant states are found.                                    ||
+##                                                                            ||
+## The script also creates a plot of the estimated log likelihood and the     ||
+## relative Bayesian information critereon against the number of states in    ||
+## each model for further analysis.                                           ||
+##                                                                            ||
+## ===========================================================================##
+## AUTHOR: Sam Fletcher                                                       ||
+## CONTACT: s.o.fletcher@exeter.ac.uk                                         ||
+## CREATED: December 2023                                                     ||
+## ===========================================================================##
+## PREREQUISITES: Run: 5_batch_CreateIncrementalModels.sh                     ||
+## ===========================================================================##
+## DEPENDENCIES: R                                                            ||
+## ===========================================================================##
+## INPUTS:                                                                    ||
+## -c|--config= -> Full/relative file path for configuation file directory    ||
+## ===========================================================================##
+## OUTPUTS:                                                                   ||
+## File containing why models with too many states were rejected              ||
+## The optimum number of states to use with the data                          ||
+## Plot between estimated log likelihood and number of states                 ||
+## Plot between relative Akaike information critereon and the number of states||
+## Plot between relative Bayesian information critereon and the number of     ||
+##   states                                                                   ||
+## ===========================================================================##
 
 
 ## ===================== ##
@@ -151,7 +151,8 @@ mv "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 # Set bin/sample size by searching through the model directory
 cd "${MODEL_DIR}" || \
 { >&2 echo "ERROR: [\${MODEL_DIR} - ${MODEL_DIR}] doesn't exist, \
-make sure FilePaths.txt is pointing to the correct directory."; finishing_statement 1; }
+make sure FilePaths.txt is pointing to the correct directory."
+finishing_statement 1; }
 
 # Specifically we want to find the bin and sample size from the emissions
 # or transitions files (and not the model or statebyline files)
@@ -215,10 +216,11 @@ for model_number in ${model_sizes}; do
 
     # State assignments are named:
     # CellType_SampleSize_BinSize_ModelSize_Chromosome_statebyline.txt
+    # We only want chromosome 1 as it is the largest chromosome 
     state_assignment_file=$(find "${MODEL_DIR}" -name "*_${model_number}_chr1_*")
 
-    # IsolationScores.R is ran with a sample size of 100% (all data is considered)
-    # This is because the slow down is not that significant for most datasets
+    # IsolationScores.R is ran with a sample size of 100% 
+    # (all data is considered) because the slow down is not that significant 
     Rscript IsolationScores.R "${configuration_directory}/config.R" \
     "${state_assignment_file}" "${output_directory}" 100 
 
@@ -252,9 +254,9 @@ rm "${output_directory}/Isolation_Scores.txt"
 ##   OPTIMUM STATES CHECK    ##
 ## ========================= ##
 
-# If the largest model learned has no redundant states, this doesn't necessarily imply
-# that it has the optimum number of states, perhaps a more complex model does. This
-# section checks for this scenario.
+# If the largest model learned has no redundant states, this doesn't necessarily
+# imply that it has the optimum number of states, perhaps a more complex model
+# does. This section checks for this scenario.
 
 if [[ $(wc -l < "${output_directory}/OptimumNumberOfStates.txt") -eq 1 ]]; then
     { echo "${model_number} states may not be the optimum number of states."
@@ -270,15 +272,20 @@ fi
 ##    PLOTTING    ##
 ## ============== ##
 
-# Plots the estimated log likelihood against the number of states across all models
-echo "Plotting the estimated log likelihoods of learned models against one another..."
+echo "Plotting the estimated log likelihoods of learned models against" \
+"one another..."
+
 Rscript PlotLikelihoods.R "${configuration_directory}/config.R" \
 "${bin_size}" "${sample_size}" "${output_directory}"
 
-# Plots the relative Bayesian information critereon against the number of states
-# across all models. This information is also saved into a .csv file.
-# BIC requires the number of observations, which is the total number of lines in each 
-# binary file minus 2 times the number of files (due to the headers in each file).
+# We plot the relative Bayesian information critereon for each model so the user
+# can use a less complex model if they wish. A less complex model may have a
+# similar BIC to a more complex model (meaning its roughly as accurate).
+# This is up to the user's discretion as BIC is just a heuristic. 
+
+# BIC requires the number of observations, which is the total number of lines  
+# in each binary file minus 2 times the number of files 
+# (due to the headers in each file).
 full_binary_path="${BINARY_DIR}/BinSize_${bin_size}_SampleSize_${sample_size}"
 
 total_observations=0
