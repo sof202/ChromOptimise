@@ -36,8 +36,8 @@
 ## DEPENDENCIES: NONE                                                         ||
 ## ===========================================================================##
 ## INPUTS:                                                                    ||
-## -c|--config -> Full/relative file path for configuation file directory     ||
-## -m|--mark -> Epigenetic mark name                                          ||
+## -c|--config= -> Full/relative file path for configuation file directory    ||
+## -m|--mark=   -> Epigenetic mark name                                       ||
 ## ===========================================================================##
 ## OUTPUTS:                                                                   ||
 ## NONE                                                                       ||
@@ -58,37 +58,34 @@ Author: Sam Fletcher
 Contact: s.o.fletcher@exeter.ac.uk
 Dependencies: NONE
 Inputs:
--c|--config -> Full/relative file path for configuation file directory
--m|--mark -> Epigenetic mark name
+-c|--config= -> Full/relative file path for configuation file directory
+-m|--mark=   -> Epigenetic mark name
 =======================================================================
 EOF
     exit 0
 }
 
-if [[ $# -eq 0 ]]; then
-    usage
-fi
+needs_argurment() {
+    # Required check in case user uses -a -b or -b -a (no argument given).
+    if [[ -z "$OPTARG" || "${OPTARG:0:1}" == - ]]; then usage; fi
+}
 
-while [[ $# -gt 0 ]]; do
-    case $1 in
-        -c|--config)
-        if [[ "$2" != -* && -n "$2" ]]; then 
-            configuration_directory="$2"; shift 2
-        else 
-            shift 1
-        fi
-        ;;
-        -m|--mark)
-        if [[ "$2" != -* && -n "$2" ]]; then 
-            mark_name="$2"; shift 2
-        else 
-            shift 1
-        fi
-        ;;
-        *)
-        usage
-    esac
+while getopts f:c:-: OPT; do
+  # Adds support for long options by reformulating OPT and OPTARG
+  # This assumes that long options are in the form: "--long=option"
+  if [ "$OPT" = "-" ]; then
+    OPT="${OPTARG%%=*}"
+    OPTARG="${OPTARG#"$OPT"}"
+    OPTARG="${OPTARG#=}"
+  fi
+  case "$OPT" in
+    c | config )  needs_argurment; configuration_directory="$OPTARG" ;;
+    m | mark )    needs_argurment; mark_name="$OPTARG" ;;
+    \? )          usage ;;  # Illegal short options are caught by getopts
+    * )           usage ;;  # bad long option
+  esac
 done
+shift $((OPTIND-1))
 
 ## ============ ##
 ##    SET UP    ##
