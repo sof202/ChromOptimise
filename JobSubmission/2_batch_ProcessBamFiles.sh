@@ -81,20 +81,20 @@ needs_argument() {
 }
 
 while getopts f:c:-: OPT; do
-  # Adds support for long options by reformulating OPT and OPTARG
-  # This assumes that long options are in the form: "--long=option"
-  if [ "$OPT" = "-" ]; then
-    OPT="${OPTARG%%=*}"
-    OPTARG="${OPTARG#"$OPT"}"
-    OPTARG="${OPTARG#=}"
-  fi
-  case "$OPT" in
-    c | config )  needs_argument; configuration_directory="$OPTARG" ;;
-    m | mark )    needs_argument; mark_name="$OPTARG" ;;
-    p | phred )   needs_argument; minimum_tolerated_phred_score="$OPTARG" ;;
-    \? )          usage ;;  # Illegal short options are caught by getopts
-    * )           usage ;;  # bad long option
-  esac
+    # Adds support for long options by reformulating OPT and OPTARG
+    # This assumes that long options are in the form: "--long=option"
+    if [ "$OPT" = "-" ]; then
+        OPT="${OPTARG%%=*}"
+        OPTARG="${OPTARG#"$OPT"}"
+        OPTARG="${OPTARG#=}"
+    fi
+    case "$OPT" in
+        c | config )  needs_argument; configuration_directory="$OPTARG" ;;
+        m | mark )    needs_argument; mark_name="$OPTARG" ;;
+        p | phred )   needs_argument; minimum_tolerated_phred_score="$OPTARG" ;;
+        \? )          usage ;;  # Illegal short options are caught by getopts
+        * )           usage ;;  # bad long option
+    esac
 done
 shift $((OPTIND-1))
 
