@@ -42,9 +42,9 @@
 ## DEPENDENCIES: Samtools                                                           ||
 ## =================================================================================##
 ## INPUTS:                                                                          ||
-## $1 -> Full (or relative) file path for configuation file directory               ||
-## $2 -> Epigenetic mark to process                                                 ||
-## $3 -> Phred score threshold value (default: 20)                                  ||
+## -c|--config= -> Full/relative file path for configuation file directory          ||
+## -m|--mark=   -> Epigenetic mark name                                             ||
+## -p|--phred=  -> Phred score threshold value (default: 20)                        ||
 ## =================================================================================##
 ## OUTPUTS:                                                                         ||
 ## Processed .bam files                                                             ||
@@ -52,33 +52,55 @@
 ## Per chromosome stats and general stats for raw and processed .bam files          ||
 ## =================================================================================##
 
-## ======================== ##
-##    HELP FUNCTIONALITY    ##
-## ======================== ##
+## ===================== ##
+##   ARGUMENT PARSING    ##
+## ===================== ##
 
-if [[ "$1" == "--help" || "$1" == "-h" ]]; then
-    echo "==================================================================="
-    echo "Purpose: Processes .bam files by removing duplicates,"
-    echo "filtering out poor quality reads and sorting."
-    echo "Author: Sam Fletcher"
-    echo "Contact: s.o.fletcher@exeter.ac.uk"
-    echo "Dependencies: Samtools"
-    echo "Inputs:"
-    echo "\$1 -> Full (or relative) file path for configuation file directory"
-    echo "\$2 -> Name of epigenetic mark"
-    echo "\$3 -> Phred score threshold value (default: 20)"
-    echo "Optional:"
-    echo "Specify --array in sbatch options, to set a custom array size."
-    echo "==================================================================="
+usage() {
+cat <<EOF
+=======================================================================
+2_batch_ProcessBamFiles.sh
+=======================================================================
+Purpose: Processes .bam files by removing duplicates,
+filtering out poor quality reads and sorting.
+Author: Sam Fletcher
+Contact: s.o.fletcher@exeter.ac.uk
+Dependencies: Samtools
+Inputs:
+-c|--config= -> Full/relative file path for configuation file directory
+-m|--mark=   -> Epigenetic mark name
+-p|--phred=  -> Phred score threshold value (default: 20)
+=======================================================================
+EOF
     exit 0
-fi
+}
+
+needs_argurment() {
+    # Required check in case user uses -a -b or -b -a (no argument given).
+    if [[ -z "$OPTARG" || "${OPTARG:0:1}" == - ]]; then usage; fi
+}
+
+while getopts f:c:-: OPT; do
+  # Adds support for long options by reformulating OPT and OPTARG
+  # This assumes that long options are in the form: "--long=option"
+  if [ "$OPT" = "-" ]; then
+    OPT="${OPTARG%%=*}"
+    OPTARG="${OPTARG#"$OPT"}"
+    OPTARG="${OPTARG#=}"
+  fi
+  case "$OPT" in
+    c | config )  needs_argurment; configuration_directory="$OPTARG" ;;
+    m | mark )    needs_argurment; mark_name="$OPTARG" ;;
+    p | phred )   needs_argurment; minimum_tolerated_phred_score="$OPTARG" ;;
+    \? )          usage ;;  # Illegal short options are caught by getopts
+    * )           usage ;;  # bad long option
+  esac
+done
+shift $((OPTIND-1))
 
 ## ============ ##
 ##    SET UP    ##
 ## ============ ##
-
-# Configuration files are required for file paths and log file management
-configuration_directory=$1
 
 source "${configuration_directory}/FilePaths.txt" || \
 { echo "The configuration file does not exist in the specified location: \
@@ -111,18 +133,16 @@ mv "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err" \
 ##    VARIABLES    ##
 ## =============== ##
 
-mark_name=$2
-minimum_tolerated_phred_score=$3
 RAW_FULL_FILE_PATH="${RAW_DIR}/${mark_name}"
 PROCESSED_FULL_FILE_PATH="${PROCESSED_DIR}/${mark_name}"
 
-## ====== DEFAULTS ====================================================================
+## ====== DEFAULTS =============================================================
 if ! [[ "${minimum_tolerated_phred_score}" =~ ^[0-9]+$ ]]; then
     minimum_tolerated_phred_score=20
     echo "Phred score threshold given is invalid, "\
     "using the default value of ${minimum_tolerated_phred_score}."
 fi
-## ====================================================================================
+## =============================================================================
 
 ## ===================== ##
 ##    FILE MANAGEMENT    ##
