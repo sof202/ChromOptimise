@@ -94,7 +94,7 @@ while getopts f:c:-: OPT; do
         m | mark )    needs_argument; mark_name="$OPTARG" ;;
         p | phred )   needs_argument; minimum_tolerated_phred_score="$OPTARG" ;;
         \? )          usage ;;  # Illegal short options are caught by getopts
-        * )           usage ;;  # bad long option
+        * )           usage ;;  # Illegal long option
     esac
 done
 shift $((OPTIND-1))

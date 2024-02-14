@@ -82,7 +82,7 @@ while getopts f:c:-: OPT; do
         c | config )  needs_argument; configuration_directory="$OPTARG" ;;
         f | file )    needs_argument; text_file_containing_inodes="$OPTARG" ;;
         \? )          usage ;;  # Illegal short options are caught by getopts
-        * )           usage ;;  # bad long option
+        * )           usage ;;  # Illegal long option
     esac
 done
 shift $((OPTIND-1))

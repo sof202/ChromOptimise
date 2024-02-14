@@ -89,7 +89,7 @@ while getopts f:c:-: OPT; do
         m | mark )         needs_argument; mark_name="$OPTARG" ;;
         s | samplesize )   needs_argument; sample_size="$OPTARG" ;;
         \? )               usage ;;  # Illegal short options are caught by getopts
-        * )                usage ;;  # bad long option
+        * )                usage ;;  # Illegal long option
     esac
 done
 shift $((OPTIND-1))
