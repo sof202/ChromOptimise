@@ -66,12 +66,13 @@ EOF
 }
 
 needs_argurment() {
-    # Catches the cases where 
+    # Required check in case user uses -c -f or -f -c (no argument given).
     if [[ -z "$OPTARG" || "${OPTARG:0:1}" == - ]]; then usage; fi
 }
 
 while getopts f:c:-: OPT; do
   # Adds support for long options by reformulating OPT and OPTARG
+  # This assumes that long options are in the form: "--long=option"
   if [ "$OPT" = "-" ]; then
     OPT="${OPTARG%%=*}"
     OPTARG="${OPTARG#"$OPT"}"
