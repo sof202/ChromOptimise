@@ -58,37 +58,33 @@ Author: Sam Fletcher
 Contact: s.o.fletcher@exeter.ac.uk
 Dependencies: Conda, EGA login credentials, Pyega3 conda environment
 Inputs:
--c|--config -> Full/relative file path for configuation file directory
--f|--file -> File of file names to download from EGA.
+-c|--config= -> Full/relative file path for configuation file directory
+-f|--file=   -> File of file names to download from EGA.
 =======================================================================
 EOF
     exit 0
 }
 
-if [[ $# -eq 0 ]]; then
-    usage
-fi
+needs_argurment() {
+    # Catches the cases where 
+    if [[ -z "$OPTARG" || "${OPTARG:0:1}" == - ]]; then usage; fi
+}
 
-while [[ $# -gt 0 ]]; do
-    case $1 in
-        -c|--config)
-        if [[ "$2" != -* && -n "$2" ]]; then 
-            configuration_directory="$2"; shift 2
-        else 
-            shift 1
-        fi
-        ;;
-        -f|--file)
-        if [[ "$2" != -* && -n "$2" ]]; then 
-            text_file_containing_inodes="$2"; shift 2
-        else 
-            shift 1
-        fi
-        ;;
-        *)
-        usage
-    esac
+while getopts f:c:-: OPT; do
+  # Adds support for long options by reformulating OPT and OPTARG
+  if [ "$OPT" = "-" ]; then
+    OPT="${OPTARG%%=*}"
+    OPTARG="${OPTARG#"$OPT"}"
+    OPTARG="${OPTARG#=}"
+  fi
+  case "$OPT" in
+    f | file )    needs_argurment; text_file_containing_inodes="$OPTARG" ;;
+    c | config )  needs_argurment; configuration_directory="$OPTARG" ;;
+    \? )          usage ;;  # Illegal short options are caught by getopts
+    * )           usage ;;  # bad long option
+  esac
 done
+shift $((OPTIND-1))
 
 ## ============ ##
 ##    SET UP    ##
