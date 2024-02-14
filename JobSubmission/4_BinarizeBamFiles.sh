@@ -38,42 +38,67 @@
 ## DEPENDENCIES: Java, ChromHMM                                                     ||
 ## =================================================================================##
 ## INPUTS:                                                                          ||
-## $1 -> Full (or relative) file path for configuation file directory               ||
-## $2 -> Bin size to be used by BinarizeBam command (default: 200)                  ||
-## $3 -> Sample size used in 3_SubsampleBamFiles.sh                                 ||
-## $4 -> The assembly to use (default: hg19)                                        ||
+## -c|--config=     -> Full/relative file path for configuation file directory      ||
+## -b|--binsize=    -> Bin size to be used by BinarizeBam command (default: 200)    ||
+## -s|--samplesize= -> Sample size used in 3_SubsampleBamFiles.sh                   ||
+## -a|--assembly=   -> The assembly to use (default: hg19)                          ||
 ## =================================================================================##
 ## OUTPUTS:                                                                         ||
 ## Binary signal files for every chromosome in the dataset except for mitochondrial ||
 ## DNA                                                                              ||
 ## =================================================================================##
 
-## ======================== ##
-##    HELP FUNCTIONALITY    ##
-## ======================== ##
+## ===================== ##
+##   ARGUMENT PARSING    ##
+## ===================== ##
 
-if [[ "$1" == "--help" || "$1" == "-h" ]]; then
-    echo "==================================================================="
-    echo "Purpose: Creates a 'cell mark file table' and uses"
-    echo "ChromHMM's BinarizeBam command to binarize bam files."
-    echo "Author: Sam Fletcher"
-    echo "Contact: s.o.fletcher@exeter.ac.uk"
-    echo "Dependencies: Java, ChromHMM"
-    echo "Inputs:"
-    echo "\$1 -> Full (or relative) file path for configuation file directory"
-    echo "\$2 -> Bin size to be used by BinarizeBam command (default: 200)"
-    echo "\$3 -> Sample size used in 3_SubsampleBamFiles.sh"
-    echo "\$4 -> The assembly to use (default: hg19)"
-    echo "==================================================================="
+usage() {
+cat <<EOF
+================================================================================
+4_BinarizeBamFiles.sh
+================================================================================
+Purpose: Creates a 'cell mark file table' and uses ChromHMM's BinarizeBam 
+command to binarize bam files.
+Author: Sam Fletcher
+Contact: s.o.fletcher@exeter.ac.uk
+Dependencies: Java, ChromHMM
+Inputs:
+-c|--config=     -> Full/relative file path for configuation file directory
+-b|--binsize=    -> Bin size to be used by BinarizeBam command (default: 200)
+-s|--samplesize= -> Sample size used in 3_SubsampleBamFiles.sh
+-a|--assembly=   -> The assembly to use (default: hg19)
+================================================================================
+EOF
     exit 0
-fi
+}
+
+needs_argument() {
+    # Required check in case user uses -a -b or -b -a (no argument given).
+    if [[ -z "$OPTARG" || "${OPTARG:0:1}" == - ]]; then usage; fi
+}
+
+while getopts f:c:-: OPT; do
+    # Adds support for long options by reformulating OPT and OPTARG
+    # This assumes that long options are in the form: "--long=option"
+    if [ "$OPT" = "-" ]; then
+        OPT="${OPTARG%%=*}"
+        OPTARG="${OPTARG#"$OPT"}"
+        OPTARG="${OPTARG#=}"
+    fi
+    case "$OPT" in
+        c | config )       needs_argument; configuration_directory="$OPTARG" ;;
+        b | binsize )      needs_argument; bin_size="$OPTARG" ;;
+        s | samplesize )   needs_argument; sample_size="$OPTARG" ;;
+        a | assembly )     needs_argument; assembly="$OPTARG" ;;
+        \? )               usage ;;  # Illegal short options are caught by getopts
+        * )                usage ;;  # bad long option
+    esac
+done
+shift $((OPTIND-1))
 
 ## ============ ##
 ##    SET UP    ##
 ## ============ ##
-
-# Configuration files are required for file paths and log file management
-configuration_directory=$1
 
 source "${configuration_directory}/FilePaths.txt" || \
 { echo "The configuration file does not exist in the specified location: \
@@ -104,10 +129,6 @@ mv "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 ## =============== ##
 ##    VARIABLES    ##
 ## =============== ##
-
-bin_size=$2
-sample_size=$3
-assembly=$4
 
 ## ====== DEFAULTS ====================================================================
 if ! [[ "${bin_size}" =~ ^[0-9]+$ ]]; then
