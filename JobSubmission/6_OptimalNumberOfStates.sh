@@ -51,7 +51,9 @@
 ## DEPENDENCIES: R                                                            ||
 ## ===========================================================================##
 ## INPUTS:                                                                    ||
-## -c|--config= -> Full/relative file path for configuation file directory    ||
+## -c|--config=     -> Full/relative file path for configuation file directory||
+## -h|--chromosome= -> The chromosome to look at the isolation score for      ||
+##                     (default:1)                                            ||
 ## ===========================================================================##
 ## OUTPUTS:                                                                   ||
 ## File containing why models with too many states were rejected              ||
@@ -69,16 +71,18 @@
 
 usage() {
 cat <<EOF
-=======================================================================
+===========================================================================
 6_OptimalNumberOfStates
-=======================================================================
+===========================================================================
 Purpose: Determines the optimum number of states to use with the data.
 Author: Sam Fletcher
 Contact: s.o.fletcher@exeter.ac.uk
 Dependencies: R
 Inputs:
--c|--config= -> Full/relative file path for configuation file directory
-=======================================================================
+-c|--config=     -> Full/relative file path for configuation file directory
+-h|--chromosome= -> The chromosome to look at the isolation score for 
+                    (default:1)
+===========================================================================
 EOF
     exit 0
 }
@@ -88,7 +92,7 @@ needs_argument() {
     if [[ -z "$OPTARG" || "${OPTARG:0:1}" == - ]]; then usage; fi
 }
 
-while getopts c:-: OPT; do
+while getopts c:h:-: OPT; do
     # Adds support for long options by reformulating OPT and OPTARG
     # This assumes that long options are in the form: "--long=option"
     if [ "$OPT" = "-" ]; then
@@ -97,9 +101,10 @@ while getopts c:-: OPT; do
         OPTARG="${OPTARG#=}"
     fi
     case "$OPT" in
-        c | config )  needs_argument; configuration_directory="$OPTARG" ;;
-        \? )          usage ;;  # Illegal short options are caught by getopts
-        * )           usage ;;  # Illegal long option
+        c | config )     needs_argument; configuration_directory="$OPTARG" ;;
+        h | chromosome)  needs_argument; chromosome_identifier="$OPTARG" ;;
+        \? )             usage ;;  # Illegal short options are caught by getopts
+        * )              usage ;;  # Illegal long option
     esac
 done
 shift $((OPTIND-1))
@@ -134,7 +139,6 @@ source "${configuration_directory}/LogFileManagement.sh" || \
 location: ${configuration_directory}"; exit 1; }
 
 
-
 # Output and error files renamed to:
 # [job id]~[date]-[time]
 
@@ -147,6 +151,12 @@ mv "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 ## =============== ##
 ##    VARIABLES    ##
 ## =============== ##
+
+if [[ -z "${chromosome_identifier}" ]]; then
+    chromosome_identifier=1
+    echo "No chromosome identifier was given, using the default value of:" \
+    "${chromosome_identifier} instead."
+fi
 
 # Set bin/sample size by searching through the model directory
 cd "${MODEL_DIR}" || \
@@ -216,8 +226,20 @@ for model_number in ${model_sizes}; do
 
     # State assignments are named:
     # CellType_SampleSize_BinSize_ModelSize_Chromosome_statebyline.txt
-    # We only want chromosome 1 as it is the largest chromosome 
-    state_assignment_file=$(find "${MODEL_DIR}" -name "*_${model_number}_chr1_*")
+
+    # We only look at one chromosome as the decision of how to handle the
+    # following case is rather arbitrary (see wiki): 
+    # "A state is not assigned on one chromosome but has dense assignment
+    # on another"
+    state_assignment_file=$(\
+    find "${MODEL_DIR}" -name "*_${model_number}_chr${chromosome_identifier}_*" \
+    )
+
+    if [[ -z "$state_assignment_file" ]]; then
+        { >&2 echo "ERROR: No state assignment file found for chromosome:" \
+        "${chromosome_identifier}, please check ${MODEL_DIR}/STATEBYLINE for" \
+        "the existence of this state assignment file"; finishing_statement 1; }
+    fi
 
     # IsolationScores.R is ran with a sample size of 100% 
     # (all data is considered) because the slow down is not that significant 
