@@ -66,7 +66,7 @@ EOF
 }
 
 needs_argurment() {
-    # Required check in case user uses -c -f or -f -c (no argument given).
+    # Required check in case user uses -a -b or -b -a (no argument given).
     if [[ -z "$OPTARG" || "${OPTARG:0:1}" == - ]]; then usage; fi
 }
 
