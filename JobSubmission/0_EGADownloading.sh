@@ -65,7 +65,7 @@ EOF
     exit 0
 }
 
-needs_argurment() {
+needs_argument() {
     # Required check in case user uses -a -b or -b -a (no argument given).
     if [[ -z "$OPTARG" || "${OPTARG:0:1}" == - ]]; then usage; fi
 }
@@ -79,8 +79,8 @@ while getopts f:c:-: OPT; do
     OPTARG="${OPTARG#=}"
   fi
   case "$OPT" in
-    c | config )  needs_argurment; configuration_directory="$OPTARG" ;;
-    f | file )    needs_argurment; text_file_containing_inodes="$OPTARG" ;;
+    c | config )  needs_argument; configuration_directory="$OPTARG" ;;
+    f | file )    needs_argument; text_file_containing_inodes="$OPTARG" ;;
     \? )          usage ;;  # Illegal short options are caught by getopts
     * )           usage ;;  # bad long option
   esac
