@@ -36,11 +36,11 @@
 ## DEPENDENCIES: R                                                                  ||
 ## =================================================================================##
 ## INPUTS:                                                                          ||
-## $1 -> Full (or relative) file path for configuation file directory               ||
-## $2 -> Size of model (default: 20)                                                ||
-## $3 -> Random seed (default: 1)                                                   ||
-## $4 -> Path to directory containing the model files                               ||
-##       (default: \${BIG_MODELS_DIR} in FilePaths.txt)                             ||
+## -c|--config= -> Full/relative file path for configuation file directory          
+## -n|--size=   -> Size of model (default: 20)
+## -s|--seed=   -> Random seed (default: 1)
+## -o|--output  -> Path to directory containing the model files
+##                 (default: \${BIG_MODELS_DIR} in FilePaths.txt)
 ## =================================================================================##
 ## OUTPUTS:                                                                         ||
 ## Histogram plot of Euclidean distances between emission parameters of pairs       ||
@@ -48,32 +48,58 @@
 ## A scatter plot of the maximum transition probabilitites towards each state.      ||
 ## =================================================================================##
 
-## ======================== ##
-##    HELP FUNCTIONALITY    ##
-## ======================== ##
+## ===================== ##
+##   ARGUMENT PARSING    ##
+## ===================== ##
 
-if [[ "$1" == "--help" || "$1" == "-h" ]]; then
-    echo "======================================================================="
-    echo "Purpose: Generates plots to aid in thresholds used in config.R which"
-    echo "are used in 6_OptimumNumberOfStates.sh in determining redundant states."
-    echo "Author: Sam Fletcher"
-    echo "Contact: s.o.fletcher@exeter.ac.uk"
-    echo "Dependencies: R"
-    echo "Inputs:"
-    echo "\$1 -> Full (or relative) file path for configuation file directory"
-    echo "\$2 -> Size of model (default: 20)"
-    echo "\$3 -> Random seed (default: 1)"
-    echo "\$4 -> Path to directory containing the model files"
-    echo "       (default: \${BIG_MODELS_DIR} in FilePaths.txt)"
-    echo "======================================================================="
+usage() {
+cat <<EOF
+=======================================================================
+CompareModels
+=======================================================================
+Purpose: Generates plots to aid in thresholds used in config.R which
+are used in 6_OptimumNumberOfStates.sh in determining redundant states.
+Author: Sam Fletcher
+Contact: s.o.fletcher@exeter.ac.uk
+Dependencies: R
+Inputs:
+-c|--config= -> Full/relative file path for configuation file directory
+-n|--size=   -> Size of model (default: 20)
+-s|--seed=   -> Random seed (default: 1)
+-o|--output  -> Path to directory containing the model files
+                (default: \${BIG_MODELS_DIR} in FilePaths.txt)
+=======================================================================
+EOF
     exit 0
-fi
+}
+
+needs_argument() {
+    # Required check in case user uses -a -b or -b -a (no argument given).
+    if [[ -z "$OPTARG" || "${OPTARG:0:1}" == - ]]; then usage; fi
+}
+
+while getopts c:n:s:o:-: OPT; do
+    # Adds support for long options by reformulating OPT and OPTARG
+    # This assumes that long options are in the form: "--long=option"
+    if [ "$OPT" = "-" ]; then
+        OPT="${OPTARG%%=*}"
+        OPTARG="${OPTARG#"$OPT"}"
+        OPTARG="${OPTARG#=}"
+    fi
+    case "$OPT" in
+        c | config )  needs_argument; configuration_directory="$OPTARG" ;;
+        n | size )    needs_argument; model_size="$OPTARG" ;;
+        s | seed )    needs_argument; seed="$OPTARG" ;;
+        o | ouput )   needs_argument; model_file_dir="$OPTARG" ;;
+        \? )          usage ;;  # Illegal short options are caught by getopts
+        * )           usage ;;  # Illegal long option
+    esac
+done
+shift $((OPTIND-1))
 
 ## ============ ##
 ##    SET UP    ##
 ## ============ ##
-
-configuration_directory=$1
 
 source "${configuration_directory}/FilePaths.txt" || \
 { echo "The configuration file does not exist in the specified location: \
@@ -109,10 +135,6 @@ mv "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 ## =============== ##
 ##    VARIABLES    ##
 ## =============== ##
-
-model_size=$2
-seed=$3
-model_file_dir=$4
 
 ## ====== DEFAULTS ====================================================================
 if [[ -z "$model_file_dir" ]]; then
