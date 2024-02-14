@@ -23,34 +23,35 @@
 #SBATCH --error=temp%A_%a.err
 #SBATCH --job-name=2_Processing
 
-## =================================================================================##
-##                                                                                  ||
-##                                     PREAMBLE                                     ||
-##                                                                                  ||
-## =================================================================================##
-## PURPOSE:                                                                         ||
-## 1_RawBamFiles contains .bam files for each epigentic mark, however these have    ||
-## yet to be processed, they still contain duplicates, multimapped fragments and    ||
-## low quality reads. This script processes the bam files.                          ||
-## =================================================================================##
-## AUTHOR: Sam Fletcher                                                             ||
-## CONTACT: s.o.fletcher@exeter.ac.uk                                               ||
-## CREATED: November 2023                                                           ||
-## =================================================================================##
-## PREREQUISITES: All .bam files for a specific epigenetic mark must be in 1 folder ||
-## =================================================================================##
-## DEPENDENCIES: Samtools                                                           ||
-## =================================================================================##
-## INPUTS:                                                                          ||
-## -c|--config= -> Full/relative file path for configuation file directory          ||
-## -m|--mark=   -> Epigenetic mark name                                             ||
-## -p|--phred=  -> Phred score threshold value (default: 20)                        ||
-## =================================================================================##
-## OUTPUTS:                                                                         ||
-## Processed .bam files                                                             ||
-## Index files for raw .bam files and processed .bam files                          ||
-## Per chromosome stats and general stats for raw and processed .bam files          ||
-## =================================================================================##
+## ===========================================================================##
+##                                                                            ||
+##                                  PREAMBLE                                  ||
+##                                                                            ||
+## ===========================================================================##
+## PURPOSE:                                                                   ||
+## 1_RawBamFiles contains .bam files for each epigentic mark, however these   ||
+## have yet to be processed, they still contain duplicates, multimapped       ||
+## fragments and low quality reads. This script processes the bam files.      ||
+## ===========================================================================##
+## AUTHOR: Sam Fletcher                                                       ||
+## CONTACT: s.o.fletcher@exeter.ac.uk                                         ||
+## CREATED: November 2023                                                     ||
+## ===========================================================================##
+## PREREQUISITES: All .bam files for a specific epigenetic mark must be       ||
+## in a single folder (with name "epigenetic mark name")                      ||
+## ===========================================================================##
+## DEPENDENCIES: Samtools                                                     ||
+## ===========================================================================##
+## INPUTS:                                                                    ||
+## -c|--config= -> Full/relative file path for configuation file directory    ||
+## -m|--mark=   -> Epigenetic mark name                                       ||
+## -p|--phred=  -> Phred score threshold value (default: 20)                  ||
+## ===========================================================================##
+## OUTPUTS:                                                                   ||
+## Processed .bam files                                                       ||
+## Index files for raw .bam files and processed .bam files                    ||
+## Per chromosome stats and general stats for raw and processed .bam files    ||
+## ===========================================================================##
 
 ## ===================== ##
 ##   ARGUMENT PARSING    ##
@@ -174,8 +175,9 @@ rm ./*
 total_number_of_files=$(echo "${list_of_files}" | wc -w)
 
 # In the event that the number of files is not a multiple of the array size some
-# files won't be processed if each array element processes the same number of files.
-# The remaining files are processed in the highest indexed array using logic below.
+# files won't be processed if each array element processes the same number of 
+# files. The remaining files are processed in the highest indexed array
+# using the modular arithmetic logic below.
 
 number_files_for_each_array=$((total_number_of_files / SLURM_ARRAY_TASK_MAX))
 start_file_index=$((SLURM_ARRAY_TASK_ID * number_files_for_each_array))
@@ -205,12 +207,13 @@ module purge
 module load SAMtools
 
 # The processing is split into 4 steps:
-# 1) Create an index file, an index stats file and a stats file for the original files
+# 1) Create an index, index stats and samtools stats file for the original files
 # 2) Sort the .bam files and remove reads with a phred score that is below
-#    $minimum_tolerated_phred_score [Note that blueprint files have already processed 
-#    to remove reads with phred score below 15]   
+#    $minimum_tolerated_phred_score [Note: blueprint files have already been
+#    processed to remove reads with phred score below 15]   
 # 3) Delete intermediate files
-# 4) Create an index file, an index stats file and a stats file for the processed files
+# 4) Create an index, index stats and samtools stats file for the 
+#    processed files
 
 for file in ${files_to_process}; do
     echo "Processing ${file}..."
@@ -239,8 +242,11 @@ for file in ${files_to_process}; do
 
     # Need to use the -h option here to keep the headers 
     # so that the next samtools view can function properly
-    samtools view -q "${minimum_tolerated_phred_score}" -h "${base_name}.sorted.bam" | \
+    samtools view \
+    -q "${minimum_tolerated_phred_score}" \
+    -h "${base_name}.sorted.bam" | \
     samtools sort /dev/stdin -o "${base_name}.sorted.filtered.bam"
+
     if (( PIPESTATUS[0] != 0 || PIPESTATUS[1] != 0 )); then 
         { >&2 echo "Filtering failed for ${file}."; }
         success=1
@@ -248,8 +254,10 @@ for file in ${files_to_process}; do
 
     # The -h option here it to ensure the idxstats can be completed in step 4.  
     # The -F 1796 exludes reads with the following flags: 
-    # a) unmapped reads b) non-primary alignment reads 
-    # c) Reads that fail PCR/vendor checks d) Reads that are PCR/optical duplicates
+    # a) unmapped reads 
+    # b) non-primary alignment reads 
+    # c) Reads that fail PCR/vendor checks 
+    # d) Reads that are PCR/optical duplicates
     samtools view -F 1796 -h "${base_name}.sorted.filtered.bam" > \
     "${base_name}.sorted.filtered.noDuplicates.bam"
     if [[ $? == 1 ]]; then 
