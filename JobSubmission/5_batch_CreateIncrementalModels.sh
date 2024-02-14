@@ -100,7 +100,7 @@ needs_argument() {
     if [[ -z "$OPTARG" || "${OPTARG:0:1}" == - ]]; then usage; fi
 }
 
-while getopts f:c:-: OPT; do
+while getopts c:n:i:b:s:a:-: OPT; do
     # Adds support for long options by reformulating OPT and OPTARG
     # This assumes that long options are in the form: "--long=option"
     if [ "$OPT" = "-" ]; then
