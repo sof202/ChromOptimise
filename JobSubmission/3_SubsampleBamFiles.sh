@@ -40,39 +40,62 @@
 ## DEPENDENCIES: Samtools                                                           ||
 ## =================================================================================##
 ## INPUTS:                                                                          ||
-## $1 -> Full (or relative) file path for configuation file directory               ||
-## $2 -> Epigenetic mark to process                                                 ||
-## $3 -> Sample size as a percentage (default : 50)                                 ||
+## -c|--config= -> Full (or relative) file path for configuation file directory     ||
+## -m|--mark= -> Epigenetic mark to process                                         ||
+## -s|--samplesize= -> Sample size as a percentage (default : 50)                   ||
 ## =================================================================================##
 ## OUTPUTS:                                                                         ||
 ## Subsampled .bam files                                                            ||
 ## =================================================================================##
 
-## ======================== ##
-##    HELP FUNCTIONALITY    ##
-## ======================== ##
+## ===================== ##
+##   ARGUMENT PARSING    ##
+## ===================== ##
 
-if [[ "$1" == "--help" || "$1" == "-h" ]]; then
-    echo "==================================================================="
-    echo "Purpose: Merges and subsamples processed .bam files."
-    echo "present in specified folder"
-    echo "Author: Sam Fletcher"
-    echo "Contact: s.o.fletcher@exeter.ac.uk"
-    echo "Dependencies: Samtools"
-    echo "Inputs:"
-    echo "\$1 -> Full (or relative) file path for configuation file directory"
-    echo "\$2 -> Name of epigenetic mark"
-    echo "\$3 -> Sample size as a percentage (default : 50)"
-    echo "==================================================================="
+usage() {
+cat <<EOF
+================================================================================
+3_SubsampleBamFiles.sh
+================================================================================
+Purpose: Merges and subsamples processed .bam files present in specified folder.
+Author: Sam Fletcher
+Contact: s.o.fletcher@exeter.ac.uk
+Dependencies: Samtools
+Inputs:
+-c|--config=     -> Full/relative file path for configuation file directory
+-m|--mark=       -> Epigenetic mark to process
+-s|--samplesize= -> Sample size as a percentage (default : 50) 
+================================================================================
+EOF
     exit 0
-fi
+}
+
+needs_argument() {
+    # Required check in case user uses -a -b or -b -a (no argument given).
+    if [[ -z "$OPTARG" || "${OPTARG:0:1}" == - ]]; then usage; fi
+}
+
+while getopts f:c:-: OPT; do
+    # Adds support for long options by reformulating OPT and OPTARG
+    # This assumes that long options are in the form: "--long=option"
+    if [ "$OPT" = "-" ]; then
+        OPT="${OPTARG%%=*}"
+        OPTARG="${OPTARG#"$OPT"}"
+        OPTARG="${OPTARG#=}"
+    fi
+    case "$OPT" in
+        c | config )       needs_argument; configuration_directory="$OPTARG" ;;
+        m | mark )         needs_argument; mark_name="$OPTARG" ;;
+        s | samplesize )   needs_argument; sample_size="$OPTARG" ;;
+        \? )               usage ;;  # Illegal short options are caught by getopts
+        * )                usage ;;  # bad long option
+    esac
+done
+shift $((OPTIND-1))
 
 ## ============ ##
 ##    SET UP    ##
 ## ============ ##
-
-# Configuration files are required for file paths and log file management
-configuration_directory=$1
 
 source "${configuration_directory}/FilePaths.txt" || \
 { echo "The configuration file does not exist in the specified location: \
@@ -105,8 +128,6 @@ mv "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 ##    VARIABLES    ##
 ## =============== ##
 
-mark_name=$2
-sample_size=$3
 PROCESSED_FULL_FILE_PATH="${PROCESSED_DIR}/${mark_name}"
 
 if [[ -z "${mark_name}" ]]; then
