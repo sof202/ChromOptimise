@@ -24,47 +24,50 @@
 #SBATCH --error=temp%A_%a.err
 #SBATCH --job-name=5_Model_Learning
 
-## =================================================================================##
-##                                                                                  ||
-##                                     PREAMBLE                                     ||
-##                                                                                  ||
-## =================================================================================##
-## PURPOSE:                                                                         ||
-## Uses ChromHMM's LearnModel command to generate models with increasing numbers of ||
-## states. The idea here is to increment the number of states in the hidden Markov  ||
-## model so that they can later be compared when testing for redundant states,      ||
-## allowing for an 'intelligent' choice for the number of states in the model.      ||
-##                                                                                  ||
-## IMPORTANT NOTE: The number of states in any one model cannot exceed 2^k, where   ||
-## k is the number of marks in the binary files. This is because the 'information'  ||
-## method is being used by ChromHMM's LearnModel command for reproducability. This  ||
-## 2^k limit is a hard cap, but depending on the data, a smaller soft cap may       ||
-## exist. ChromHMM outputs the maximum number of states allowed if the cap is       ||
-## exceeded, check the error logs for this message.                                 ||
-## =================================================================================##
-## AUTHOR: Sam Fletcher                                                             ||
-## CONTACT: s.o.fletcher@exeter.ac.uk                                               ||
-## CREATED: November 2023                                                           ||
-## =================================================================================##
-## PREREQUISITES: Run 4_BinarizeBamFiles.sh                                         ||
-## =================================================================================##
-## DEPENDENCIES: Java, ChromHMM                                                     ||
-## =================================================================================##
-## INPUTS:                                                                          ||
-## -c|--config=     -> Full/relative file path for configuation file directory      ||
-## -n|--nummodels=  -> Number of models to learn (default: 4)                       ||
-## -i|--increment=  -> The increment to use between model sizes (default: 1)        ||
-## -b|--binsize=    -> The bin size used in 4_BinarizeBamFiles                      ||
-## -s|--samplesize= -> The sample size used in 3_SubsampleBamFiles                  ||
-## -a|--assembly=   -> The assembly to use (default: hg19)                          ||
-## =================================================================================##
-## OUTPUTS:                                                                         ||
-## Emission parameter matrix for models (.png, .txt and .svg)                       ||
-## Transition parameter matrix for models (.png, .txt and .svg)                     ||
-## Full model files                                                                 ||
-## The overlap and fold enrichment with existing genomic annotations for models     ||
-## The maximum achieved estimated log likelihood achieved by each model             ||
-## =================================================================================##
+## ===========================================================================##
+##                                                                            ||
+##                                  PREAMBLE                                  ||
+##                                                                            ||
+## ===========================================================================##
+## PURPOSE:                                                                   ||
+## Uses ChromHMM's LearnModel command to generate models with increasing      ||
+## numbers of states. The idea here is to increment the number of states in   ||
+## the HMM so that they can later be compared when testing for redundant      ||
+## states, allowing for an 'intelligent' choice for the number of states in   ||
+## the model.                                                                 ||
+##                                                                            ||
+## IMPORTANT NOTE: The number of states in any one model cannot exceed 2^k,   ||
+## where k is the number of marks in the binary files. This is because the    ||
+## 'information' method is being used by ChromHMM's LearnModel command for    ||
+## reproducability. This 2^k limit is a hard cap, but depending on the data,  ||
+## a smaller soft cap may exist.                                              ||
+## ChromHMM outputs the maximum number of states allowed if the cap is        ||
+## exceeded, check the error logs for this message.                           ||
+## ===========================================================================##
+## AUTHOR: Sam Fletcher                                                       ||
+## CONTACT: s.o.fletcher@exeter.ac.uk                                         ||
+## CREATED: November 2023                                                     ||
+## ===========================================================================##
+## PREREQUISITES: Run 4_BinarizeBamFiles.sh                                   ||
+## ===========================================================================##
+## DEPENDENCIES: Java, ChromHMM                                               ||
+## ===========================================================================##
+## INPUTS:                                                                    ||
+## -c|--config=     -> Full/relative file path for configuation file directory||
+## -n|--nummodels=  -> Number of models to learn (default: 4)                 ||
+## -i|--increment=  -> The increment to use between model sizes (default: 1)  ||
+## -b|--binsize=    -> The bin size used in 4_BinarizeBamFiles                ||
+## -s|--samplesize= -> The sample size used in 3_SubsampleBamFiles            ||
+## -a|--assembly=   -> The assembly to use (default: hg19)                    ||
+## ===========================================================================##
+## OUTPUTS:                                                                   ||
+## Emission parameter matrix for models (.png, .txt and .svg)                 ||
+## Transition parameter matrix for models (.png, .txt and .svg)               ||
+## Full model files                                                           ||
+## The overlap and fold enrichment with existing genomic annotations for      ||
+##   models                                                                   ||
+## The maximum achieved estimated log likelihood achieved by each model       ||
+## ===========================================================================##
 
 ## ===================== ##
 ##   ARGUMENT PARSING    ##
@@ -73,7 +76,7 @@
 usage() {
 cat <<EOF
 ===========================================================================
-4_BinarizeBamFiles.sh
+5_batch_CreateIncrementalModels.sh
 ===========================================================================
 Purpose: Uses ChromHMM's LearnModel command to generate several models
 with increasing numbers of states.
@@ -153,7 +156,7 @@ mv "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err" \
 ##    VARIABLES    ##
 ## =============== ##
 
-## ====== DEFAULTS ====================================================================
+## ====== DEFAULTS =============================================================
 if ! [[ "${number_of_models_to_generate}" =~ ^[0-9]+$ ]]; then
     number_of_models_to_generate=4
     echo "Value for 'number of models to generate' is invalid."
@@ -188,9 +191,10 @@ fi
 
 if [[ -z "${assembly}" ]]; then
     assembly=hg19
-    echo "No assembly was given, using the default value of ${assembly} instead."
+    echo "No assembly was given, using the default value of" \
+    "${assembly} instead."
 fi
-# =====================================================================================
+# ==============================================================================
 
 ## =============================== ##
 ##   CLEAN UP AND ERROR CATCHING   ##
@@ -221,8 +225,8 @@ rm -f ./*
 number_of_models_per_array=$((number_of_models_to_generate / SLURM_ARRAY_TASK_COUNT))
 remainder=$((number_of_models_to_generate % SLURM_ARRAY_TASK_COUNT))
 
-# If the number of models to be generated isn't a multiple of the size of the array,
-# the array with the smallest id will learn the left over smaller models
+# If the number of models to be generated isn't a multiple of the size of the
+# array, the array with the smallest id will learn the left over smaller models
 # (spreading the larger models evenly across the other array elements).
 if [[ "${SLURM_ARRAY_TASK_ID}" -eq 1 ]]; then
     starting_number_of_states=2
@@ -266,6 +270,7 @@ echo "Learning models using a bin size of ${bin_size}..."
 # Main loop
 for numstates in ${sequence}; do
     echo "Learning model with: ${numstates} states..."
+
     # -noautoopen used so html files are not opened after model learning finshes.
     # -nobed used as genome browser files and segmentation files are not required.
     # -printstatebyline used to get the state assignment for isolation metrics
