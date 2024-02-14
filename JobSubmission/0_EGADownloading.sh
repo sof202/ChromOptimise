@@ -37,8 +37,8 @@
 ## Pyega3 conda environment                                                   ||
 ## ===========================================================================##
 ## INPUTS:                                                                    ||
-## -c|--config -> Full/relative file path for configuation file directory     ||
-## -f|--file -> File of file names to download from EGA.                      ||
+## -c|--config= -> Full/relative file path for configuation file directory    ||
+## -f|--file=   -> File of file names to download from EGA.                   ||
 ## ===========================================================================##
 ## OUTPUTS:                                                                   ||
 ## NONE                                                                       ||
