@@ -152,7 +152,7 @@ bin_indices_sample <- mapply(subsample_target_bins, states, samples)
 isolation_scores <- unlist(lapply(bin_indices_sample, get_isolation_score))
 
 isolation_scores_output <-
-  data.frame(states = states, isolation_scores = isolation_scores)
+  data.frame(state = states, isolation_score = isolation_scores)
 
 # This is purely so that the output text file is easier to read
 sorted_isolation_scores <-
