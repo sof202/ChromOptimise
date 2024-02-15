@@ -9,6 +9,12 @@ LogFileManagement.sh
 # Ignore vscode project settings
 .vscode
 
+# Ignore R studio related files
+*.Rhistory
+*.Rdat
+*.Rproj
+
+
 # Dependencies
 documentation/node_modules
 
