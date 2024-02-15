@@ -166,6 +166,6 @@ setwd(output_file_path)
 
 output_file_name <- paste0("Isolation_Scores_model-",model_size,".txt")
 
-write.table(flanking_states_table,
+write.table(sorted_isolation_scores,
             output_file_name,
             row.names = FALSE)
