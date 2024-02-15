@@ -164,6 +164,12 @@ cd "${MODEL_DIR}" || \
 make sure FilePaths.txt is pointing to the correct directory."
 finishing_statement 1; }
 
+if [[ -z "$(ls -A)" ]]; then
+    { >&2 echo -e "ERROR: No files found in [\${MODEL_DIR} - ${MODEL_DIR}].\n"\
+    "Please run 5_CreateIncrementalModels.sh before this script."
+    finishing_statement 1; }
+fi
+
 # Specifically we want to find the bin and sample size from the emissions
 # or transitions files (and not the model or statebyline files)
 # Hence we look for text files that have the word 'states' in them
@@ -172,27 +178,9 @@ finishing_statement 1; }
 bin_size=$(find . -type f -name "*States*.txt" | head -1 | cut -d "_" -f 3)
 sample_size=$(find . -type f -name "*States*.txt" | head -1 | cut -d "_" -f 5)
 
-## =================== ##
-##   FILE MANAGEMENT   ##
-## =================== ##
-
-if [[ -z "$(ls -A)" ]]; then
-    { >&2 echo -e "ERROR: No files found in [\${MODEL_DIR} - ${MODEL_DIR}].\n"\
-    "Please run 5_CreateIncrementalModels.sh before this script."
-    finishing_statement 1; }
-fi
-
-mkdir -p "${OPTIMUM_STATES_DIR}/temp"
-cd "${OPTIMUM_STATES_DIR}/temp" || finishing_statement 1
-
-# Although we delete the temporary directory later, we still remove the contents
-# of the directory in case a previous job was cancelled/halted early.
-rm -f ./*
-
-cd "${MODEL_DIR}" || \
-{ >&2 echo "ERROR: [\${MODEL_DIR} - ${MODEL_DIR}] doesn't exist, \
-make sure FilePaths.txt is pointing to the correct directory."
-finishing_statement 1; }
+## =============== ##
+##    MAIN LOOP    ##
+## =============== ##
 
 # Using the emission files here for the model numbers is arbitrary, model
 # or transition files could have been used just the same.
@@ -203,9 +191,12 @@ find . -type f -name "emissions*.txt" | \
 grep -oP "\d+(?=.txt)" | \
 sort -gr)
 
-## =============== ##
-##    MAIN LOOP    ##
-## =============== ##
+
+output_directory="${OPTIMUM_STATES_DIR}\
+/BinSize_${bin_size}_SampleSize_${sample_size}_MaxModelSize_${model_number}"
+
+mkdir -p "${output_directory}"
+rm -f "${output_directory}"/*
 
 module purge
 module load R/4.2.1-foss-2022a
@@ -215,15 +206,7 @@ cd "${RSCRIPTS_DIR}" || \
 make sure FilePaths.txt is pointing to the correct directory"
 finishing_statement 1; }
 
-output_directory="${OPTIMUM_STATES_DIR}\
-/BinSize_${bin_size}_SampleSize_${sample_size}_MaxModelSize_${model_number}"
-
-mkdir -p "${output_directory}"
-rm -f "${output_directory}"/*
-
 for model_number in ${model_sizes}; do
-    echo "Running IsolationScores.R for: ${model_number} states..."
-
     # State assignments are named:
     # CellType_SampleSize_BinSize_ModelSize_Chromosome_statebyline.txt
 
@@ -235,6 +218,15 @@ for model_number in ${model_sizes}; do
     find "${MODEL_DIR}" -name "*_${model_number}_chr${chromosome_identifier}_*" \
     )
 
+    emissions_file=$(\
+    find "${MODEL_DIR}" -name "emissions*${model_number}.txt*" \
+    )
+    transitions_file=$(\
+    find "${MODEL_DIR}" -name "transitions*${model_number}.txt*" \
+    )
+
+    # The existence of this file (provided the user doesn't delete them)
+    # implies the existence of the emissions and transistions files.
     if [[ -z "$state_assignment_file" ]]; then
         { >&2 echo "ERROR: No state assignment file found for chromosome:" \
         "${chromosome_identifier}, please check ${MODEL_DIR}/STATEBYLINE for" \
@@ -242,35 +234,52 @@ for model_number in ${model_sizes}; do
     fi
 
     # IsolationScores.R is ran with a sample size of 100% 
-    # (all data is considered) because the slow down is not that significant 
+    # (all data is considered) because the slow down is not that significant
+    echo "Running IsolationScores.R for: ${model_number} states..."
+
     Rscript IsolationScores.R "${configuration_directory}/config.R" \
-    "${state_assignment_file}" "${output_directory}" 100 
+    "${state_assignment_file}" \
+    "${output_directory}/Isolation_scores" \
+    100 
+
+
+    echo "Running SimilarEmssions.R for: ${model_number} states..."
+
+    Rscript SimilarEmssions.R "${configuration_directory}/config.R" \
+    "${emissions_file}" \
+    "${model_number}" \
+    "${output_directory}/Euclidean_distances"
+
+
+    echo "Running FlankingStates.R for: ${model_number} states..."
+
+    Rscript FlankingStates.R "${configuration_directory}/config.R" \
+    "${transitions_file}" \
+    "${model_number}" \
+    "${output_directory}/Flanking_states"
+
 
     echo "Running RedundantStateChecker.R for: ${model_number} states..."
 
     Rscript RedundantStateChecker.R "${configuration_directory}/config.R" \
-    "${model_number}" "${bin_size}" "${sample_size}" "${output_directory}"
+    "${model_number}" \
+    "${output_directory}"
 
     redundant_states_found=$(tail -1 \
-    "${output_directory}/Redundant_States_Modelsize_${model_number}.txt")
+    "${output_directory}/Redundant_states_model-${model_number}.txt")
 
     if [[ "${redundant_states_found}" == "NONE" ]]; then
         echo "Model with ${model_number} states has no redundant states." >> \
         "${output_directory}/OptimumNumberOfStates.txt"
         break
     else
-        rm -f "${OPTIMUM_STATES_DIR}"/temp/*"${model_number}".txt
-        
-        echo -n "Model with ${model_number} states has redundant states: " >> \
+        echo -n "Model with ${model_number} states has redundant state(s):" >> \
         "${output_directory}/OptimumNumberOfStates.txt"
         
         echo "${redundant_states_found}" >> \
         "${output_directory}/OptimumNumberOfStates.txt"
     fi
 done
-
-rm -r "${OPTIMUM_STATES_DIR}/temp"
-rm "${output_directory}/Isolation_Scores.txt"
 
 ## ========================= ##
 ##   OPTIMUM STATES CHECK    ##
