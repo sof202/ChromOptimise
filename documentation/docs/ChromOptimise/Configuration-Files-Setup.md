@@ -115,7 +115,6 @@ emission_plotting_dir=paste0(big_models_dir,"/path/to/plots")
 ## Redundancy parameters
 
 emissions_threshold=VALUE
-transitions_threshold=VALUE
 isolation_threshold=VALUE
 
 ## Number of marks used in analysis
