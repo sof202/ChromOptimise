@@ -82,23 +82,26 @@ isolation_scores <- read.table(isolation_scores_file, header = TRUE)
 # want to know the pairs of states that have the same flanks, not just which
 # states have the same flanks as another state
 find_flanks_pairs <- function(flanking_data, for_output = FALSE) {
-  same_flanks <- data.frame(reference_state = numeric(), comparison_state = numeric())
-  
+  same_flanks <-
+    data.frame(reference_state = numeric(), comparison_state = numeric())
+
   for (reference_state in 1:(nrow(flanking_data) - 1)) {
     for (comparison_state in (reference_state + 1):nrow(flanking_data)) {
       reference_state_flanks <- unlist(flanking_data[reference_state, 2:3])
       comparison_state_flanks <- unlist(flanking_data[comparison_state, 2:3])
 
       if (identical(reference_state_flanks, comparison_state_flanks)) {
-        same_flanks[nrow(same_flanks) + 1, ] <- c(reference_state, comparison_state)
+        same_flanks[nrow(same_flanks) + 1, ] <-
+          c(reference_state, comparison_state)
       }
     }
   }
-  
+
   if (for_output) {
-    same_flanks <- cbind(same_flanks, flanking_data[same_flanks$reference_state, 2:3])
+    same_flanks <-
+      cbind(same_flanks, flanking_data[same_flanks$reference_state, 2:3])
   }
-  
+
   return(same_flanks)
 }
 
@@ -112,13 +115,14 @@ find_flanks_pairs <- function(flanking_data, for_output = FALSE) {
 
 ## Similar emission parameters ##
 low_euclidean_distances <-
-  euclidean_distances[euclidean_distances$euclidean_distance < emissions_threshold, ]
+  euclidean_distances[euclidean_distances$euclidean_distance <
+                      emissions_threshold, ]
 
 similar_state_pairs <- low_euclidean_distances[, 1:2]
 
 # When paired with the isolation score, we only care about whether or not
 # a state exists in a similar state pair (not which one it is a part of)
-states_in_similar_pairs <- 
+states_in_similar_pairs <-
   unique(c(low_euclidean_distances[, 1], low_euclidean_distances[, 2]))
 
 
@@ -126,7 +130,7 @@ states_in_similar_pairs <-
 same_flank_pairs <- find_flanks_pairs(flanking_data)
 
 same_flank_pairs_for_output <-
- find_flanks_pairs(flanking_data, for_output = TRUE)
+  find_flanks_pairs(flanking_data, for_output = TRUE)
 
 ## High isolation scores ##
 # Isolation score will be NA if the state in question was only assigned
@@ -143,7 +147,7 @@ highly_isolated_states <- highly_isolated_states_data$state
 unassigned_states <- setdiff((1:model_size), isolation_scores$state)
 isolated_states <- append(highly_isolated_states, unassigned_states)
 
-# States are assigned NA in IsolationScores.R if they only appear once in the 
+# States are assigned NA in IsolationScores.R if they only appear once in the
 # state assignment.
 single_assigned_states <-
   isolation_scores$state[is.na(isolation_scores$isolation_score)]
@@ -157,7 +161,7 @@ isolated_states <- append(isolated_states, single_assigned_states)
 
 ## Accounts for (i) and (ii)(b) being satisfied ##
 
-# Due to the way these two dataframes have been created, the entry in 
+# Due to the way these two dataframes have been created, the entry in
 # reference_state will always be smaller than the one in comparison_state.
 # Therefore, simply merging the two dataframes will find all state pairs
 # that satisfy (i) and (ii)(b) simultaneously.
@@ -167,16 +171,16 @@ redundant_state_candidates <- merge(similar_state_pairs, same_flank_pairs)
 # isolation score (as this state is more likely to be the redundant one).
 # Note that we only care if a model HAS redundant states, not which states are
 # redundant. We could just as easily pick the first state every time.
-redundant_states <- unlist(apply(redundant_state_candidates, 1, function(row){
-  if (isolation_scores$isolation_score[row[1]] > 
-      isolation_scores$isolation_score[row[2]]) {
+redundant_states <- unlist(apply(redundant_state_candidates, 1, function(row) {
+  if (isolation_scores$isolation_score[row[1]] >
+        isolation_scores$isolation_score[row[2]]) {
     return(row[1])
   }
   return(row[2])
 }))
 
 ## Accounts for (i) and (ii)(a) being satisfied ##
-redundant_states <- 
+redundant_states <-
   append(redundant_states, intersect(isolated_states, states_in_similar_pairs))
 
 # Some redundant states might be added multiple times from our criteria
@@ -194,13 +198,13 @@ output_file <- paste0("Redundant_states_model-", model_size, ".txt")
 setwd(output_file_path)
 separator <- "<------------------------------------------------------------>"
 
-write_table_to_output <- function(table){
+write_table_to_output <- function(table) {
   write.table(table, file = output_file, append = TRUE,
               row.names = FALSE, col.names = FALSE)
   write(separator, file = output_file, append = TRUE)
 }
 
-write_text_to_output <- function(text){
+write_text_to_output <- function(text) {
   write(text, file = output_file, append = TRUE)
   write(separator, file = output_file, append = TRUE)
 }

@@ -130,7 +130,8 @@ subsample_target_bins <- function(target_state, sample_percent) {
 
   # We want a representative sample for each state, some states will be
   # assigned to a much larger number of bins than others
-  sample_size <- ceiling(length(bins_with_target_value) * (sample_percent / 100))
+  sample_size <-
+    ceiling(length(bins_with_target_value) * (sample_percent / 100))
 
   if (sample_size > length(bins_with_target_value)) {
     sample_size <- length(bins_with_target_value)
@@ -164,7 +165,7 @@ sorted_isolation_scores <-
 
 setwd(output_file_path)
 
-output_file_name <- paste0("Isolation_Scores_model-",model_size,".txt")
+output_file_name <- paste0("Isolation_Scores_model-", model_size, ".txt")
 
 write.table(sorted_isolation_scores,
             output_file_name,

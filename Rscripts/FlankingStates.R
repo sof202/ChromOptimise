@@ -69,7 +69,7 @@ upstream_flank <- function(transitions_data, state) {
 
   # We don't want to factor in the probability of the upstream bin being
   # the same as the selected state, so we remove this value.
-  state_column_excluding_self <- 
+  state_column_excluding_self <-
     subset(state_column, subset = seq_along(state_column) != state)
 
   # The state that has the maximum probability of transitioning towards
@@ -82,7 +82,7 @@ downstream_flank <- function(transitions_data, state) {
   # to some other state
   state_row <- transitions_data[state, ]
 
-  state_row_excluding_self <- 
+  state_row_excluding_self <-
     subset(state_row, subset = seq_along(state_row) != state)
 
   # The state that has the maximum probability of being transitioned to
@@ -96,13 +96,13 @@ downstream_flank <- function(transitions_data, state) {
 
 list_of_states <- seq_along(1:model_size)
 
-list_of_upstream_flanks <- 
+list_of_upstream_flanks <-
   mapply(upstream_flank, transitions_data, list_of_states)
 
-list_of_downstream_flanks <- 
+list_of_downstream_flanks <-
   mapply(downstream_flank, transitions_data, list_of_states)
 
-flanking_states_table <- 
+flanking_states_table <-
   data.frame(state = list_of_states,
              likeliest_upstream_flank = unlist(list_of_upstream_flanks),
              likeliest_downstream_flank = unlist(list_of_downstream_flanks))
@@ -112,7 +112,8 @@ flanking_states_table <-
 ## =========== ##
 
 setwd(output_file_path)
-output_file_name <- paste0("Likeliest_flanking_states_model-",model_size,".txt")
+output_file_name <-
+  paste0("Likeliest_flanking_states_model-", model_size, ".txt")
 
 write.table(flanking_states_table,
             output_file_name,

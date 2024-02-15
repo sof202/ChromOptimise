@@ -84,7 +84,7 @@ euclidean_distances_table <- calculate_euclidean_distances(emissions_data)
 
 setwd(output_file_path)
 
-output_file_name <- paste0("Euclidean_distances_model-",model_size,".txt")
+output_file_name <- paste0("Euclidean_distances_model-", model_size, ".txt")
 
 write.table(flanking_states_table,
             output_file_name,
