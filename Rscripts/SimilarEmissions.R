@@ -5,8 +5,7 @@
 ## ============================================================== ##
 ## PURPOSE:                                                       ||
 ## This calculates the Euclidean distance between each pair of    ||
-## states in a HMM and flags them as 'similar' if this metric     ||
-## falls below the threshold given in config.R                    ||
+## states in a HMM.                                               ||
 ## ============================================================== ##
 ## AUTHOR: Sam Fletcher                                           ||
 ## CONTACT: s.o.fletcher@exeter.ac.uk                             ||
@@ -22,8 +21,8 @@
 ## $4 -> Directory to place output files into                     ||
 ## ============================================================== ##
 ## OUTPUTS:                                                       ||
-## Text file containing most probable flanking states for each    ||
-## state in the model.                                            ||
+## Text file containing the Euclidean distance between each       ||
+## possible pair of states in the selected model                  ||
 ## ============================================================== ##
 
 ## ========== ##
@@ -45,6 +44,8 @@ setwd(model_dir)
 ##   LOADING FILES   ##
 ## ================= ##
 
+# This is required as ChromHMM writes the file with the state numbers in the
+# first row and column (which is not wanted for this analysis)
 emissions_data <- read.table(emissions_file, skip = 1)
 emissions_data <- subset(emissions_data, select = -V1)
 
@@ -55,11 +56,10 @@ emissions_data <- subset(emissions_data, select = -V1)
 calculate_euclidean_distances <- function(emissions_data) {
   state_pair_distances <- data.frame(reference_state = numeric(),
                                      comparison_state = numeric(),
-                                     euclidan_distance = double())
+                                     euclidean_distance = double())
 
   for (reference_state_index in 1:(model_size - 1)){
     for (comparison_state_index in (reference_state_index + 1):model_size){
-
       reference_state <- as.numeric(emissions_data[reference_state_index, ])
       comparison_state <- as.numeric(emissions_data[comparison_state_index, ])
 

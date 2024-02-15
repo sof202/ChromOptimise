@@ -7,7 +7,7 @@
 ## This calculates the most probable states to flank each         ||
 ## state in a hidden markov model that is not itself. For         ||
 ## example: suppose a bin is assigned state 1, then we are        ||
-## looking at the most likely state assignment for the  next bin  ||
+## looking at the most likely state assignment for the next bin   ||
 ## (up and downstream) of this bin that is not assigned 1.        ||
 ## ============================================================== ##
 ## AUTHOR: Sam Fletcher                                           ||
@@ -49,8 +49,11 @@ setwd(model_dir)
 
 # Instead of looking at state assignment files, it is easier to just look
 # at the transition probability matrix to inspect the most likely upstream
-# or downstream flanking state. This is because they convey the same information
+# or downstream flanking state.
 transitions_data <- read.table(transitions_file, skip = 1)
+
+# This is required as ChromHMM writes the file with the state numbers in the
+# first row and column (which is not wanted for this analysis)
 transitions_data <- subset(transitions_data, select = -V1)
 
 ## ====================== ##
@@ -71,7 +74,7 @@ upstream_flank <- function(transitions_data, state) {
 
   # The state that has the maximum probability of transitioning towards
   # the selected state is our most likely upstream flank
-  return(which(max(state_column_excluding_self) == state_column)
+  return(which(max(state_column_excluding_self) == state_column))
 }
 
 downstream_flank <- function(transitions_data, state) {
@@ -84,7 +87,7 @@ downstream_flank <- function(transitions_data, state) {
 
   # The state that has the maximum probability of being transitioned to
   # from the selected state is our most likely downstream flank
-  return(which(max(state_row_excluding_self) == state_row)
+  return(which(max(state_row_excluding_self) == state_row))
 }
 
 ## ======== ##

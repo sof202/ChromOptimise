@@ -233,16 +233,6 @@ for model_number in ${model_sizes}; do
         "the existence of this state assignment file"; finishing_statement 1; }
     fi
 
-    # IsolationScores.R is ran with a sample size of 100% 
-    # (all data is considered) because the slow down is not that significant
-    echo "Running IsolationScores.R for: ${model_number} states..."
-
-    Rscript IsolationScores.R "${configuration_directory}/config.R" \
-    "${state_assignment_file}" \
-    "${output_directory}/Isolation_scores" \
-    100 
-
-
     echo "Running SimilarEmssions.R for: ${model_number} states..."
 
     Rscript SimilarEmssions.R "${configuration_directory}/config.R" \
@@ -257,6 +247,16 @@ for model_number in ${model_sizes}; do
     "${transitions_file}" \
     "${model_number}" \
     "${output_directory}/Flanking_states"
+
+
+    # IsolationScores.R is ran with a sample size of 100% 
+    # (all data is considered) because the slow down is not that significant
+    echo "Running IsolationScores.R for: ${model_number} states..."
+
+    Rscript IsolationScores.R "${configuration_directory}/config.R" \
+    "${state_assignment_file}" \
+    "${output_directory}/Isolation_scores" \
+    100 
 
 
     echo "Running RedundantStateChecker.R for: ${model_number} states..."
