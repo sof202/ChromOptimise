@@ -10,7 +10,7 @@
 ## ============================================================== ##
 ## AUTHOR: Sam Fletcher                                           ||
 ## CONTACT: s.o.fletcher@exeter.ac.uk                             ||
-## CREATED: January 2022                                          ||
+## CREATED: February 2022                                         ||
 ## ============================================================== ##
 ## PREREQUISITES:                                                 ||
 ## Run 5_batch_CreateIncrementalModels.sh                         ||
