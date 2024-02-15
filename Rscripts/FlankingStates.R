@@ -20,7 +20,8 @@
 ## INPUTS:                                                        ||
 ## $1 -> Location of configuation file                            ||
 ## $2 -> Location of transition matrix file                       ||
-## $3 -> Directory to place output files into                     ||
+## $3 -> Number of states in model                                ||
+## $4 -> Directory to place output files into                     ||
 ## ============================================================== ##
 ## OUTPUTS:                                                       ||
 ## Text file containing most probable flanking states for each    ||
@@ -36,7 +37,8 @@ rm(list = ls())
 arguments <- commandArgs(trailingOnly = TRUE)
 config_file_location <- arguments[1]
 transitions_file <- arguments[2]
-output_file_path <- arguments[3]
+model_size <- as.numeric(arguments[3])
+output_file_path <- arguments[4]
 
 source(config_file_location)
 setwd(model_dir)
