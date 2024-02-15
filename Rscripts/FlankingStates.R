@@ -109,7 +109,8 @@ flanking_states_table <-
 ## =========== ##
 
 setwd(output_file_path)
+output_file_name <- paste0("Likeliest_flanking_states_",model_size,".txt")
 
 write.table(flanking_states_table,
-            "Likeliest_flanking_states.txt",
+            output_file_name,
             row.names = FALSE)
