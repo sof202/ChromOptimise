@@ -137,7 +137,7 @@ create_heatmap <- function(emissions_data) {
 
 
 create_histogram <- function(emissions_data) {
-  eucldiean_distances <- distances_for_plotting(emissions_data)
+  eucldiean_distances <- calculate_euclidean_distances(emissions_data)
   
   euclidean_distance_histogram <- 
     ggplot(eucldiean_distances, aes(x = euclidean_distance)) +
