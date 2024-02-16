@@ -237,15 +237,14 @@ for model_number in ${model_sizes}; do
 
     Rscript SimilarEmssions.R "${configuration_directory}/config.R" \
     "${emissions_file}" \
-    "${model_number}" \
-    "${output_directory}/Euclidean_distances"
+    "${output_directory}/Euclidean_distances" \
+    FALSE
 
 
     echo "Running FlankingStates.R for: ${model_number} states..."
 
     Rscript FlankingStates.R "${configuration_directory}/config.R" \
     "${transitions_file}" \
-    "${model_number}" \
     "${output_directory}/Flanking_states"
 
 
