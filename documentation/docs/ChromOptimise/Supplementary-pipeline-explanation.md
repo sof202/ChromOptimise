@@ -27,7 +27,7 @@ sbatch CompareModels.sh
 
 In [config.R](./Configuration-Files-Setup.md#configr), the user needs to decide upon the threshold parameters used in identifying redundant states in models. It is tempting to pick an arbitrary small number here. However, this small pipeline aids the user in choosing more informed values for these parameters.
 
-For a visual representation of the pipeline, please consult the file: [`Supplementary_Pipeline.pdf`](https://github.com/sof202/ChromOptimise/blob/main/information/Supplementary_Pipeline.pdf)
+For a visual representation of the pipeline, please consult this [schematic representation](/pipelines/Supplementary_Pipeline.pdf).
 
 ### Generate_Big_Model.sh
 

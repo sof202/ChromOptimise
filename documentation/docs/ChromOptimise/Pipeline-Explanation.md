@@ -18,7 +18,7 @@ The pipeline will then output:
 - A scatter plot that showcases how the number of states in the hidden Markov model relates to the estimated log likelihood of the model
 - A file containing the optimum number of states to use with the binarized data files (when a specific bin size has been used)
 
-For a visual representation of the pipeline, please consult the file: [`Optimal_States_Analysis_Pipeline.pdf`](https://github.com/sof202/ChromOptimise/blob/main/information/Optimal_States_Analysis_Pipeline.pdf).
+For a visual representation of the pipeline, please consult this [schematic representation](/pipelines/Optimal_States_Analysis_Pipeline.pdf).
 
 ## 0_EGADownloading.sh
 
