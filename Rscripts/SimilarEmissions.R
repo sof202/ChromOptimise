@@ -74,6 +74,7 @@ calculate_euclidean_distances <- function(emissions_data, model_size) {
 
   return(state_pair_distances)
 }
+
 ## ======== ##
 ##   MAIN   ##
 ## ======== ##
@@ -124,27 +125,31 @@ distances_for_plotting <- function(emissions_data) {
 create_heatmap <- function(emissions_data) {
   eucldiean_distances <- distances_for_plotting(emissions_data)
   
-  heatmap <- 
-    ggplot(eucldiean_distances, aes(reference_state,
-                                    comparison_state,
-                                    fill = euclidean_distance))
-  heatmap <-
-    heatmap +
-    geom_tile() +
-    scale_fill_gradient(low = "blue", high = "white")
-}
-
-
-create_heatmap <- function(emissions_data) {
-  eucldiean_distances <- distances_for_plotting(emissions_data)
-  
-  heatmap <- 
+  euclidean_distances_heatmap <- 
     ggplot(eucldiean_distances, aes(reference_state,
                                     comparison_state,
                                     fill = euclidean_distance)) +
     geom_tile() +
     scale_fill_gradient(low = "blue", high = "white")
+
+  return(euclidean_distances_heatmap)
 }
+
+
+create_histogram <- function(emissions_data) {
+  eucldiean_distances <- distances_for_plotting(emissions_data)
+  
+  euclidean_distance_histogram <- 
+    ggplot(eucldiean_distances, aes(x = euclidean_distance)) +
+    theme_minimal() +
+    geom_histogram(binwidth = 0.05, color = "black", fill = "white") +
+    labs(title = "Histogram of Euclidean distances",
+         x = "Euclidean Distance", y = "Frequency") +
+    theme(plot.title = element_text(hjust = 0.5))
+  
+  return(euclidean_distance_histogram)
+}
+
 
 
 if (plotting_flag) {
