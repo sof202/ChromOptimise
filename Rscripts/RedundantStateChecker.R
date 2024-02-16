@@ -11,9 +11,11 @@
 ##   (i) There exists another state with similar emission         ||
 ##       parameters (under Euclidean distance)                    ||
 ##   (ii) At least one of the following:                          ||
-##     (a) The state is highly isolated (under isolation score)   ||
-##     (b) The similar states are likely to be flanked by the     ||
-##         same states (under flanking states)                    ||
+##      (a) The state is highly isolated (under isolation score)  ||
+##      (b) The similar states are likely to be flanked by the    ||
+##          same states                                           ||
+##      (c) At least one of the similar states is flanked on both ||
+##          sides by the other state (in the similar state pair)  ||
 ##                                                                ||
 ## In the event that (i) and (ii)(b) are triggered, the state     ||
 ## with the higher isolation score is assumed to be the redundant ||
@@ -105,6 +107,52 @@ find_flanks_pairs <- function(flanking_data, for_output = FALSE) {
   return(same_flanks)
 }
 
+# This is for assessing states that satisfy (ii)(c)
+find_identical_flanks <- function(flanking_data) {
+  identical_flank_rows <- 
+    apply(flanking_data, 1, function(row) row[2] == row[3])
+  
+  # We only need columns 1 and 2 here as columns 2 and 3 have the same data
+  # (from the logic above). Adding column 3 adds no extra information.
+  identical_flanks <- flanking_data[identical_flank_rows, 1:2]
+  
+  return(identical_flanks)
+}
+
+# This is required as a state might satisfy (i) and (ii)(c), but the order
+# of the columns are the incorrect way around.
+# Suppose that state 2 is likely to be flanked on both sides by state 1 and 
+# states 1 and 2 have similar emission vectors. Then simply checking if the rows 
+# of the identical flanks and the similar state pairs are identical is not 
+# enough. The rows in this case will be c(2,1) and c(1,2) which are not 
+# identical. They will be identical after sorting however.
+check_rows_have_same_values <- function(row1, row2) {
+  row1_sorted <- sort(row1)
+  row2_sorted <- sort(row2)
+  
+  return(identical(row1_sorted, row2_sorted))
+}
+
+# A simple merge does not work for finding states that satisfy (i) and (ii)(c)
+# This is because the order of the rows could be the wrong way around
+# We could just sort the columns first and use a merge function, but this has
+# the possibility of losing the information of "which state is flanking which"
+# (as the order of the rows could have flipped).
+find_equivalent_rows <- function(identical_flanks, similar_state_pairs) {
+  equivalent_rows <- data.frame( state = numeric(), flank = numeric())
+
+  for (row1 in 1:nrow(identical_flanks)) {
+    reference_row <- unlist(identical_flanks[row1, ])
+    for (row2 in 1:nrow(similar_state_pairs)) {
+      comparison_row <- unlist(similar_state_pairs[row2, ])
+
+      if (check_rows_have_same_values(reference_row, comparison_row)) {
+        equivalent_rows[, nrow(equivalent_rows) + 1] <- reference_row
+      }
+    }
+  }
+}
+
 ## ======================================== ##
 ##   DETERMINE REDUNDANT STATE CANDIDATES   ##
 ## ======================================== ##
@@ -126,11 +174,16 @@ states_in_similar_pairs <-
   unique(c(low_euclidean_distances[, 1], low_euclidean_distances[, 2]))
 
 
-## States with the same flanking states ##
+## State pairs with the same flanking states ##
 same_flank_pairs <- find_flanks_pairs(flanking_data)
 
 same_flank_pairs_for_output <-
   find_flanks_pairs(flanking_data, for_output = TRUE)
+
+
+## States with identical flanking states ##
+identical_flanks <- find_identical_flanks(flanking_data)
+
 
 ## High isolation scores ##
 # Isolation score will be NA if the state in question was only assigned
@@ -162,10 +215,12 @@ isolated_states <- append(isolated_states, single_assigned_states)
 ## Accounts for (i) and (ii)(b) being satisfied ##
 
 # Due to the way these two dataframes have been created, the entry in
-# reference_state will always be smaller than the one in comparison_state.
+# reference_state will be strictly smaller than the one in comparison_state.
 # Therefore, simply merging the two dataframes will find all state pairs
 # that satisfy (i) and (ii)(b) simultaneously.
-redundant_state_candidates <- merge(similar_state_pairs, same_flank_pairs)
+redundant_state_candidates <- 
+  merge(similar_state_pairs, same_flank_pairs,
+        by = c("reference_state", "comparison_state"))[, 1:2]
 
 # This function is in place so that we can choose the state that has a higher
 # isolation score (as this state is more likely to be the redundant one).
@@ -178,6 +233,23 @@ redundant_states <- unlist(apply(redundant_state_candidates, 1, function(row) {
   }
   return(row[2])
 }))
+
+## Accounts for (i) and (ii)(c) being satisfied ##
+
+# If rows in identical_flanks and similar_state_pairs have the same entries
+# (either way around), then this signifies that the state in identical_flanks
+# satisfies (i), as it is a part of a similar state pair. It also satisfies
+# (ii)(c), as it is flanked on both sides by the same state that it is in
+# a similar state pair with
+identical_flank_similar_state <- 
+  find_equivalent_rows(identical_flanks, similar_state_pairs)
+
+# The state column of this dataframe holds the states that are BEING flanked
+# on both sides by the state that is similar to them. This makes them
+# redundant.
+redundant_states <-
+  append(redundant_states, identical_flank_similar_state$state)
+
 
 ## Accounts for (i) and (ii)(a) being satisfied ##
 redundant_states <-
@@ -216,13 +288,21 @@ write_text_to_output("|State pair| |Euclidean distance between states|")
 
 write_table_to_output(low_euclidean_distances)
 
-## Same flanking states ##
+## State pairs wihth the same flanking states ##
 
-write_text_to_output("\nStates with the same flanking states:\n")
+write_text_to_output("\nState pairs with the same flanking states:\n")
 
 write_text_to_output("|State pair| |Upstream flank| |Downstream flank|")
 
 write_table_to_output(same_flank_pairs_for_output)
+
+## States with identical flanking states ##
+
+write_text_to_output("\nStates with identical flanking states:\n")
+
+write_text_to_output("|State| |Flanking state|")
+
+write_table_to_output(identical_flanks)
 
 ## Highly isolated states ##
 write_text_to_output("\nStates with high isolation score:\n")
