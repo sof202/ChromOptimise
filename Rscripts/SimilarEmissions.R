@@ -17,8 +17,8 @@
 ## INPUTS:                                                        ||
 ## $1 -> Location of configuation file                            ||
 ## $2 -> Location of transition matrix file                       ||
-## $3 -> Number of states in model                                ||
-## $4 -> Directory to place output files into                     ||
+## $3 -> Directory to place output files into                     ||
+## $4 -> Boolean for if plots are to be made                      ||
 ## ============================================================== ##
 ## OUTPUTS:                                                       ||
 ## Text file containing the Euclidean distance between each       ||
@@ -31,11 +31,13 @@
 
 rm(list = ls())
 
+library(ggplot2)
+
 arguments <- commandArgs(trailingOnly = TRUE)
 config_file_location <- arguments[1]
-emssions_file <- arguments[2]
-model_size <- as.numeric(arguments[3])
-output_file_path <- arguments[4]
+emissions_file <- arguments[2]
+output_file_path <- arguments[3]
+plotting_flag <- arguments[4]
 
 source(config_file_location)
 setwd(model_dir)
@@ -53,7 +55,7 @@ emissions_data <- subset(emissions_data, select = -V1)
 ##   EUCLIDEAN DISTANCE FUNCTIONS   ##
 ## ================================ ##
 
-calculate_euclidean_distances <- function(emissions_data) {
+calculate_euclidean_distances <- function(emissions_data, model_size) {
   state_pair_distances <- data.frame(reference_state = numeric(),
                                      comparison_state = numeric(),
                                      euclidean_distance = double())
@@ -66,7 +68,7 @@ calculate_euclidean_distances <- function(emissions_data) {
       euclidean_distance <- sqrt(sum((reference_state - comparison_state) ^ 2))
 
       state_pair_distances[nrow(state_pair_distances) + 1, ] <-
-        c(reference_state, comparison_state, euclidean_distance)
+        c(reference_state_index, comparison_state_index, euclidean_distance)
     }
   }
 
@@ -76,11 +78,14 @@ calculate_euclidean_distances <- function(emissions_data) {
 ##   MAIN   ##
 ## ======== ##
 
-euclidean_distances_table <- calculate_euclidean_distances(emissions_data)
+model_size <- nrow(emissions_data)
 
-## =========== ##
-##   OUTPUTS   ##
-## =========== ##
+euclidean_distances_table <-
+  calculate_euclidean_distances(emissions_data, model_size)
+
+## ========== ##
+##   OUTPUT   ##
+## ========== ##
 
 setwd(output_file_path)
 
@@ -89,3 +94,74 @@ output_file_name <- paste0("Euclidean_distances_model-", model_size, ".txt")
 write.table(flanking_states_table,
             output_file_name,
             row.names = FALSE)
+
+## ============ ##
+##   PLOTTING   ##
+## ============ ##
+
+# Due to the heatmap, we now need the euclidean distances for every pair
+# of states, even for the repeats (distance between 1 and 2, distance between
+# 2 and 1).
+distances_for_plotting <- function(emissions_data) {
+  plotting_data_frame <- data.frame(reference_state = numeric(),
+                                    comparison_state = numeric(),
+                                    euclidean_distance = numeric())
+  
+  for (reference_state_index in 1:model_size) {
+    for (comparison_state_index in 1:model_size) {
+      reference_state <- emissions_data[, reference_state_index]
+      comparison_state <- emissions_data[, comparison_state_index]
+      
+      euclidean_distance <- sqrt(sum((reference_state - comparison_state) ^ 2))
+      
+      plotting_data_frame[nrow(plotting_data_frame)+1, ] <- 
+        c(reference_state_index, comparison_state_index, euclidean_distance)
+    }
+  }
+  return(plotting_data_frame)
+}
+
+create_heatmap <- function(emissions_data) {
+  eucldiean_distances <- distances_for_plotting(emissions_data)
+  
+  heatmap <- 
+    ggplot(eucldiean_distances, aes(reference_state,
+                                    comparison_state,
+                                    fill = euclidean_distance))
+  heatmap <-
+    heatmap +
+    geom_tile() +
+    scale_fill_gradient(low = "blue", high = "white")
+}
+
+
+create_heatmap <- function(emissions_data) {
+  eucldiean_distances <- distances_for_plotting(emissions_data)
+  
+  heatmap <- 
+    ggplot(eucldiean_distances, aes(reference_state,
+                                    comparison_state,
+                                    fill = euclidean_distance)) +
+    geom_tile() +
+    scale_fill_gradient(low = "blue", high = "white")
+}
+
+
+if (plotting_flag) {
+  euclidean_distances_heatmap <- create_heatmap(emissions_data)
+  eucldiean_distances_histogram <- create_histogram(emissions_data)
+
+  heatmap_plot_name <-
+    paste0("Euclidean_distances_heatmap_model-", model_size, ".png")
+  histogram_plot_name <-
+    paste0("Euclidean_distances_histogram_model-", model_size, ".png")
+
+  ggsave(
+    heatmap_plot_name,
+    plot = euclidean_distances_heatmap
+  )
+  ggsave(
+    histogram_plot_name,
+    plot = eucldiean_distances_histogram
+  )
+}
