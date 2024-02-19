@@ -67,25 +67,23 @@ upstream_flank <- function(transitions_data, state) {
 
   # We don't want to factor in the probability of the upstream bin being
   # the same as the selected state, so we remove this value.
-  state_column_excluding_self <-
-    subset(state_column, subset = seq_along(state_column) != state)
+  state_column[state] <- NA
 
   # The state that has the maximum probability of transitioning towards
   # the selected state is our most likely upstream flank
-  return(which(max(state_column_excluding_self) == state_column))
+  return(which.max(state_column))
 }
 
 downstream_flank <- function(transitions_data, state) {
   # Rows give the transition probability of travelling from our selected state
   # to some other state
   state_row <- transitions_data[state, ]
-
-  state_row_excluding_self <-
-    subset(state_row, subset = seq_along(state_row) != state)
-
+  
+  state_row[state] <- NA
+  
   # The state that has the maximum probability of being transitioned to
   # from the selected state is our most likely downstream flank
-  return(which(max(state_row_excluding_self) == state_row))
+  return(which.max(state_row))
 }
 
 ## ======== ##
@@ -107,8 +105,8 @@ list_of_downstream_flanks <-
 
 flanking_states_table <-
   data.frame(state = list_of_states,
-             likeliest_upstream_flank = unlist(list_of_upstream_flanks),
-             likeliest_downstream_flank = unlist(list_of_downstream_flanks))
+             likeliest_upstream_flank = list_of_upstream_flanks,
+             likeliest_downstream_flank = list_of_downstream_flanks)
 
 ## =========== ##
 ##   OUTPUTS   ##
