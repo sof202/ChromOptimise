@@ -190,10 +190,10 @@ sort -gr)
 
 
 output_directory="${OPTIMUM_STATES_DIR}\
-/BinSize_${bin_size}_SampleSize_${sample_size}_MaxModelSize_${model_number}"
+/BinSize_${bin_size}_SampleSize_${sample_size}_MaxModelSize_${model_sizes[-1]}"
 
 mkdir -p "${output_directory}"
-rm -f "${output_directory}"/*
+rm -f "${output_directory:?}"/*
 
 module purge
 module load R/4.2.1-foss-2022a
@@ -230,9 +230,9 @@ for model_number in ${model_sizes}; do
         "the existence of this state assignment file"; finishing_statement 1; }
     fi
 
-    echo "Running SimilarEmssions.R for: ${model_number} states..."
+    echo "Running SimilarEmissions.R for: ${model_number} states..."
 
-    Rscript SimilarEmssions.R "${configuration_directory}/config.R" \
+    Rscript SimilarEmissions.R "${configuration_directory}/config.R" \
     "${emissions_file}" \
     "${output_directory}/Euclidean_distances" \
     FALSE

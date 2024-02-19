@@ -157,7 +157,7 @@ isolation_scores_output <-
 
 # This is purely so that the output text file is easier to read
 sorted_isolation_scores <-
-  isolation_scores_output[order(isolation_scores_output$states), ]
+  isolation_scores_output[order(isolation_scores_output$state), ]
 
 ## =========== ##
 ##   OUTPUTS   ##
