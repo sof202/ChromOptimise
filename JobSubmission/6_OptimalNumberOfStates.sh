@@ -113,9 +113,6 @@ shift $((OPTIND-1))
 ##    SET UP    ##
 ## ============ ##
 
-# Configuration files are required for file paths and log file management
-configuration_directory=$1
-
 source "${configuration_directory}/FilePaths.txt" || \
 { echo "The configuration file does not exist in the specified location: \
 ${configuration_directory}"; exit 1; }
