@@ -94,6 +94,7 @@ downstream_flank <- function(transitions_data, state) {
 
 model_size <- nrow(transitions_data)
 
+
 list_of_states <- seq_along(1:model_size)
 
 list_of_upstream_flanks <-

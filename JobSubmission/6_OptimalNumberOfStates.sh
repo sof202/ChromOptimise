@@ -190,6 +190,7 @@ sort -gr)
 output_directory="${OPTIMUM_STATES_DIR}\
 /BinSize_${bin_size}_SampleSize_${sample_size}_MaxModelSize_${model_sizes[0]}"
 
+
 mkdir -p "${output_directory}"
 rm -f "${output_directory:?}"/*
 
