@@ -130,7 +130,9 @@ create_heatmap <- function(emissions_data) {
                                     comparison_state,
                                     fill = euclidean_distance)) +
     geom_tile() +
-    scale_fill_gradient(low = "blue", high = "white")
+    scale_fill_gradient(low = "blue", high = "white") +
+    labs(title = "Heatmap of Euclidean distances between state pairs") +
+    theme(plot.title = element_text(hjust = 0.5))
 
   return(euclidean_distances_heatmap)
 }
