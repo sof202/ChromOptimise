@@ -150,7 +150,9 @@ create_histogram <- function(emissions_data) {
   return(euclidean_distance_histogram)
 }
 
-
+if (!exists("plotting_flag")) {
+  plotting_flag <- FALSE
+}
 
 if (plotting_flag) {
   euclidean_distances_heatmap <- create_heatmap(emissions_data)
