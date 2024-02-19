@@ -193,7 +193,7 @@ output_directory="${OPTIMUM_STATES_DIR}\
 /BinSize_${bin_size}_SampleSize_${sample_size}_MaxModelSize_${model_sizes[-1]}"
 
 mkdir -p "${output_directory}"
-rm -f "${output_directory}"/*
+rm -f "${output_directory:?}"/*
 
 module purge
 module load R/4.2.1-foss-2022a
