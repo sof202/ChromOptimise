@@ -92,7 +92,8 @@ downstream_flank <- function(transitions_data, state) {
 ##   MAIN   ##
 ## ======== ##
 
-model_size <- nrow(transition_data)
+model_size <- nrow(transitions_data)
+
 
 list_of_states <- seq_along(1:model_size)
 
