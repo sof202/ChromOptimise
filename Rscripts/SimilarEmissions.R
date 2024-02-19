@@ -92,7 +92,7 @@ setwd(output_file_path)
 
 output_file_name <- paste0("Euclidean_distances_model-", model_size, ".txt")
 
-write.table(flanking_states_table,
+write.table(euclidean_distances_table,
             output_file_name,
             row.names = FALSE)
 
