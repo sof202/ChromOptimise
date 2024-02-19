@@ -230,9 +230,9 @@ for model_number in ${model_sizes}; do
         "the existence of this state assignment file"; finishing_statement 1; }
     fi
 
-    echo "Running SimilarEmssions.R for: ${model_number} states..."
+    echo "Running SimilarEmissions.R for: ${model_number} states..."
 
-    Rscript SimilarEmssions.R "${configuration_directory}/config.R" \
+    Rscript SimilarEmissions.R "${configuration_directory}/config.R" \
     "${emissions_file}" \
     "${output_directory}/Euclidean_distances" \
     FALSE
