@@ -195,6 +195,8 @@ mkdir -p "${output_directory}/Euclidean_distances"
 mkdir -p "${output_directory}/Flanking_states"
 mkdir -p "${output_directory}/Isolation_scores"
 
+rm -f "${output_directory:?}"/*
+
 module purge
 module load R/4.2.1-foss-2022a
 

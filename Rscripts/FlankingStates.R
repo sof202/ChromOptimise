@@ -36,7 +36,7 @@ rm(list = ls())
 arguments <- commandArgs(trailingOnly = TRUE)
 config_file_location <- arguments[1]
 transitions_file <- arguments[2]
-output_file_path <- arguments[4]
+output_file_path <- arguments[3]
 
 source(config_file_location)
 setwd(model_dir)
