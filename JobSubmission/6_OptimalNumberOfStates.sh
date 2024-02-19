@@ -252,6 +252,7 @@ for model_number in "${model_sizes[@]}"; do
     Rscript IsolationScores.R "${configuration_directory}/config.R" \
     "${state_assignment_file}" \
     "${output_directory}/Isolation_scores" \
+    "${model_number}" \
     100 
 
 

@@ -20,7 +20,8 @@
 ## $1 -> Location of configuation file                            ||
 ## $2 -> State assignments file                                   ||
 ## $3 -> Output file path                                         ||
-## $4 -> Sample size for isolation score                          ||
+## $4 -> Size of the model                                        ||
+## $5 -> Sample size for isolation score                          ||
 ## ============================================================== ##
 ## OUTPUTS:                                                       ||
 ## Text file containing isolation scores for each state           ||
@@ -38,7 +39,8 @@ arguments <- commandArgs(trailingOnly = TRUE)
 config_file_location <- arguments[1]
 state_assignments_file <- arguments[2]
 output_file_path <- arguments[3]
-isolation_sample_size <- as.numeric(arguments[4])
+model_size <- as.numeric(arguments[4])
+isolation_sample_size <- as.numeric(arguments[5])
 
 source(config_file_location)
 
