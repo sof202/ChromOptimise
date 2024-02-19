@@ -97,11 +97,13 @@ model_size <- nrow(transitions_data)
 
 list_of_states <- seq_along(1:model_size)
 
-list_of_upstream_flanks <-
-  mapply(upstream_flank, transitions_data, list_of_states)
+list_of_upstream_flanks <- 
+  sapply(list_of_states,
+         function(state) upstream_flank(transitions_data, state))
 
-list_of_downstream_flanks <-
-  mapply(downstream_flank, transitions_data, list_of_states)
+list_of_downstream_flanks <- 
+  sapply(list_of_states,
+         function(state) downstream_flank(transitions_data, state))
 
 flanking_states_table <-
   data.frame(state = list_of_states,
