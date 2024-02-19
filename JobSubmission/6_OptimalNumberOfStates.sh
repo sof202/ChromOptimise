@@ -183,14 +183,12 @@ sample_size=$(find . -type f -name "*States*.txt" | head -1 | cut -d "_" -f 5)
 # or transition files could have been used just the same.
 # We reverse the order as we plan on working from the most complex model
 # to the least until a model with no redundant states is found.
-model_sizes=$( \
-find . -type f -name "emissions*.txt" | \
+mapfile -t model_sizes < <(find . -type f -name "emissions*.txt" | \
 grep -oP "\d+(?=.txt)" | \
 sort -gr)
 
-
 output_directory="${OPTIMUM_STATES_DIR}\
-/BinSize_${bin_size}_SampleSize_${sample_size}_MaxModelSize_${model_sizes[-1]}"
+/BinSize_${bin_size}_SampleSize_${sample_size}_MaxModelSize_${model_sizes[0]}"
 
 mkdir -p "${output_directory}"
 rm -f "${output_directory:?}"/*
@@ -203,7 +201,7 @@ cd "${RSCRIPTS_DIR}" || \
 make sure FilePaths.txt is pointing to the correct directory"
 finishing_statement 1; }
 
-for model_number in ${model_sizes}; do
+for model_number in "${model_sizes[@]}"; do
     # State assignments are named:
     # CellType_SampleSize_BinSize_ModelSize_Chromosome_statebyline.txt
 
