@@ -241,6 +241,7 @@ echo "Running IsolationScores.R for: ${model_size} states..."
 Rscript IsolationScores.R "${configuration_directory}/config.R" \
 "${state_assignment_file}" \
 "${model_file_dir}/Isolation_scores" \
+"${model_size}" \
 100 
 
 
