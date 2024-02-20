@@ -1,6 +1,6 @@
-name: Suggestion Report
-description: File a suggestion report
-title: "[Suggestion]: "
+name: Enhancement Report
+description: File a suggestion for an enhancement
+title: "[Enhancement suggestion]: "
 labels: ["enhancement"]
 body:
   - type: markdown
@@ -18,9 +18,8 @@ body:
   - type: textarea
     id: Suggestion
     attributes:
-      label: Suggestion
+      label: Enhancement suggestion
       description: What is your suggestion, and why would it be useful to you?
-      placeholder: Tell us what you see!
-      value: "My suggestion for an enhancement is..."
+      placeholder: "My suggestion for an enhancement is..."
     validations:
       required: true
