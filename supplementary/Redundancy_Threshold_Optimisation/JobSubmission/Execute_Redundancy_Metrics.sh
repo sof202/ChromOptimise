@@ -206,11 +206,11 @@ find "${model_file_dir}" \
 )
 
 emissions_file=$(\
-find "${MODEL_DIR}" -name "emissions*${model_size}.txt*" \
+find "${MODEL_DIR}" -name "emissions*${model_size}_${seed}.txt*" \
 )
 
 transitions_file=$(\
-find "${MODEL_DIR}" -name "transitions*${model_size}.txt*" \
+find "${MODEL_DIR}" -name "transitions*${model_size}_${seed}.txt*" \
 )
 
 if [[ -z "$state_assignment_file" ]]; then
