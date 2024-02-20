@@ -167,11 +167,10 @@ fi
 ##   FILE EXISTANCE   ##
 ## ================== ##
 
-cd "${model_file_dir}" ||  { >&2 echo "ERROR: ${model_file_dir} doesn't exist, \
-ensure that the directory exists before running this script."
-finishing_statement 1; }
-
-if [[ -z $(find . -type f -name "emissions*") ]]; then
+# The R scripts below will fail to execute if there are no model files
+# in the directory given. This just reduces the number of error messages
+# and is more descriptive than what R will output.
+if [[ -z $(find "${model_file_dir}" -type f -name "emissions*") ]]; then
     { >&2 echo -e "ERROR: No model files were found in ${model_file_dir}.\n"\
     "Ensure that you have ran Generate_Big_Model.sh or ChromHMM's "\
     "LearnModel command before using this script."; finishing_statement 1; }  
@@ -184,25 +183,13 @@ fi
 module purge
 module load R/4.2.1-foss-2022a
 
-cd "${SUPPLEMENTARY_DIR}/Redundancy_Threshold_Optimisation/Rscripts" ||  \
-{ >&2 echo "ERROR: \
-${SUPPLEMENTARY_DIR}/Redundancy_Threshold_Optimisation/Rscripts \
-doesn't exist, make sure [\${SUPPLEMENTARY_DIR} - ${SUPPLEMENTARY_DIR}] \
-in FilePaths.txt is pointing to the correct directory"; finishing_statement 1; }
-
-Rscript HistogramPlotForEuclideanDistances.R \
-"${configuration_directory}/config.R" \
-"${model_size}" "${seed}" "${model_file_dir}" 
-
-Rscript ScatterPlotForTransitionMaxima.R \
-"${configuration_directory}/config.R" \
-"${model_size}" "${seed}" "${model_file_dir}"
-
 cd "${RSCRIPTS_DIR}" || \
 { >&2 echo "ERROR: make sure [\${RSCRIPTS_DIR} - ${RSCRIPTS_DIR}] \
 in FilePaths.txt is pointing to the correct directory"; finishing_statement 1; }
 
-mkdir -p "${model_file_dir}/IsolationScores"
+mkdir -p "${model_file_dir}/Isolation_scores"
+mkdir -p "${model_file_dir}/Euclidean_distances"
+mkdir -p "${model_file_dir}/Flanking_states"
 
 # State assignments are named:
 # CellType_SampleSize_BinSize_ModelSize_Seed_Chromosome_statebyline.txt
@@ -216,15 +203,43 @@ find "${model_file_dir}" \
 -name "*${model_size}_${seed}_chr${chromosome_identifier}_*" \
 )
 
+emissions_file=$(\
+find "${MODEL_DIR}" -name "emissions*${model_size}.txt*" \
+)
+
+transitions_file=$(\
+find "${MODEL_DIR}" -name "transitions*${model_size}.txt*" \
+)
+
 if [[ -z "$state_assignment_file" ]]; then
     { >&2 echo "ERROR: No state assignment file found for chromosome:" \
-    "${chromosome_identifier}, please check ${model_file_dir}/STATEBYLINE for" \
+    "${chromosome_identifier}, please check ${MODEL_DIR}/STATEBYLINE for" \
     "the existence of this state assignment file"; finishing_statement 1; }
 fi
 
+echo "Running SimilarEmissions.R for: ${model_size} states..."
+
+Rscript SimilarEmissions.R "${configuration_directory}/config.R" \
+"${emissions_file}" \
+"${model_file_dir}/Euclidean_distances" \
+TRUE
+
+
+echo "Running FlankingStates.R for: ${model_size} states..."
+
+Rscript FlankingStates.R "${configuration_directory}/config.R" \
+"${transitions_file}" \
+"${model_file_dir}/Flanking_states"
+
+
+# IsolationScores.R is ran with a sample size of 100% 
+# (all data is considered) because the slow down is not that significant
+echo "Running IsolationScores.R for: ${model_size} states..."
 
 Rscript IsolationScores.R "${configuration_directory}/config.R" \
-"${state_assignment_file}" "${model_file_dir}/IsolationScores" 100
+"${state_assignment_file}" \
+"${model_file_dir}/Isolation_scores" \
+100 
 
 
 finishing_statement 0
