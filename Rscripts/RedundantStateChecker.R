@@ -226,13 +226,19 @@ redundant_state_candidates <-
 # isolation score (as this state is more likely to be the redundant one).
 # Note that we only care if a model HAS redundant states, not which states are
 # redundant. We could just as easily pick the first state every time.
-redundant_states <- unlist(apply(redundant_state_candidates, 1, function(row) {
-  if (isolation_scores$isolation_score[row[1]] >
-        isolation_scores$isolation_score[row[2]]) {
-    return(row[1])
-  }
-  return(row[2])
-}))
+if (nrow(redundant_state_candidates) > 0) {
+  # If no candidates were found, this code will fail as there are no rows
+  # to compare. The above if statement accounts for this scenario.
+  redundant_states <- unlist(apply(redundant_state_candidates, 1, function(row) {
+    if (isolation_scores$isolation_score[row[1]] >
+          isolation_scores$isolation_score[row[2]]) {
+      return(row[1])
+    }
+    return(row[2])
+  }))
+} else {
+  redundant_states <- c()
+}
 
 ## Accounts for (i) and (ii)(c) being satisfied ##
 
