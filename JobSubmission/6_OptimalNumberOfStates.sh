@@ -190,6 +190,8 @@ sort -gr)
 output_directory="${OPTIMUM_STATES_DIR}\
 /BinSize_${bin_size}_SampleSize_${sample_size}_MaxModelSize_${model_sizes[0]}"
 
+# Clear up the directory in case of repeat runs (with different thresholds)
+rm -rf "${output_directory:?}"
 
 mkdir -p "${output_directory}/Euclidean_distances"
 mkdir -p "${output_directory}/Flanking_states"
