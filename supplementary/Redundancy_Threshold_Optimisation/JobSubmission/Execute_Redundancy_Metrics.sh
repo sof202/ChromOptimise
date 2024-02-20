@@ -211,6 +211,7 @@ find "${model_file_dir}" -name "emissions*${model_size}_${seed}.txt*" \
 
 transitions_file=$(\
 find "${model_file_dir}" -name "transitions*${model_size}_${seed}.txt*" \
+)
 
 if [[ -z "$state_assignment_file" ]]; then
     { >&2 echo "ERROR: No state assignment file found for chromosome:" \
