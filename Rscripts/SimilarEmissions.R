@@ -122,8 +122,7 @@ distances_for_heatmap <- function(emissions_data, model_size) {
 }
 
 create_heatmap <- function(emissions_data) {
-  eucldiean_distances <- 
-    calculate_euclidean_distances(emissions_data, model_size)
+  eucldiean_distances <- distances_for_heatmap(emissions_data, model_size)
   
   euclidean_distances_heatmap <- 
     ggplot(eucldiean_distances, aes(reference_state,
@@ -139,7 +138,8 @@ create_heatmap <- function(emissions_data) {
 
 
 create_histogram <- function(emissions_data) {
-  eucldiean_distances <- distances_for_plotting(emissions_data, model_size)
+  eucldiean_distances <-
+    calculate_euclidean_distances(emissions_data, model_size)
   
   euclidean_distance_histogram <- 
     ggplot(eucldiean_distances, aes(x = euclidean_distance)) +
