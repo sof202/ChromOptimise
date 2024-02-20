@@ -84,6 +84,8 @@ needs_argument() {
     if [[ -z "$OPTARG" || "${OPTARG:0:1}" == - ]]; then usage; fi
 }
 
+if [[ ! $1 =~ -.* ]]; then usage; fi
+
 while getopts c:n:s:o:-: OPT; do
     # Adds support for long options by reformulating OPT and OPTARG
     # This assumes that long options are in the form: "--long=option"
