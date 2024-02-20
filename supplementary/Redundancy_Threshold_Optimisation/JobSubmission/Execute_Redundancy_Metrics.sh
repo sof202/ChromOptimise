@@ -206,16 +206,15 @@ find "${model_file_dir}" \
 )
 
 emissions_file=$(\
-find "${MODEL_DIR}" -name "emissions*${model_size}_${seed}.txt*" \
+find "${model_file_dir}" -name "emissions*${model_size}_${seed}.txt*" \
 )
 
 transitions_file=$(\
-find "${MODEL_DIR}" -name "transitions*${model_size}_${seed}.txt*" \
-)
+find "${model_file_dir}" -name "transitions*${model_size}_${seed}.txt*" \
 
 if [[ -z "$state_assignment_file" ]]; then
     { >&2 echo "ERROR: No state assignment file found for chromosome:" \
-    "${chromosome_identifier}, please check ${MODEL_DIR}/STATEBYLINE for" \
+    "${chromosome_identifier}, please check ${model_file_dir}/STATEBYLINE for" \
     "the existence of this state assignment file"; finishing_statement 1; }
 fi
 
