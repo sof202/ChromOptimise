@@ -102,7 +102,6 @@ write.table(euclidean_distances_table,
 
 # Due to the heatmap, we now need the euclidean distances for every pair
 # of states, even for the repeats (distance between 1 and 2, distance between
-# 2 and 1).
 distances_for_plotting <- function(emissions_data) {
   plotting_data_frame <- data.frame(reference_state = numeric(),
                                     comparison_state = numeric(),
@@ -110,8 +109,8 @@ distances_for_plotting <- function(emissions_data) {
   
   for (reference_state_index in 1:model_size) {
     for (comparison_state_index in 1:model_size) {
-      reference_state <- emissions_data[, reference_state_index]
-      comparison_state <- emissions_data[, comparison_state_index]
+      reference_state <- as.numeric(emissions_data[reference_state_index, ])
+      comparison_state <- as.numeric(emissions_data[comparison_state_index, ])
       
       euclidean_distance <- sqrt(sum((reference_state - comparison_state) ^ 2))
       
