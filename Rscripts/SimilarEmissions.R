@@ -100,33 +100,13 @@ write.table(euclidean_distances_table,
 ##   PLOTTING   ##
 ## ============ ##
 
-# Due to the heatmap, we now need the euclidean distances for every pair
-# of states, even for the repeats (distance between 1 and 2, distance between
-distances_for_heatmap <- function(emissions_data, model_size) {
-  plotting_data_frame <- data.frame(reference_state = numeric(),
-                                    comparison_state = numeric(),
-                                    euclidean_distance = numeric())
-  
-  for (reference_state_index in 1:model_size) {
-    for (comparison_state_index in 1:model_size) {
-      reference_state <- as.numeric(emissions_data[reference_state_index, ])
-      comparison_state <- as.numeric(emissions_data[comparison_state_index, ])
-      
-      euclidean_distance <- sqrt(sum((reference_state - comparison_state) ^ 2))
-      
-      plotting_data_frame[nrow(plotting_data_frame)+1, ] <- 
-        c(reference_state_index, comparison_state_index, euclidean_distance)
-    }
-  }
-  return(plotting_data_frame)
-}
-
 create_heatmap <- function(emissions_data) {
-  eucldiean_distances <- distances_for_heatmap(emissions_data, model_size)
+  eucldiean_distances <-
+    calculate_euclidean_distances(emissions_data, model_size)
   
   euclidean_distances_heatmap <- 
-    ggplot(eucldiean_distances, aes(reference_state,
-                                    comparison_state,
+    ggplot(eucldiean_distances, aes(comparison_state,
+                                    reference_state,
                                     fill = euclidean_distance)) +
     geom_tile() +
     scale_fill_gradient(low = "blue", high = "white") +
@@ -141,7 +121,7 @@ create_histogram <- function(emissions_data) {
   eucldiean_distances <-
     calculate_euclidean_distances(emissions_data, model_size)
   
-  euclidean_distance_histogram <- 
+  euclidean_distance_histogram <-
     ggplot(eucldiean_distances, aes(x = euclidean_distance)) +
     theme_minimal() +
     geom_histogram(binwidth = 0.05, color = "black", fill = "white") +
