@@ -55,7 +55,7 @@
 usage() {
 cat <<EOF
 ===========================================================================
-Execture_Redundancy_Metrics
+Execute_Redundancy_Metrics
 ===========================================================================
 Purpose: Generates plots to aid in thresholds used in config.R which
 are used in 6_OptimumNumberOfStates.sh in determining redundant states.
@@ -80,7 +80,7 @@ needs_argument() {
     if [[ -z "$OPTARG" || "${OPTARG:0:1}" == - ]]; then usage; fi
 }
 
-while getopts c:n:s:o:-: OPT; do
+while getopts c:n:s:h:o:-: OPT; do
     # Adds support for long options by reformulating OPT and OPTARG
     # This assumes that long options are in the form: "--long=option"
     if [ "$OPT" = "-" ]; then
