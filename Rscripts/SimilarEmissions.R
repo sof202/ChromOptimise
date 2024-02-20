@@ -102,7 +102,7 @@ write.table(euclidean_distances_table,
 
 # Due to the heatmap, we now need the euclidean distances for every pair
 # of states, even for the repeats (distance between 1 and 2, distance between
-distances_for_plotting <- function(emissions_data, model_size) {
+distances_for_heatmap <- function(emissions_data, model_size) {
   plotting_data_frame <- data.frame(reference_state = numeric(),
                                     comparison_state = numeric(),
                                     euclidean_distance = numeric())
@@ -122,7 +122,8 @@ distances_for_plotting <- function(emissions_data, model_size) {
 }
 
 create_heatmap <- function(emissions_data) {
-  eucldiean_distances <- distances_for_plotting(emissions_data, model_size)
+  eucldiean_distances <- 
+    calculate_euclidean_distances(emissions_data, model_size)
   
   euclidean_distances_heatmap <- 
     ggplot(eucldiean_distances, aes(reference_state,
