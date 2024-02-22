@@ -16,7 +16,6 @@ Consider the below example:
 | Bin number | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
 | -- | -- | -- | -- | -- | -- | -- | -- |
 | state assignment | 1 | 1 | 1 | 2 | 2 | 3 | 2
-| | | | | | | | |
 
 In this example, lets find the flanking states for bin number 4. The next bin (bin 5) is also assigned state 2, so we go to the next bin (and so on) until we reach a bin that is not assigned 2. In this case, we go to bin 6 and find the downstream flank is 3. In the same way we can go backwards to find the upstream flank is 1 (assignment for bin 3).
 
