@@ -6,7 +6,7 @@ sidebar_position: 5
 
 # 3_SubsampleBamFiles
 
-:::warning[Skipping script 1]
+:::warning[Skipping script 2]
 If you skipped script 2 (2_batch_ProcessBamFiles.sh), please ensure that your files are separated into different folders (by epigenetic mark). The names of these folders doesn't matter, but we recommend naming them after the epignetic mark name (so help messages make sense).
 :::
 
