@@ -26,7 +26,7 @@ If you are working with a lot of files, this step can use a large amount of memo
 Samtools had a known bug in version 0.1.18 where subsampling would fail if the sample size was above 50%, ensure that your version of samtools is up to date.
 :::
 
-# Example usage
+## Example usage
 
 ```bash
 # Merges all files in ${PROCESSED_DIR}/H3k27me3 and subsamples this file
