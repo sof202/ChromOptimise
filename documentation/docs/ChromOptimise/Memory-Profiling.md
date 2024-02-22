@@ -10,18 +10,6 @@ To gain insights into the peak heap consumption of each script in the pipeline, 
 Heaptrack, produced by KDE, can be obtained through an appimage download or local compilation. The GitHub repository for Heaptrack can be accessed [here](https://github.com/KDE/heaptrack).
 
 
-## Contents
-- [0_DownloadBluePrint.sh](#0_downloadblueprintsh)
-- [1_MovingFilesToSingleDirectory.sh](#1_movingfilestosingledirectorysh)
-- [2_batch_ProcessBamFiles.sh](#2_batch_processbamfilessh)
-- [3_SubsampleBamFiles.sh](#3_subsamplebamfilessh)
-- [4_BinarizeBamFiles.sh](#4_binarizebamfilessh)
-- [5_batch_CreateIncrementalModels.sh](#5_batch_createincrementalmodelssh)
-- [6_OptimalNumberOfStates.sh](#6_optimalnumberofstatessh)
-- [Generate_Big_Model.sh](#generate_big_modelsh)
-- [Generate_Redundancy_Metrics_Plots.sh](#generate_redundancy_metrics_plotssh)
-- [CompareModels.sh](#comparemodelssh)
-
 ## 0_DownloadBluePrint.sh
 The memory consumption for this script depends on the abundance and size of the files that are being downloaded from EGA repositories. 
 

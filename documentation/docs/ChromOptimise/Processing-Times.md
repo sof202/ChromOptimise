@@ -7,18 +7,6 @@ sidebar_position: 6
 SLURM workload manager has the feature of introducing a maximum wall time into each script. The default maximum wall time is set in the `#SBATCH` section of each script and can be overridden when setting the `--time` option when using `sbatch`. If the time of execution for a script exceeds this maximum wall time, it will terminate early. This is useful as it helps with workload management on HPCs that a large number of users have access to, and also reduces the effects of non-halting programs. 
 \
 Using bash builtins and time utilities, we were able to create estimates on how long each script is expected to take depending on the inputs and complexity of information. 
-## Contents
-- [General CPU information which testing was conducted on](#general-cpu-information-which-testing-was-conducted-on)
-- [0_DownloadBluePrint.sh](#0_downloadblueprintsh)
-- [1_MovingFilesToSingleDirectory.sh](#1_movingfilestosingledirectorysh)
-- [2_batch_ProcessBamFiles.sh](#2_batch_processbamfilessh)
-- [3_SubsampleBamFiles.sh](#3_subsamplebamfilessh)
-- [4_BinarizeBamFiles.sh](#4_binarizebamfilessh)
-- [5_batch_CreateIncrementalModels.sh](#5_batch_createincrementalmodelssh)
-- [6_OptimalNumberOfStates.sh](#6_optimalnumberofstatessh)
-- [Generate_Big_Model.sh](#generate_big_modelsh)
-- [Generate_Redundancy_Metrics_Plots.sh](#generate_redundancy_metrics_plotssh)
-- [CompareModels.sh](#comparemodelssh)
 
 ## General CPU information which testing was conducted on
 Note that processing times are likely to vary across systems, the scripts were tested on a high performance cluster (HPC) that is split into several compute nodes. Each script was ran on a compute node which have the following properties:
