@@ -1,4 +1,6 @@
-# ChromOptimise - Optimum states analysis for ChromHMM
+<p align="center">
+  <img src="https://github.com/sof202/ChromOptimise/assets/147140110/41a500d8-fa7d-4a3c-8270-297a16bf6b5c" />
+</p>
 
 ChromOptimise is a pipeline that identifies the optimum number of states that should be used with [ChromHMM](https://compbio.mit.edu/ChromHMM/#:~:text=ChromHMM%20is%20software%20for%20learning,and%20spatial%20patterns%20of%20marks.)'s `LearnModel` command for a particular genomic dataset.
 
@@ -8,7 +10,6 @@ For more specific information, please head over to the [wiki](https://sof202.git
 - [About](#About)
 - [Getting started](#getting-started)
 - [Usage](#usage)
-- [Important notes](#important-notes)
 - [Software Requirements](#software-requirements)
 - [Further information](#further-information)
 
@@ -40,12 +41,6 @@ Depending on your chosen dataset, you may not need to run all scripts. For examp
 
 There also exists supplementary scripts for further information on your chosen data set. Most importantly, thresholds used in redundancy analysis can be inferred from the results of [Redundancy_Threshold_Optimisation](https://github.com/sof202/ChromOptimise/tree/main/supplementary/Redundancy_Threshold_Optimisation). Further details for these scripts can be found in the [wiki](https://sof202.github.io/ChromOptimise/ChromOptimise/Supplementary-pipeline-explanation). 
 
-## Important notes
-### Note 1
-This pipeline was designed with a very large dataset in mind (the dataset being blueprint obtained from EGA). This particular dataset includes a large quantity of ChIP-Seq data from mature neutrophils in blood samples. This is why a subsampling stage was implemented. This step of the pipeline might not be required if your dataset is relatively small. Regardless of this, please run the associated script still as subsequent scripts rely on a specific file structure.
-
-### Note 2
-To display a short version of the preamble for each script in the command line, run the script with a `-h` or `--help` flag.
 
 ## Software requirements
 This pipeline requires a unix-flavoured OS with the following software installed:
