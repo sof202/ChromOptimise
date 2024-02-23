@@ -16,7 +16,7 @@ There is a possible source of error in the above logic where the output will not
 
 ## Thresholds
 
-The major factor that affects the output of this script lies in the thresholds defined in the configuration file for R [config.R]. It can be difficult to determine suitable values for these thresholds without prior knowledge. To help with this, the supplementary pipeline was created. Running the supplementary pipeline can help the user in identifying 'good' values for these thresholds based off of the information gained from much larger models (that undoubtedly have redundant states). To learn more about this pipeline, consult [these pages].
+The major factor that affects the output of this script lies in the thresholds defined in the configuration file for R [config.R](/ChromOptimise/Configuration-Files-Setup.md#configr). It can be difficult to determine suitable values for these thresholds without prior knowledge. To help with this, the supplementary pipeline was created. Running the supplementary pipeline can help the user in identifying 'good' values for these thresholds based off of the information gained from much larger models (that undoubtedly have redundant states). To learn more about this pipeline, consult [these pages](/category/supplementary-pipeline---usage-and-explanation).
 
 ### The curse of dimensionality
 

@@ -25,9 +25,9 @@ After completion, alongside the optimal number of states to use with the dataset
 
 Alongside the above, the following information is outputted for each rejected model:
 
-- The [isolation scores] for each state in the model
-- The [most likely flanking states] for each state in the model
-- The [Euclidean distances] between each pair of states in the model
+- The [isolation scores](./OptimalNumberOfStates/IsolationScores) for each state in the model
+- The [most likely flanking states](./OptimalNumberOfStates/FlankingStates) for each state in the model
+- The [Euclidean distances](./OptimalNumberOfStates/SimilarEmissions) between each pair of states in the model
 - The collated information from the above points in a more digestible format
 
 For an example output of the pipeline, see [these pages].

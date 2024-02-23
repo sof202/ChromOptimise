@@ -19,7 +19,7 @@ The reason for merging files and subsampling instead of simply subsampling the o
 This results in the different samples no longer being directly comparable as they will likely have different sizes.
 
 :::note[Large number of files]
-If you are working with a lot of files, this step can use a large amount of memory due to the way samtools merges files, see [memory profiling] for more information.
+If you are working with a lot of files, this step can use a large amount of memory due to the way samtools merges files, see [memory profiling](/ChromOptimise/Memory-Profiling.md) for more information.
 :::
 
 :::warning[outdated samtools]

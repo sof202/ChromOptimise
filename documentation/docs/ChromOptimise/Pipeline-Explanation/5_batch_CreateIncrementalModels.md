@@ -8,7 +8,7 @@ sidebar_position: 7
 
 ## Explanation
 
-This uses ChromHMM's `LearnModel` command to learn multiple hidden Markov models. It also obtains the [estimated log likelihood] value of each model.
+This uses ChromHMM's `LearnModel` command to learn multiple hidden Markov models. It also obtains the [estimated log likelihood](/ChromOptimise/ChromHMM-overview.md#estimated-log-likelihood) value of each model.
 
 This script will always generate a model with 2 states. Inspecting the emission parameters for this simple model is a good way of validating your data.
 \

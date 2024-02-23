@@ -99,7 +99,7 @@ export CHROMHMM_CHROM_SIZES="${CHROMHMM_MAIN_DIR}/path/to/chromosome/sizes"
 
 ## config.R
 
-To get a good value for the thresholds in the redundancy parameters section, please consult the [supplementary pipeline].
+To get a good value for the thresholds in the redundancy parameters section, please consult the [supplementary pipeline](/category/supplementary-pipeline---usage-and-explanation).
 
 ```R title="config.R"
 ## Data Directories
@@ -177,7 +177,7 @@ finishing_statement(){
 
 ## ChromOptimiseConfig.txt
 
-This is the configuration file that enables the user to run all of the files in the [main pipeline] sequentially. Options are briefly described in comments here, but for a better picture of what to put here we recommend looking at the [documentation]. If you do not plan on using certain scripts at all (which is likely the case for 0_EGADownloading.sh for example) you can just remove the options section for those selected scripts.
+This is the configuration file that enables the user to run all of the files in the [main pipeline](/category/main-pipeline---usage-and-explanation) sequentially. Options are briefly described in comments here, but for a better picture of what to put here we recommend looking at the pipeline explanation. If you do not plan on using certain scripts at all (which is likely the case for 0_EGADownloading.sh for example) you can just remove the options section for those selected scripts.
 
 ```text title="ChromOptimiseConfig.txt"
 # Which shell script to start from (provide a number from 0 to 6)

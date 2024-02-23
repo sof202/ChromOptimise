@@ -8,7 +8,7 @@ sidebar_position: 3
 
 ## Explanation
 
-This script runs the same R scripts that 6_OptimalNumberOfStates.sh does. Head over to the [relevant pages] for explanations on the individual scripts. The only difference is that a histogram and heatmap is generated for the Euclidean distances calculated (as it can be rather difficult to interpret these files when there are lots of states).
+This script runs the same R scripts that 6_OptimalNumberOfStates.sh does. Head over to the [relevant pages](/category/optimal-number-of-states) for explanations on the individual scripts. The only difference is that a histogram and heatmap is generated for the Euclidean distances calculated (as it can be rather difficult to interpret these files when there are lots of states).
 
 
 ## Obtaining 'good' threshold parameters

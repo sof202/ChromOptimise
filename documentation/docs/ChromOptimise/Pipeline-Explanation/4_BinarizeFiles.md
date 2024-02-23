@@ -21,7 +21,7 @@ Sometimes your dataset will contain information for additional chromosomes that 
 
 This step takes a user input for the bin size, this will have a noticable effect on the quality of your models. ChromHMM recommends a bin size of 200 and this is reflected in this pipeline. It is important to consider the implications of changing the bin size. A lower value will increase the granularity of the data, but increases the susceptibility to random noise in the dataset. A larger value will achieve the opposite. 
 
-To learn more about how the bin size (and other factors) affect the final result of the pipeline, head to [this page].
+To learn more about how the bin size (and other factors) affect the final result of the pipeline, head to [this page](/ChromOptimise/Factors-that-affect-the-output.md).
 
 # Example usage
 

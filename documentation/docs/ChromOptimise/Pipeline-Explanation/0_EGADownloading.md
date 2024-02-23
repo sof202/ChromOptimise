@@ -28,7 +28,7 @@ These should be provided to you via EGA.
 
 ### Step Two: Create a conda environment with pyega3 installed:
 
-Note down the location of this conda environment. It is to be used in the configuration file [FilePaths.txt].
+Note down the location of this conda environment. It is to be used in the configuration file [FilePaths.txt](/ChromOptimise/Configuration-Files-Setup.md#filepathstxt).
 
 ```bash
 # Change 'myenv' to a memorable name
