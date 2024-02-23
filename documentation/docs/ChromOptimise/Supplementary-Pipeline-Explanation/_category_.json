@@ -1,0 +1,8 @@
+{
+  "label": "Supplementary Pipeline - Usage and Explanation",
+  "position": 2,
+  "link": {
+    "type": "generated-index",
+    "description": "Click on one of the cards below to learn more about a specific script in the pipeline, including its intended usage and example commands."
+  }
+}

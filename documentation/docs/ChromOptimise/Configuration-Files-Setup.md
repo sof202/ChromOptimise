@@ -6,11 +6,14 @@ sidebar_position: 2
 
 You will need to create three configuration files for this pipeline to work:
 
-- FilePaths.txt
-- config.R
-- LogFileManagement.sh.
+- [FilePaths.txt](#filepathstxt)
+- [config.R](#configr)
+- [LogFileManagement.sh](#logfilemanagementsh)
 
 These files are used by each of the R and bash scripts to aid in organisation of the scripts and avoid repetition.
+
+If you want to just run one script that does everything for you (no need to understand how each script works), you can create one more configuration file in [ChromOptimiseConfig.txt](#chromoptimiseconfigtxt). This file will be sourced in ChromOptimise.sh and all arguments will be parsed for you.
+
 
 :::info
 The scripts in this pipeline do not create the directory structure themselves. This is to avoid large files being dumped in unwanted locations. Please check your file paths are correct and then run Create_File_Structure.sh.
@@ -22,8 +25,9 @@ You must ensure that these files are written with EOL: \n (LF) and not EOL: \r\n
 
 After one creates each of these configuration files, place them in the 'configuration' directory. Then run the `setup` executable from the main directory.
 
-Note: The pipeline was completed with blueprint data in mind, if your data is already downloaded, processed, binarized etc. then the associated lines in the config files might not be required.
-
+:::note[blueprint]
+The pipeline was completed with blueprint data in mind, if your data is already downloaded, processed, binarized etc. then the associated lines in the config files might not be required.
+:::
 ## Data directory structure
 
 A guide for the structure of the data directory is given below (You only need to create the directories starting with an integer):
@@ -95,7 +99,7 @@ export CHROMHMM_CHROM_SIZES="${CHROMHMM_MAIN_DIR}/path/to/chromosome/sizes"
 
 ## config.R
 
-To get a good value for the thresholds in the redundancy parameters section, please consult the [supplementary pipeline](./Supplementary-pipeline-explanation.md).
+To get a good value for the thresholds in the redundancy parameters section, please consult the [supplementary pipeline](/category/supplementary-pipeline---usage-and-explanation).
 
 ```R title="config.R"
 ## Data Directories
@@ -173,7 +177,7 @@ finishing_statement(){
 
 ## ChromOptimiseConfig.txt
 
-This is the configuration file that enables the user to run all of the files in the [main pipeline](./Pipeline-Explanation.md) sequentially. Options are briefly described in comments here, but for a better picture of what to put here we recommend looking at the [documentation](./Pipeline-Explanation.md). If you do not plan on using certain scripts at all (which is likely the case for 0_EGADownloading.sh for example) you can just remove the options section for those selected scripts.
+This is the configuration file that enables the user to run all of the files in the [main pipeline](/category/main-pipeline---usage-and-explanation) sequentially. Options are briefly described in comments here, but for a better picture of what to put here we recommend looking at the pipeline explanation. If you do not plan on using certain scripts at all (which is likely the case for 0_EGADownloading.sh for example) you can just remove the options section for those selected scripts.
 
 ```text title="ChromOptimiseConfig.txt"
 # Which shell script to start from (provide a number from 0 to 6)

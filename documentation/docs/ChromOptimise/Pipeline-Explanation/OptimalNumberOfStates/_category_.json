@@ -1,0 +1,8 @@
+{
+  "label": "Optimal Number of States",
+  "position": 8,
+  "link": {
+    "type": "generated-index",
+    "description": "This is a collection of R scripts (and a shell script that calls these) that will determine the model with the optimal number of states."
+  }
+}
