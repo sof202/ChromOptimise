@@ -14,7 +14,7 @@ The model produced will use a random initialisation of emission/transition param
 Ideally the model size used will be large enough that the model produced is 'guaranteed' to have lots of redundant states. We appreciate that the model learning time for this script can be incredibly long, but this stage is important for determining good values for thresholds.
 
 :::note[Baum-Welch]
-ChromHMM uses the Baum-Welch algorithm to train the model. This algorithm finds a **local** maximum of the [estimated log likelihood](./ChromHMM-overview.md#estimated-log-likelihood), **not** the **global** maximum.
+ChromHMM uses the Baum-Welch algorithm to train the model. This algorithm finds a **local** maximum of the [estimated log likelihood], **not** the **global** maximum.
 
 Therefore, because the initialisation is random, the models produced by this script can take variable lengths of time to train (for different seeds) and may be highly innacurate (despite their complexity).
 :::
