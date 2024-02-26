@@ -35,14 +35,20 @@ After using this pipeline, the user will have greater knowledge over their datas
 ## Getting started
 1) Clone this repository
 2) Ensure all [required software](#software-requirements) is installed
-3) Create the configuration files using the [templates](https://sof202.github.io/ChromOptimise/ChromOptimise/Configuration-Files-Setup) provided and place them in a memorable location (with the data the tool is being used on is recommended)
+3) Create the configuration files using the [templates](https://sof202.github.io/ChromOptimise/ChromOptimise/Configuration-Files-Setup) provided and place them in a memorable location
 4) Run the [`setup`](https://github.com/sof202/ChromOptimise/blob/main/setup) executable 
     - You may need to use `chmod +x setup` first
     - The user will be prompted for whether they want to remove lines beginning with `module` (artefact of HPC system used at UoE)
+    - The user will also be prompted if they want to remove SLURM directives that are specific to the UoE HPC.
 
 ## Usage
-After completing ['getting started'](#getting-started), run each of the shell scripts in [JobSubmission](https://github.com/sof202/ChromOptimise/tree/main/JobSubmission) sequentially for each epigenetic mark. For further information and **example code** please consult the [pipeline explanation](https://sof202.github.io/ChromOptimise/ChromOptimise/Pipeline-Explanation) and the [related schematic representation](https://github.com/sof202/ChromOptimise/blob/main/information/Optimal_States_Analysis_Pipeline.pdf).
-\
+After completing ['getting started'](#getting-started), run the master script (ChromOptimise.sh) in the command line with:
+```bash
+bash ChromOptimise path/to/configuration/directory
+```
+
+Alternatively, you can run each of the shell scripts in [JobSubmission](https://github.com/sof202/ChromOptimise/tree/main/JobSubmission) sequentially for each epigenetic mark. For further information and **example usage** please consult the [pipeline explanation](https://sof202.github.io/ChromOptimise/category/main-pipeline---usage-and-explanation).
+
 Depending on your chosen dataset, you may not need to run all scripts. For example:
 - If you are not downloading data from EGA, the first two scripts are not necessary 
     - Just ensure that `.bam` files are organised into directories named [[epigenetic mark name]] within the [raw files directory](https://sof202.github.io/ChromOptimise/ChromOptimise/Configuration-Files-Setup#data-directory-structure)
