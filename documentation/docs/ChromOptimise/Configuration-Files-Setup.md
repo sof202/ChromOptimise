@@ -181,7 +181,7 @@ This is the configuration file that enables the user to run all of the files in 
 
 ```text title="ChromOptimiseConfig.txt"
 # Which shell script to start from (provide a number from 0 to 6)
-export starting_script=
+export STARTING_SCRIPT=
 
 # This is the list of marks that you intend to use in the analysis
 # Please provide this as a white space separated array
