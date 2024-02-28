@@ -260,9 +260,9 @@ if [[ "${STARTING_SCRIPT}" -eq 4 ]]; then
 elif [[ "${STARTING_SCRIPT}" -lt 4 ]]; then
     # Checkpoint script should not finish searching until all subsampling has
     # finished. We use the downloading MAXTIME as this is likely to be very
-    # high and wait until at least the first mark has been successfully merged
+    # high and wait until at least the final mark has been successfully merged
     # to start the search
-    array_index_merge="${LIST_OF_MARKS[0]}_merge"
+    array_index_merge="${LIST_OF_MARKS[-1]}_merge"
 
     jobID[checkpoint]=$( \
     sbatch \
