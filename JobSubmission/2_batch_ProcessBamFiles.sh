@@ -188,10 +188,10 @@ left_over_files=$((remainder + number_files_for_each_array))
 
 
 if [[ "${SLURM_ARRAY_TASK_ID}" -eq "${SLURM_ARRAY_TASK_COUNT}" ]]; then
-    files_to_process=$(find . -type f -name "*.bam" | \
+    files_to_process=$(find "${RAW_FULL_FILE_PATH}" -type f -name "*.bam" | \
     tail -$left_over_files)
 else
-    files_to_process=$(find . -type f -name "*.bam" | \
+    files_to_process=$(find "${RAW_FULL_FILE_PATH}" -type f -name "*.bam" | \
     head -$start_file_index | \
     tail -$number_files_for_each_array )
 fi
