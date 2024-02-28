@@ -243,7 +243,8 @@ if [[ "${STARTING_SCRIPT}" -eq 4 ]]; then
     --config="${configuration_directory}" \
     --binsize="${BIN_SIZE}" \
     --samplesize="${SAMPLE_SIZE}" \
-    --assembly="${ASSEMBLY}" \
+    --assembly="${ASSEMBLY}" | \
+    awk '{print $4}' \
     )
 
     echo "Submitted 4_BinarizeBamFiles.sh under job ID:"
@@ -277,7 +278,7 @@ elif [[ "${STARTING_SCRIPT}" -lt 4 ]]; then
 
     # ------------------------------------------------------------- #
     
-    jobID[binarization]=$( \
+    jobID[binarization]=$(
     sbatch \
     --time="${MAXTIME_4}" \
     --dependency=afterok:"${jobID[checkpoint]}" \
@@ -285,7 +286,8 @@ elif [[ "${STARTING_SCRIPT}" -lt 4 ]]; then
     --config="${configuration_directory}" \
     --binsize="${BIN_SIZE}" \
     --samplesize="${SAMPLE_SIZE}" \
-    --assembly="${ASSEMBLY}" \
+    --assembly="${ASSEMBLY}" | \
+    awk '{print $4}' \
     )
 
     echo "Submitted 4_BinarizeBamFiles.sh under job ID:"
@@ -306,7 +308,8 @@ if [[ "${STARTING_SCRIPT}" -eq 5 ]]; then
     --increment="${STATE_INCREMENT}" \
     --binsize="${BIN_SIZE}" \
     --samplesize="${SAMPLE_SIZE}" \
-    --assembly="${ASSEMBLY}" \
+    --assembly="${ASSEMBLY}" | \
+    awk '{print $4}' \
     )
 
     echo "Submitted 5_batch_CreateIncrementalModels.sh under job ID:"
@@ -324,7 +327,8 @@ elif [[ "${STARTING_SCRIPT}" -lt 5 ]]; then
     --increment="${STATE_INCREMENT}" \
     --binsize="${BIN_SIZE}" \
     --samplesize="${SAMPLE_SIZE}" \
-    --assembly="${ASSEMBLY}" \
+    --assembly="${ASSEMBLY}" | \
+    awk '{print $4}' \
     )
 
     echo "Submitted 5_batch_CreateIncrementalModels.sh under job ID:"
@@ -340,7 +344,8 @@ if [[ "${STARTING_SCRIPT}" -eq 6 ]]; then
     --time="${MAXTIME_6}" \
     "6_OptimalNumberOfStates.sh" \
     --config="${configuration_directory}" \
-    --chromosome="${CHROMOSOME_IDENTIFIER}" \
+    --chromosome="${CHROMOSOME_IDENTIFIER}" | \
+    awk '{print $4}' \
     )
 
     echo "Submitted 6_OptimalNumberOfStates.sh under job ID:"
@@ -353,7 +358,8 @@ elif [[ "${STARTING_SCRIPT}" -lt 6 ]]; then
     --dependency=afterok:"${jobID[Model_Learning]}" \
     "6_OptimalNumberOfStates.sh" \
     --config="${configuration_directory}" \
-    --chromosome="${CHROMOSOME_IDENTIFIER}" \
+    --chromosome="${CHROMOSOME_IDENTIFIER}" | \
+    awk '{print $4}' \
     )
 
     echo "Submitted 6_OptimalNumberOfStates.sh under job ID:"
