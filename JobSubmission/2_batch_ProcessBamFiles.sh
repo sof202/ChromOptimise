@@ -189,16 +189,15 @@ left_over_files=$((remainder + number_files_for_each_array))
 
 if [[ "${SLURM_ARRAY_TASK_ID}" -eq "${SLURM_ARRAY_TASK_COUNT}" ]]; then
     files_to_process=$(find . -type f -name "*.bam" | \
-    cut -d "/" -f 2 | \
-    sed 's/.bam//' | \
     tail -$left_over_files)
 else
     files_to_process=$(find . -type f -name "*.bam" | \
-    cut -d "/" -f 2 | \
-    sed 's/.bam//' | \
     head -$start_file_index | \
     tail -$number_files_for_each_array )
 fi
+
+echo "Processing files:"
+echo "${files_to_process}"
 
 ## ====================== ##
 ##    PROCESSING STAGE    ##
