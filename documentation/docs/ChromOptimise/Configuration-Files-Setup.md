@@ -227,13 +227,13 @@ export CHROMOSOME_IDENTIFIER=1
 # Variables are numbered by their corresponding script number 
 # (0 -> EGADownloading.sh)
 # Times must be in the format: hh:mm:ss
-export 0_MAXTIME=96:00:00
-export 1_MAXTIME=00:30:00
-export 2_MAXTIME=12:00:00
-export 3_MAXTIME=12:00:00
-export 4_MAXTIME=04:00:00
-export 5_MAXTIME=12:00:00
-export 6_MAXTIME=00:10:00
+export MAXTIME_0=96:00:00
+export MAXTIME_1=00:30:00
+export MAXTIME_2=12:00:00
+export MAXTIME_3=12:00:00
+export MAXTIME_4=04:00:00
+export MAXTIME_5=12:00:00
+export MAXTIME_6=00:10:00
 
 
 # The following are the array sizes you wish to use for batch jobs (processing
