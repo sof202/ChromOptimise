@@ -259,13 +259,15 @@ if [[ "${STARTING_SCRIPT}" -eq 4 ]]; then
 # directory has the correct number of files in it (for the sample size given).
 elif [[ "${STARTING_SCRIPT}" -lt 4 ]]; then
     # Checkpoint script should not finish searching until all subsampling has
-    # finished. The maximum time this can take is the addition of max
-    # wall times for previous scripts
-    
+    # finished. We use the downloading MAXTIME as this is likely to be very
+    # high and wait until at least the first mark has been successfully merged
+    # to start the search
+    array_index_merge="${LIST_OF_MARKS[0]}_merge"
+
     jobID[checkpoint]=$( \
     sbatch \
     --time="${MAXTIME_0}" \
-    --dependency=afterok:"${jobID[${array_index_process}]}" \
+    --dependency=afterok:"${jobID[${array_index_merge}]}" \
     "$CHROMOPTIMISE_DIR/ChromOptimiseCheckpoints/Subsampling_Checkpoint.sh" \
     "${configuration_directory}" \
     "${SAMPLE_SIZE}" \
