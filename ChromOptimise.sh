@@ -38,6 +38,11 @@
 # can be called using just their file name)
 
 CHROMOPTIMISE_DIR=$(dirname "$0")
+
+# dirname only gets the relative path, we want the full path for robustness.
+cd "${CHROMOPTIMISE_DIR}" || exit 1
+CHROMOPTIMISE_DIR=$(pwd)
+
 JOBSUBMISSION_DIR="${CHROMOPTIMISE_DIR}/JobSubmission"
 
 cd "${JOBSUBMISSION_DIR}" || { echo "An error occured, the JobSubmission 
