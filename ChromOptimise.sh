@@ -243,7 +243,7 @@ if [[ "${STARTING_SCRIPT}" -eq 4 ]]; then
     --config="${configuration_directory}" \
     --binsize="${BIN_SIZE}" \
     --samplesize="${SAMPLE_SIZE}" \
-    --assembly="${ASSEMBLY:=hg19}" \
+    --assembly="${ASSEMBLY}" \
     )
 
     echo "Submitted 4_BinarizeBamFiles.sh under job ID:"
@@ -285,7 +285,7 @@ elif [[ "${STARTING_SCRIPT}" -lt 4 ]]; then
     --config="${configuration_directory}" \
     --binsize="${BIN_SIZE}" \
     --samplesize="${SAMPLE_SIZE}" \
-    --assembly="${ASSEMBLY:=hg19}" \
+    --assembly="${ASSEMBLY}" \
     )
 
     echo "Submitted 4_BinarizeBamFiles.sh under job ID:"
@@ -306,7 +306,7 @@ if [[ "${STARTING_SCRIPT}" -eq 5 ]]; then
     --increment="${STATE_INCREMENT}" \
     --binsize="${BIN_SIZE}" \
     --samplesize="${SAMPLE_SIZE}" \
-    --assembly="${ASSEMBLY:=hg19}" \
+    --assembly="${ASSEMBLY}" \
     )
 
     echo "Submitted 5_batch_CreateIncrementalModels.sh under job ID:"
@@ -324,7 +324,7 @@ elif [[ "${STARTING_SCRIPT}" -lt 5 ]]; then
     --increment="${STATE_INCREMENT}" \
     --binsize="${BIN_SIZE}" \
     --samplesize="${SAMPLE_SIZE}" \
-    --assembly="${ASSEMBLY:=hg19}" \
+    --assembly="${ASSEMBLY}" \
     )
 
     echo "Submitted 5_batch_CreateIncrementalModels.sh under job ID:"
