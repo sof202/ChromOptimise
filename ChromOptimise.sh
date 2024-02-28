@@ -236,7 +236,7 @@ fi
 
 ## ---4_BinarizeBamFiles.sh-------------------------------------------------- ##
 if [[ "${STARTING_SCRIPT}" -eq 4 ]]; then
-    jobID[binarization]=$(
+    jobID[binarization]=$( \
     sbatch \
     --time="${MAXTIME_4}" \
     "4_BinarizeBamFiles.sh" \
@@ -261,7 +261,7 @@ elif [[ "${STARTING_SCRIPT}" -lt 4 ]]; then
     # finished. The maximum time this can take is the addition of max
     # wall times for previous scripts
     
-    jobID[checkpoint]=$(
+    jobID[checkpoint]=$( \
     sbatch \
     --time="${MAXTIME_0}" \
     --dependency=afterok:"${jobID[${array_index_process}]}" \
@@ -277,7 +277,7 @@ elif [[ "${STARTING_SCRIPT}" -lt 4 ]]; then
 
     # ------------------------------------------------------------- #
     
-    jobID[binarization]=$(
+    jobID[binarization]=$( \
     sbatch \
     --time="${MAXTIME_4}" \
     --dependency=afterok:"${jobID[checkpoint]}" \
