@@ -40,6 +40,7 @@ mkdir -p "${SUBSAMPLED_DIR}"
 mkdir -p "${BINARY_DIR}"
 mkdir -p "${MODEL_DIR}"
 mkdir -p "${OPTIMUM_STATES_DIR}"
+mkdir -p "${LD_ASSESSMENT_DIR}"
 mkdir -p "${COMPARE_DIR}"
 mkdir -p "${BIG_MODELS_DIR}"
 
@@ -72,5 +73,6 @@ if [[ "${delete_slurm_directives}" == "y" ]]; then
     for file in $script_list; do
         sed -i "s/#SBATCH -A Research_Project-MRC190311//g" "${file}"
         sed -i "s/#SBATCH -p mrcq//g" "${file}"
+        sed -i "s/#SBATCH --mail-type=ED//g" "${file}"
     done
 fi

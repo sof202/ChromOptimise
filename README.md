@@ -35,8 +35,9 @@ After using this pipeline, the user will have greater knowledge over their datas
 ## Getting started
 1) Clone this repository
 2) Ensure all [required software](#software-requirements) is installed
-3) Create the configuration files using the [templates](https://sof202.github.io/ChromOptimise/ChromOptimise/Configuration-Files-Setup) provided and place them in a memorable location
-4) Run the [`setup`](https://github.com/sof202/ChromOptimise/blob/main/setup) executable 
+3) If using [LDSC](https://github.com/bulik/ldsc), download 1000 genomes files (or similar) from this [repository](https://zenodo.org/records/10515792)
+4) Create the configuration files using the [templates](https://sof202.github.io/ChromOptimise/ChromOptimise/Configuration-Files-Setup) provided and place them in a memorable location
+5) Run the [`setup`](https://github.com/sof202/ChromOptimise/blob/main/setup) executable 
     - You may need to use `chmod +x setup` first
     - The user will be prompted for whether they want to remove lines beginning with `module` (artefact of HPC system used at UoE)
     - The user will also be prompted if they want to remove SLURM directives that are specific to the UoE HPC.
@@ -67,6 +68,7 @@ This pipeline requires a unix-flavoured OS with the following software installed
 - [Java](https://www.java.com/en/) (>= openjdk 13.0.2)
 - [ChromHMM](https://compbio.mit.edu/ChromHMM/#:~:text=ChromHMM%20is%20software%20for%20learning,and%20spatial%20patterns%20of%20marks.) (>=1.23)
 - [sed](https://www.gnu.org/software/sed/) (>=4.2.2)
+- [LDSC](https://github.com/bulik/ldsc) (>=aa33296)
 
 
 ## Further information
