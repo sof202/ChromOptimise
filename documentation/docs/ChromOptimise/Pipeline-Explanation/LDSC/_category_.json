@@ -1,0 +1,8 @@
+{
+  "label": "LDSC integration",
+  "position": 9,
+  "link": {
+    "type": "generated-index",
+    "description": "This is a script that runs ldsc and associated R scripts which help in determining if a model is biologically relevant."
+  }
+}

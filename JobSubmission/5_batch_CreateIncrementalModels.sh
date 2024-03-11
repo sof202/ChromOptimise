@@ -257,7 +257,7 @@ mkdir -p "${OPTIMUM_STATES_DIR}/Likelihood_Values"
 cd "${OPTIMUM_STATES_DIR}/Likelihood_Values" || finishing_statement 1
 
 # Job is to be submitted as an array so we only want to 
-# remake likelihood files for one of the array tasks, not all of them.
+# remake likelihood files for only one of the array tasks, not all of them.
 if [[ "${SLURM_ARRAY_TASK_ID}" -eq 1 ]]; then
     rm -f "likelihood.BinSize.${bin_size}.SampleSize.${sample_size}.txt"
     touch "likelihood.BinSize.${bin_size}.SampleSize.${sample_size}.txt"
@@ -274,12 +274,10 @@ for numstates in ${sequence}; do
     echo "Learning model with: ${numstates} states..."
 
     # -noautoopen used so html files are not opened after model learning finshes.
-    # -nobed used as genome browser files and segmentation files are not required.
     # -printstatebyline used to get the state assignment for isolation metrics
     java -mx4G \
     -jar "${CHROMHMM_MAIN_DIR}/ChromHMM.jar" LearnModel \
     -noautoopen \
-    -nobed \
     -printstatebyline \
     -b "${bin_size}" \
     "${full_binary_path}" "${MODEL_DIR}" "${numstates}" "${assembly}" > \
@@ -290,8 +288,7 @@ for numstates in ${sequence}; do
     echo -n "Estimated Log Likelihood for ${numstates} states: " >> \
     "likelihood.BinSize.${bin_size}.SampleSize.${sample_size}.txt"
 
-    # grep removes the terminal logs associated with writing to files. 
-    # The tail and awk locate the final estimated log likelihood.
+    # grep selects terminal logs that are not associated with writing to files.
     grep "  " "ChromHMM.Output.BinSize.${bin_size}.numstates.${numstates}.txt" | \
     tail -1 | \
     awk '{print $2}' >> \
@@ -320,15 +317,11 @@ finishing_statement 1; }
 # html files are not required for subsequent analysis
 rm ./*.html
 
-# Find all files in model directory, but not the state assignment files
 # We specifically want the model files that have yet to be renamed.
 # Renamed files will have the the second word as 'BinSize' instead of a number
 # so they will not be found by this command
 files_to_rename=$(find . -maxdepth 1 -type f -name "*ions_[0-9]*")
 
-# files will be named [emissions/transitions] (file start) followed by
-# information about the file (file middle) followed by the number of states
-# and file extension (file end)
 file_middle="_BinSize_${bin_size}_SampleSize_${sample_size}_States_"
 
 for file in $files_to_rename; do
