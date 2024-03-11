@@ -55,11 +55,22 @@ Main_Data_Directory
 │   ├── ...
 │   ├── Results_From_Run_n
 │   └── Likelihood_Values_Of_Models
-├── 7_Big_Model_Files
-│   └── Plots
-│       ├── Euclidean_Distance_Histrograms
-│       └── Transition_Maxima_Scatter_Plots
-└── 8_Model_Comparison_Files
+├── 7_LDSC_Assessment_Files
+│   ├── Results_From_Run_1
+│   ├── Results_From_Run_2
+│   ├── ...
+│   └── Results_From_Run_n
+├── 8_Model_Comparison_Files
+└── 9_Big_Model_Files
+    └── Plots
+        ├── Euclidean_Distance_Histrograms
+        └── Transition_Maxima_Scatter_Plots
+
+
+LDSC_reference_files
+├── PLINK_files
+├── Weights
+└── GWAS_traits
 ```
 
 ## FilePaths.txt
@@ -68,33 +79,50 @@ Main_Data_Directory
 ## Data directories
 
 export MAIN_DIR="full/path/to/main/directory"
-export DOWNLOAD_DIR="${MAIN_DIR}/path/to/downloads"
-export RAW_DIR="${MAIN_DIR}/path/to/raw/data"
-export PROCESSED_DIR="${MAIN_DIR}/path/to/processed/data"
-export SUBSAMPLED_DIR="${MAIN_DIR}/path/to/subsampled/data"
-export BINARY_DIR="${MAIN_DIR}/path/to/binary/data"
-export MODEL_DIR="${MAIN_DIR}/path/to/chromHMM/models"
-export OPTIMUM_STATES_DIR="${MAIN_DIR}/path/to/optimum/states/output"
-export COMPARE_DIR="${MAIN_DIR}/path/to/comparison/files"
-export BIG_MODELS_DIR="${MAIN_DIR}/path/to/big/models"
+export DOWNLOAD_DIR="${MAIN_DIR}/0_Downloads"
+export RAW_DIR="${MAIN_DIR}/1_RawBamFiles"
+export PROCESSED_DIR="${MAIN_DIR}/2_ProcessedBamFiles"
+export SUBSAMPLED_DIR="${MAIN_DIR}/3_SubsampledBamFiles"
+export BINARY_DIR="${MAIN_DIR}/4_BinarizedBamFiles"
+export MODEL_DIR="${MAIN_DIR}/5_ModelFiles"
+export OPTIMUM_STATES_DIR="${MAIN_DIR}/6_OptimumNumberOfStates"
+export LD_ASSESSMENT_DIR="${MAIN_DIR}/7_LDSCFiles"
+export COMPARE_DIR="${MAIN_DIR}/8_ModelComparisonFiles"
+export BIG_MODELS_DIR="${MAIN_DIR}/9_BigModelFiles"
+
+## LDSC data directories
+
+export LD_DIR="full/path/to/ldsc/directory"
+export LD_PLINK_DIR="${LD_DIR}/PLINK_files"
+export LD_WEIGHTS_DIR="${LD_DIR}/weights_files"
+export LD_GWAS_TRAITS_DIR="${LD_DIR}/gwas_traits"
+
+## LDSC reference file prefixes
+
+export PLINK_PREFIX="prefix.for.plink.files"
+export WEIGHTS_PREFIX="prefix.for.weights.files"
 
 ## Script directories
 
 export SCRIPTS_DIR="full/path/to/this/repository"
 export RSCRIPTS_DIR="${SCRIPTS_DIR}/Rscripts"
-export SUPPLEMENTARY_DIR="${SCRIPTS_DIR}/supplementary"
 export LOG_DIR="${SCRIPTS_DIR}/LogFiles"
 
 ## Pyega3/conda directories
 
 export CONDA_SHELL="path/to/conda/etc/folder"
 export PYEGA_ENVIRONMENT="path/to/pyega3/conda/environment"
+export LDSC_ENVIRONMENT="path/to/ldsc/conda/environment"
 export CREDENTIALS="path/to/EGA/credentials"
 
 ## ChromHMM file locations
 
 export CHROMHMM_MAIN_DIR="/path/to/ChromHMM/main/directory"
 export CHROMHMM_CHROM_SIZES="${CHROMHMM_MAIN_DIR}/path/to/chromosome/sizes"
+
+## LDSC software
+
+export LD_SOFTWARE_DIR="path/to/ldsc/main/directory"
 ```
 
 ## config.R
@@ -222,6 +250,11 @@ export STATE_INCREMENT=1
 # this matters for your analysis, keep this at 1.
 export CHROMOSOME_IDENTIFIER=1
 
+# If you are running the script starting from script 7 (in which case this
+# master script is a little overkill), you need to input the number of states
+# you deem to be optimal. If starting on script <=6, this is not required
+export OPTIMUM_NUMBER_OF_STATES=
+
 # The following are the time you wish to allocate to each job (without this
 # jobs have no maximum walltime and can run forever).
 # Variables are numbered by their corresponding script number 
@@ -233,7 +266,8 @@ export MAXTIME_2=12:00:00
 export MAXTIME_3=12:00:00
 export MAXTIME_4=04:00:00
 export MAXTIME_5=12:00:00
-export MAXTIME_6=00:10:00
+export MAXTIME_6=00:20:00
+export MAXTIME_7=00:10:00
 
 
 # The following are the array sizes you wish to use for batch jobs (processing
