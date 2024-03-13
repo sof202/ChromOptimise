@@ -18,9 +18,8 @@
 ## Run 5_batch_CreateIncrementalModels.sh                         ||
 ## ============================================================== ##
 ## INPUTS:                                                        ||
-## $1 -> Location of configuation file                            ||
-## $2 -> Location of transition matrix file                       ||
-## $3 -> Directory to place output files into                     ||
+## $1 -> Location of transition matrix file                       ||
+## $2 -> Directory to place output files into                     ||
 ## ============================================================== ##
 ## OUTPUTS:                                                       ||
 ## Text file containing most probable flanking states for each    ||
@@ -34,12 +33,8 @@
 rm(list = ls())
 
 arguments <- commandArgs(trailingOnly = TRUE)
-config_file_location <- arguments[1]
-transitions_file <- arguments[2]
-output_file_path <- arguments[3]
-
-source(config_file_location)
-setwd(model_dir)
+transitions_file <- arguments[1]
+output_file_path <- arguments[2]
 
 ## ================= ##
 ##   LOADING FILES   ##

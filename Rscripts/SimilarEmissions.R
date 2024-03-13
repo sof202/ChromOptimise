@@ -15,10 +15,9 @@
 ## Run 5_batch_CreateIncrementalModels.sh                         ||
 ## ============================================================== ##
 ## INPUTS:                                                        ||
-## $1 -> Location of configuation file                            ||
-## $2 -> Location of transition matrix file                       ||
-## $3 -> Directory to place output files into                     ||
-## $4 -> Boolean for if plots are to be made                      ||
+## $1 -> Location of transition matrix file                       ||
+## $2 -> Directory to place output files into                     ||
+## $3 -> Boolean for if plots are to be made                      ||
 ## ============================================================== ##
 ## OUTPUTS:                                                       ||
 ## Text file containing the Euclidean distance between each       ||
@@ -34,13 +33,9 @@ rm(list = ls())
 library(ggplot2)
 
 arguments <- commandArgs(trailingOnly = TRUE)
-config_file_location <- arguments[1]
-emissions_file <- arguments[2]
-output_file_path <- arguments[3]
-plotting_flag <- arguments[4]
-
-source(config_file_location)
-setwd(model_dir)
+emissions_file <- arguments[1]
+output_file_path <- arguments[2]
+plotting_flag <- arguments[3]
 
 ## ================= ##
 ##   LOADING FILES   ##

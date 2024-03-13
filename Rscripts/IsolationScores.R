@@ -17,11 +17,10 @@
 ## Run 5_batch_CreateIncrementalModels.sh                         ||
 ## ============================================================== ##
 ## INPUTS:                                                        ||
-## $1 -> Location of configuation file                            ||
-## $2 -> State assignments file                                   ||
-## $3 -> Output file path                                         ||
-## $4 -> Size of the model                                        ||
-## $5 -> Sample size for isolation score                          ||
+## $1 -> State assignments file                                   ||
+## $2 -> Output file path                                         ||
+## $3 -> Size of the model                                        ||
+## $4 -> Sample size for isolation score                          ||
 ## ============================================================== ##
 ## OUTPUTS:                                                       ||
 ## Text file containing isolation scores for each state           ||
@@ -36,13 +35,10 @@ rm(list = ls())
 library(ggplot2)
 
 arguments <- commandArgs(trailingOnly = TRUE)
-config_file_location <- arguments[1]
-state_assignments_file <- arguments[2]
-output_file_path <- arguments[3]
-model_size <- as.numeric(arguments[4])
-isolation_sample_size <- as.numeric(arguments[5])
-
-source(config_file_location)
+state_assignments_file <- arguments[1]
+output_file_path <- arguments[2]
+model_size <- as.numeric(arguments[3])
+isolation_sample_size <- as.numeric(arguments[4])
 
 ## =================== ##
 ##   FILE PROCESSING   ##

@@ -130,19 +130,6 @@ export LD_SOFTWARE_DIR="path/to/ldsc/main/directory"
 To get a good value for the thresholds in the redundancy parameters section, please consult the [supplementary pipeline](/category/supplementary-pipeline---usage-and-explanation).
 
 ```R title="config.R"
-## Data Directories
-
-main_dir="path/to/main/directory"
-model_dir=paste0(main_dir, "path/to/model/files")
-optimum_states_dir=paste0(main_dir, "path/to/optimum/states/output")
-compare_dir=paste0(main_dir, "path/to/comparison/files")
-big_models_dir=paste0(main_dir,"path/to/big/model/files")
-
-## Plotting directories
-
-transition_plotting_dir=paste0(big_models_dir,"/path/to/plots")
-emission_plotting_dir=paste0(big_models_dir,"/path/to/plots")
-
 ## Redundancy parameters
 
 emissions_threshold=VALUE
