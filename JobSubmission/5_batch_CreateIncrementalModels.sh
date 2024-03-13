@@ -206,6 +206,7 @@ output_directory="${MODEL_DIR:?}\
 
 rm -rf "${output_directory}"
 mkdir -p "${output_directory}/Likelihood_Values"
+mkdir -p "${output_directory}/STATEBYLINE"
 cd "${output_directory}/Likelihood_Values" || finishing_statement 1
 
 
@@ -266,7 +267,7 @@ for numstates in ${sequence}; do
     "ChromHMM.output.numstates.${numstates}.txt"
 
     echo "Writing estimated log likelihood to: likelihoods.txt"
-    echo -n "Estimated Log Likelihood for ${numstates} states: " >> \
+    echo "Estimated Log Likelihood for ${numstates} states: " >> \
     "likelihoods.txt"
 
     # grep selects terminal logs that are not associated with writing to files.
