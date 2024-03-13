@@ -174,8 +174,8 @@ if [[ -z "${bin_size}" || -z "${sample_size}" || -z "${number_of_models}" ]]; th
     -name "BinSize_*${bin_size}*_SampleSize_*${sample_size}*_*${number_of_models}*" | \
     head -1)
 else
-    input_directory="${MODEL_DIR:?} \
-    /BinSize_${bin_size}_SampleSize_${sample_size}_${number_of_models}"
+input_directory="${MODEL_DIR:?}\
+/BinSize_${bin_size}_SampleSize_${sample_size}_${number_of_models}"
 fi
 
 if [[ -z "$(ls -A "${input_directory}")" ]]; then
