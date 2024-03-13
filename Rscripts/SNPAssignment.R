@@ -54,7 +54,7 @@ reference_bim_file <- read.table(reference_bim_file)
 # This requires the inputted UCSC BED file to be sorted (which is usually the 
 # case) as the binary search relies on this to function.
 snp_annotation_binary_search <- function(snp_position, bed_file) {
-  intervals <- c(bed_file[, 1], bed_file[nrows(bed_file), 2])
+  intervals <- c(bed_file[, 1], bed_file[nrow(bed_file), 2])
   index <- findInterval(snp_position, intervals)
   if (index > 0) {
     # state assignments should be in third column of bed file
