@@ -226,6 +226,7 @@ finishing_statement 1; }
 
 # We ignore non-autosomal chromosomes as 1000 genomes doesn't provide this data
 for chromosome in {1..22}; do
+    echo "Creating SNP assignments for chromosome: ${chromosome}"
     bim_file="${LD_PLINK_DIR}/${PLINK_PREFIX}.${chromosome}.bim"
 
     Rscript SNPAssignment.R \
@@ -249,6 +250,7 @@ conda activate "${LDSC_ENVIRONMENT}"
 
 
 for chromosome in {1..22}; do
+    echo "Creating base ld scores for chromosome ${chromosome}"
     python \
     "${LD_SOFTWARE_DIR}/ldsc.py" \
     --l2 \
@@ -266,7 +268,8 @@ gwas_traits=$(find "${LD_GWAS_TRAITS_DIR}" -name "*${gwas_pattern}*.sumstats*")
 
 for file_name in "${gwas_traits[@]}"; do
     output_file=$(basename "${file_name}" .sumstats.gz)
-
+    echo "Generating partitioned heritability ld scores for: ${output_file}"
+    
     # No need for overlap frq files here as state assignments are necessarily
     # distinct categories
 	python \
@@ -285,7 +288,7 @@ conda deactivate
 module purge
 module module load R/4.2.1-foss-2022a
 
-
+echo "Generating output plots"
 Rscript HeritabilityHeatmap.R \
 <(find "${output_directory}/heritability" -name "*${gwas_pattern}*.results") \
 "${output_directory}/plots"
