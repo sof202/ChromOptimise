@@ -177,8 +177,8 @@ if [[ -z "${bin_size}" || -z "${sample_size}" || -z "${number_of_models}" ]]; th
     sample_size=$(basename "${input_directory}" | cut -d_ -f4)
     number_of_models=$(basename "${input_directory}" | cut -d_ -f5)
 else
-    input_directory="${OPTIMUM_STATES_DIR} \
-    /BinSize_${bin_size}_SampleSize_${sample_size}_${number_of_models}"
+input_directory="${OPTIMUM_STATES_DIR} \
+/BinSize_${bin_size}_SampleSize_${sample_size}_${number_of_models}"
 fi
 
 if [[ -z "${model_size}" ]]; then
