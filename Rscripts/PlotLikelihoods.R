@@ -16,10 +16,8 @@
 ## Run 5_batch_CreateIncrementalModels.sh                         ||
 ## ============================================================== ##
 ## INPUTS:                                                        ||
-## $1 -> Location of configuation file                            ||
-## $2 -> Bin size                                                 ||
-## $3 -> Sample size                                              ||
-## $4 -> Directory to place output files into                     ||
+## $1 -> Location of likelihoods file                             ||
+## $2 -> Directory to place output files into                     ||
 ## ============================================================== ##
 ## OUTPUTS:                                                       ||
 ## Line plot of estimated log likelihoods against the number      ||
@@ -40,22 +38,15 @@ library("ggplot2")
 library("dplyr")
 
 arguments <- commandArgs(trailingOnly = TRUE)
-config_file_location <- arguments[1]
-bin_size <- arguments[2]
-sample_size <- arguments[3]
-output_file_path <- arguments[4]
+likelihoods_file <- arguments[1]
+output_file_path <- arguments[2]
 
-source(config_file_location)
-setwd(likelihood_dir)
 
 ## ============== ##
 ##   PROCESSING   ##
 ## ============== ##
 
-file_name <- paste0(
-  "likelihood.BinSize.", bin_size, ".SampleSize.", sample_size, ".txt"
-)
-likelihood_data <- read.table(file_name)
+likelihood_data <- read.table(likelihoods_file)
 
 likelihood_data <- subset(likelihood_data, select = c(V5, V7))
 names(likelihood_data) <- c("number_of_states", "estimated_log_likelihood")

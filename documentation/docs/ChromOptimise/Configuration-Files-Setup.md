@@ -135,7 +135,6 @@ To get a good value for the thresholds in the redundancy parameters section, ple
 main_dir="path/to/main/directory"
 model_dir=paste0(main_dir, "path/to/model/files")
 optimum_states_dir=paste0(main_dir, "path/to/optimum/states/output")
-likelihood_dir=paste0(optimum_states_dir, "Likelihood_Values")
 compare_dir=paste0(main_dir, "path/to/comparison/files")
 big_models_dir=paste0(main_dir,"path/to/big/model/files")
 

@@ -16,11 +16,9 @@
 ## Run 6_CompareModels.sh                                         ||
 ## ============================================================== ##
 ## INPUTS:                                                        ||
-## $1 -> Location of configuation file                            ||
-## $2 -> Bin size                                                 ||
-## $3 -> Sample size                                              ||
-## $4 -> Total size of binary files                               ||
-## $5 -> Directory to place output files into                     ||
+## $1 -> Location of likelihoods file                             ||
+## $2 -> Total size of binary files                               ||
+## $3 -> Directory to place output files into                     ||
 ## ============================================================== ##
 ## OUTPUTS:                                                       ||
 ## Scatter plot of relative BIC against number of states          ||
@@ -33,26 +31,22 @@
 
 rm(list = ls())
 
+setwd("/lustre/projects/Research_Project-MRC190311/scripts/integrative")
+source("ChromOptimise/configuration/config.R")
+setwd(likelihood_dir)
+
 library(ggplot2)
 
 arguments <- commandArgs(trailingOnly = TRUE)
-config_file_location <- arguments[1]
-bin_size <- arguments[2]
-sample_size <- arguments[3]
-number_of_observations <- as.numeric(arguments[4])
-output_file_path <- arguments[5]
-
-source(config_file_location)
-setwd(likelihood_dir)
+likelihoods_file <- arguments[1]
+number_of_observations <- as.numeric(arguments[2])
+output_file_path <- arguments[3]
 
 ## =============== ##
 ##   IMPORT DATA   ##
 ## =============== ##
 
-file_name <- paste0(
-  "likelihood.BinSize.", bin_size, ".SampleSize.", sample_size, ".txt"
-)
-likelihood_data <- read.table(file_name)
+likelihood_data <- read.table(likelihoods_file)
 
 likelihood_data <- subset(likelihood_data, select = c(V5, V7))
 names(likelihood_data) <- c("number_of_states", "estimated_log_likelihood")
@@ -95,6 +89,8 @@ relative_bic_scatter +
        x = "Number of States", y = "BIC (relative to minimum BIC)") +
   theme_bw() +
   theme(plot.title = element_text(hjust = 0.5))
+
+write_csv(likelihood_data, file.path(output_file_path, "Bayesian_Information_Criterion.csv"))
 
 
 setwd(output_file_path)

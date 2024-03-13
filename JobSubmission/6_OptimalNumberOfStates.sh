@@ -314,8 +314,9 @@ fi
 echo "Plotting the estimated log likelihoods of learned models against" \
 "one another..."
 
-Rscript PlotLikelihoods.R "${configuration_directory}/config.R" \
-"${bin_size}" "${sample_size}" "${output_directory}"
+Rscript PlotLikelihoods.R \
+"${input_directory}/Likelihood_Values/likelihoods.txt" \
+"${output_directory}"
 
 # We plot the relative Bayesian information critereon for each model so the user
 # can use a less complex model if they wish. A less complex model may have a
@@ -334,8 +335,10 @@ for file in "${full_binary_path}"/*_binary.txt*; do
 done
 
 echo "Processing the Bayesian information critereon of learned models..."
-Rscript CalculateBIC.R "${configuration_directory}/config.R" \
-"${bin_size}" "${sample_size}" "${total_observations}" "${output_directory}"
+Rscript CalculateBIC.R \
+"${input_directory}/Likelihood_Values/likelihoods.txt" \
+"${total_observations}" \
+"${output_directory}"
 
 
 finishing_statement 0
