@@ -54,6 +54,9 @@
 ## -c|--config=     -> Full/relative file path for configuation file directory||
 ## -h|--chromosome= -> The chromosome to look at the isolation score for      ||
 ##                     (default:1)                                            ||
+## -b|--binsize=    -> The bin size used in 4_BinarizeBamFiles                ||
+## -s|--samplesize= -> The sample size used in 3_SubsampleBamFiles            ||
+## -n|--nummodels=  -> Number of models to learn (default: 4)                 ||
 ## ===========================================================================##
 ## OUTPUTS:                                                                   ||
 ## File containing why models with too many states were rejected              ||
@@ -82,6 +85,9 @@ Inputs:
 -c|--config=     -> Full/relative file path for configuation file directory
 -h|--chromosome= -> The chromosome to look at the isolation score for 
                     (default:1)
+-b|--binsize=    -> The bin size used in 4_BinarizeBamFiles
+-s|--samplesize= -> The sample size used in 3_SubsampleBamFiles
+-n|--nummodels=  -> Number of models to learn (default: 4)
 ===========================================================================
 EOF
     exit 0
@@ -94,7 +100,7 @@ needs_argument() {
 
 if [[ ! $1 =~ -.* ]]; then usage; fi
 
-while getopts c:h:-: OPT; do
+while getopts c:h:b:s:m:-: OPT; do
     # Adds support for long options by reformulating OPT and OPTARG
     # This assumes that long options are in the form: "--long=option"
     if [ "$OPT" = "-" ]; then
@@ -105,6 +111,9 @@ while getopts c:h:-: OPT; do
     case "$OPT" in
         c | config )     needs_argument; configuration_directory="$OPTARG" ;;
         h | chromosome)  needs_argument; chromosome_identifier="$OPTARG" ;;
+        b | binsize )    needs_argument; bin_size="$OPTARG" ;;
+        s | samplesize ) needs_argument; sample_size="$OPTARG" ;;
+        n | nummodels)   needs_argument; number_of_models="$OPTARG" ;;
         \? )             usage ;;  # Illegal short options are caught by getopts
         * )              usage ;;  # Illegal long option
     esac
@@ -157,25 +166,23 @@ if [[ -z "${chromosome_identifier}" ]]; then
     "${chromosome_identifier} instead."
 fi
 
-# Set bin/sample size by searching through the model directory
-cd "${MODEL_DIR}" || \
-{ >&2 echo "ERROR: [\${MODEL_DIR} - ${MODEL_DIR}] doesn't exist, \
-make sure FilePaths.txt is pointing to the correct directory."
-finishing_statement 1; }
+if [[ -z "${bin_size}" || -z "${sample_size}" || -z "${number_of_models}" ]]; then
+    # If the user doesn't put in all of these options, our best hope is to look
+    # for the first approximate match
+    input_directory=$( \
+    find "${MODEL_DIR:?}" -type d \
+    -name "BinSize_*${bin_size}*_SampleSize_*${sample_size}*_*${number_of_models}*" | \
+    head -1)
+else
+    input_directory="${MODEL_DIR:?} \
+    /BinSize_${bin_size}_SampleSize_${sample_size}_${number_of_models}"
+fi
 
-if [[ -z "$(ls -A)" ]]; then
-    { >&2 echo -e "ERROR: No files found in [\${MODEL_DIR} - ${MODEL_DIR}].\n"\
+if [[ -z "$(ls -A "${input_directory}")" ]]; then
+    { >&2 echo -e "ERROR: No files found in: ${input_directory}.\n"\
     "Please run 5_CreateIncrementalModels.sh before this script."
     finishing_statement 1; }
 fi
-
-# Specifically we want to find the bin and sample size from the emissions
-# or transitions files (and not the model or statebyline files)
-# Hence we look for text files that have the word 'states' in them
-# (due to the renaming that happened in model learning script).
-# File names are "." separated with 3rd field bin size and 5th field sample size
-bin_size=$(find . -type f -name "*States*.txt" | head -1 | cut -d "_" -f 3)
-sample_size=$(find . -type f -name "*States*.txt" | head -1 | cut -d "_" -f 5)
 
 ## =============== ##
 ##    MAIN LOOP    ##
@@ -185,21 +192,19 @@ sample_size=$(find . -type f -name "*States*.txt" | head -1 | cut -d "_" -f 5)
 # or transition files could have been used just the same.
 # We reverse the order as we plan on working from the most complex model
 # to the least until a model with no redundant states is found.
-mapfile -t model_sizes < <(find . -type f -name "emissions*.txt" | \
+mapfile -t model_sizes < <(find "${input_directory}" -type f -name "emissions*.txt" | \
 grep -oP "\d+(?=.txt)" | \
 sort -gr)
 
-output_directory="${OPTIMUM_STATES_DIR}\
-/BinSize_${bin_size}_SampleSize_${sample_size}_MaxModelSize_${model_sizes[0]}"
+output_directory="${OPTIMUM_STATES_DIR:?}\
+/BinSize_${bin_size}_SampleSize_${sample_size}_${number_of_models}"
 
 # Clear up the directory in case of repeat runs (with different thresholds)
-rm -rf "${output_directory:?}"
+rm -rf "${output_directory}"
 
 mkdir -p "${output_directory}/Euclidean_distances"
 mkdir -p "${output_directory}/Flanking_states"
 mkdir -p "${output_directory}/Isolation_scores"
-
-rm -f "${output_directory:?}"/*
 
 module purge
 module load R/4.2.1-foss-2022a
@@ -218,21 +223,21 @@ for model_number in "${model_sizes[@]}"; do
     # "A state is not assigned on one chromosome but has dense assignment
     # on another"
     state_assignment_file=$(\
-    find "${MODEL_DIR}" -name "*_${model_number}_chr${chromosome_identifier}_*" \
+    find "${input_directory}" -name "*_${model_number}_chr${chromosome_identifier}_*" \
     )
 
     emissions_file=$(\
-    find "${MODEL_DIR}" -name "emissions*${model_number}.txt*" \
+    find "${input_directory}" -name "emissions_${model_number}.txt*" \
     )
     transitions_file=$(\
-    find "${MODEL_DIR}" -name "transitions*${model_number}.txt*" \
+    find "${input_directory}" -name "transitions_${model_number}.txt*" \
     )
 
     # The existence of this file (provided the user doesn't delete them)
     # implies the existence of the emissions and transistions files.
     if [[ -z "$state_assignment_file" ]]; then
         { >&2 echo "ERROR: No state assignment file found for chromosome:" \
-        "${chromosome_identifier}, please check ${MODEL_DIR}/STATEBYLINE for" \
+        "${chromosome_identifier}, please check ${input_directory}/STATEBYLINE for" \
         "the existence of this state assignment file"; finishing_statement 1; }
     fi
 

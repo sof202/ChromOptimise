@@ -307,7 +307,6 @@ if [[ "${STARTING_SCRIPT}" -eq 5 ]]; then
     "5_batch_CreateIncrementalModels.sh" \
     --config="${configuration_directory}" \
     --nummodels="${NUMBER_OF_MODELS}" \
-    --increment="${STATE_INCREMENT}" \
     --binsize="${BIN_SIZE}" \
     --samplesize="${SAMPLE_SIZE}" \
     --assembly="${ASSEMBLY}" | \
@@ -326,7 +325,6 @@ elif [[ "${STARTING_SCRIPT}" -lt 5 ]]; then
     "5_batch_CreateIncrementalModels.sh" \
     --config="${configuration_directory}" \
     --nummodels="${NUMBER_OF_MODELS}" \
-    --increment="${STATE_INCREMENT}" \
     --binsize="${BIN_SIZE}" \
     --samplesize="${SAMPLE_SIZE}" \
     --assembly="${ASSEMBLY}" | \
@@ -346,7 +344,10 @@ if [[ "${STARTING_SCRIPT}" -eq 6 ]]; then
     --time="${MAXTIME_6}" \
     "6_OptimalNumberOfStates.sh" \
     --config="${configuration_directory}" \
-    --chromosome="${CHROMOSOME_IDENTIFIER}" | \
+    --chromosome="${CHROMOSOME_IDENTIFIER}" \
+    --binsize="${BIN_SIZE}" \
+    --samplesize="${SAMPLE_SIZE}" \
+    --nummodels="${NUMBER_OF_MODELS}" | \
     awk '{print $4}' \
     )
 
@@ -360,7 +361,10 @@ elif [[ "${STARTING_SCRIPT}" -lt 6 ]]; then
     --dependency=afterok:"${jobID[Model_Learning]}" \
     "6_OptimalNumberOfStates.sh" \
     --config="${configuration_directory}" \
-    --chromosome="${CHROMOSOME_IDENTIFIER}" | \
+    --chromosome="${CHROMOSOME_IDENTIFIER}" \
+    --binsize="${BIN_SIZE}" \
+    --samplesize="${SAMPLE_SIZE}" \
+    --nummodels="${NUMBER_OF_MODELS}" | \
     awk '{print $4}' \
     )
 
@@ -379,7 +383,8 @@ if [[ "${STARTING_SCRIPT}" -eq 7 ]]; then
     --state="${OPTIMUM_NUMBER_OF_STATES}" \
     --gwas="${GWAS_PATTERN}" \
     --binsize="${BIN_SIZE}" \
-    --samplesize="${SAMPLE_SIZE}" | \
+    --samplesize="${SAMPLE_SIZE}" \
+    --nummodels="${NUMBER_OF_MODELS}" | \
     awk '{print $4}' \
     )
 
@@ -387,7 +392,6 @@ if [[ "${STARTING_SCRIPT}" -eq 7 ]]; then
     echo "${jobID[LDSC]}"
 
 elif [[ "${STARTING_SCRIPT}" -lt 7 ]]; then
-    max_model_size=$(( 2 + (NUMBER_OF_MODELS - 1) * STATE_INCREMENT ))
     jobID[LDSC]=$( \
     sbatch \
     --time="${MAXTIME_7}" \
@@ -397,7 +401,7 @@ elif [[ "${STARTING_SCRIPT}" -lt 7 ]]; then
     --gwas="${GWAS_PATTERN}" \
     --binsize="${BIN_SIZE}" \
     --samplesize="${SAMPLE_SIZE}" \
-    --maxmodel="${max_model_size}" | \
+    --nummodels="${NUMBER_OF_MODELS}" | \
     awk '{print $4}' \
     )
 

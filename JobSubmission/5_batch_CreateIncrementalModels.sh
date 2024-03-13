@@ -55,7 +55,6 @@
 ## INPUTS:                                                                    ||
 ## -c|--config=     -> Full/relative file path for configuation file directory||
 ## -n|--nummodels=  -> Number of models to learn (default: 4)                 ||
-## -i|--increment=  -> The increment to use between model sizes (default: 1)  ||
 ## -b|--binsize=    -> The bin size used in 4_BinarizeBamFiles                ||
 ## -s|--samplesize= -> The sample size used in 3_SubsampleBamFiles            ||
 ## -a|--assembly=   -> The assembly to use (default: hg19)                    ||
@@ -86,7 +85,6 @@ Dependencies: Java, ChromHMM
 Inputs:
 -c|--config=     -> Full/relative file path for configuation file directory
 -n|--nummodels=  -> Number of models to learn (default: 4)
--i|--increment=  -> The increment to use between model sizes (default: 1)
 -b|--binsize=    -> The bin size used in 4_BinarizeBamFiles
 -s|--samplesize= -> The sample size used in 3_SubsampleBamFiles
 -a|--assembly=   -> The assembly to use (default: hg19)
@@ -113,7 +111,6 @@ while getopts c:n:i:b:s:a:-: OPT; do
     case "$OPT" in
         c | config )       needs_argument; configuration_directory="$OPTARG" ;;
         n | nummodels)     needs_argument; number_of_models_to_generate="$OPTARG" ;;
-        i | increment)     needs_argument; states_increment="$OPTARG" ;;
         b | binsize )      needs_argument; bin_size="$OPTARG" ;;
         s | samplesize )   needs_argument; sample_size="$OPTARG" ;;
         a | assembly )     needs_argument; assembly="$OPTARG" ;;
@@ -165,12 +162,6 @@ if ! [[ "${number_of_models_to_generate}" =~ ^[0-9]+$ ]]; then
     echo "Using the default value of: ${number_of_models_to_generate} instead."
 fi
 
-if ! [[ "${states_increment}" =~ ^[0-9]+$ ]]; then
-    states_increment=1
-    echo "State increment given is invalid."
-    echo "Using the default value of ${states_increment} instead."
-fi
-
 if ! [[ "${bin_size}" =~ ^[0-9]+$  || "${sample_size}" =~ ^[0-9]+$ ]]; then
     cd "${BINARY_DIR}" || \
     { >&2 echo "ERROR: [\${BINARY_DIR} - ${BINARY_DIR}] doesn't exist, \
@@ -210,14 +201,12 @@ cd "${full_binary_path}" || \
 finishing_statement 1; }
 
 # Clean up from previous runs of script
-cd "${MODEL_DIR}" || \
-{ >&2 echo "ERROR: [\${MODEL_DIR} - ${MODEL_DIR}] doesn't exist, \
-make sure FilePaths.txt is pointing to the correct directory."
-finishing_statement 1; }
-rm -f ./*
+output_directory="${MODEL_DIR:?}\
+/BinSize_${bin_size}_SampleSize_${sample_size}_${number_of_models_to_generate}"
 
-cd STATEBYLINE || { finishing_statement 1; }
-rm -f ./*
+rm -rf "${output_directory}"
+mkdir -p "${output_directory}/Likelihood_Values"
+cd "${output_directory}/Likelihood_Values" || finishing_statement 1
 
 
 ## ========================== ##
@@ -226,6 +215,9 @@ rm -f ./*
 
 number_of_models_per_array=$((number_of_models_to_generate / SLURM_ARRAY_TASK_COUNT))
 remainder=$((number_of_models_to_generate % SLURM_ARRAY_TASK_COUNT))
+
+# By default, we assume that the user wants to learn every model from 2 upwards
+states_increment=1
 
 # If the number of models to be generated isn't a multiple of the size of the
 # array, the array with the smallest id will learn the left over smaller models
@@ -253,16 +245,6 @@ fi
 module purge
 module load Java
 
-mkdir -p "${OPTIMUM_STATES_DIR}/Likelihood_Values"
-cd "${OPTIMUM_STATES_DIR}/Likelihood_Values" || finishing_statement 1
-
-# Job is to be submitted as an array so we only want to 
-# remake likelihood files for only one of the array tasks, not all of them.
-if [[ "${SLURM_ARRAY_TASK_ID}" -eq 1 ]]; then
-    rm -f "likelihood.BinSize.${bin_size}.SampleSize.${sample_size}.txt"
-    touch "likelihood.BinSize.${bin_size}.SampleSize.${sample_size}.txt"
-fi
-
 sequence=$(\
 seq "$starting_number_of_states" "$states_increment" "$ending_number_of_states"\
 )
@@ -280,24 +262,25 @@ for numstates in ${sequence}; do
     -noautoopen \
     -printstatebyline \
     -b "${bin_size}" \
-    "${full_binary_path}" "${MODEL_DIR}" "${numstates}" "${assembly}" > \
-    "ChromHMM.Output.BinSize.${bin_size}.numstates.${numstates}.txt"
+    "${full_binary_path}" "${output_directory}" "${numstates}" "${assembly}" > \
+    "ChromHMM.output.numstates.${numstates}.txt"
 
-    echo -n "Writing estimated log likelihood to: "
-    echo "likelihood.BinSize.${bin_size}.SampleSize.${sample_size}.txt"
+    echo "Writing estimated log likelihood to: likelihoods.txt"
     echo -n "Estimated Log Likelihood for ${numstates} states: " >> \
-    "likelihood.BinSize.${bin_size}.SampleSize.${sample_size}.txt"
+    "likelihoods.txt"
 
     # grep selects terminal logs that are not associated with writing to files.
-    grep "  " "ChromHMM.Output.BinSize.${bin_size}.numstates.${numstates}.txt" | \
+    grep "  " "ChromHMM.output.numstates.${numstates}.txt" | \
     tail -1 | \
     awk '{print $2}' >> \
-    "likelihood.BinSize.${bin_size}.SampleSize.${sample_size}.txt" 
+    "likelihoods.txt"
 
-    grep "  " "ChromHMM.Output.BinSize.${bin_size}.numstates.${numstates}.txt" >> \
+    # Instead of storing chromHMM's log file in a separate location, it is
+    # easier to just store the log in the existing log file
+    grep "  " "ChromHMM.output.numstates.${numstates}.txt" >> \
     "${LOG_FILE_PATH}/${SLURM_ARRAY_JOB_ID}~${SLURM_ARRAY_TASK_ID}~${timestamp}.log"
 
-    rm "ChromHMM.Output.BinSize.${bin_size}.numstates.${numstates}.txt"
+    rm "ChromHMM.output.numstates.${numstates}.txt"
 done
 
 ## ========================= ##
@@ -309,30 +292,9 @@ done
 # The below code is in place to rename our output files so that this information
 # can be inferred from the file names.
 
-cd "${MODEL_DIR}" || \
-{ >&2 echo "ERROR: [\${MODEL_DIR} - ${MODEL_DIR}] doesn't exist, \
-make sure FilePaths.txt is pointing to the correct directory."
-finishing_statement 1; }
+cd "${output_directory}" || finishing_statement 1
 
 # html files are not required for subsequent analysis
 rm ./*.html
-
-# We specifically want the model files that have yet to be renamed.
-# Renamed files will have the the second word as 'BinSize' instead of a number
-# so they will not be found by this command
-files_to_rename=$(find . -maxdepth 1 -type f -name "*ions_[0-9]*")
-
-file_middle="_BinSize_${bin_size}_SampleSize_${sample_size}_States_"
-
-for file in $files_to_rename; do
-    # files are originally in the form 
-    # [file type]_[state_number].[file extension]
-    # We want to split this into the type of the file (file start) and the 
-    # number of states and file extension (file end)
-    file_start=$(basename "$file" | cut -d "_" -f 1)
-    file_end=$(basename "$file" | cut -d "_" -f 2)
-
-    mv "$file" "${file_start}${file_middle}${file_end}"
-done
 
 finishing_statement 0

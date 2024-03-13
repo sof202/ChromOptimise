@@ -197,7 +197,8 @@ fi
 
 rm -f "cellmarkfiletable.txt" 
 for file in *"${sample_size}"*.bam; do
-    echo -ne "Mature_Neutorphil_SampleSize_${sample_size}_BinSize_${bin_size}\t" >> \
+    # We're assuming here that there is only one cell type inspected
+    echo -ne "ChromOptimise\t" >> \
     "cellmarkfiletable.txt"
     # The subsampled files are named: subsampled.[SampleSize].[mark_name].bam. 
     # Below extracts the mark name

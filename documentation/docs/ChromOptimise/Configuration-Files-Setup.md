@@ -240,11 +240,6 @@ export ASSEMBLY=hg19
 # here
 export NUMBER_OF_MODELS=4
 
-# This is the increment in the number of states to use between models.
-# For most cases this will likely be 1. However, if you have lots of marks
-# in your dataset a larger value might be more appropriate
-export STATE_INCREMENT=1
-
 # This is the chromosome identifier (1-22, x,y,m) for the chromosome that is
 # to be used with the isolation metric (see Pipeline-explanation). Unless
 # this matters for your analysis, keep this at 1.

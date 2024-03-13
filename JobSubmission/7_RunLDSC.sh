@@ -56,7 +56,7 @@
 ##                     want to look at the results for a different model.     ||
 ## -b|--binsize=    -> The bin size used in 4_BinarizeBamFiles                ||
 ## -s|--samplesize= -> The sample size used in 3_SubsampleBamFiles            ||
-## -m|--maxmodel=   -> The size of the largest model generated                ||
+## -n|--nummodels=  -> Number of models to learn (default: 4)                 ||
 ## ===========================================================================##
 ## OUTPUTS:                                                                   ||
 ## Heatmap of enrichments from partitioned heritability for each GWAS trait   ||
@@ -78,15 +78,15 @@ Author: Sam Fletcher
 Contact: s.o.fletcher@exeter.ac.uk
 Dependencies: R, LDSC, gwas traits, 1000 genomes files
 Inputs:
- -c|--config=     -> Full/relative file path for configuation file directory
- -g|--gwas=       -> The glob pattern used for selecting gwas traits to use 
-                     for heritability analysis, your input will be wrapped
-                     in "*"s
- -t|--state=      -> (Override) Optimal number of states. Use this if you 
-                     want to look at the results for a different model.
- -b|--binsize=    -> The bin size used in 4_BinarizeBamFiles
- -s|--samplesize= -> The sample size used in 3_SubsampleBamFiles
- -m|--maxmodel=   -> The size of the largest model generated
+-c|--config=     -> Full/relative file path for configuation file directory
+-g|--gwas=       -> The glob pattern used for selecting gwas traits to use 
+                    for heritability analysis, your input will be wrapped
+                    in "*"s
+-t|--state=      -> (Override) Optimal number of states. Use this if you 
+                    want to look at the results for a different model.
+-b|--binsize=    -> The bin size used in 4_BinarizeBamFiles
+-s|--samplesize= -> The sample size used in 3_SubsampleBamFiles
+-n|--nummodels=  -> Number of models to learn (default: 4)
 ===========================================================================
 EOF
     exit 0
@@ -113,7 +113,7 @@ while getopts c:t:g:b:s:m:-: OPT; do
         g | gwas )       needs_argument; gwas_pattern="$OPTARG" ;;
         b | binsize )    needs_argument; bin_size="$OPTARG" ;;
         s | samplesize ) needs_argument; sample_size="$OPTARG" ;;
-        m | maxmodel )   needs_argument; max_model_size="$OPTARG" ;;
+        n | nummodels)   needs_argument; number_of_models="$OPTARG" ;;
         \? )             usage ;;  # Illegal short options are caught by getopts
         * )              usage ;;  # Illegal long option
     esac
@@ -165,23 +165,29 @@ if [[ -z "${gwas_pattern}" ]]; then
     "All gwas traits will be considered."
 fi
 
-# Set bin/sample size by searching through the model directory
-cd "${MODEL_DIR}" || \
-{ >&2 echo "ERROR: [\${MODEL_DIR} - ${MODEL_DIR}] doesn't exist, \
-make sure FilePaths.txt is pointing to the correct directory."
-finishing_statement 1; }
+if [[ -z "${bin_size}" || -z "${sample_size}" || -z "${number_of_models}" ]]; then
+    # If the user doesn't put in all of these options, our best hope is to look
+    # for the first approximate match
+    input_directory=$( \
+    find "${OPTIMUM_STATES_DIR}" -type d \
+    -name "BinSize_*${bin_size}*_SampleSize_*${sample_size}*_*${number_of_models}*" | \
+    head -1)
 
-if [[ -z "$(ls -A)" ]]; then
-    { >&2 echo -e "ERROR: No files found in [\${MODEL_DIR} - ${MODEL_DIR}].\n"\
-    "Please run 5_CreateIncrementalModels.sh before this script."
-    finishing_statement 1; }
+    bin_size=$(basename "${input_directory}" | cut -d_ -f2)
+    sample_size=$(basename "${input_directory}" | cut -d_ -f4)
+    number_of_models=$(basename "${input_directory}" | cut -d_ -f5)
+else
+    input_directory="${OPTIMUM_STATES_DIR} \
+    /BinSize_${bin_size}_SampleSize_${sample_size}_${number_of_models}"
 fi
 
-optimum_state_file="${OPTIMUM_STATES_DIR}\
-/BinSize_${bin_size}_SampleSize_${sample_size}_MaxModelSize_${max_model_size}} \
-/OptimumNumberOfStates.txt"
-
 if [[ -z "${model_size}" ]]; then
+    if [[ -z "$(ls -A "${input_directory}")" ]]; then
+        { >&2 echo -e "ERROR: No files found in: ${input_directory}.\n"\
+        "Please run 6_OptimumNumberOfStates.sh before this script."
+        finishing_statement 1; }
+    fi
+    optimum_state_file="${input_directory}/OptimumNumberOfStates.txt"
     model_size=$(tail -1 "${optimum_state_file}" | \
     cut -d: -f2 | \
     tr -d ' ')
@@ -189,7 +195,7 @@ if [[ -z "${model_size}" ]]; then
 fi
 
 output_directory="${LD_ASSESSMENT_DIR}\
-/BinSize_${bin_size}_SampleSize_${sample_size}_ModelSize_${model_size}"
+/BinSize_${bin_size}_SampleSize_${sample_size}_${model_size}"
 
 ## ============================ ##
 ##   ANNOTATION FILE CREATION   ##
@@ -201,7 +207,12 @@ output_directory="${LD_ASSESSMENT_DIR}\
 module purge
 module load R/4.2.1-foss-2022a
 
-dense_bed_file=$(find "${MODEL_DIR}" -name "*_${model_size}_dense.bed")
+full_model_directory="${MODEL_DIR}\
+/BinSize_${bin_size}_SampleSize_${sample_size}_${number_of_models}"
+
+dense_bed_file=$(\
+find "${full_model_directory}" \
+-name "*_${model_size}_dense.bed")
 
 cd "${RSCRIPTS_DIR}" || \
 { >&2 echo "ERROR: [\${RSCRIPTS_DIR} - ${RSCRIPTS_DIR}] doesn't exist, \
