@@ -86,7 +86,8 @@ names(reference_bim_file) <- c("CHR", "SNP", "CM", "BP")
 # ldsc expects a particular column order for the annotation file to function
 # correctly
 column_order <- c("CHR", "BP", "SNP", "CM")
-annotation_file <- write_snp_annotation(reference_bim_file[, column_order])
+annotation_file <- write_snp_annotation(bed_file,
+                                        reference_bim_file[, column_order])
 
 write.table(annotation_file, output_file_name, row.names = FALSE, sep = "\t")
 
