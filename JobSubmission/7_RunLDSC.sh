@@ -3,8 +3,8 @@
 #SBATCH --export=ALL 
 # Submit to the mrc queue for faster queue times
 #SBATCH -p mrcq 
-# Script usually takes less than one minute
-#SBATCH --time=00:10:00 
+# SNP assignment takes quite a while
+#SBATCH --time=48:00:00
 #SBATCH -A Research_Project-MRC190311 
 #SBATCH --nodes=1 
 #SBATCH --ntasks-per-node=16
@@ -226,7 +226,7 @@ finishing_statement 1; }
 
 # We ignore non-autosomal chromosomes as 1000 genomes doesn't provide this data
 for chromosome in {1..22}; do
-    echo "Creating SNP assignments for chromosome: ${chromosome}"
+    assignment_start=$(date +%s)
     bim_file="${LD_PLINK_DIR}/${PLINK_PREFIX}.${chromosome}.bim"
 
     Rscript SNPAssignment.R \
@@ -234,6 +234,10 @@ for chromosome in {1..22}; do
     '$1 == chromosome {print $2, $3, $4}' "${dense_bed_file}") \
     <(awk '{print $1, $2, $3, $4}' "${bim_file}") \
     "${output_directory}/annotation/ChromHMM.${chromosome}.annot"
+
+    assignment_end=$(date +%s)
+    time_taken=$((assignment_end - assignment_start))
+    echo "Chromosome ${chromosome} took: ${time_taken} seconds"
 done
 
 ## ======================= ##
@@ -250,7 +254,6 @@ conda activate "${LDSC_ENVIRONMENT}"
 
 
 for chromosome in {1..22}; do
-    echo "Creating base ld scores for chromosome ${chromosome}"
     python \
     "${LD_SOFTWARE_DIR}/ldsc.py" \
     --l2 \
@@ -268,8 +271,7 @@ gwas_traits=$(find "${LD_GWAS_TRAITS_DIR}" -name "*${gwas_pattern}*.sumstats*")
 
 for file_name in "${gwas_traits[@]}"; do
     output_file=$(basename "${file_name}" .sumstats.gz)
-    echo "Generating partitioned heritability ld scores for: ${output_file}"
-    
+
     # No need for overlap frq files here as state assignments are necessarily
     # distinct categories
 	python \
@@ -288,7 +290,6 @@ conda deactivate
 module purge
 module module load R/4.2.1-foss-2022a
 
-echo "Generating output plots"
 Rscript HeritabilityHeatmap.R \
 <(find "${output_directory}/heritability" -name "*${gwas_pattern}*.results") \
 "${output_directory}/plots"
