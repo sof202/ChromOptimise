@@ -377,7 +377,9 @@ if [[ "${STARTING_SCRIPT}" -eq 7 ]]; then
     "7_RunLDSC.sh" \
     --config="${configuration_directory}" \
     --state="${OPTIMUM_NUMBER_OF_STATES}" \
-    --gwas="${GWAS_PATTERN}" | \
+    --gwas="${GWAS_PATTERN}" \
+    --binsize="${BIN_SIZE}" \
+    --samplesize="${SAMPLE_SIZE}" | \
     awk '{print $4}' \
     )
 
@@ -385,31 +387,17 @@ if [[ "${STARTING_SCRIPT}" -eq 7 ]]; then
     echo "${jobID[LDSC]}"
 
 elif [[ "${STARTING_SCRIPT}" -lt 7 ]]; then
-    # This is a helper script that will find the optimum number of states
-    # for the data as outputted by the previous script
-    jobID[Optimum_number_of_states]=$( \
-    sbatch \
-    --time=00:10:00 \
-    --dependency=afterok:"${jobID[Optimal_States]}" \
-    "$CHROMOPTIMISE_DIR/ChromOptimiseCheckpoints/Optimum_states.sh" \
-    "${configuration_directory}" \
-    "${NUMBER_OF_MODELS}" \
-    "${STATE_INCREMENT}" \
-    "${BIN_SIZE}" \
-    "${SAMPLE_SIZE}"   
-    )
-
-    echo "Submitted Optimum_states.sh under job ID:"
-    echo "${jobID[Optimum_number_of_states]}"
-
+    max_model_size=$(( 2 + (NUMBER_OF_MODELS - 1) * STATE_INCREMENT ))
     jobID[LDSC]=$( \
     sbatch \
     --time="${MAXTIME_7}" \
-    --dependency=afterok:"${jobID[Optimum_number_of_states]}" \
+    --dependency=afterok:"${jobID[Optimal_States]}" \
     "7_RunLDSC.sh" \
     --config="${configuration_directory}" \
-    --state="${OPTIMUM_NUMBER_OF_STATES}" \
-    --gwas="${GWAS_PATTERN}" | \
+    --gwas="${GWAS_PATTERN}" \
+    --binsize="${BIN_SIZE}" \
+    --samplesize="${SAMPLE_SIZE}" \
+    --maxmodel="${max_model_size}" | \
     awk '{print $4}' \
     )
 

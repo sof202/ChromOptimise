@@ -17,7 +17,7 @@
 #SBATCH --output=temp%j.log
 # Temporary error file, later to be removed
 #SBATCH --error=temp%j.err
-#SBATCH --job-name=6_Optimal_States
+#SBATCH --job-name=7_LDSC
 
 ## ===========================================================================##
 ##                                                                            ||
@@ -48,14 +48,19 @@
 ##               1000 genomes files (plink files, weights)                    ||
 ## ===========================================================================##
 ## INPUTS:                                                                    ||
-## -c|--config= -> Full/relative file path for configuation file directory    ||
-## -s|--state=  -> The determined number of states that is optimal            ||
-## -g|--gwas=   -> The glob pattern used for selecting gwas traits to use     ||
-##                 for heritability analysis, your input will be wrapped      ||
-##                 in "*"s                                                    ||
+## -c|--config=     -> Full/relative file path for configuation file directory||
+## -g|--gwas=       -> The glob pattern used for selecting gwas traits to use ||
+##                     for heritability analysis, your input will be wrapped  ||
+##                     in "*"s                                                ||
+## -t|--state=      -> (Override) Optimal number of states. Use this if you   ||
+##                     want to look at the results for a different model.     ||
+## -b|--binsize=    -> The bin size used in 4_BinarizeBamFiles                ||
+## -s|--samplesize= -> The sample size used in 3_SubsampleBamFiles            ||
+## -m|--maxmodel=   -> The size of the largest model generated                ||
 ## ===========================================================================##
 ## OUTPUTS:                                                                   ||
-## Heatmap of results from partitioned heritability for each GWAS trait       ||
+## Heatmap of enrichments from partitioned heritability for each GWAS trait   ||
+## Bar plots for enrichment p values for each GWAS trait                      ||
 ## ===========================================================================##
 
 
@@ -73,11 +78,15 @@ Author: Sam Fletcher
 Contact: s.o.fletcher@exeter.ac.uk
 Dependencies: R, LDSC, gwas traits, 1000 genomes files
 Inputs:
- -c|--config= -> Full/relative file path for configuation file directory
- -s|--state=  -> The determined number of states that is optimal
- -g|--gwas=   -> The glob pattern used for selecting gwas traits to use 
-                 for heritability analysis, your input will be wrapped
-                 in "*"s
+ -c|--config=     -> Full/relative file path for configuation file directory
+ -g|--gwas=       -> The glob pattern used for selecting gwas traits to use 
+                     for heritability analysis, your input will be wrapped
+                     in "*"s
+ -t|--state=      -> (Override) Optimal number of states. Use this if you 
+                     want to look at the results for a different model.
+ -b|--binsize=    -> The bin size used in 4_BinarizeBamFiles
+ -s|--samplesize= -> The sample size used in 3_SubsampleBamFiles
+ -m|--maxmodel=   -> The size of the largest model generated
 ===========================================================================
 EOF
     exit 0
@@ -90,7 +99,7 @@ needs_argument() {
 
 if [[ ! $1 =~ -.* ]]; then usage; fi
 
-while getopts c:s:g:-: OPT; do
+while getopts c:t:g:b:s:m:-: OPT; do
     # Adds support for long options by reformulating OPT and OPTARG
     # This assumes that long options are in the form: "--long=option"
     if [ "$OPT" = "-" ]; then
@@ -100,8 +109,11 @@ while getopts c:s:g:-: OPT; do
     fi
     case "$OPT" in
         c | config )     needs_argument; configuration_directory="$OPTARG" ;;
-        s | state )      needs_argument; model_size="$OPTARG" ;;
+        t | state )      needs_argument; model_size="$OPTARG" ;;
         g | gwas )       needs_argument; gwas_pattern="$OPTARG" ;;
+        b | binsize )    needs_argument; bin_size="$OPTARG" ;;
+        s | samplesize ) needs_argument; sample_size="$OPTARG" ;;
+        m | maxmodel )   needs_argument; max_model_size="$OPTARG" ;;
         \? )             usage ;;  # Illegal short options are caught by getopts
         * )              usage ;;  # Illegal long option
     esac
@@ -165,26 +177,16 @@ if [[ -z "$(ls -A)" ]]; then
     finishing_statement 1; }
 fi
 
-# Specifically we want to find the bin and sample size from the emissions
-# or transitions files (and not the model or statebyline files)
-# Hence we look for text files that have the word 'states' in them
-# (due to the renaming that happened in model learning script).
-# File names are "." separated with 3rd field bin size and 5th field sample size
-bin_size=$(find . -type f -name "*States*.txt" | head -1 | cut -d "_" -f 3)
-sample_size=$(find . -type f -name "*States*.txt" | head -1 | cut -d "_" -f 5)
+optimum_state_file="${OPTIMUM_STATES_DIR}\
+/BinSize_${bin_size}_SampleSize_${sample_size}_MaxModelSize_${max_model_size}} \
+/OptimumNumberOfStates.txt"
 
 if [[ -z "${model_size}" ]]; then
-    optimum_state_file="$(dirname "$0")/../Optimum_State.txt"
-    model_size=$(cat "${optimum_state_file}")
-    rm "${optimum_state_file}"
+    model_size=$(tail -1 "${optimum_state_file}" | \
+    cut -d: -f2 | \
+    tr -d ' ')
+    echo "Optimum model size found was: ${model_size}"
 fi
-
-if [[ -z "${model_size}" ]]; then
-    { >&2 echo "ERROR: please enter a model size to evaluate with the -s flag."\
-    "or ensure you are running the script through ChromOptimise.sh" 
-    finishing_statement 1; }
-fi
-
 
 output_directory="${LD_ASSESSMENT_DIR}\
 /BinSize_${bin_size}_SampleSize_${sample_size}_ModelSize_${model_size}"
