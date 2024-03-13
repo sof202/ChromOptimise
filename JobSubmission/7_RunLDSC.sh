@@ -197,6 +197,11 @@ fi
 output_directory="${LD_ASSESSMENT_DIR}\
 /BinSize_${bin_size}_SampleSize_${sample_size}_${model_size}"
 
+rm -rf "${output_directory:?}"
+mkdir -p "${output_directory:?}/annotation"
+mkdir -p "${output_directory:?}/heritability"
+mkdir -p "${output_directory:?}/plots"
+
 ## ============================ ##
 ##   ANNOTATION FILE CREATION   ##
 ## ============================ ##
