@@ -69,7 +69,7 @@ write_snp_annotation <- function(bed_file, bim_file) {
   bim_file <- apply(bim_file, 1, function(row) {
     assignment <- snp_annotation_binary_search(row["BP"], bed_file)
     column_name <- paste0("state_", assignment)
-    row[[column_name]][row] <- 1 
+    row[column_name] <- 1 
     row
   })
   bim_file[is.na(bim_file)] <- 0
