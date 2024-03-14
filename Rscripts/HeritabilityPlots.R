@@ -33,12 +33,10 @@
 
 rm(list = ls())
 
-if (!require("patchwork", quietly = TRUE))
-  install.packages("patchwork")
+if (!require("tidyr", quietly = TRUE))
+  install.packages("tidyr")
 
 library(ggplot2)
-library(reshape2)
-library(patchwork)
 
 arguments <- commandArgs(trailingOnly = TRUE)
 results_file_list <- readLines(arguments[1])
@@ -74,10 +72,10 @@ create_enrichment_heatmap <- function(results_files) {
   enrichment_data <- merge_results_files(results_files, "Enrichment") 
 
   # Melt makes it easier to create a heatmap from the data.
-  enrichment_data <- melt(enrichment_data,
-                            id.vars = "Category",
-                            variable.name = "gwas_trait",
-                            value.name = "Enrichment")
+  enrichment_data <- tidyr::pivot_longer(enrichment_data,
+                                         cols = -Category,
+                                         names_to = "gwas_trait",
+                                         values_to = "Enrichment")
   enrichment_heatmap <- 
     ggplot(enrichment_data,
           aes(gwas_trait, Category, fill = Enrichment)) +
@@ -129,7 +127,7 @@ names(pvalue_barplots) <- names(results_files)
 setwd(output_directory)
 
 for (plot in names(pvalue_barplots)) {
-  plot_name <- paste0("pvalues_", plot,".png")
+  plot_name <- paste0("Enrichment_pvalues_barplot_", plot,".png")
   ggsave(
     plot_name,
     plot = pvalue_barplots[[plot]]
@@ -137,6 +135,6 @@ for (plot in names(pvalue_barplots)) {
 }
 
 ggsave(
-  "Enrichment_heatmap_forpartitioned_heritability.png",
+  "Enrichment_heatmap.png",
   plot = enrichment_heatmap
 )
