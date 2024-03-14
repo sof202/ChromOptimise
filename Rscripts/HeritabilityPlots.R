@@ -71,7 +71,7 @@ merge_results_files <- function(results_files, target_column) {
 create_enrichment_heatmap <- function(results_files) {
   enrichment_data <- merge_results_files(results_files, "Enrichment") 
 
-  # Melt makes it easier to create a heatmap from the data.
+  # pivot_longer is so heatmap can be plotted more easily
   enrichment_data <- tidyr::pivot_longer(enrichment_data,
                                          cols = -Category,
                                          names_to = "gwas_trait",
