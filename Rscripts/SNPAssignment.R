@@ -58,9 +58,9 @@ bim_file <- data.table::data.table(read.table(bim_file))
 
 # This requires the inputted UCSC BED file to be sorted (which is usually the 
 # case) as the binary search relies on this to function.
-snp_annotation_binary_search <- function(snp_position, bed_file) {
+snp_annotation_binary_search <- function(snp_positions, bed_file) {
   intervals <- unlist(c(bed_file[, 1], tail(bed_file[, 2], 1)))
-  index <- findInterval(snp_position, intervals)
+  index <- findInterval(snp_positions, intervals)
   state_assignment <- ifelse(index > 0, bed_file[index, 3], NA)
   return(state_assignment)
 }
@@ -72,10 +72,9 @@ update_bim_file <- function(row, assignment) {
 }
 
 write_snp_annotation <- function(bed_file, bim_file) {
+  assignments <- snp_annotation_binary_search(bim_file$BP, bed_file)
+
   bim_file_rows <- 1:nrow(bim_file)
-  assignments <- unlist(lapply(bim_file_rows, function(row) {
-    snp_annotation_binary_search(bim_file$BP[row], bed_file)
-  }))
   updated_bim_rows <- lapply(bim_file_rows, function(row) {
     update_bim_file(bim_file[row, ], assignments[[row]])
   })
