@@ -31,11 +31,7 @@
 
 rm(list = ls())
 
-if (!require("dplyr", quietly = TRUE))
-  install.packages("dplyr")
-
-library("ggplot2")
-library("dplyr")
+library(ggplot2)
 
 arguments <- commandArgs(trailingOnly = TRUE)
 likelihoods_file <- arguments[1]
