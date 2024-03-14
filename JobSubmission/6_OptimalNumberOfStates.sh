@@ -336,6 +336,7 @@ done
 
 echo "Processing the Bayesian information critereon of learned models..."
 Rscript CalculateBIC.R \
+"${configuration_directory}/config.R" \
 "${input_directory}/Likelihood_Values/likelihoods.txt" \
 "${total_observations}" \
 "${output_directory}"

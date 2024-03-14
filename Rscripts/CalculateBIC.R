@@ -16,9 +16,10 @@
 ## Run 6_CompareModels.sh                                         ||
 ## ============================================================== ##
 ## INPUTS:                                                        ||
-## $1 -> Location of likelihoods file                             ||
-## $2 -> Total size of binary files                               ||
-## $3 -> Directory to place output files into                     ||
+## $1 -> Location of configuation file                            ||
+## $2 -> Location of likelihoods file                             ||
+## $3 -> Total size of binary files                               ||
+## $4 -> Directory to place output files into                     ||
 ## ============================================================== ##
 ## OUTPUTS:                                                       ||
 ## Scatter plot of relative BIC against number of states          ||
@@ -31,16 +32,15 @@
 
 rm(list = ls())
 
-setwd("/lustre/projects/Research_Project-MRC190311/scripts/integrative")
-source("ChromOptimise/configuration/config.R")
-setwd(likelihood_dir)
-
 library(ggplot2)
 
 arguments <- commandArgs(trailingOnly = TRUE)
-likelihoods_file <- arguments[1]
-number_of_observations <- as.numeric(arguments[2])
-output_file_path <- arguments[3]
+config_file_location <- arguments[1]
+likelihoods_file <- arguments[2]
+number_of_observations <- as.numeric(arguments[3])
+output_file_path <- arguments[4]
+
+source(config_file_location)
 
 ## =============== ##
 ##   IMPORT DATA   ##
@@ -63,6 +63,7 @@ names(likelihood_data) <- c("number_of_states", "estimated_log_likelihood")
 # L -> Likelihood function (output of chromHMM already in ln(L) form)
 log_observations <- log(number_of_observations)
 
+# number_of_marks is coming from config.R
 likelihood_data$parameters <-
   (likelihood_data$number_of_states * number_of_marks) +
   (likelihood_data$number_of_states ^ 2)
