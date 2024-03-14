@@ -59,7 +59,7 @@ bim_file <- data.table::data.table(read.table(bim_file))
 # This requires the inputted UCSC BED file to be sorted (which is usually the 
 # case) as the binary search relies on this to function.
 snp_annotation_binary_search <- function(snp_positions, bed_file) {
-  intervals <- unlist(c(bed_file[, 1], bed_file[nrow(bed_file), 2]))
+  intervals <- unlist(c(bed_file[, 1], tail(bed_file[, 2], 1)))
   indices <- findInterval(snp_positions, intervals)
   result <- ifelse(indices > 0, bed_file[indices, 3], NA)
   return(result)
