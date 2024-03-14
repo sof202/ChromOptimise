@@ -41,7 +41,7 @@ library(reshape2)
 library(patchwork)
 
 arguments <- commandArgs(trailingOnly = TRUE)
-results_file_list <- arguments[1]
+results_file_list <- readLines(arguments[1])
 output_directory <- arguments[2]
 
 ## ================= ##
@@ -114,10 +114,6 @@ create_pvalue_barplots <- function(results_files, p_value_threshold) {
   return(list_of_pvalue_plots)
 }
 
-concatenate_plots <- function(list_of_plots, columns) {
-  rows = ceiling(length(list_of_plots) / columns)
-  return(wrap_plots(list_of_plots, ncol = columns, nrow = rows))
-}
 
 ## =========== ##
 ##   OUTPUTS   ##
@@ -128,15 +124,19 @@ enrichment_heatmap <- create_enrichment_heatmap(results_files)
 # pvalue threshold is arbitrarily chosen to be 0.01 (which will be
 # 2 after -log10(), change this if you wish)
 pvalue_barplots <- create_pvalue_barplots(results_files, 2)
+names(pvalue_barplots) <- names(results_files)
 
-# 3 columns (so far), has lead to the best visibility of plots
-concatenated_barplots <- concatenate_plots(pvalue_barplots, 3)
+setwd(output_directory)
+
+for (plot in names(pvalue_barplots)) {
+  plot_name <- paste0("pvalues_", plot,".png")
+  ggsave(
+    plot_name,
+    plot = pvalue_barplots[[plot]]
+  )
+}
 
 ggsave(
-  "pvalue_barplots_for_partitioned_heritability.png",
-  plot = concatenated_barplots
-)
-
-ggsave(
-  "Enrichment_heatmap_forpartitioned_heritability.png""
+  "Enrichment_heatmap_forpartitioned_heritability.png",
+  plot = enrichment_heatmap
 )
