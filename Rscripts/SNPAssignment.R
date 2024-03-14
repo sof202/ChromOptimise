@@ -60,9 +60,11 @@ bim_file <- data.table::data.table(read.table(bim_file))
 # case) as the binary search relies on this to function.
 snp_annotation_binary_search <- function(snp_positions, bed_file) {
   intervals <- unlist(c(bed_file[, 1], tail(bed_file[, 2], 1)))
-  index <- findInterval(snp_positions, intervals)
-  state_assignment <- ifelse(index > 0, bed_file[index, 3], NA)
-  return(state_assignment)
+  indices <- findInterval(snp_positions, intervals)
+  state_assignments <- unlist(lapply(indices, function(index) {
+    bed_file[index, 3]
+  }))
+  return(state_assignments)
 }
 
 update_bim_file <- function(row, assignment) {
@@ -73,7 +75,7 @@ update_bim_file <- function(row, assignment) {
 
 write_snp_annotation <- function(bed_file, bim_file) {
   assignments <- snp_annotation_binary_search(bim_file$BP, bed_file)
-
+  
   updated_bim_rows <- lapply(1:nrow(bim_file), function(row) {
     update_bim_file(bim_file[row, ], assignments[[row]])
   })
