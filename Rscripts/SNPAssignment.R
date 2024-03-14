@@ -17,11 +17,12 @@
 ## Download/create PLINK files (e.g. 1000 genomes)                ||
 ## ============================================================== ##
 ## INPUTS:                                                        ||
-## $1 -> An altered BED file with columns: start position, end    ||
+## $1 -> Size of the model                                        ||
+## $2 -> An altered BED file with columns: start position, end    ||
 ##       position and annotation for genomic region               ||
-## $2 -> The first four columns of the reference bim file         ||
+## $3 -> The first four columns of the reference bim file         ||
 ##       (CHR, ID, CM, BP)                                        ||
-## $3 -> The full file path for the output .annot file            ||
+## $4 -> The full file path for the output .annot file            ||
 ## ============================================================== ##
 ## OUTPUTS:                                                       ||
 ## A .annot file that annotates all SNPS in the given bim file    ||
@@ -36,16 +37,17 @@ rm(list = ls())
 library(dplyr)
 
 arguments <- commandArgs(trailingOnly = TRUE)
-bed_file <- arguments[1]
-reference_bim_file <- arguments[2]
-output_file_name <- arguments[3]
+model_size <- as.numeric(arguments[1])
+bed_file <- arguments[2]
+reference_bim_file <- arguments[3]
+output_file_name <- arguments[4]
 
 ## ================= ##
 ##   LOADING FILES   ##
 ## ================= ##
 
-bed_file <- read.table(bed_file)
-reference_bim_file <- read.table(reference_bim_file)
+bed_file <- data.table::fread(bed_file)
+reference_bim_file <- data.table::fread(reference_bim_file)
 
 ## ============================= ##
 ##   SNP ANNOTATION ASSIGNMENT   ##
@@ -53,34 +55,29 @@ reference_bim_file <- read.table(reference_bim_file)
 
 # This requires the inputted UCSC BED file to be sorted (which is usually the 
 # case) as the binary search relies on this to function.
-snp_annotation_binary_search <- function(snp_position, bed_file) {
-  intervals <- c(bed_file[, 1], bed_file[nrow(bed_file), 2])
-  index <- findInterval(snp_position, intervals)
-  if (index > 0) {
-    # state assignments should be in third column of bed file
-    return(bed_file[index, 3])
-  } else {
-    # Should never happen
-    return(NA)
-  }
+snp_annotation_binary_search <- function(snp_positions, bed_file) {
+  intervals <- unlist(c(bed_file[, 1], bed_file[nrow(bed_file), 2]))
+  indices <- findInterval(snp_positions, intervals)
+  result <- ifelse(indices > 0, bed_file[indices, 3], NA)
+  return(result)
+}
+
+update_bim_file <- function(row, assignment) {
+  state_column <- paste0("state_", assignment)
+  data.table::set(row, j = state_column, value = 1)
+  return(row)
 }
 
 write_snp_annotation <- function(bed_file, bim_file) {
-  assignments <- apply(bim_file, 1, function(row) {
-    snp_annotation_binary_search(row["BP"], bed_file)
+  bim_file_rows <- 1:nrow(bim_file)
+  assignments <- unlist(lapply(bim_file_rows, function(row) {
+    snp_annotation_binary_search(bim_file$BP[row], bed_file)
+  }))
+  updated_bim_rows <- lapply(bim_file_rows, function(row) {
+    update_bim_file(bim_file[row, ], assignments[[row]])
   })
-  
-  # Optimisation, reduces the number of times this length function is called
-  length_assignments <- length(assignments)
-
-  for (row in 1:length_assignments) {
-    assignment <- assignments[[row]]
-    column_name <- paste0("state_", assignment)
-    bim_file[row, column_name] <- 1 
-  }
-  bim_file[is.na(bim_file)] <- 0
-  
-  return(bim_file)
+  annotation_file <- data.table::rbindlist(updated_bim_rows)
+  return(annotation_file)
 }
 
 ## ======== ##
@@ -92,8 +89,17 @@ names(reference_bim_file) <- c("CHR", "SNP", "CM", "BP")
 # ldsc expects a particular column order for the annotation file to function
 # correctly
 column_order <- c("CHR", "BP", "SNP", "CM")
-annotation_file <- write_snp_annotation(bed_file,
-                                        reference_bim_file[, column_order])
+bim_file <- reference_bim_file[, column_order]
+
+# ldsc will break if a state contains SNPs on one chromosome but not on another
+# So we need to initialise all of our columns first with zeroes
+state_columns <- NULL
+for (i in 1:model_size) {
+  state_columns <- c(state_columns, paste0("state_", i))
+}
+bim_file[state_columns] <- 0
+
+annotation_file <- write_snp_annotation(bed_file, bim_file)
 
 write.table(annotation_file, output_file_name, row.names = FALSE, sep = "\t")
 

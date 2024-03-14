@@ -230,6 +230,7 @@ for chromosome in {1..22}; do
     bim_file="${LD_PLINK_DIR}/${PLINK_PREFIX}.${chromosome}.bim"
 
     Rscript SNPAssignment.R \
+    "${model_size}" \
     <(awk -v chromosome="chr${chromosome}" \
     '$1 == chromosome {print $2, $3, $4}' "${dense_bed_file}") \
     <(awk '{print $1, $2, $3, $4}' "${bim_file}") \
