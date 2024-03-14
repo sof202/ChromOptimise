@@ -34,7 +34,8 @@
 
 rm(list = ls())
 
-library(dplyr)
+if (!require("data.table", quietly = TRUE))
+  install.packages("data.table")
 
 arguments <- commandArgs(trailingOnly = TRUE)
 model_size <- as.numeric(arguments[1])
