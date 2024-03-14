@@ -40,15 +40,17 @@ if (!require("data.table", quietly = TRUE))
 arguments <- commandArgs(trailingOnly = TRUE)
 model_size <- as.numeric(arguments[1])
 bed_file <- arguments[2]
-reference_bim_file <- arguments[3]
+bim_file <- arguments[3]
 output_file_name <- arguments[4]
 
 ## ================= ##
 ##   LOADING FILES   ##
 ## ================= ##
 
-bed_file <- data.table::fread(bed_file)
-reference_bim_file <- data.table::fread(reference_bim_file)
+# data.tables are faster, we are reading from /dev/fd (to avoid temporary files)
+# which doesn't work with fread. Hence we read with the base R function
+bed_file <- data.table::data.table(read.table(bed_file))
+bim_file <- data.table::data.table(read.table(bim_file))
 
 ## ============================= ##
 ##   SNP ANNOTATION ASSIGNMENT   ##
@@ -85,12 +87,13 @@ write_snp_annotation <- function(bed_file, bim_file) {
 ##   MAIN   ##
 ## ======== ##
 
-names(reference_bim_file) <- c("CHR", "SNP", "CM", "BP")
+# Standard bim column order (we are only taking the first four columns)
+names(bim_file) <- c("CHR", "SNP", "CM", "BP")
 
 # ldsc expects a particular column order for the annotation file to function
 # correctly
 column_order <- c("CHR", "BP", "SNP", "CM")
-bim_file <- reference_bim_file[, column_order]
+data.table::setcolorder(bim_file, neworder =  column_order)
 
 # ldsc will break if a state contains SNPs on one chromosome but not on another
 # So we need to initialise all of our columns first with zeroes
