@@ -101,7 +101,7 @@ state_columns <- NULL
 for (i in 1:model_size) {
   state_columns <- c(state_columns, paste0("state_", i))
 }
-bim_file[state_columns] <- 0
+bim_file[, state_columns] <- 0
 
 annotation_file <- write_snp_annotation(bed_file, bim_file)
 
