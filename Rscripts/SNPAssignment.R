@@ -74,8 +74,7 @@ update_bim_file <- function(row, assignment) {
 write_snp_annotation <- function(bed_file, bim_file) {
   assignments <- snp_annotation_binary_search(bim_file$BP, bed_file)
 
-  bim_file_rows <- 1:nrow(bim_file)
-  updated_bim_rows <- lapply(bim_file_rows, function(row) {
+  updated_bim_rows <- lapply(1:nrow(bim_file), function(row) {
     update_bim_file(bim_file[row, ], assignments[[row]])
   })
   annotation_file <- data.table::rbindlist(updated_bim_rows)
