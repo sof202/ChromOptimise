@@ -8,15 +8,16 @@
 #SBATCH -A Research_Project-MRC190311 
 #SBATCH --nodes=1 
 #SBATCH --ntasks-per-node=16
+#SBATCH --array=1-22
 # Memory consumption is very low in testing
 # Consult information/Memory_Profiling.md for expected memory usage
 #SBATCH --mem=1G 
 # Send an email after the job is done
 #SBATCH --mail-type=END 
 # Temporary log file, later to be removed
-#SBATCH --output=temp%j.log
+#SBATCH --output=temp%A_%a.log
 # Temporary error file, later to be removed
-#SBATCH --error=temp%j.err
+#SBATCH --error=temp%A_%a.err
 #SBATCH --job-name=7_LDSC
 
 ## ===========================================================================##
@@ -150,10 +151,10 @@ location: ${configuration_directory}"; exit 1; }
 # Temporary log files are moved like this as SLURM cannot create directories.
 # The alternative would be forcing the user to create the file structure
 # themselves and using full file paths in the SLURM directives (bad)
-mv "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" \
-"${LOG_FILE_PATH}/${SLURM_JOB_ID}~${timestamp:=}.log"
-mv "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
-"${LOG_FILE_PATH}/${SLURM_JOB_ID}~$timestamp.err"
+mv "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.log" \
+"${LOG_FILE_PATH}/${SLURM_ARRAY_JOB_ID}~${SLURM_ARRAY_TASK_ID}~${timestamp:=}.log"
+mv "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err" \
+"${LOG_FILE_PATH}/${SLURM_ARRAY_JOB_ID}~${SLURM_ARRAY_TASK_ID}~$timestamp.err"
 
 
 ## =============== ##
@@ -225,21 +226,22 @@ make sure FilePaths.txt is pointing to the correct directory"
 finishing_statement 1; }
 
 # We ignore non-autosomal chromosomes as 1000 genomes doesn't provide this data
-for chromosome in {1..22}; do
-    assignment_start=$(date +%s)
-    bim_file="${LD_PLINK_DIR}/${PLINK_PREFIX}.${chromosome}.bim"
+# Hence our chromosomes are just 1-22 (the array indices)
+chromosome=${SLURM_ARRAY_TASK_ID}
 
-    Rscript SNPAssignment.R \
-    "${model_size}" \
-    <(awk -v chromosome="chr${chromosome}" \
-    '$1 == chromosome {print $2, $3, $4}' "${dense_bed_file}") \
-    <(awk '{print $1, $2, $3, $4}' "${bim_file}") \
-    "${output_directory}/annotation/ChromHMM.${chromosome}.annot"
+assignment_start=$(date +%s)
+bim_file="${LD_PLINK_DIR}/${PLINK_PREFIX}.${chromosome}.bim"
 
-    assignment_end=$(date +%s)
-    time_taken=$((assignment_end - assignment_start))
-    echo "Chromosome ${chromosome} took: ${time_taken} seconds"
-done
+Rscript SNPAssignment.R \
+"${model_size}" \
+<(awk -v chromosome="chr${chromosome}" \
+'$1 == chromosome {print $2, $3, $4}' "${dense_bed_file}") \
+<(awk '{print $1, $2, $3, $4}' "${bim_file}") \
+"${output_directory}/annotation/ChromHMM.${chromosome}.annot"
+
+assignment_end=$(date +%s)
+time_taken=$((assignment_end - assignment_start))
+echo "Chromosome ${chromosome} took: ${time_taken} seconds"
 
 ## ======================= ##
 ##   REFERENCE LD SCORES   ##
@@ -254,33 +256,49 @@ source "${CONDA_SHELL}/profile.d/conda.sh" || \
 conda activate "${LDSC_ENVIRONMENT}"
 
 
-for chromosome in {1..22}; do
-    python \
-    "${LD_SOFTWARE_DIR}/ldsc.py" \
-    --l2 \
-    --bfile      "${LD_PLINK_DIR}/${PLINK_PREFIX}.${chromosome}" \
-    --ld-wind-cm 1 \
-    --annot      "${output_directory}/annotation/ChromHMM.${chromosome}.annot" \
-    --out        "${output_directory}/annotation/ChromHMM.${chromosome}"
-done
+python \
+"${LD_SOFTWARE_DIR}/ldsc.py" \
+--l2 \
+--bfile      "${LD_PLINK_DIR}/${PLINK_PREFIX}.${chromosome}" \
+--ld-wind-cm 1 \
+--annot      "${output_directory}/annotation/ChromHMM.${chromosome}.annot" \
+--out        "${output_directory}/annotation/ChromHMM.${chromosome}"
+
 
 ## ============================ ##
 ##   PARTITIONED HERITABILITY   ##
 ## ============================ ##
 
-gwas_traits=$(find "${LD_GWAS_TRAITS_DIR}" -name "*${gwas_pattern}*.sumstats*")
+# We only need to calculate partitioned heritability (and produce the plots)
+# once, so if the number of chromosomes completed isn't yet 22, we exit early.
+chromosomes_completed=$(\
+find "${output_directory}/annotation/" \
+-name "ChromHMM*ldscore*" | \
+wc -l)
+
+if [[ "${chromosomes_completed}" -ne 22 ]]; then
+    echo "Not all ld scores have been calculated in this array."
+    echo "Exiting early..."
+    finishing_statement 0
+fi
+
+
+
+gwas_traits=$(\
+find "${LD_GWAS_TRAITS_DIR}" -name "*${gwas_pattern}*.sumstats*"\
+)
 
 for file_name in "${gwas_traits[@]}"; do
     output_file=$(basename "${file_name}" .sumstats.gz)
 
     # No need for overlap frq files here as state assignments are necessarily
     # distinct categories
-	python \
-	"${LD_SOFTWARE_DIR}/ldsc.py" \
-	--h2          "${file_name}" \
-	--ref-ld-chr  "${output_directory}/annotation/ChromHMM." \
-	--w-ld-chr    "${WEIGHTS_DIR}/${WEIGHTS_PREFIX}." \
-	--out         "${output_directory}/heritability/${output_file}"
+    python \
+    "${LD_SOFTWARE_DIR}/ldsc.py" \
+    --h2          "${file_name}" \
+    --ref-ld-chr  "${output_directory}/annotation/ChromHMM." \
+    --w-ld-chr    "${WEIGHTS_DIR}/${WEIGHTS_PREFIX}." \
+    --out         "${output_directory}/heritability/${output_file}"
 done
 
 ## ====================== ##
