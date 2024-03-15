@@ -34,7 +34,15 @@
 
 rm(list = ls())
 
-if (!require("data.table", quietly = TRUE))
+if (!requireNamespace("doParallel", quietly = TRUE))
+  install.packages("doParallel")
+
+if (!requireNamespace("foreach", quietly = TRUE))
+  install.packages("foreach")
+
+library(foreach)
+
+if (!requireNamespace("data.table", quietly = TRUE))
   install.packages("data.table")
 
 arguments <- commandArgs(trailingOnly = TRUE)
@@ -52,6 +60,21 @@ output_file_name <- arguments[4]
 bed_file <- data.table::data.table(read.table(bed_file))
 bim_file <- data.table::data.table(read.table(bim_file))
 
+## ======================= ##
+##   PARALLEL PROCESSING   ##
+## ======================= ##
+
+setup_cluster <- function() {
+  cores <- parallel::detectCores()
+  cluster <- parallel::makeCluster(cores)
+  doParallel::registerDoParallel(cluster)
+  return(cluster)
+}
+
+teardown_cluster <- function(cluster) {
+  parallel::stopCluster(cluster)
+}
+
 ## ============================= ##
 ##   SNP ANNOTATION ASSIGNMENT   ##
 ## ============================= ##
@@ -60,12 +83,20 @@ bim_file <- data.table::data.table(read.table(bim_file))
 # case) as the binary search relies on this to function.
 snp_annotation_binary_search <- function(snp_positions, bed_file) {
   intervals <- unlist(c(bed_file[, 1], tail(bed_file[, 2], 1)))
-  indices <- findInterval(snp_positions, intervals)
+  
+  cluster <- setup_cluster()
+  indices <- foreach::foreach(snp_position = snp_positions, .combine = "c") 
+  %dopar% {
+    findInterval(snp_position, intervals)
+  }
+  teardown_cluster(cluster)
+  
   state_assignments <- unlist(lapply(indices, function(index) {
     bed_file[index, 3]
   }))
   return(state_assignments)
 }
+
 
 update_bim_file <- function(row, assignment) {
   state_column <- paste0("state_", assignment)
