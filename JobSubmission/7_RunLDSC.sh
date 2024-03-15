@@ -303,7 +303,7 @@ for file_name in ${gwas_traits}; do
     "${LD_SOFTWARE_DIR}/ldsc.py" \
     --h2          "${file_name}" \
     --ref-ld-chr  "${output_directory}/annotation/ChromHMM." \
-    --w-ld-chr    "${WEIGHTS_DIR}/${WEIGHTS_PREFIX}." \
+    --w-ld-chr    "${LD_WEIGHTS_DIR}/${WEIGHTS_PREFIX}." \
     --out         "${output_directory}/heritability/${output_file}"
 done
 
