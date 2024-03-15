@@ -34,16 +34,21 @@
 
 rm(list = ls())
 
-if (!requireNamespace("doParallel", quietly = TRUE))
+if (!requireNamespace("doParallel", quietly = TRUE)) {
   install.packages("doParallel")
+}
 
-if (!requireNamespace("foreach", quietly = TRUE))
+library(doParallel)
+
+if (!requireNamespace("foreach", quietly = TRUE)) {
   install.packages("foreach")
+}
 
 library(foreach)
 
-if (!requireNamespace("data.table", quietly = TRUE))
+if (!requireNamespace("data.table", quietly = TRUE)) {
   install.packages("data.table")
+}
 
 arguments <- commandArgs(trailingOnly = TRUE)
 model_size <- as.numeric(arguments[1])
