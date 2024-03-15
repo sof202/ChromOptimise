@@ -206,7 +206,8 @@ if [[ "${SLURM_ARRAY_TASK_ID}" -eq 1 ]]; then
     mkdir -p "${output_directory:?}/plots"
 fi
 
-wait 10
+# We sleep here to ensure files are not removed prematurely
+sleep 5
 
 ## ============================ ##
 ##   ANNOTATION FILE CREATION   ##
