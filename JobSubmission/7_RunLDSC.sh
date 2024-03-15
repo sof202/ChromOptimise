@@ -11,7 +11,7 @@
 #SBATCH --array=1-22
 # Memory consumption is very low in testing
 # Consult information/Memory_Profiling.md for expected memory usage
-#SBATCH --mem=1G 
+#SBATCH --mem=22G 
 # Send an email after the job is done
 #SBATCH --mail-type=END 
 # Temporary log file, later to be removed
