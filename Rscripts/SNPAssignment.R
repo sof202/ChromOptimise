@@ -88,6 +88,8 @@ snp_annotation_binary_search <- function(snp_positions, bed_file) {
   intervals <- unlist(c(bed_file[, 1], tail(bed_file[, 2], 1)))
   
   cluster <- setup_cluster()
+  # This is the largest slow down of this script due to the size of the
+  # bim and bed files. Parallel processing should speed it up
   indices <-
     foreach::foreach(snp_position = snp_positions, .combine = "c") %dopar% {
       findInterval(snp_position, intervals)
