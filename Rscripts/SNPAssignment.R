@@ -38,8 +38,6 @@ if (!requireNamespace("doParallel", quietly = TRUE)) {
   install.packages("doParallel")
 }
 
-library(doParallel)
-
 if (!requireNamespace("foreach", quietly = TRUE)) {
   install.packages("foreach")
 }
@@ -90,10 +88,10 @@ snp_annotation_binary_search <- function(snp_positions, bed_file) {
   intervals <- unlist(c(bed_file[, 1], tail(bed_file[, 2], 1)))
   
   cluster <- setup_cluster()
-  indices <- foreach::foreach(snp_position = snp_positions, .combine = "c") 
-  %dopar% {
-    findInterval(snp_position, intervals)
-  }
+  indices <-
+    foreach::foreach(snp_position = snp_positions, .combine = "c") %dopar% {
+      findInterval(snp_position, intervals)
+      }
   teardown_cluster(cluster)
   
   state_assignments <- unlist(lapply(indices, function(index) {
