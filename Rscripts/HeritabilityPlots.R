@@ -51,6 +51,13 @@ results_files <- lapply(results_file_list, function(file) {
   read.table(file, header = TRUE)
 })
 
+# This is required as the rest of the script iterates over list items.
+# If only one file is read into this script, the logic will break as
+# results_files will be a data.frame 
+if (is.data.frame(results_files)) {
+  results_files <- list(results_files)
+}
+
 names(results_files) <- unlist(lapply(results_file_list, function(file) {
   strsplit(basename(file),"\\.results")
 }))
