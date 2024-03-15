@@ -33,8 +33,9 @@
 
 rm(list = ls())
 
-if (!require("tidyr", quietly = TRUE))
+if (!requireNamespace("tidyr", quietly = TRUE)) {
   install.packages("tidyr")
+}
 
 library(ggplot2)
 
