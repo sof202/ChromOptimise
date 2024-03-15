@@ -294,7 +294,7 @@ gwas_traits=$(\
 find "${LD_GWAS_TRAITS_DIR}" -name "*${gwas_pattern}*.sumstats*"\
 )
 
-for file_name in "${gwas_traits[@]}"; do
+for file_name in ${gwas_traits}; do
     output_file=$(basename "${file_name}" .sumstats.gz)
 
     # No need for overlap frq files here as state assignments are necessarily
