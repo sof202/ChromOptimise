@@ -95,12 +95,14 @@ export BIG_MODELS_DIR="${MAIN_DIR}/9_BigModelFiles"
 export LD_DIR="full/path/to/ldsc/directory"
 export LD_PLINK_DIR="${LD_DIR}/PLINK_files"
 export LD_WEIGHTS_DIR="${LD_DIR}/weights_files"
+export LD_FRQ_DIR="${LD_DIR}/frq_files"
 export LD_GWAS_TRAITS_DIR="${LD_DIR}/gwas_traits"
 
 ## LDSC reference file prefixes
 
 export PLINK_PREFIX="prefix.for.plink.files"
 export WEIGHTS_PREFIX="prefix.for.weights.files"
+export FRQ_PREFIX="prefix.for.frq.files"
 
 ## Script directories
 

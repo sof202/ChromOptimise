@@ -297,15 +297,16 @@ find "${LD_GWAS_TRAITS_DIR}" -name "*${gwas_pattern}*.sumstats*"\
 for file_name in ${gwas_traits}; do
     output_file=$(basename "${file_name}" .sumstats.gz)
 
-    # No need for overlap frq files here as state assignments are necessarily
-    # distinct categories
+    # Despite the fact that there are no overlapping annotations, we still
+    # need to parse frq files as otherwise ldsc does not output .results files
     python \
     "${LD_SOFTWARE_DIR}/ldsc.py" \
     --h2          "${file_name}" \
     --ref-ld-chr  "${output_directory}/annotation/ChromHMM." \
     --w-ld-chr    "${LD_WEIGHTS_DIR}/${WEIGHTS_PREFIX}." \
-    --out         "${output_directory}/heritability/${output_file}" \
-    --print-coefficients
+    --frqfile-chr "${LD_FRQ_DIR}/${FRQ_PREFIX}" \
+    --overlap-annot \
+    --out         "${output_directory}/heritability/${output_file}"
 done
 
 ## ====================== ##
