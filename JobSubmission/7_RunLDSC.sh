@@ -198,10 +198,13 @@ fi
 output_directory="${LD_ASSESSMENT_DIR}\
 /BinSize_${bin_size}_SampleSize_${sample_size}_${model_size}"
 
-rm -rf "${output_directory:?}"
-mkdir -p "${output_directory:?}/annotation"
-mkdir -p "${output_directory:?}/heritability"
-mkdir -p "${output_directory:?}/plots"
+# If jobs get queued, some files will be deleted prematurely
+if [[ "${SLURM_ARRAY_TASK_ID}" -eq 1 ]]; then
+    rm -rf "${output_directory:?}"
+    mkdir -p "${output_directory:?}/annotation"
+    mkdir -p "${output_directory:?}/heritability"
+    mkdir -p "${output_directory:?}/plots"
+fi
 
 ## ============================ ##
 ##   ANNOTATION FILE CREATION   ##
