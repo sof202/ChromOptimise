@@ -317,6 +317,6 @@ conda deactivate
 module purge
 module load R/4.2.1-foss-2022a
 
-Rscript HeritabilityHeatmap.R \
+Rscript HeritabilityPlots.R \
 <(find "${output_directory}/heritability" -name "*${gwas_pattern}*.results") \
 "${output_directory}/plots"
