@@ -133,6 +133,9 @@ pvalue_barplots <- create_pvalue_barplots(results_files, 2)
 names(pvalue_barplots) <- names(results_files)
 
 setwd(output_directory)
+# This usually helps to remove errors around being unable
+# to start the PNG device
+options(bitmapType='cairo')
 
 for (plot in names(pvalue_barplots)) {
   plot_name <- paste0("Enrichment_pvalues_barplot_", plot,".png")
