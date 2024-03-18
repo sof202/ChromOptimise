@@ -70,6 +70,7 @@ Main_Data_Directory
 LDSC_reference_files
 ├── PLINK_files
 ├── Weights
+├── Baseline_files 
 └── GWAS_traits
 ```
 
