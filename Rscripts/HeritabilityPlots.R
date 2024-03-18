@@ -76,8 +76,15 @@ merge_results_files <- function(results_files, target_column) {
   return(merged_dataframe)
 }
 
+# LDSC adds an L2_0 after each category, which we don't want
+remove_L2_suffix <- function(dataframe) {
+  dataframe$Category <- sub("L2_0", "", dataframe$Category)
+  return(dataframe)
+}
+
 create_enrichment_heatmap <- function(results_files) {
   enrichment_data <- merge_results_files(results_files, "Enrichment") 
+  enrichment_data <- remove_L2_suffix(enrichment_data)
 
   # pivot_longer is so heatmap can be plotted more easily
   enrichment_data <- tidyr::pivot_longer(enrichment_data,
@@ -105,6 +112,7 @@ create_pvalue_barplots <- function(results_files, p_value_threshold) {
     data <- results_files[[file]]
     plot_title <- names(results_files)[[file]]
     data$Enrichment_p <- -log10(data$Enrichment_p)
+    data <- remove_L2_suffix(data)
 
     bar_plot <-
       ggplot(data,
