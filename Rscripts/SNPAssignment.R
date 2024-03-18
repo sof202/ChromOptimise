@@ -133,6 +133,8 @@ for (i in 1:model_size) {
 baseline_file[, state_columns] <- 0
 
 annotation_file <- write_snp_annotation(bed_file, baseline_file)
-
-write.table(annotation_file, output_file_name, row.names = FALSE, sep = "\t")
+data.table::fwrite(annotation_file,
+                   file = output_file_name,
+                   row.names = FALSE,
+                   sep = "\t")
 
