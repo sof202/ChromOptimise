@@ -3,15 +3,15 @@
 #SBATCH --export=ALL 
 # Submit to the mrc queue for faster queue times
 #SBATCH -p mrcq 
-# SNP assignment takes quite a while
-#SBATCH --time=48:00:00
+# Largest time sink lies with the number of gwas results inspected
+#SBATCH --time=24:00:00
 #SBATCH -A Research_Project-MRC190311 
 #SBATCH --nodes=1 
 #SBATCH --ntasks-per-node=16
 #SBATCH --array=1-22
-# Memory consumption is very low in testing
-# Consult information/Memory_Profiling.md for expected memory usage
-#SBATCH --mem=22G 
+# memory consumption of SNPassignment is somewhere around 1GB per array element
+# for ldsc, it can be much higher when using lots of categories
+#SBATCH --mem=100G 
 # Send an email after the job is done
 #SBATCH --mail-type=END 
 # Temporary log file, later to be removed
