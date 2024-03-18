@@ -14,6 +14,8 @@ This is the wrapper script that will parse your arguments into mutliple R script
 There is a possible source of error in the above logic where the output will not actually be the optimal number of states to use. Suppose the maximum number of states out of any model is only 3 (but the number of marks is much larger than this), then it is likely that this model has no redundant states. This doesn't actually suggests that the optimal number of states is 3, just that it is 3 or greater. The additional information of a model with 4 states having redundant states is what confirms the model with 3 states is optimal.
 :::
 
+Note that you still need to input the bin size, sample size and the number of models learned here. The reason for this is because the file structure is designed such that multiple runs of the same dataset can be analysed concurrently.
+
 ## Thresholds
 
 The major factor that affects the output of this script lies in the thresholds defined in the configuration file for R [config.R](/ChromOptimise/Configuration-Files-Setup.md#configr). It can be difficult to determine suitable values for these thresholds without prior knowledge. To help with this, the supplementary pipeline was created. Running the supplementary pipeline can help the user in identifying 'good' values for these thresholds based off of the information gained from much larger models (that undoubtedly have redundant states). To learn more about this pipeline, consult [these pages](/category/supplementary-pipeline---usage-and-explanation).
@@ -36,5 +38,8 @@ As such, no value is given for the `emission_threshold`, this value should be ch
 # data set.
 sbatch 6_OptimalNumberOfStates.sh \
 --config="path/to/configuration/directory" \
---chromosome=1
+--chromosome=1 \
+--binsize=200 \
+--samplesize=75 \
+--nummodels=6 \
 ```
