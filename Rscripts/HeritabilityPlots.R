@@ -85,11 +85,14 @@ create_enrichment_heatmap <- function(results_files) {
                                          names_to = "gwas_trait",
                                          values_to = "Enrichment")
   enrichment_heatmap <- 
-    ggplot(enrichment_data,
-          aes(gwas_trait, Category, fill = Enrichment)) +
+    ggplot(enrichment_data, aes(gwas_trait,
+                                Category,
+                                fill = Enrichment,
+                                label = round(Enrichment, 2)) +
     geom_tile(color = "black") +
     coord_fixed(ratio = 1) +
     scale_fill_gradient(low = "light green", high = "dark green") +
+    geom_text(size=rel(2)) +
     theme(panel.background = element_rect(fill = "white")) +
     labs(title = "Enrichment of GWAS traits", x = "GWAS trait", y = "State") +
     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
@@ -112,7 +115,7 @@ create_pvalue_barplots <- function(results_files, p_value_threshold) {
       geom_hline(yintercept = p_value_threshold,
                  linetype = "dashed",
                  color = "black") +
-      labs(title = plot_title, x = "Enrichment p-value", y = "State") +
+      labs(title = plot_title, x = "State", y = "-log_10(Enrichment p-value)") +
       theme(plot.title = element_text(hjust = 0.5))
 
     list_of_pvalue_plots[[file]] <- bar_plot
