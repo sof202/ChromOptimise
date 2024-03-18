@@ -118,7 +118,6 @@ create_histogram <- function(emissions_data) {
   
   euclidean_distance_histogram <-
     ggplot(eucldiean_distances, aes(x = euclidean_distance)) +
-    theme_minimal() +
     geom_histogram(binwidth = 0.05, color = "black", fill = "white") +
     labs(title = "Histogram of Euclidean distances",
          x = "Euclidean Distance", y = "Frequency") +
