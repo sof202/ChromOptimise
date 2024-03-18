@@ -33,16 +33,9 @@ ${configuration_directory}"; exit 1; }
 ##   CREATION OF FILE STRUCTURE   ##
 ## ============================== ##
 
-mkdir -p "${DOWNLOAD_DIR}"
-mkdir -p "${RAW_DIR}"
-mkdir -p "${PROCESSED_DIR}"
-mkdir -p "${SUBSAMPLED_DIR}"
-mkdir -p "${BINARY_DIR}"
-mkdir -p "${MODEL_DIR}"
-mkdir -p "${OPTIMUM_STATES_DIR}"
-mkdir -p "${LD_ASSESSMENT_DIR}"
-mkdir -p "${COMPARE_DIR}"
-mkdir -p "${BIG_MODELS_DIR}"
+mkdir -p "${DOWNLOAD_DIR}" "${RAW_DIR}" "${PROCESSED_DIR}" "${SUBSAMPLED_DIR}" \
+"${BINARY_DIR}" "${MODEL_DIR}" "${OPTIMUM_STATES_DIR}" "${LD_ASSESSMENT_DIR}" \
+"${COMPARE_DIR}" "${BIG_MODELS_DIR}"
 
 ## ============================= ##
 ##   DELETE UOE SPECIFIC LINES   ##
