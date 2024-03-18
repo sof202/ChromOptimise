@@ -61,7 +61,8 @@ output_file_name <- arguments[4]
 # data.tables are faster, we are reading from /dev/fd (to avoid temporary files)
 # which doesn't work with fread. Hence we read with the base R function
 bed_file <- data.table::data.table(read.table(bed_file))
-baseline_file <- data.table::data.table(read.table(baseline_file))
+baseline_file <-
+  data.table::data.table(read.table(baseline_file, header = TRUE))
 
 ## ======================= ##
 ##   PARALLEL PROCESSING   ##
