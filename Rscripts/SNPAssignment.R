@@ -51,7 +51,7 @@ if (!requireNamespace("data.table", quietly = TRUE)) {
 arguments <- commandArgs(trailingOnly = TRUE)
 model_size <- as.numeric(arguments[1])
 bed_file <- arguments[2]
-bim_file <- arguments[3]
+baseline_file <- arguments[3]
 output_file_name <- arguments[4]
 
 ## ================= ##
@@ -61,7 +61,7 @@ output_file_name <- arguments[4]
 # data.tables are faster, we are reading from /dev/fd (to avoid temporary files)
 # which doesn't work with fread. Hence we read with the base R function
 bed_file <- data.table::data.table(read.table(bed_file))
-bim_file <- data.table::data.table(read.table(bim_file))
+baseline_file <- data.table::data.table(read.table(baseline_file))
 
 ## ======================= ##
 ##   PARALLEL PROCESSING   ##
@@ -103,17 +103,17 @@ snp_annotation_binary_search <- function(snp_positions, bed_file) {
 }
 
 
-update_bim_file <- function(row, assignment) {
+update_baseline_file <- function(row, assignment) {
   state_column <- paste0("state_", assignment)
   data.table::set(row, j = state_column, value = 1)
   return(row)
 }
 
-write_snp_annotation <- function(bed_file, bim_file) {
-  assignments <- snp_annotation_binary_search(bim_file$BP, bed_file)
+write_snp_annotation <- function(bed_file, baseline_file) {
+  assignments <- snp_annotation_binary_search(baseline_file$BP, bed_file)
   
-  updated_bim_rows <- lapply(1:nrow(bim_file), function(row) {
-    update_bim_file(bim_file[row, ], assignments[[row]])
+  updated_bim_rows <- lapply(1:nrow(baseline_file), function(row) {
+    update_baseline_file(baseline_file[row, ], assignments[[row]])
   })
   annotation_file <- data.table::rbindlist(updated_bim_rows)
   return(annotation_file)
@@ -123,23 +123,15 @@ write_snp_annotation <- function(bed_file, bim_file) {
 ##   MAIN   ##
 ## ======== ##
 
-# Standard bim column order (we are only taking the first four columns)
-names(bim_file) <- c("CHR", "SNP", "CM", "BP")
-
-# ldsc expects a particular column order for the annotation file to function
-# correctly
-column_order <- c("CHR", "BP", "SNP", "CM")
-data.table::setcolorder(bim_file, neworder =  column_order)
-
 # ldsc will break if a state contains SNPs on one chromosome but not on another
 # So we need to initialise all of our columns first with zeroes
 state_columns <- NULL
 for (i in 1:model_size) {
   state_columns <- c(state_columns, paste0("state_", i))
 }
-bim_file[, state_columns] <- 0
+baseline_file[, state_columns] <- 0
 
-annotation_file <- write_snp_annotation(bed_file, bim_file)
+annotation_file <- write_snp_annotation(bed_file, baseline_file)
 
 write.table(annotation_file, output_file_name, row.names = FALSE, sep = "\t")
 

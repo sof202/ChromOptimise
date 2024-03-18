@@ -97,12 +97,14 @@ export LD_PLINK_DIR="${LD_DIR}/PLINK_files"
 export LD_WEIGHTS_DIR="${LD_DIR}/weights_files"
 export LD_FRQ_DIR="${LD_DIR}/frq_files"
 export LD_GWAS_TRAITS_DIR="${LD_DIR}/gwas_traits"
+export LD_BASELINE_DIR="${LD_DIR}/baseline"
 
 ## LDSC reference file prefixes
 
 export PLINK_PREFIX="prefix.for.plink.files"
 export WEIGHTS_PREFIX="prefix.for.weights.files"
 export FRQ_PREFIX="prefix.for.frq.files"
+export BASELINE_PREFIX="prefix.for.baseline.files"
 
 ## Script directories
 

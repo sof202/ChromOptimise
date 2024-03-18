@@ -236,13 +236,13 @@ finishing_statement 1; }
 chromosome=${SLURM_ARRAY_TASK_ID}
 
 assignment_start=$(date +%s)
-bim_file="${LD_PLINK_DIR}/${PLINK_PREFIX}.${chromosome}.bim"
+baseline_annot="${LD_BASELINE_DIR}/${BASELINE_PREFIX}.${chromosome}.annot.gz"
 
 Rscript SNPAssignment.R \
 "${model_size}" \
 <(awk -v chromosome="chr${chromosome}" \
 '$1 == chromosome {print $2, $3, $4}' "${dense_bed_file}") \
-<(awk '{print $1, $2, $3, $4}' "${bim_file}") \
+<(zcat "${baseline_annot}") \
 "${output_directory}/annotation/ChromHMM.${chromosome}.annot"
 
 assignment_end=$(date +%s)
