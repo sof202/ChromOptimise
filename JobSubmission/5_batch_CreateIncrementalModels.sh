@@ -204,14 +204,14 @@ finishing_statement 1; }
 output_directory="${MODEL_DIR:?}\
 /BinSize_${bin_size}_SampleSize_${sample_size}_${number_of_models_to_generate}"
 
-sleep 15
-# Avoid stale file handles
+# Avoid stale file handles by only deleting directory structure once
 if [[ "${SLURM_ARRAY_TASK_ID}" -eq 1 ]]; then
     rm -rf "${output_directory}"
     mkdir -p "${output_directory}/Likelihood_Values"
     mkdir -p "${output_directory}/STATEBYLINE"
 fi
 
+sleep 5
 cd "${output_directory}/Likelihood_Values" || finishing_statement 1
 
 
