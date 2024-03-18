@@ -99,7 +99,7 @@ create_enrichment_heatmap <- function(results_files) {
     geom_tile(color = "black") +
     coord_fixed(ratio = 1) +
     scale_fill_gradient(low = "light green", high = "dark green") +
-    geom_text(size=rel(2)) +
+    geom_text() +
     theme(panel.background = element_rect(fill = "white")) +
     labs(title = "Enrichment of GWAS traits", x = "GWAS trait", y = "State") +
     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
@@ -158,5 +158,8 @@ for (plot in names(pvalue_barplots)) {
 
 ggsave(
   "Enrichment_heatmap.png",
-  plot = enrichment_heatmap
+  plot = enrichment_heatmap,
+  
+  # Plot can become difficult to read when there is a lot of gwas traits
+  scale = length(results_files) / 10
 )
