@@ -38,9 +38,10 @@ if (!requireNamespace("tidyr", quietly = TRUE)) {
 }
 
 if (!requireNamespace("ggtext", quietly = TRUE)) {
-  install.packages("ggtext")
+  install.packages("ggtext", "~/R_packages")
 }
 
+.libPaths(c("~/R_packages", .libPaths()))
 library(ggplot2)
 
 arguments <- commandArgs(trailingOnly = TRUE)
