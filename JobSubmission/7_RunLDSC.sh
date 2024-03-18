@@ -196,7 +196,7 @@ if [[ -z "${model_size}" ]]; then
 fi
 
 output_directory="${LD_ASSESSMENT_DIR}\
-/BinSize_${bin_size}_SampleSize_${sample_size}_${model_size}"
+/BinSize_${bin_size}_SampleSize_${sample_size}_${number_of_models}"
 
 # If jobs get queued, some files will be deleted prematurely
 if [[ "${SLURM_ARRAY_TASK_ID}" -eq 1 ]]; then
