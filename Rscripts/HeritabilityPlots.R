@@ -91,8 +91,8 @@ create_enrichment_heatmap <- function(results_files) {
     coord_fixed(ratio = 1) +
     scale_fill_gradient(low = "light green", high = "dark green") +
     theme(panel.background = element_rect(fill = "white")) +
-    labs(title = "Enrichment of GWAS traits", x = "GWAS trait", y = "State")
-
+    labs(title = "Enrichment of GWAS traits", x = "GWAS trait", y = "State") +
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
   return(enrichment_heatmap)
 }
 
