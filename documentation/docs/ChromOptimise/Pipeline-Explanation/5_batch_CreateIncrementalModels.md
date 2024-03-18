@@ -31,7 +31,6 @@ One may not know this number before running the script. However, the maximum num
 sbatch --array=1-3 5_batch_CreateIncementalModels.sh \
 --config="path/to/configuration/directory" \
 --nummodels=6 \
---increment=1 \
 --binsize=200 \
 --samplesize=75 \
 --assembly=hg19
