@@ -237,4 +237,11 @@ java -mx4G \
 "${SUBSAMPLED_DIR}/cellmarkfiletable.txt" \
 "${BINARY_DIR}/BinSize_${bin_size}_SampleSize_${sample_size}"
 
+# Non-autosomal chromosomes are not factored into ldsc step of the pipeline
+# so we minimise their impact by deleting their associated binary files
+rm "${BINARY_DIR}/BinSize_${bin_size}_SampleSize_${sample_size}/*chrM*"
+rm "${BINARY_DIR}/BinSize_${bin_size}_SampleSize_${sample_size}/*chrX*"
+rm "${BINARY_DIR}/BinSize_${bin_size}_SampleSize_${sample_size}/*chrY*"
+
+
 finishing_statement 0

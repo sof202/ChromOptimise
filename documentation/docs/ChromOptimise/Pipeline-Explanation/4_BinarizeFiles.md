@@ -14,7 +14,11 @@ This uses ChromHMM's `BinarizeBam` command to binarize the subsampled `.bam` fil
 It is assumed at this point that the at least step 3 has been completed for all of the epigenetic marks that you aim to use in the hidden Markov models, and that the sample size used for each mark is the same.
 
 :::note[Unwanted chromosomes]
-Sometimes your dataset will contain information for additional chromosomes that you don't want to include in further downstream analysis. For example, mitochondrial DNA. At the bottom of this script, there is some commented code. You can modify this line to tell the script to delete such unwanted files.
+In step 7, the tool ldsc is used to inspect biological relevance in the chromatin
+states obtained from ChromHMM. This step specifically will only consider autosomal
+chromosomes. As a result, sex (and mitochondrial) binary files are deleted at the
+end of this script. Comment these lines out if you want to keep these chromosomes
+for the model generation step (step 5).
 :::
 
 ### Bin size
