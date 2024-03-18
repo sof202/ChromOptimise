@@ -88,7 +88,7 @@ create_enrichment_heatmap <- function(results_files) {
     ggplot(enrichment_data, aes(gwas_trait,
                                 Category,
                                 fill = Enrichment,
-                                label = round(Enrichment, 2)) +
+                                label = round(Enrichment, 2))) +
     geom_tile(color = "black") +
     coord_fixed(ratio = 1) +
     scale_fill_gradient(low = "light green", high = "dark green") +
