@@ -204,7 +204,7 @@ finishing_statement 1; }
 output_directory="${MODEL_DIR:?}\
 /BinSize_${bin_size}_SampleSize_${sample_size}_${number_of_models_to_generate}"
 
-sleep 5
+sleep 15
 # Avoid stale file handles
 if [[ "${SLURM_ARRAY_TASK_ID}" -eq 1 ]]; then
     rm -rf "${output_directory}"
