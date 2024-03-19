@@ -92,7 +92,7 @@ From the [user manual](https://compbio.mit.edu/ChromHMM/ChromHMM_manual.pdf) and
 \
 From a [resource](https://www.cs.ubc.ca/~murphyk/Bayes/rabiner.pdf) sent by one of the creators, Jason Ernst, these algorithms have a computational complexity of O(N<sup>2</sup>T). Where N is the number of states in the model and T is the total number of observations (proportional to sizes of binary files).
 
-**Note**: Although the algorithms mentioned have computational complexity of O(N<sup>2</sup>T), this doesn't serve as the complete picture. By default, ChromHMM will terminate once the change in the likelihood function is below 0.001. The number of iterations it takes to reach this point can vary massively between models and datasets. The maximum number of iterations (by default) is 200. Keep this maximum iteration number into account when considering processing times.
+**Note**: Although the algorithms mentioned have computational complexity of O(N<sup>2</sup>T), this doesn't serve as the complete picture. By default, ChromHMM will terminate once the change in the likelihood function is below 001. The number of iterations it takes to reach this point can vary massively between models and datasets. The maximum number of iterations (by default) is 200. Keep this maximum iteration number into account when considering processing times.
 \
 In testing, the following was observed:
 
@@ -113,6 +113,66 @@ It is important to note that this script is designed to be executed as an array 
 ## 6_OptimalNumberOfStates.sh
 This script makes use of an R script that is inside of a loop. However, the Rscript has very little computational complexity and so the script is usually very fast. In previous tests with 8 state models, the script took ~14 seconds. It is unlikely that this script will ever exceed the default wall time set in the `#SBATCH` parameters at the top of the script.
 
+## 7_ReferenceLDSCore.sh
+This script will take roughly the same amount of time regardless of the number
+of states in your model. In testing, the following times were found for the
+SNP assignment R script:
+
+- Chromosome 1 took: 964 seconds
+- Chromosome 2 took: 1163 seconds
+- Chromosome 3 took: 757 seconds
+- Chromosome 4 took: 804 seconds
+- Chromosome 5 took: 698 seconds
+- Chromosome 6 took: 733 seconds
+- Chromosome 7 took: 637 seconds
+- Chromosome 8 took: 597 seconds
+- Chromosome 9 took: 490 seconds
+- Chromosome 10 took: 562 seconds
+- Chromosome 11 took: 530 seconds
+- Chromosome 12 took: 504 seconds
+- Chromosome 13 took: 387 seconds
+- Chromosome 14 took: 354 seconds
+- Chromosome 15 took: 299 seconds
+- Chromosome 16 took: 345 seconds
+- Chromosome 17 took: 281 seconds
+- Chromosome 18 took: 313 seconds
+- Chromosome 19 took: 239 seconds
+- Chromosome 20 took: 223 seconds
+- Chromosome 21 took: 136 seconds
+- Chromosome 22 took: 138 seconds
+
+For the calculation of LDscores: 
+- Chromosome 1 took: 11 minutes
+- Chromosome 2 took: 13 minutes
+- Chromosome 3 took: 11 minutes
+- Chromosome 4 took: 11 minutes
+- Chromosome 5 took: 9 minutes
+- Chromosome 6 took: 10 minutes
+- Chromosome 7 took: 9 minutes
+- Chromosome 8 took: 9 minutes
+- Chromosome 9 took: 6 minutes
+- Chromosome 10 took: 7 minutes
+- Chromosome 11 took: 7 minutes
+- Chromosome 12 took: 7 minutes
+- Chromosome 13 took: 5 minutes
+- Chromosome 14 took: 5 minutes
+- Chromosome 15 took: 4 minutes
+- Chromosome 16 took: 5 minutes
+- Chromosome 17 took: 3 minutes
+- Chromosome 18 took: 4 minutes
+- Chromosome 19 took: 3 minutes
+- Chromosome 20 took: 3 minutes
+- Chromosome 21 took: 2 minutes
+- Chromosome 22 took: 2 minutes
+
+## 8_PartitionedHeritability.sh
+This script will linearly increase in time with each additional gwas trait
+considered. The effect of having more annotations seems to be minimal however
+(more annotations only appears to increase 
+[memory requirements](./Memory-Profiling.md)). In testing, for 58 annotations
+(8 state annotations), this script took on average 6 minutes and 30 seconds
+for each gwas trait (with a high of 7.01 minutes and a low of 6.05 minutes)
+
 ## Generate_Big_Model.sh 
 Computational time for this script follows the same logic as [5_batch_CreateIncrementalModels.sh](#5_batch_createincrementalmodelssh). The main contributor to computational time is ChromHMM's `LearnModel` command, only this time the models are likely to be much larger. As a result expect the processing time to be very long if a high number of states is to be used.
 \
@@ -125,8 +185,3 @@ In testing, the following was observed:
     - 70 states took 19 hours 18 minutes
     - 80 states took 25 hours 34 minutes
 
-## Generate_Redundancy_Metrics_Plots.sh
-This script calls two R scripts that make one plot each. The amount of data that is parsed into them is very small (unless the models have hundreds of states). Therefore, despite R being relatively slow, this script should never take any longer than one minute. In testing, processing a model with 80 states took 12 seconds.
-
-## CompareModels.sh
-Most computational time is accredited to ChromHMM's `CompareModels` command. However, this command does not require a large amount of time to run. In tests, comparing models to a model of 8 states (then to 7 states, 6, 5 etc.) took only 18 seconds. Therefore it is unlikely that this script will ever exceed the default wall time set in the `#SBATCH` parameters at the top of the script. 

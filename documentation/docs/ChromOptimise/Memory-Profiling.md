@@ -64,8 +64,19 @@ Additionally, it's important to note that this script is designed to be executed
 ## 6_OptimalNumberofStates.sh
 This script utilizes Rscripts which entail minor computations, resulting in very low memory consumption. Through testing, it has been observed that the memory usage never surpassed a few kilobytes.
 
+## 7_ReferenceLDSCore.sh
+This script's biggest requirement of memory comes from the SNP assigment R script
+that it calls. In testing, chromosomes 1 and 2 use about 800MB of memory.
+Because the script is ran as an array that processes each chromosome at the same
+time, 22 GB of memory is allocated.
+
+## 8_PartitionedHeritability.sh
+According to [ldsc's creators](https://github.com/bulik/ldsc/wiki/FAQ),
+partitioned heritability should only take up ~8GB for 50 annotations. The number
+of annotations in this script will be greater than 50. In testing, over 20GB is
+required to stop out of memory errors for just 58 annotations. To account for
+this, the SLURM directive is set to 50GB of memory.
+
 ## Generate_Big_Model.sh 
 This script is similar to [5_batch_CreateIncrementalModels.sh](#5_batch_createincrementalmodelssh), suggesting that the memory consumption pattern is likely to align with the conclusions drawn there. However, it's important to note that due to the computational time required for this script, utilizing heaptrack to monitor memory allocations was impractical. Consequently, the memory consumption for notably large models (20 states or more) remains unknown and is not extensively documented.
 
-## CompareModels.sh
-Based on testing, this script incurs minimal memory consumption. The majority of the script is dedicated to fundamental file management tasks and the utilization of ChromHMM's `CompareModels` command. Notably, the latter operation only necessitates kilobytes of peak heap consumption when comparing 7 different emission files.
