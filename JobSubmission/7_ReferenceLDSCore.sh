@@ -73,9 +73,9 @@
 usage() {
 cat <<EOF
 ===========================================================================
-7_RunLDSC
+7_ReferenceLDSCore
 ===========================================================================
-Purpose: Determines and plots partitioned heritability using LDSC
+Purpose: Generates reference LD scores after generating annotation files
 Author: Sam Fletcher
 Contact: s.o.fletcher@exeter.ac.uk
 Dependencies: R, LDSC, gwas traits, 1000 genomes files
@@ -110,14 +110,14 @@ while getopts c:t:g:b:s:n:-: OPT; do
         OPTARG="${OPTARG#=}"
     fi
     case "$OPT" in
-        c | config )     needs_argument; configuration_directory="$OPTARG" ;;
-        t | state )      needs_argument; model_size="$OPTARG" ;;
-        g | gwas )       needs_argument; gwas_pattern="$OPTARG" ;;
-        b | binsize )    needs_argument; bin_size="$OPTARG" ;;
-        s | samplesize ) needs_argument; sample_size="$OPTARG" ;;
-        n | nummodels)   needs_argument; number_of_models="$OPTARG" ;;
-        \? )             usage ;;  # Illegal short options are caught by getopts
-        * )              usage ;;  # Illegal long option
+        c | config )      needs_argument; configuration_directory="$OPTARG" ;;
+        t | state )       needs_argument; model_size="$OPTARG" ;;
+        g | gwas )        needs_argument; gwas_pattern="$OPTARG" ;;
+        b | binsize )     needs_argument; bin_size="$OPTARG" ;;
+        s | samplesize )  needs_argument; sample_size="$OPTARG" ;;
+        n | nummodels )   needs_argument; number_of_models="$OPTARG" ;;
+        \? )              usage ;;  # Illegal short options are caught by getopts
+        * )               usage ;;  # Illegal long option
     esac
 done
 shift $((OPTIND-1))

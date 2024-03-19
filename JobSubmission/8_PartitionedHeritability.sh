@@ -63,7 +63,7 @@
 usage() {
 cat <<EOF
 ===========================================================================
-7_RunLDSC
+8_PartitionedHeritability
 ===========================================================================
 Purpose: Determines and plots partitioned heritability using LDSC
 Author: Sam Fletcher
@@ -98,13 +98,13 @@ while getopts c:g:b:s:n:-: OPT; do
         OPTARG="${OPTARG#=}"
     fi
     case "$OPT" in
-        c | config )     needs_argument; configuration_directory="$OPTARG" ;;
-        g | gwas )       needs_argument; gwas_pattern="$OPTARG" ;;
-        b | binsize )    needs_argument; bin_size="$OPTARG" ;;
-        s | samplesize ) needs_argument; sample_size="$OPTARG" ;;
-        n | nummodels)   needs_argument; number_of_models="$OPTARG" ;;
-        \? )             usage ;;  # Illegal short options are caught by getopts
-        * )              usage ;;  # Illegal long option
+        c | config )      needs_argument; configuration_directory="$OPTARG" ;;
+        g | gwas )        needs_argument; gwas_pattern="$OPTARG" ;;
+        b | binsize )     needs_argument; bin_size="$OPTARG" ;;
+        s | samplesize )  needs_argument; sample_size="$OPTARG" ;;
+        n | nummodels )   needs_argument; number_of_models="$OPTARG" ;;
+        \? )              usage ;;  # Illegal short options are caught by getopts
+        * )               usage ;;  # Illegal long option
     esac
 done
 shift $((OPTIND-1))
