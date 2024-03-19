@@ -291,7 +291,7 @@ fi
 # ~220GB of memory available). Hence at this point we run a new script with
 # sbatch
 
-cd "${SCRIPTS_DIR}/Jobsubmission" || { echo "Could not find the JobSubmission \
+cd "${SCRIPTS_DIR}/JobSubmission" || { echo "Could not find the JobSubmission \
 directory in ${SCRIPTS_DIR}/Jobsubmission. Please check your configuration \
 file."; finishing_statement 0; }
 
