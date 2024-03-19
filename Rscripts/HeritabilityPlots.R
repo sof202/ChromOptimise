@@ -159,10 +159,6 @@ for (plot in names(pvalue_barplots)) {
   )
 }
 
-ggsave(
-  "Enrichment_heatmap.png",
-  plot = enrichment_heatmap,
-  limitsize = FALSE,
-  # Plot can become difficult to read when there is a lot of gwas traits
-  scale = length(results_files) * length(results_files[[1]]) / 100
-)
+png("Enrichment_heatmap.png", width = 19200, height = 10800)
+print(enrichment_heatmap)
+
