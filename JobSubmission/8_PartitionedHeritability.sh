@@ -11,7 +11,7 @@
 #SBATCH --ntasks-per-node=16
 # According to ldsc, roughly 8 GB are required for 50 categories, we increase
 # this here as we have 50 baseline categories plus each of our states
-#SBATCH --mem=20G 
+#SBATCH --mem=50G 
 # Send an email after the job is done
 #SBATCH --mail-type=END 
 # Temporary log file, later to be removed
@@ -140,9 +140,9 @@ location: ${configuration_directory}"; exit 1; }
 # The alternative would be forcing the user to create the file structure
 # themselves and using full file paths in the SLURM directives (bad)
 mv "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.log" \
-"${LOG_FILE_PATH}/${SLURM_ARRAY_JOB_ID}~${SLURM_ARRAY_TASK_ID}~${timestamp:=}.log"
+"${LOG_FILE_PATH}/${SLURM_JOB_ID}~${timestamp:=}.log"
 mv "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err" \
-"${LOG_FILE_PATH}/${SLURM_ARRAY_JOB_ID}~${SLURM_ARRAY_TASK_ID}~$timestamp.err"
+"${LOG_FILE_PATH}/${SLURM_JOB_ID}~$timestamp.err"
 
 
 ## =============== ##
@@ -157,34 +157,18 @@ fi
 if [[ -z "${bin_size}" || -z "${sample_size}" || -z "${number_of_models}" ]]; then
     # If the user doesn't put in all of these options, our best hope is to look
     # for the first approximate match
-    input_directory=$( \
-    find "${OPTIMUM_STATES_DIR}" -type d \
+    ld_directory=$( \
+    find "${LD_ASSESSMENT_DIR}" -type d \
     -name "BinSize_*${bin_size}*_SampleSize_*${sample_size}*_*${number_of_models}*" | \
     head -1)
 
-    bin_size=$(basename "${input_directory}" | cut -d_ -f2)
-    sample_size=$(basename "${input_directory}" | cut -d_ -f4)
-    number_of_models=$(basename "${input_directory}" | cut -d_ -f5)
+    bin_size=$(basename "${ld_directory}" | cut -d_ -f2)
+    sample_size=$(basename "${ld_directory}" | cut -d_ -f4)
+    number_of_models=$(basename "${ld_directory}" | cut -d_ -f5)
 else
-input_directory="${OPTIMUM_STATES_DIR}\
+ld_directory="${LD_ASSESSMENT_DIR}\
 /BinSize_${bin_size}_SampleSize_${sample_size}_${number_of_models}"
 fi
-
-if [[ -z "${model_size}" ]]; then
-    if [[ -z "$(ls -A "${input_directory}")" ]]; then
-        { >&2 echo -e "ERROR: No files found in: ${input_directory}.\n"\
-        "Please run 6_OptimumNumberOfStates.sh before this script."
-        finishing_statement 1; }
-    fi
-    optimum_state_file="${input_directory}/OptimumNumberOfStates.txt"
-    model_size=$(tail -1 "${optimum_state_file}" | \
-    cut -d: -f2 | \
-    tr -d ' ')
-    echo "Optimum model size found was: ${model_size}"
-fi
-
-output_directory="${LD_ASSESSMENT_DIR}\
-/BinSize_${bin_size}_SampleSize_${sample_size}_${number_of_models}"
 
 ## ============================ ##
 ##   PARTITIONED HERITABILITY   ##
@@ -210,11 +194,11 @@ for file_name in ${gwas_traits}; do
     python \
     "${LD_SOFTWARE_DIR}/ldsc.py" \
     --h2          "${file_name}" \
-    --ref-ld-chr  "${output_directory}/annotation/ChromHMM." \
+    --ref-ld-chr  "${ld_directory}/annotation/ChromHMM." \
     --w-ld-chr    "${LD_WEIGHTS_DIR}/${WEIGHTS_PREFIX}." \
     --frqfile-chr "${LD_FRQ_DIR}/${FRQ_PREFIX}." \
     --overlap-annot \
-    --out         "${output_directory}/heritability/${output_file}"
+    --out         "${ld_directory}/heritability/${output_file}"
 done
 
 ## ====================== ##
@@ -231,5 +215,5 @@ make sure FilePaths.txt is pointing to the correct directory"
 finishing_statement 1; }
 
 Rscript HeritabilityPlots.R \
-<(find "${output_directory}/heritability" -name "*${gwas_pattern}*.results") \
-"${output_directory}/plots"
+<(find "${ld_directory}/heritability" -name "*${gwas_pattern}*.results") \
+"${ld_directory}/plots"

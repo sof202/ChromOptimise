@@ -162,11 +162,6 @@ mv "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err" \
 ##    VARIABLES    ##
 ## =============== ##
 
-if [[ -z "${gwas_pattern}" ]]; then
-    echo "No glob pattern was given for selecting gwas traits." \
-    "All gwas traits will be considered."
-fi
-
 if [[ -z "${bin_size}" || -z "${sample_size}" || -z "${number_of_models}" ]]; then
     # If the user doesn't put in all of these options, our best hope is to look
     # for the first approximate match
