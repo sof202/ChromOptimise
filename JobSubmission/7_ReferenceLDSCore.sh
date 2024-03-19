@@ -3,8 +3,8 @@
 #SBATCH --export=ALL 
 # Submit to the mrc queue for faster queue times
 #SBATCH -p mrcq 
-# Largest time sink lies with the number of gwas results inspected
-#SBATCH --time=24:00:00
+# SNP assignment takes ~20-30 minutes for chr 1, ldsc takes <15 minutes
+#SBATCH --time=2:00:00
 #SBATCH -A Research_Project-MRC190311 
 #SBATCH --nodes=1 
 #SBATCH --ntasks-per-node=16
@@ -60,8 +60,9 @@
 ## -n|--nummodels=  -> Number of models to learn (default: 4)                 ||
 ## ===========================================================================##
 ## OUTPUTS:                                                                   ||
-## Heatmap of enrichments from partitioned heritability for each GWAS trait   ||
-## Bar plots for enrichment p values for each GWAS trait                      ||
+## Annotation files for each chromosome (annotations being all baseline       ||
+## categories and state assignments from ChromHMM).                           ||
+## LD scores for each category for each chromosome.                           ||
 ## ===========================================================================##
 
 
@@ -288,35 +289,22 @@ if [[ "${chromosomes_completed}" -ne 22 ]]; then
     finishing_statement 0
 fi
 
+# This job is being ran as an array, which means that the memory of the job
+# is split among each array task. This memory allocation is not dynamic and so
+# at this point in the program the task only has (max memory)/22 GB of memory.
+# This is not enough to handle the partitioned heritability (unless you have
+# ~220GB of memory available). Hence at this point we run a new script with
+# sbatch
 
+cd "${SCRIPTS_DIR}/Jobsubmission" || { echo "Could not find the JobSubmission \
+directory in ${SCRIPTS_DIR}/Jobsubmission. Please check your configuration \
+file."; finishing_statement 0; }
 
-gwas_traits=$(\
-find "${LD_GWAS_TRAITS_DIR}" -name "*${gwas_pattern}*.sumstats*"\
-)
+sbatch 8_PartitionedHeritability.sh \
+--config="${configuration_directory}" \
+--gwas="${gwas_pattern}" \
+--binsize="${bin_size}" \
+--samplesize="${sample_size}" \
+--nummodels="${number_of_models}"
 
-for file_name in ${gwas_traits}; do
-    output_file=$(basename "${file_name}" .sumstats.gz)
-
-    # Despite the fact that there are no overlapping annotations, we still
-    # need to parse frq files as otherwise ldsc does not output .results files
-    python \
-    "${LD_SOFTWARE_DIR}/ldsc.py" \
-    --h2          "${file_name}" \
-    --ref-ld-chr  "${output_directory}/annotation/ChromHMM." \
-    --w-ld-chr    "${LD_WEIGHTS_DIR}/${WEIGHTS_PREFIX}." \
-    --frqfile-chr "${LD_FRQ_DIR}/${FRQ_PREFIX}." \
-    --overlap-annot \
-    --out         "${output_directory}/heritability/${output_file}"
-done
-
-## ====================== ##
-##   DATA VISUALISATION   ##
-## ====================== ##
-
-conda deactivate
-module purge
-module load R/4.2.1-foss-2022a
-
-Rscript HeritabilityPlots.R \
-<(find "${output_directory}/heritability" -name "*${gwas_pattern}*.results") \
-"${output_directory}/plots"
+finishing_statement 0
