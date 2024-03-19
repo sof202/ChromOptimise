@@ -152,14 +152,17 @@ for (plot in names(pvalue_barplots)) {
   plot_name <- paste0("Enrichment_pvalues_barplot_", plot,".png")
   ggsave(
     plot_name,
-    plot = pvalue_barplots[[plot]]
+    plot = pvalue_barplots[[plot]],
+    limitsize = FALSE,
+    # Plot can become difficult to read when there is a lot of gwas traits
+    scale = length(results_files[[1]]) / 25
   )
 }
 
 ggsave(
   "Enrichment_heatmap.png",
   plot = enrichment_heatmap,
-  
+  limitsize = FALSE,
   # Plot can become difficult to read when there is a lot of gwas traits
-  scale = length(results_files) / 10
+  scale = length(results_files) * length(results_files[[1]]) / 100
 )
