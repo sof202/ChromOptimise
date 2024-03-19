@@ -1,6 +1,6 @@
 ---
 title: 7_RunLDSC
-description: "The script used to integrate LDSC."
+description: "Calculates the ldscores for annotation files."
 sidebar_position: 1
 ---
 
@@ -21,8 +21,8 @@ The script achieves this using [partitioned heritability](https://www.nature.com
 ## Example usage
 
 ```bash
-# Generates heatmap of enrichments and bar plots for all GWAS-traits for the 
-# model with 5 states in the model directory
+# Generates annotation and ldscore for each chromosome using the model with
+# 5 states in the model directory
 sbatch 7_RunLDSC.sh \
 --config="path/to/configuration/directory" \
 --state=5 \
@@ -32,11 +32,10 @@ sbatch 7_RunLDSC.sh \
 ```
 
 ```bash
-# Generates heatmap of enrichments and bar plots for all height based traits for  
-# the model with 6 states in the model directory
+# Generates annotation and ldscore for each chromosome using the model with
+# the optimum number of states (as decided by 6_OptimalNumberOfStates) 
 sbatch 7_RunLDSC.sh \
 --config="path/to/configuration/directory" \
---state=6 \
 --gwas="height" \
 --binsize=200 \
 --samplesize=75 \

@@ -1,7 +1,7 @@
 ---
 title: HeritabilityPlots
 description: "The script used to create plots of partitioned heritability."
-sidebar_position: 3
+sidebar_position: 4
 ---
 
 # HeritabilityPlots
