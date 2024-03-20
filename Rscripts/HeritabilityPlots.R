@@ -95,7 +95,6 @@ bonferroni_correction <- function(results_files, pvalue_threshold) {
 }
 
 fdr_correction <- function(pvalues, fdr_threshold) {
-  pvalues <- pvalues[!is.na(pvalues)]
   adjusted_pvalues <- p.adjust(pvalues, method="BH")
   significant_pvalues <-
     subset(adjusted_pvalues, adjusted_pvalues < fdr_threshold)
@@ -149,6 +148,8 @@ create_pvalue_barplots <-
         data <- data[state_assignment_rows, ]
       }
       plot_title <- names(results_files)[[file]]
+      # We remove the base row as it is guaranteed to have a NaN p-value
+      data <- data[, !(names(df) %in% "base")]
       fdr_threshold <- fdr_correction(data$Enrichment_p, pvalue_threshold)
 
       data$Enrichment_p <- -log10(data$Enrichment_p)
