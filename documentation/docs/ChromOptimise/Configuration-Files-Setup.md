@@ -44,24 +44,47 @@ Main_Data_Directory
 │   ├── ...
 │   └── Epigenetic_Mark_n
 ├── 3_Subsampled_Bam_Files
-├── 4_Binary_Files
-│   ├── BinSize_xxx_SampleSize_yyy
-│   ├── ...
-│   └── BinSize_zzz_SampleSize_www
-├── 5_Model_Files
-├── 6_Optimum_Number_Of_States
-│   ├── Results_From_Run_1
-│   ├── Results_From_Run_2
-│   ├── ...
-│   ├── Results_From_Run_n
-│   └── Likelihood_Values_Of_Models
-├── 7_LDSC_Assessment_Files
-│   ├── Results_From_Run_1
-│   ├── Results_From_Run_2
-│   ├── ...
+│   ├── cellmarkfiletable.txt
 │   └── Results_From_Run_n
-├── 8_Model_Comparison_Files
-└── 9_Big_Model_Files
+├── 4_Binary_Files
+│   └── Results_From_Run_n
+│       └── Binary_files for each chromosome
+├── 5_Model_Files
+│   └── Results_From_Run_n
+│       ├── Likelihood_Values
+│       │   └── likelihoods.txt 
+│       ├── state_assignments (STATEBYLINE)
+│       │   └── [cell].statebyline.txt 
+│       └── ChromHMM model files
+├── 6_Optimum_Number_Of_States
+│   └── Results_From_Run_n
+│       ├── Euclidean_distances
+│       │   └── Euclidean_distances_model-n.txt 
+│       ├── Flanking_states
+│       │   └── Likeliest_flanking_states_model-n.txt 
+│       ├── Isolation_scores
+│       │   └── Isolation_scores_model-n.txt 
+│       ├── Redundant_states_model-n.txt 
+│       └── OptimumNumberOfStates.txt
+├── 7_LDSC_Assessment_Files
+│   └── Results_From_Run_n
+│       ├── annotation
+│       │   ├── ChromHMM.n.l2.ldscore.gz
+│       │   ├── ChromHMM.n.annot
+│       │   ├── ChromHMM.n.log
+│       │   ├── ChromHMM.n.M
+│       │   └── ChromHMM.n.M_5_50
+│       ├── heritability
+│       │   ├── gwas_trait_n.results
+│       │   └── gwas_trait_n.log
+│       └── plots
+│           ├── All_categories
+│           │   ├── Enrichment_heatmap.png
+│           │   └── Enrichment_pvalues_gwas_trait_n.png
+│           └── State_categories
+│               ├── Enrichment_heatmap.png
+│               └── Enrichment_pvalues_gwas_trait_n.png
+└── 8_Big_Model_Files
     └── Plots
         ├── Euclidean_Distance_Histrograms
         └── Transition_Maxima_Scatter_Plots
