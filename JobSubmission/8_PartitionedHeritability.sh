@@ -174,10 +174,6 @@ fi
 ##   PARTITIONED HERITABILITY   ##
 ## ============================ ##
 
-gwas_traits=$(\
-find "${LD_GWAS_TRAITS_DIR}" -name "*${gwas_pattern}*.sumstats*"\
-)
-
 module purge
 module load Anaconda3/2020.02
 
@@ -187,15 +183,19 @@ source "${CONDA_SHELL}/profile.d/conda.sh" || \
 conda activate "${LDSC_ENVIRONMENT}"
 
 weights_prefix=$(\
-find "${LD_PLINK_DIR}" -type f -name "*22.l2*" -print0 | \
+find "${LD_WEIGHTS_DIR}" -type f -name "*22.l2*" -print0 | \
 xargs -0 basename | \
 sed "s/22\..*//" \
 )
 
 frq_prefix=$(\
-find "${LD_PLINK_DIR}" -type f -name "*22.frq*" -print0 | \
+find "${LD_FRQ_DIR}" -type f -name "*22.frq*" -print0 | \
 xargs -0 basename | \
 sed "s/22\..*//" \
+)
+
+gwas_traits=$(\
+find "${LD_GWAS_TRAITS_DIR}" -name "*${gwas_pattern}*.sumstats*"\
 )
 
 for file_name in ${gwas_traits}; do
