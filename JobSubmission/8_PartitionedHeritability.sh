@@ -198,6 +198,7 @@ xargs -0 basename | \
 sed "s/22\..*//" \
 )
 
+echo $frq_prefix
 for file_name in ${gwas_traits}; do
     output_file=$(basename "${file_name}" .sumstats.gz)
 
