@@ -151,7 +151,7 @@ create_pvalue_barplots <-
 # to read.
 complete_enrichment_heatmap <-
   create_enrichment_heatmap(results_files, full = TRUE)
-states_enrichment_heatmap <-
+state_enrichment_heatmap <-
   create_enrichment_heatmap(results_files)
 
 # pvalue threshold is arbitrarily chosen to be 0.01 (which will be
@@ -170,34 +170,33 @@ options(bitmapType='cairo')
 
 setwd(output_directory)
 
-for (plot in names(pvalue_barplots)) {
+for (plot in names(state_pvalue_barplots)) {
   plot_name <-
-    paste0("State_Categories/Enrichment_pvalues_barplot_", plot,".png")
+    paste0("State_Categories/Enrichment_pvalues_", plot,".png")
   ggsave(
     plot_name,
     plot = pvalue_barplots[[plot]],
     limitsize = FALSE,
-    # Plot can become difficult to read when there is a lot of gwas traits
-    height = nrow(results_files[[1]]) / 5
+    height = (nrow(results_files[[2]]) - 47) / 5
   )
 }
 
 ggsave(
   "State_Categories/Enrichment_heatmap.png",
-  enrichment_heatmap,
+  state_enrichment_heatmap,
   limitsize = FALSE,
   width = length(results_files),
-  height = nrow(results_files[[1]]) / 5
+  height = (nrow(results_files[[1]]) - 47) / 5
+)
 
 for (plot in names(complete_pvalue_barplots)) {
   plot_name <-
-    paste0("All_Categories/Enrichment_pvalues_barplot_", plot,".png")
+    paste0("All_Categories/Enrichment_pvalues_", plot,".png")
   ggsave(
     plot_name,
     plot = pvalue_barplots[[plot]],
     limitsize = FALSE,
-    # Plot can become difficult to read when there is a lot of gwas traits
-    scale = length(results_files[[1]]) / 25
+    height = nrow(results_files[[2]]) / 5
   )
 }
 
