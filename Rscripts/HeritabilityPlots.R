@@ -84,7 +84,7 @@ remove_L2_suffix <- function(dataframe) {
 
 create_enrichment_heatmap <- function(results_files, complete = FALSE) {
   enrichment_data <- merge_results_files(results_files, "Enrichment") 
-  if (not complete) {
+  if (!complete) {
     state_assignment_rows <- grepl("^state_[0-9]+$", enrichment_data$category)
     enrichment_data <- enrichment_data[state_assignment_rows, ]
   }
@@ -114,7 +114,7 @@ create_pvalue_barplots <-
     list_of_pvalue_plots <- list()
     for (file in 1:length(results_files)) {
       data <- results_files[[file]]
-      if (not complete) {
+      if (!complete) {
         state_assignment_rows <- grepl("^state_[0-9]+$", data$category)
         data <- data[state_assignment_rows, ]
       }
