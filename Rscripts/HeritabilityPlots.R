@@ -87,7 +87,6 @@ remove_L2_suffix <- function(results) {
 ## =============================== ##
 
 bonferroni_correction <- function(results_files, pvalue_threshold) {
-  pvalues <- pvalues[!is.na(pvalues)]
   number_of_traits <- length(results_files)
   number_of_annotations <- nrow(results_files[[1]])
   number_of_hypotheses <- number_of_traits * number_of_annotations
