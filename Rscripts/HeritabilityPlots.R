@@ -162,7 +162,7 @@ state_pvalue_barplots <-
   create_pvalue_barplots(results_files, 2)
 
 names(complete_pvalue_barplots) <- names(results_files)
-names(pvalue_barplots) <- names(results_files)
+names(state_pvalue_barplots) <- names(results_files)
 
 # This usually helps to remove errors around being unable
 # to start the PNG device
@@ -175,7 +175,7 @@ for (plot in names(state_pvalue_barplots)) {
     paste0("State_Categories/Enrichment_pvalues_", plot,".png")
   ggsave(
     plot_name,
-    plot = pvalue_barplots[[plot]],
+    plot = state_pvalue_barplots[[plot]],
     limitsize = FALSE,
     height = (nrow(results_files[[2]]) - 47) / 5
   )
@@ -194,7 +194,7 @@ for (plot in names(complete_pvalue_barplots)) {
     paste0("All_Categories/Enrichment_pvalues_", plot,".png")
   ggsave(
     plot_name,
-    plot = pvalue_barplots[[plot]],
+    plot = complete_pvalue_barplots[[plot]],
     limitsize = FALSE,
     height = nrow(results_files[[2]]) / 5
   )
