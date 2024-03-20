@@ -94,7 +94,7 @@ bonferroni_correction <- function(results_files, pvalue_threshold) {
   return(-log10(bonferroni_threshold))
 }
 
-fdr_correction <- function(pvalues, pvalue_threshold) {
+fdr_correction <- function(pvalues, fdr_threshold) {
   adjusted_pvalues <- p.adjust(pvalues, method="BH")
   significant_pvalues <-
     subset(adjusted_pvalues, adjusted_pvalues < fdr_threshold)
