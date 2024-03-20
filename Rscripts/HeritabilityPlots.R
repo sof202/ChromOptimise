@@ -18,7 +18,7 @@
 ## ============================================================== ##
 ## INPUTS:                                                        ||
 ## $1 -> A list of all .results files                             ||
-## $2 -> The full path for the output plots                       ||
+## $2 -> The complete path for the output plots                       ||
 ## ============================================================== ##
 ## OUTPUTS:                                                       ||
 ## A heatmap for the enrichment seen across GWAS traits and       ||
@@ -82,8 +82,12 @@ remove_L2_suffix <- function(dataframe) {
   return(dataframe)
 }
 
-create_enrichment_heatmap <- function(results_files) {
+create_enrichment_heatmap <- function(results_files, complete = FALSE) {
   enrichment_data <- merge_results_files(results_files, "Enrichment") 
+  if (not complete) {
+    state_assignment_rows <- grepl("^state_[0-9]+$", enrichment_data$category)
+    enrichment_data <- enrichment_data[state_assignment_rows, ]
+  }
   enrichment_data <- remove_L2_suffix(enrichment_data)
 
   # pivot_longer is so heatmap can be plotted more easily
@@ -106,50 +110,70 @@ create_enrichment_heatmap <- function(results_files) {
   return(enrichment_heatmap)
 }
 
-create_pvalue_barplots <- function(results_files, p_value_threshold) {
-  list_of_pvalue_plots <- list()
-  for (file in 1:length(results_files)) {
-    data <- results_files[[file]]
-    plot_title <- names(results_files)[[file]]
-    data$Enrichment_p <- -log10(data$Enrichment_p)
-    data <- remove_L2_suffix(data)
+create_pvalue_barplots <- 
+  function(results_files, p_value_threshold, complete = FALSE) {
+    list_of_pvalue_plots <- list()
+    for (file in 1:length(results_files)) {
+      data <- results_files[[file]]
+      if (not complete) {
+        state_assignment_rows <- grepl("^state_[0-9]+$", data$category)
+        data <- data[state_assignment_rows, ]
+      }
+      plot_title <- names(results_files)[[file]]
+      data$Enrichment_p <- -log10(data$Enrichment_p)
+      data <- remove_L2_suffix(data)
 
-    bar_plot <-
-      ggplot(data,
-             aes(x = Category, y = Enrichment_p, fill = Enrichment_p)) +
-      geom_bar(stat = "identity", color = "black") +
-      scale_fill_gradient(low = "light green", high = "dark green") +
-      coord_flip() +
-      geom_hline(yintercept = p_value_threshold,
-                 linetype = "dashed",
-                 color = "black") +
-      labs(title = plot_title, x = "State", y = "-log_10(Enrichment p-value)") +
-      theme(plot.title = element_text(hjust = 0.5))
+      bar_plot <-
+        ggplot(data,
+               aes(x = Category, y = Enrichment_p, fill = Enrichment_p)) +
+        geom_bar(stat = "identity", color = "black") +
+        scale_fill_gradient(low = "light green", high = "dark green") +
+        coord_flip() +
+        geom_hline(yintercept = p_value_threshold,
+                   linetype = "dashed",
+                   color = "black") +
+        labs(title = plot_title,
+             x = "State",
+             y = "-log_10(Enrichment p-value)") +
+        theme(plot.title = element_text(hjust = 0.5))
 
-    list_of_pvalue_plots[[file]] <- bar_plot
+      list_of_pvalue_plots[[file]] <- bar_plot
+    }
+    return(list_of_pvalue_plots)
   }
-  return(list_of_pvalue_plots)
-}
 
 
 ## =========== ##
 ##   OUTPUTS   ##
 ## =========== ##
 
-enrichment_heatmap <- create_enrichment_heatmap(results_files)
+# We create plots that conatin all of the categories as well as just the state
+# assignments. This is because the complete heatmap and bar plots can be difficult
+# to read.
+complete_enrichment_heatmap <-
+  create_enrichment_heatmap(results_files, full = TRUE)
+states_enrichment_heatmap <-
+  create_enrichment_heatmap(results_files)
 
 # pvalue threshold is arbitrarily chosen to be 0.01 (which will be
 # 2 after -log10(), change this if you wish)
-pvalue_barplots <- create_pvalue_barplots(results_files, 2)
+complete_pvalue_barplots <-
+  create_pvalue_barplots(results_files, 2, full = TRUE)
+state_pvalue_barplots <-
+  create_pvalue_barplots(results_files, 2)
+
+names(complete_pvalue_barplots) <- names(results_files)
 names(pvalue_barplots) <- names(results_files)
 
-setwd(output_directory)
 # This usually helps to remove errors around being unable
 # to start the PNG device
 options(bitmapType='cairo')
 
+setwd(output_directory)
+
 for (plot in names(pvalue_barplots)) {
-  plot_name <- paste0("Enrichment_pvalues_barplot_", plot,".png")
+  plot_name <-
+    paste0("State_Categories/Enrichment_pvalues_barplot_", plot,".png")
   ggsave(
     plot_name,
     plot = pvalue_barplots[[plot]],
@@ -159,6 +183,30 @@ for (plot in names(pvalue_barplots)) {
   )
 }
 
-png("Enrichment_heatmap.png", width = 19200, height = 10800)
-print(enrichment_heatmap)
+ggsave(
+  "State_Categories/Enrichment_heatmap.png",
+  enrichment_heatmap,
+  limitsize = FALSE,
+  width = length(results_files),
+  height = nrow(results_files[[1]]) / 5
+)
 
+for (plot in names(complete_pvalue_barplots)) {
+  plot_name <-
+    paste0("All_Categories/Enrichment_pvalues_barplot_", plot,".png")
+  ggsave(
+    plot_name,
+    plot = pvalue_barplots[[plot]],
+    limitsize = FALSE,
+    # Plot can become difficult to read when there is a lot of gwas traits
+    scale = length(results_files[[1]]) / 25
+  )
+}
+
+ggsave(
+  "All_Categories/Enrichment_heatmap.png",
+  complete_enrichment_heatmap,
+  limitsize = FALSE,
+  width = length(results_files),
+  height = nrow(results_files[[1]]) / 5
+)
