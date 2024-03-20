@@ -97,7 +97,6 @@ create_enrichment_heatmap <- function(results_files) {
                                 fill = Enrichment,
                                 label = round(Enrichment, 2))) +
     geom_tile(color = "black") +
-    coord_fixed(ratio = 1) +
     scale_fill_gradient(low = "light green", high = "dark green") +
     geom_text() +
     theme(panel.background = element_rect(fill = "white")) +
@@ -155,10 +154,14 @@ for (plot in names(pvalue_barplots)) {
     plot = pvalue_barplots[[plot]],
     limitsize = FALSE,
     # Plot can become difficult to read when there is a lot of gwas traits
-    scale = length(results_files[[1]]) / 25
+    height = nrow(results_files[[1]]) / 5
   )
 }
 
-png("Enrichment_heatmap.png", width = 19200, height = 10800)
-print(enrichment_heatmap)
-
+ggsave(
+  "enrichment_heatmap.png",
+  enrichment_heatmap,
+  limitsize = FALSE,
+  width = length(results_files),
+  height = nrow(results_files[[1]]) / 5
+)
