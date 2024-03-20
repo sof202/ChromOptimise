@@ -85,7 +85,7 @@ remove_L2_suffix <- function(dataframe) {
 create_enrichment_heatmap <- function(results_files, complete = FALSE) {
   enrichment_data <- merge_results_files(results_files, "Enrichment") 
   if (!complete) {
-    state_assignment_rows <- grepl("^state_[0-9]+$", enrichment_data$category)
+    state_assignment_rows <- grepl("^state_[0-9]+$", enrichment_data$Category)
     enrichment_data <- enrichment_data[state_assignment_rows, ]
   }
   enrichment_data <- remove_L2_suffix(enrichment_data)
@@ -115,7 +115,7 @@ create_pvalue_barplots <-
     for (file in 1:length(results_files)) {
       data <- results_files[[file]]
       if (!complete) {
-        state_assignment_rows <- grepl("^state_[0-9]+$", data$category)
+        state_assignment_rows <- grepl("^state_[0-9]+$", data$Category)
         data <- data[state_assignment_rows, ]
       }
       plot_title <- names(results_files)[[file]]
@@ -177,7 +177,7 @@ for (plot in names(state_pvalue_barplots)) {
     plot_name,
     plot = state_pvalue_barplots[[plot]],
     limitsize = FALSE,
-    height = (nrow(results_files[[2]]) - 47) / 5
+    height = (nrow(results_files[[1]]) - 47) / 5
   )
 }
 
@@ -196,7 +196,7 @@ for (plot in names(complete_pvalue_barplots)) {
     plot_name,
     plot = complete_pvalue_barplots[[plot]],
     limitsize = FALSE,
-    height = nrow(results_files[[2]]) / 5
+    height = nrow(results_files[[1]]) / 5
   )
 }
 
