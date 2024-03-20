@@ -144,7 +144,7 @@ create_pvalue_barplots <-
     for (file in 1:length(results_files)) {
       data <- results_files[[file]]
       # We remove the base row as it is guaranteed to have a NaN p-value
-      data <- data[, !(names(df) %in% "base")]
+      data <- data[-1, ]
       fdr_threshold <- fdr_correction(data$Enrichment_p, pvalue_threshold)
 
       data <- remove_L2_suffix(data)
