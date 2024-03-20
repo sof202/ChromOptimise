@@ -77,9 +77,9 @@ merge_results_files <- function(results_files, target_column) {
 }
 
 # LDSC adds an L2_0 after each category, which we don't want
-remove_L2_suffix <- function(dataframe) {
-  dataframe$Category <- sub("L2_0", "", dataframe$Category)
-  return(dataframe)
+remove_L2_suffix <- function(results) {
+  results$Category <- sub("L2_0", "", results$Category)
+  return(results)
 }
 
 ## =============================== ##
@@ -95,7 +95,7 @@ bonferroni_correction <- function(results_files, pvalue_threshold) {
 }
 
 fdr_correction <- function(pvalues, pvalue_threshold) {
-  adjusted_pvalues <- p.adjust(pvlaues, method="BH")
+  adjusted_pvalues <- p.adjust(pvalues, method="BH")
   significant_pvalues <-
     subset(adjusted_pvalues, adjusted_pvalues < fdr_threshold)
   critical_value <- max(significant_pvalues)
@@ -136,7 +136,10 @@ create_enrichment_heatmap <- function(results_files, complete = FALSE) {
 create_pvalue_barplots <- 
   function(results_files, pvalue_threshold, fdr_threshold, complete = FALSE) {
     list_of_pvalue_plots <- list()
-    bonferroni_threshold <- bonferroni_correction(results_files, pvalue_threshold) 
+
+    bonferroni_threshold <-
+      bonferroni_correction(results_files, pvalue_threshold) 
+
     for (file in 1:length(results_files)) {
       data <- results_files[[file]]
       data <- remove_L2_suffix(data)
