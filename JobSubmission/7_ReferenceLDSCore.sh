@@ -197,9 +197,10 @@ output_directory="${LD_ASSESSMENT_DIR}\
 # If jobs get queued, some files will be deleted prematurely
 if [[ "${SLURM_ARRAY_TASK_ID}" -eq 1 ]]; then
     rm -rf "${output_directory:?}"
-    mkdir -p "${output_directory:?}/annotation"
-    mkdir -p "${output_directory:?}/heritability"
-    mkdir -p "${output_directory:?}/plots"
+    mkdir -p "${output_directory}/annotation" \
+    "${output_directory}/heritability" \
+    "${output_directory}/plots/State_Categories" \
+    "${output_directory}/plots/All_Categories" 
 fi
 
 # We sleep here to ensure files are not removed prematurely
@@ -232,7 +233,7 @@ finishing_statement 1; }
 chromosome=${SLURM_ARRAY_TASK_ID}
 
 assignment_start=$(date +%s)
-baseline_annot="${LD_BASELINE_DIR}/${BASELINE_PREFIX}.${chromosome}.annot.gz"
+baseline_annot="${LD_BASELINE_DIR}/baselineLD.${chromosome}.annot.gz"
 
 Rscript SNPAssignment.R \
 "${model_size}" \
@@ -257,11 +258,16 @@ source "${CONDA_SHELL}/profile.d/conda.sh" || \
 [\${CONDA_SHELL} - ${CONDA_SHELL}]"; exit 1; }
 conda activate "${LDSC_ENVIRONMENT}"
 
+plink_prefix=$(\
+find "${LD_PLINK_DIR}" -type f -name "*22.bim" -print0 | \
+xargs -0 basename | \
+sed "s/22\..*//" \
+)
 
 python \
 "${LD_SOFTWARE_DIR}/ldsc.py" \
 --l2 \
---bfile      "${LD_PLINK_DIR}/${PLINK_PREFIX}.${chromosome}" \
+--bfile      "${LD_PLINK_DIR}/${plink_prefix}${chromosome}" \
 --ld-wind-cm 1 \
 --annot      "${output_directory}/annotation/ChromHMM.${chromosome}.annot" \
 --out        "${output_directory}/annotation/ChromHMM.${chromosome}"
@@ -275,7 +281,7 @@ python \
 # once, so if the number of chromosomes completed isn't yet 22, we exit early.
 chromosomes_completed=$(\
 find "${output_directory}/annotation/" \
--name "ChromHMM*ldscore*" -size 0+ | \
+-name "ChromHMM*.log" -size 0+ | \
 wc -l)
 
 if [[ "${chromosomes_completed}" -ne 22 ]]; then
