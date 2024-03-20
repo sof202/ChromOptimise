@@ -132,6 +132,13 @@ for (i in 1:model_size) {
 }
 baseline_file[, state_columns] <- 0
 
+# Some categories in the baseline annotation result in hugely negative 
+# enrichment. We're only adding more annotaions to reduce the variablity in
+# results, so removing these annotations is fine.
+
+annotations_to_remove <-
+  c("MAF_Adj_LLD_AFR", "MAF_Adj_ASMC", "MAF_Adj_Predicted_Allele_Age")
+
 annotation_file <- write_snp_annotation(bed_file, baseline_file)
 data.table::fwrite(annotation_file,
                    file = output_file_name,
