@@ -84,11 +84,11 @@ remove_L2_suffix <- function(dataframe) {
 
 create_enrichment_heatmap <- function(results_files, complete = FALSE) {
   enrichment_data <- merge_results_files(results_files, "Enrichment") 
+  enrichment_data <- remove_L2_suffix(enrichment_data)
   if (!complete) {
     state_assignment_rows <- grepl("^state_[0-9]+$", enrichment_data$Category)
     enrichment_data <- enrichment_data[state_assignment_rows, ]
   }
-  enrichment_data <- remove_L2_suffix(enrichment_data)
 
   # pivot_longer is so heatmap can be plotted more easily
   enrichment_data <- tidyr::pivot_longer(enrichment_data,
@@ -114,13 +114,13 @@ create_pvalue_barplots <-
     list_of_pvalue_plots <- list()
     for (file in 1:length(results_files)) {
       data <- results_files[[file]]
+      data <- remove_L2_suffix(data)
       if (!complete) {
         state_assignment_rows <- grepl("^state_[0-9]+$", data$Category)
         data <- data[state_assignment_rows, ]
       }
       plot_title <- names(results_files)[[file]]
       data$Enrichment_p <- -log10(data$Enrichment_p)
-      data <- remove_L2_suffix(data)
 
       bar_plot <-
         ggplot(data,
