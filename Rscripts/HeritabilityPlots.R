@@ -190,9 +190,9 @@ state_enrichment_heatmap <-
 
 # pvalue threshold is arbitrarily chosen to be 0.05 
 complete_pvalue_barplots <-
-  create_pvalue_barplots(results_files, 0.05, complete = TRUE)
+  create_pvalue_barplots(results_files, 0.05, 0.05, complete = TRUE)
 state_pvalue_barplots <-
-  create_pvalue_barplots(results_files, 0.05)
+  create_pvalue_barplots(results_files, 0.05, 0.05)
 
 names(complete_pvalue_barplots) <- names(results_files)
 names(state_pvalue_barplots) <- names(results_files)
