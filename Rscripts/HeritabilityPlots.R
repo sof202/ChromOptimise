@@ -62,9 +62,9 @@ names(results_files) <- unlist(lapply(results_file_list, function(file) {
   strsplit(basename(file),"\\.results")
 }))
 
-## ======== ##
-##   MAIN   ##
-## ======== ##
+## =============================== ##
+##   DATA MANIPULATION FUNCTIONS   ##
+## =============================== ##
 
 merge_results_files <- function(results_files, target_column) {
   merged_dataframe <- results_files[[1]]$Category
@@ -81,6 +81,30 @@ remove_L2_suffix <- function(dataframe) {
   dataframe$Category <- sub("L2_0", "", dataframe$Category)
   return(dataframe)
 }
+
+## =============================== ##
+##   P-VALUE THRESHOLD FUNCTIONS   ##
+## =============================== ##
+
+bonferroni_correction <- function(results_files, pvalue_threshold) {
+  number_of_traits <- length(results_files)
+  number_of_annotations <- nrow(results_files[[1]])
+  number_of_hypotheses <- number_of_traits * number_of_annotations
+  bonferroni_threshold <- pvalue_threshold / number_of_hypotheses
+  return(-log10(bonferroni_threshold))
+}
+
+fdr_correction <- function(pvalues, pvalue_threshold) {
+  adjusted_pvalues <- p.adjust(pvlaues, method="BH")
+  significant_pvalues <-
+    subset(adjusted_pvalues, adjusted_pvalues < fdr_threshold)
+  critical_value <- max(significant_pvalues)
+  return(-log10(critical_value))
+}
+
+## ====================== ##
+##   PLOTTING FUNCTIONS   ##
+## ====================== ##
 
 create_enrichment_heatmap <- function(results_files, complete = FALSE) {
   enrichment_data <- merge_results_files(results_files, "Enrichment") 
@@ -110,8 +134,9 @@ create_enrichment_heatmap <- function(results_files, complete = FALSE) {
 }
 
 create_pvalue_barplots <- 
-  function(results_files, p_value_threshold, complete = FALSE) {
+  function(results_files, pvalue_threshold, fdr_threshold, complete = FALSE) {
     list_of_pvalue_plots <- list()
+    bonferroni_threshold <- bonferroni_correction(results_files, pvalue_threshold) 
     for (file in 1:length(results_files)) {
       data <- results_files[[file]]
       data <- remove_L2_suffix(data)
@@ -120,6 +145,8 @@ create_pvalue_barplots <-
         data <- data[state_assignment_rows, ]
       }
       plot_title <- names(results_files)[[file]]
+      fdr_threshold <- fdr_correction(data$Enrichment_p, pvalue_threshold)
+
       data$Enrichment_p <- -log10(data$Enrichment_p)
 
       bar_plot <-
@@ -128,9 +155,12 @@ create_pvalue_barplots <-
         geom_bar(stat = "identity", color = "black") +
         scale_fill_gradient(low = "light green", high = "dark green") +
         coord_flip() +
-        geom_hline(yintercept = p_value_threshold,
+        geom_hline(yintercept = bonferroni_threshold,
                    linetype = "dashed",
                    color = "black") +
+        geom_hline(yintercept = fdr_threshold,
+                   linetype = "dashed",
+                   color = "gray") +
         labs(title = plot_title,
              x = "State",
              y = "-log_10(Enrichment p-value)") +
@@ -154,12 +184,11 @@ complete_enrichment_heatmap <-
 state_enrichment_heatmap <-
   create_enrichment_heatmap(results_files)
 
-# pvalue threshold is arbitrarily chosen to be 0.01 (which will be
-# 2 after -log10(), change this if you wish)
+# pvalue threshold is arbitrarily chosen to be 0.05 
 complete_pvalue_barplots <-
-  create_pvalue_barplots(results_files, 2, complete = TRUE)
+  create_pvalue_barplots(results_files, 0.05, complete = TRUE)
 state_pvalue_barplots <-
-  create_pvalue_barplots(results_files, 2)
+  create_pvalue_barplots(results_files, 0.05)
 
 names(complete_pvalue_barplots) <- names(results_files)
 names(state_pvalue_barplots) <- names(results_files)
