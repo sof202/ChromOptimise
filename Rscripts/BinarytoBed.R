@@ -50,7 +50,7 @@ binary_files <- lapply(binary_file_list, function(file) {
   read.table(gzfile(file), header = TRUE, skip = 1)
 })
 
-names(binary_files) <- unlist(lapply(results_file_list, function(file) {
+names(binary_files) <- unlist(lapply(binary_file_list, function(file) {
   stringr::str_extract(basename(file), "(?<=_).*?(?=_)")
 }))
 
