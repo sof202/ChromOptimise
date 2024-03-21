@@ -63,12 +63,12 @@ names(binary_files) <- unlist(lapply(binary_file_list, function(file) {
 create_intervals <- function(number_of_intervals, bin_size) {
   start <- seq(
     from = 0,
-    to = number_of_intervals * bin_size,
+    to = (number_of_intervals - 1) * bin_size,
     by = bin_size
   )
   end <- seq(
     from = bin_size,
-    to = (number_of_intervals + 1) * bin_size,
+    to = number_of_intervals * bin_size,
     by = bin_size
   )
   return(cbind(start, end))
