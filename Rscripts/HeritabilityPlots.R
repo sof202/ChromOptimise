@@ -18,7 +18,7 @@
 ## ============================================================== ##
 ## INPUTS:                                                        ||
 ## $1 -> A list of all .results files                             ||
-## $2 -> The complete path for the output plots                       ||
+## $2 -> The complete path for the output plots                   ||
 ## ============================================================== ##
 ## OUTPUTS:                                                       ||
 ## A heatmap for the enrichment seen across GWAS traits and       ||
@@ -59,7 +59,7 @@ if (is.data.frame(results_files)) {
 }
 
 names(results_files) <- unlist(lapply(results_file_list, function(file) {
-  strsplit(basename(file),"\\.results")
+  gsub("\\.sumstats.*", "", basename(file))
 }))
 
 ## =============================== ##
