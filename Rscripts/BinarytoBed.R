@@ -76,9 +76,9 @@ create_intervals <- function(number_of_intervals, bin_size) {
 
 create_bed_file <- function(binary_file, chromosome, bin_size) {
   number_of_rows <- nrow(binary_file)
-  chromosome_column <- rep(chromosome, times = number_of_rows)
+  chromosome <- rep(chromosome, times = number_of_rows)
   interval_columns <- create_intervals(number_of_rows, bin_size)
-  return(cbind(chromosome_column, interval_columns, binary_file))
+  return(cbind(chromosome, interval_columns, binary_file))
 }
 
 ## =========== ##
@@ -89,12 +89,19 @@ write_bed_file <- function(bed_file, chromosome, output_directory) {
   full_file_path <- paste0(output_directory, "/binary_", chromosome, ".bed")
   header_line <- paste("ChromOptimise", chromosome, sep = "\t")
   write(header_line, file = full_file_path)
-  write.table(bed_file,
-    file = full_file_path,
-    append = TRUE,
-    sep = "\t",
-    row.names = FALSE
+
+  # Warnings are suppressed here as the 'appending column names to file'
+  # message is exactly the behaviour we want
+  suppressWarnings(
+    write.table(bed_file,
+      file = full_file_path,
+      append = TRUE,
+      sep = "\t",
+      row.names = FALSE,
+      quote = FALSE
+    )
   )
+  invisible()
 }
 
 ## ======= ##
@@ -107,6 +114,6 @@ bed_files <- lapply(names(binary_files), function(file) {
 
 names(bed_files) <- names(binary_files)
 
-lapply(names(bed_files), function(file) {
+invisible(lapply(names(bed_files), function(file) {
   write_bed_file(bed_files[[file]], file, output_directory)
-})
+}))
