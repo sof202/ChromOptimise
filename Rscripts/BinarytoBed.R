@@ -47,7 +47,7 @@ output_directory <- arguments[3]
 ## ======================== ##
 
 binary_files <- lapply(binary_file_list, function(file) {
-  read.table(gzfile(file), header = TRUE)
+  read.table(gzfile(file), header = TRUE, skip = 1)
 })
 
 names(binary_files) <- unlist(lapply(results_file_list, function(file) {
