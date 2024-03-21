@@ -24,7 +24,7 @@
 ## A heatmap for the enrichment seen across GWAS traits and       ||
 ## ChromHMM states                                                ||
 ## A selection of bar plots for p-values seen across ChomHMM      ||
-## states for each GWAS trait                                     || 
+## states for each GWAS trait                                     ||
 ## ============================================================== ##
 
 ## ========== ##
@@ -53,7 +53,7 @@ results_files <- lapply(results_file_list, function(file) {
 
 # This is required as the rest of the script iterates over list items.
 # If only one file is read into this script, the logic will break as
-# results_files will be a data.frame 
+# results_files will be a data.frame
 if (is.data.frame(results_files)) {
   results_files <- list(results_files)
 }
@@ -69,7 +69,7 @@ names(results_files) <- unlist(lapply(results_file_list, function(file) {
 merge_results_files <- function(results_files, target_column) {
   merged_dataframe <- results_files[[1]]$Category
   for (file in 1:length(results_files)) {
-    merged_dataframe <- 
+    merged_dataframe <-
       cbind(merged_dataframe, results_files[[file]][target_column])
   }
   colnames(merged_dataframe) <- c("Category", names(results_files))
@@ -77,7 +77,7 @@ merge_results_files <- function(results_files, target_column) {
 }
 
 # LDSC adds an L2_0 after each category, which we don't want
-remove_L2_suffix <- function(results) {
+remove_l2_suffix <- function(results) {
   results$Category <- sub("L2_0", "", results$Category)
   return(results)
 }
@@ -96,7 +96,7 @@ bonferroni_correction <- function(results_files, pvalue_threshold) {
 
 fdr_correction <- function(pvalues, fdr_threshold) {
   pvalues <- pvalues[!is.na(pvalues)]
-  adjusted_pvalues <- p.adjust(pvalues, method="BH")
+  adjusted_pvalues <- p.adjust(pvalues, method = "BH")
   significant_pvalues <-
     subset(adjusted_pvalues, adjusted_pvalues < fdr_threshold)
   critical_value <- max(significant_pvalues)
@@ -108,8 +108,8 @@ fdr_correction <- function(pvalues, fdr_threshold) {
 ## ====================== ##
 
 create_enrichment_heatmap <- function(results_files, complete = FALSE) {
-  enrichment_data <- merge_results_files(results_files, "Enrichment") 
-  enrichment_data <- remove_L2_suffix(enrichment_data)
+  enrichment_data <- merge_results_files(results_files, "Enrichment")
+  enrichment_data <- remove_l2_suffix(enrichment_data)
   if (!complete) {
     state_assignment_rows <- grepl("^state_[0-9]+$", enrichment_data$Category)
     enrichment_data <- enrichment_data[state_assignment_rows, ]
@@ -120,7 +120,7 @@ create_enrichment_heatmap <- function(results_files, complete = FALSE) {
                                          cols = -Category,
                                          names_to = "gwas_trait",
                                          values_to = "Enrichment")
-  enrichment_heatmap <- 
+  enrichment_heatmap <-
     ggplot(enrichment_data, aes(gwas_trait,
                                 Category,
                                 fill = Enrichment,
@@ -139,7 +139,7 @@ create_pvalue_barplots <-
     list_of_pvalue_plots <- list()
 
     bonferroni_threshold <-
-      bonferroni_correction(results_files, pvalue_threshold) 
+      bonferroni_correction(results_files, pvalue_threshold)
 
     for (file in 1:length(results_files)) {
       data <- results_files[[file]]
@@ -147,7 +147,7 @@ create_pvalue_barplots <-
       data <- data[-1, ]
       fdr_threshold <- fdr_correction(data$Enrichment_p, pvalue_threshold)
 
-      data <- remove_L2_suffix(data)
+      data <- remove_l2_suffix(data)
       if (!complete) {
         state_assignment_rows <- grepl("^state_[0-9]+$", data$Category)
         data <- data[state_assignment_rows, ]
@@ -184,14 +184,14 @@ create_pvalue_barplots <-
 ## =========== ##
 
 # We create plots that conatin all of the categories as well as just the state
-# assignments. This is because the complete heatmap and bar plots can be difficult
-# to read.
+# assignments. This is because the complete heatmap and bar plots can be
+# difficult to read.
 complete_enrichment_heatmap <-
   create_enrichment_heatmap(results_files, complete = TRUE)
 state_enrichment_heatmap <-
   create_enrichment_heatmap(results_files)
 
-# pvalue threshold is arbitrarily chosen to be 0.05 
+# pvalue threshold is arbitrarily chosen to be 0.05
 complete_pvalue_barplots <-
   create_pvalue_barplots(results_files, 0.05, 0.05, complete = TRUE)
 state_pvalue_barplots <-
@@ -202,13 +202,13 @@ names(state_pvalue_barplots) <- names(results_files)
 
 # This usually helps to remove errors around being unable
 # to start the PNG device
-options(bitmapType='cairo')
+options(bitmapType = "cairo")
 
 setwd(output_directory)
 
 for (plot in names(state_pvalue_barplots)) {
   plot_name <-
-    paste0("State_Categories/Enrichment_pvalues_", plot,".png")
+    paste0("State_Categories/Enrichment_pvalues_", plot, ".png")
   ggsave(
     plot_name,
     plot = state_pvalue_barplots[[plot]],
@@ -227,7 +227,7 @@ ggsave(
 
 for (plot in names(complete_pvalue_barplots)) {
   plot_name <-
-    paste0("All_Categories/Enrichment_pvalues_", plot,".png")
+    paste0("All_Categories/Enrichment_pvalues_", plot, ".png")
   ggsave(
     plot_name,
     plot = complete_pvalue_barplots[[plot]],
