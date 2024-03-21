@@ -239,9 +239,12 @@ java -mx4G \
 
 # Non-autosomal chromosomes are not factored into ldsc step of the pipeline
 # so we minimise their impact by deleting their associated binary files
-rm "${BINARY_DIR}/BinSize_${bin_size}_SampleSize_${sample_size}/*chrM*"
-rm "${BINARY_DIR}/BinSize_${bin_size}_SampleSize_${sample_size}/*chrX*"
-rm "${BINARY_DIR}/BinSize_${bin_size}_SampleSize_${sample_size}/*chrY*"
+cd "${BINARY_DIR}/BinSize_${bin_size}_SampleSize_${sample_size}" || \
+finishing_statement 1
+
+rm "*chrM*"
+rm "*chrX*"
+rm "*chrY*"
 
 
 finishing_statement 0
