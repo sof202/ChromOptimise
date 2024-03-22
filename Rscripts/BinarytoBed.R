@@ -37,6 +37,10 @@ if (!requireNamespace("stringr", quietly = TRUE)) {
   install.packages("stringr")
 }
 
+if (!requireNamespace("dplyr", quietly = TRUE)) {
+  install.packages("dplyr")
+}
+
 arguments <- commandArgs(trailingOnly = TRUE)
 binary_file_list <- readLines(arguments[1])
 bin_size <- as.numeric(arguments[2])
@@ -58,27 +62,26 @@ names(binary_files) <- unlist(lapply(binary_file_list, function(file) {
 ##   BED FILE CREATION   ##
 ## ===================== ##
 
-# This isn't quite correct as it will create BED file that is larger than
+# This isn't quite correct as it will create a  BED file that is larger than
 # the chromosome.
-create_intervals <- function(number_of_intervals, bin_size) {
-  start <- seq(
-    from = 0,
-    to = (number_of_intervals - 1) * bin_size,
-    by = bin_size
-  )
-  end <- seq(
-    from = bin_size,
-    to = number_of_intervals * bin_size,
-    by = bin_size
-  )
-  return(cbind(start, end))
-}
-
 create_bed_file <- function(binary_file, chromosome, bin_size) {
-  number_of_rows <- nrow(binary_file)
-  chromosome <- rep(chromosome, times = number_of_rows)
-  interval_columns <- create_intervals(number_of_rows, bin_size)
-  return(cbind(chromosome, interval_columns, binary_file))
+  number_of_intervals <- dplyr::n(binary_file)
+  bed_file <- binary_file |>
+    dplyr::mutate(
+      chromosome = chromosome,
+      start = seq(
+        from = 0,
+        to = (number_of_intervals - 1) * bin_size,
+        by = bin_size
+      ),
+      end = seq(
+        from = bin_size,
+        to = number_of_intervals * bin_size,
+        by = bin_size
+      ),
+      .before = 1
+    )
+  return(bed_file)
 }
 
 ## =========== ##
@@ -86,18 +89,15 @@ create_bed_file <- function(binary_file, chromosome, bin_size) {
 ## =========== ##
 
 write_bed_file <- function(bed_file, chromosome, output_directory) {
-  full_file_path <- paste0(output_directory, "/binary_", chromosome, ".bed")
-  header_line <- paste("ChromOptimise", chromosome, sep = "\t")
-  write(header_line, file = full_file_path)
-
+  full_file_path <- paste0(output_directory, "/binary-", chromosome, ".bed")
   # Warnings are suppressed here as the 'appending column names to file'
   # message is exactly the behaviour we want
   suppressWarnings(
     write.table(bed_file,
       file = full_file_path,
-      append = TRUE,
       sep = "\t",
       row.names = FALSE,
+      col.names = FALSE,
       quote = FALSE
     )
   )
@@ -108,8 +108,12 @@ write_bed_file <- function(bed_file, chromosome, output_directory) {
 ##  MAIN   ##
 ## ======= ##
 
-bed_files <- lapply(names(binary_files), function(file) {
-  create_bed_file(binary_files[[file]], file, bin_size)
+bed_files <- lapply(names(bed_files), function(file) {
+  write_bed_file(bed_files[[file]], file, bin_size)
+})
+
+bed_files <- lapply(binary_files, function(file) {
+  create_bed_file(file, bin_size)
 })
 
 names(bed_files) <- names(binary_files)
