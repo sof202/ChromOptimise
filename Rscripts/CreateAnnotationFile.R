@@ -43,7 +43,7 @@ arguments <- commandArgs(trailingOnly = TRUE)
 baseline_annotation <- arguments[1]
 state_assignments <- arguments[2]
 mark_assignment <- arguments[3]
-model_size <- arguments[4]
+model_size <- as.numeric(arguments[4])
 output_file_path <- arguments[5]
 
 ## ================ ##
