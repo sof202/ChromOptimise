@@ -330,7 +330,7 @@ python \
 # once, so if the number of chromosomes completed isn't yet 22, we exit early.
 chromosomes_completed=$(\
 find "${output_directory}/annotation/" \
--name "ChromHMM*.log" -size 0+ | \
+-name "ChromHMM*.log" -size +0 | \
 wc -l)
 
 if [[ "${chromosomes_completed}" -ne 22 ]]; then
