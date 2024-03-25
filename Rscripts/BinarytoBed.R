@@ -53,7 +53,7 @@ output_file_path <- arguments[3]
 # We skip the first line as the meta data has 2 entries which can result in
 # reading errors (if number of marks is not equal to 2).
 binary_file <-
-  data.table::data.table(read.table(binary_file_location,
+  data.table::data.table(read.table(binary_file,
     header = TRUE,
     skip = 1
   ))

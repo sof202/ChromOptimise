@@ -285,7 +285,7 @@ module load R/4.2.1-foss-2022a
 baseline_annot="${LD_BASELINE_DIR}/baselineLD.${chromosome}.annot.gz"
 
 Rscript CreateAnnotationFile.R \
-<(cat "${baseline_annot}") \
+<(zcat "${baseline_annot}") \
 <(cat "${temporary_directory}/state_assignments-${chromosome}.txt")\
 <(cat "${temporary_directory}/mark_assignments-${chromosome}.txt") \
 "${model_size}" \
