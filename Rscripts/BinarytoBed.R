@@ -17,9 +17,9 @@
 ## Run 4_BinarizeBamFiles.sh                                      ||
 ## ============================================================== ##
 ## INPUTS:                                                        ||
-## $1 -> A list of binary files (one for each chromosome)         ||
+## $1 -> Binary file location (from ChromHMM)                     ||
 ## $2 -> Bin size used for binarization                           ||
-## $3 -> output directory                                         ||
+## $3 -> output file location                                     ||
 ## ============================================================== ##
 ## OUTPUTS:                                                       ||
 ## A UCSC bed file with columns: chromosome, start, end, then     ||
@@ -42,21 +42,17 @@ if (!requireNamespace("dplyr", quietly = TRUE)) {
 }
 
 arguments <- commandArgs(trailingOnly = TRUE)
-binary_file_list <- readLines(arguments[1])
+binary_file_location <- arguments[1]
 bin_size <- as.numeric(arguments[2])
-output_directory <- arguments[3]
+output_file_path <- arguments[3]
 
 ## ======================== ##
 ##   LOADING BINARY FILES   ##
 ## ======================== ##
 
-binary_files <- lapply(binary_file_list, function(file) {
-  read.table(gzfile(file), header = TRUE, skip = 1)
-})
+binary_file <-
+  read.table(gzfile(binary_file_location), header = TRUE, skip = 1)
 
-names(binary_files) <- unlist(lapply(binary_file_list, function(file) {
-  stringr::str_extract(basename(file), "(?<=_).*?(?=_)")
-}))
 
 ## ===================== ##
 ##   BED FILE CREATION   ##
@@ -84,17 +80,12 @@ create_bed_file <- function(binary_file, chromosome, bin_size) {
   return(bed_file)
 }
 
-## =========== ##
-##   OUTPUTS   ##
-## =========== ##
-
-write_bed_file <- function(bed_file, chromosome, output_directory) {
-  full_file_path <- paste0(output_directory, "/binary-", chromosome, ".bed")
+write_bed_file <- function(bed_file, chromosome, output_file_path) {
   # Warnings are suppressed here as the 'appending column names to file'
   # message is exactly the behaviour we want
   suppressWarnings(
     write.table(bed_file,
-      file = full_file_path,
+      file = output_file_path,
       sep = "\t",
       row.names = FALSE,
       col.names = FALSE,
@@ -108,16 +99,9 @@ write_bed_file <- function(bed_file, chromosome, output_directory) {
 ##  MAIN   ##
 ## ======= ##
 
-bed_files <- lapply(names(bed_files), function(file) {
-  write_bed_file(bed_files[[file]], file, bin_size)
-})
+chromosome <-
+  stringr::str_extract(basename(binary_file_location), "(?<=_).*?(?=_)")
 
-bed_files <- lapply(binary_files, function(file) {
-  create_bed_file(file, bin_size)
-})
+bed_file <- create_bed_file(binary_file, chromosome, bin_size)
 
-names(bed_files) <- names(binary_files)
-
-invisible(lapply(names(bed_files), function(file) {
-  write_bed_file(bed_files[[file]], file, output_directory)
-}))
+invisible(write_bed_file(bed_file, chromosome, output_file_path))
