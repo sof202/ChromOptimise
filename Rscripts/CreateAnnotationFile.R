@@ -85,7 +85,7 @@ output_annotation <-
   output_annotation[, !(names(output_annotation) %in% blacklisted_annotations)]
 
 data.table::fwrite(
-  output_annotation_file,
+  output_annotation,
   file = output_file_path,
   quote = FALSE,
   row.names = FALSE,

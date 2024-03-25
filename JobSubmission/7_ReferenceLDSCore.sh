@@ -292,7 +292,7 @@ Rscript CreateAnnotationFile.R \
 "${model_size}" \
 "${output_directory}/annotation/ChromHMM.${chromosome}.annot"
 
-rm -rf "${temporary_directory}"
+# rm -rf "${temporary_directory}"
 
 ## ======================= ##
 ##   REFERENCE LD SCORES   ##
