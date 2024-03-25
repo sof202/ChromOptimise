@@ -40,11 +40,19 @@ if (!requireNamespace("dplyr", quietly = TRUE)) {
 }
 
 arguments <- commandArgs(trailingOnly = TRUE)
-baseline_annotation <- data.table::fread(arguments[1], header = TRUE)
-state_assignments <- scan(arguments[2], what = numeric(), sep = "\n")
-mark_assignment <- data.table::fread(arguments[3], header = TRUE)
-model_size <- as.numeric(arguments[4])
+baseline_annotation <- arguments[1]
+state_assignments <- arguments[2]
+mark_assignment <- arguments[3]
+model_size <- arguments[4]
 output_file_path <- arguments[5]
+
+## ================ ##
+##   FILE LOADING   ##
+## ================ ##
+
+baseline_annotation <- data.table::data.table(read.table(baseline_annotation))
+state_assignments <- scan(state_assignments, what = numeric(), sep = "\n")
+mark_assignment <- data.table::data.table(read.table(mark_assignment))
 
 ## ======== ##
 ##   MAIN   ##

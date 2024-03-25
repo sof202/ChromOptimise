@@ -250,12 +250,12 @@ module purge
 module load R/4.2.1-foss-2022a
 
 Rscript BinarytoBed.R \
-"${binary_file}" \
+<(zcat "${binary_file}") \
 "${bin_size}" \
 "${temporary_directory}/binary-${chromosome}.bed"
 
 Rscript BimtoBed.R \
-"${bim_file}" \
+<(cat "${bim_file}") \
 "${temporary_directory}/SNP_positions-${chromosome}.bed"
 
 module purge
@@ -285,9 +285,9 @@ module load R/4.2.1-foss-2022a
 baseline_annot="${LD_BASELINE_DIR}/baselineLD.${chromosome}.annot.gz"
 
 Rscript CreateAnnotationFile.R \
-"${baseline_annot}" \
-"${temporary_directory}/state_assignments-${chromosome}.txt" \
-"${temporary_directory}/mark_assignments-${chromosome}.txt" \
+<(cat "${baseline_annot}") \
+<(cat "${temporary_directory}/state_assignments-${chromosome}.txt")\
+<(cat "${temporary_directory}/mark_assignments-${chromosome}.txt") \
 "${model_size}" \
 "${output_directory}/annotation/ChromHMM.${chromosome}.annot"
 

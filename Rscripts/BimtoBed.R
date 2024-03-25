@@ -38,8 +38,8 @@ if (!requireNamespace("dplyr", quietly = TRUE)) {
 }
 
 arguments <- commandArgs(trailingOnly = TRUE)
-bim_file_location <- readLines(arguments[1])
-output_file_path <- arguments[3]
+bim_file <- arguments[1]
+output_file_path <- arguments[2]
 
 ## ===================== ##
 ##   LOADING BIM FILES   ##
@@ -48,7 +48,7 @@ output_file_path <- arguments[3]
 # The only data that matters in the bim file is the chromosome number and
 # the snp's position, the other columns are not used anywhere
 bim_file <-
-  data.table::data.table(read.table(bim_file_location)) |>
+  data.table::data.table(read.table(bim_file)) |>
   dplyr::select(c(1, 4)) |>
   data.table::setnames(c("chromosome", "snp_position"))
 
