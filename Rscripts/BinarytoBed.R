@@ -90,7 +90,7 @@ create_bed_file <- function(binary_file, chromosome, bin_size) {
 ## ======= ##
 
 chromosome <-
-  stringr::str_extract(basename(binary_file_location), "(?<=_).*?(?=_)")
+  stringr::str_extract(basename(binary_file), "(?<=_).*?(?=_)")
 
 bed_file <- create_bed_file(binary_file, chromosome, bin_size)
 
