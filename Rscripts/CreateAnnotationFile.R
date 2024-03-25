@@ -50,9 +50,13 @@ output_file_path <- arguments[5]
 ##   FILE LOADING   ##
 ## ================ ##
 
-baseline_annotation <- data.table::data.table(read.table(baseline_annotation))
+baseline_annotation <- data.table::data.table(read.table(baseline_annotation),
+  header = TRUE
+)
 state_assignments <- as.numeric(readLines(state_assignments))
-mark_assignment <- data.table::data.table(read.table(mark_assignment))
+mark_assignment <- data.table::data.table(read.table(mark_assignment),
+  header = TRUE
+)
 
 ## ======== ##
 ##   MAIN   ##
@@ -84,7 +88,7 @@ blacklisted_annotations <-
 output_annotation <-
   output_annotation[, !(names(output_annotation) %in% blacklisted_annotations)]
 
-data.table::fwrite(
+write.table(
   output_annotation,
   file = output_file_path,
   quote = FALSE,
