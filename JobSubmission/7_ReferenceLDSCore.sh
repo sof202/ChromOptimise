@@ -271,7 +271,8 @@ awk '{print $7}' > \
 # We get the mark names at the top of the file for the Rscript that appends
 # these columns to the annotation file later for convenience
 zcat "${binary_file}" | \
-awk 'NR==2' > \
+awk 'NR==2 {for(i=1; i<=NF; i++) \
+printf "ChromOptimise_%s%s", $i, (i==NF ? "\n" : "\t")}' > \
 "${temporary_directory}/mark_assignments-${chromosome}.txt"
 
 bedtools intersect -wb \
