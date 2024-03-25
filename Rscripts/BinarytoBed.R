@@ -61,7 +61,7 @@ binary_file <-
 # This isn't quite correct as it will create a  BED file that is larger than
 # the chromosome.
 create_bed_file <- function(binary_file, chromosome, bin_size) {
-  number_of_intervals <- dplyr::n(binary_file)
+  number_of_intervals <- nrow(binary_file)
   bed_file <- binary_file |>
     dplyr::mutate(
       chromosome = chromosome,
