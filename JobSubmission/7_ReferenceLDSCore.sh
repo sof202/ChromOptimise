@@ -270,9 +270,12 @@ awk '{print $7}' > \
 
 # We get the mark names at the top of the file for the Rscript that appends
 # these columns to the annotation file later for convenience
-# zcat "${binary_file}" |
-# awk 'NR==2' \
-# "${temporary_directory}/mark_assignments-${chromosome}.txt"
+zcat "${binary_file}" |
+awk 'NR==2' \
+"${temporary_directory}/mark_assignments-${chromosome}.txt"
+
+# awk gets all upset here due to file locking, give it a bit of a rest first
+sleep 5
 
 bedtools intersect -wb \
 -a "${temporary_directory}/SNP_positions-${chromosome}.bed" \
@@ -287,10 +290,12 @@ baseline_annot="${LD_BASELINE_DIR}/baselineLD.${chromosome}.annot.gz"
 
 Rscript CreateAnnotationFile.R \
 <(zcat "${baseline_annot}") \
-<(cat "${temporary_directory}/state_assignments-${chromosome}.txt")\
+<(cat "${temporary_directory}/state_assignments-${chromosome}.txt") \
 <(cat "${temporary_directory}/mark_assignments-${chromosome}.txt") \
 "${model_size}" \
 "${output_directory}/annotation/ChromHMM.${chromosome}.annot"
+
+rm -rf "${temporary_directory}"
 
 ## ======================= ##
 ##   REFERENCE LD SCORES   ##
