@@ -206,45 +206,90 @@ fi
 # We sleep here to ensure files are not removed prematurely
 sleep 5
 
-## ============================ ##
-##   ANNOTATION FILE CREATION   ##
-## ============================ ##
-
-# We need to classify all of the SNPs from the 1000 genomes data into our
-# state assignments from ChromHMM to create the partitions (annotation files)
-
-module purge
-module load R/4.2.1-foss-2022a
+## =================== ##
+##   FILE MANAGEMENT   ##
+## =================== ##
 
 full_model_directory="${MODEL_DIR}\
 /BinSize_${bin_size}_SampleSize_${sample_size}_${number_of_models}"
 
+full_binary_directory="${BINARY_DIR}\
+/BinSize_${bin_size}_SampleSize_${sample_size}"
+
+# We ignore non-autosomal chromosomes as 1000 genomes doesn't provide this data
+# Hence our chromosomes are just 1-22 (the array indices)
+chromosome=${SLURM_ARRAY_TASK_ID}
+
+# The production of the annotation file requires some intermediary files
+# so we create a temporary directory to hold these
+temporary_directory="${output_directory}/temp_${chromosome}"
+mkdir -p "${temporary_directory}"
+
 dense_bed_file=$(\
 find "${full_model_directory}" \
 -name "*_${model_size}_dense.bed")
+
+binary_file=$(\
+    find "${full_binary_directory}" \
+-name "*_chr${chromosome}_binary*")
+
+bim_file=$(\
+    find "${LD_PLINK_DIR}" \
+-name "*${chromosome}*")
+
+## ============================ ##
+##   ANNOTATION FILE CREATION   ##
+## ============================ ##
 
 cd "${RSCRIPTS_DIR}" || \
 { >&2 echo "ERROR: [\${RSCRIPTS_DIR} - ${RSCRIPTS_DIR}] doesn't exist, \
 make sure FilePaths.txt is pointing to the correct directory"
 finishing_statement 1; }
 
-# We ignore non-autosomal chromosomes as 1000 genomes doesn't provide this data
-# Hence our chromosomes are just 1-22 (the array indices)
-chromosome=${SLURM_ARRAY_TASK_ID}
+module purge
+module load R/4.2.1-foss-2022a
 
-assignment_start=$(date +%s)
+Rscript BinarytoBed.R \
+"${binary_file}" \
+"${bin_size}" \
+"${temporary_directory}/binary-${chromosome}.bed"
+
+Rscript BimtoBed.R \
+"${bim_file}" \
+"${temporary_directory}/SNP_positions-${chromosome}.bed"
+
+module purge
+module load BEDTools/2.29.2-GCC-9.3.0
+
+bedtools intersect -wb \
+-a "${temporary_directory}/SNP_positions-${chromosome}.bed" \
+-b "${dense_bed_file}" | \
+awk '{print $7}' > \
+"${temporary_directory}/state_assignments-${chromosome}.txt"
+
+# We get the mark names at the top of the file for the Rscript that appends
+# these columns to the annotation file later for convenience
+zcat "${binary_file}" |
+awk 'NR==2' \
+"${temporary_directory}/mark_assignments-${chromosome}.txt"
+
+bedtools intersect -wb \
+-a "${temporary_directory}/SNP_positions-${chromosome}.bed" \
+-b "${temporary_directory}/binary-${chromosome}.bed" | \
+awk '{ for (i=7; i<=NF; i++) printf "%s%s", $i, (i<NF ? "\t" : "\n") }' >> \
+"${temporary_directory}/mark_assignments-${chromosome}.txt"
+
+module purge
+module load R/4.2.1-foss-2022a
+
 baseline_annot="${LD_BASELINE_DIR}/baselineLD.${chromosome}.annot.gz"
 
-Rscript SNPAssignment.R \
+Rscript CreateAnnotationFile.R \
+"${baseline_annot}" \
+"${temporary_directory}/state_assignments-${chromosome}.txt" \
+"${temporary_directory}/mark_assignments-${chromosome}.txt" \
 "${model_size}" \
-<(awk -v chromosome="chr${chromosome}" \
-'$1 == chromosome {print $2, $3, $4}' "${dense_bed_file}") \
-<(zcat "${baseline_annot}") \
 "${output_directory}/annotation/ChromHMM.${chromosome}.annot"
-
-assignment_end=$(date +%s)
-time_taken=$((assignment_end - assignment_start))
-echo "Chromosome ${chromosome} took: ${time_taken} seconds"
 
 ## ======================= ##
 ##   REFERENCE LD SCORES   ##
