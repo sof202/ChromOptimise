@@ -270,18 +270,15 @@ awk '{print $7}' > \
 
 # We get the mark names at the top of the file for the Rscript that appends
 # these columns to the annotation file later for convenience
-zcat "${binary_file}" |
-awk 'NR==2' \
+zcat "${binary_file}" | \
+awk 'NR==2' > \
 "${temporary_directory}/mark_assignments-${chromosome}.txt"
-
-# awk gets all upset here due to file locking, give it a bit of a rest first
-sleep 5
 
 bedtools intersect -wb \
 -a "${temporary_directory}/SNP_positions-${chromosome}.bed" \
 -b "${temporary_directory}/binary-${chromosome}.bed" | \
 awk '{ for (i=7; i<=NF; i++) printf "%s%s", $i, (i<NF ? "\t" : "\n") }' >> \
-"${temporary_directory}/mark_assignments-${chromosome}.txt"
+"${temporary_directory}/mark_assignments-${chromosome}_temp.txt"
 
 module purge
 module load R/4.2.1-foss-2022a
