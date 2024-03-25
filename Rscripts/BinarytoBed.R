@@ -51,7 +51,7 @@ output_file_path <- arguments[3]
 ## ======================== ##
 
 binary_file <-
-  read.table(gzfile(binary_file_location), header = TRUE, skip = 1)
+  data.table::fread(gzfile(binary_file_location), header = TRUE, skip = 1)
 
 
 ## ===================== ##
@@ -80,21 +80,6 @@ create_bed_file <- function(binary_file, chromosome, bin_size) {
   return(bed_file)
 }
 
-write_bed_file <- function(bed_file, chromosome, output_file_path) {
-  # Warnings are suppressed here as the 'appending column names to file'
-  # message is exactly the behaviour we want
-  suppressWarnings(
-    write.table(bed_file,
-      file = output_file_path,
-      sep = "\t",
-      row.names = FALSE,
-      col.names = FALSE,
-      quote = FALSE
-    )
-  )
-  invisible()
-}
-
 ## ======= ##
 ##  MAIN   ##
 ## ======= ##
@@ -104,4 +89,10 @@ chromosome <-
 
 bed_file <- create_bed_file(binary_file, chromosome, bin_size)
 
-invisible(write_bed_file(bed_file, chromosome, output_file_path))
+data.table::fwrite(bed_file,
+  file = output_file_path,
+  sep = "\t",
+  row.names = FALSE,
+  col.names = FALSE,
+  quote = FALSE
+)

@@ -235,7 +235,7 @@ binary_file=$(\
 
 bim_file=$(\
     find "${LD_PLINK_DIR}" \
--name "*${chromosome}.bim")
+-name "*.${chromosome}.bim")
 
 ## ============================ ##
 ##   ANNOTATION FILE CREATION   ##
