@@ -252,6 +252,7 @@ module load R/4.2.1-foss-2022a
 Rscript BinarytoBed.R \
 <(zcat "${binary_file}") \
 "${bin_size}" \
+"chr${chromosome}" \
 "${temporary_directory}/binary-${chromosome}.bed"
 
 Rscript BimtoBed.R \

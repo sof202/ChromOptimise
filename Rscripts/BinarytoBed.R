@@ -19,7 +19,8 @@
 ## INPUTS:                                                        ||
 ## $1 -> Binary file location (from ChromHMM)                     ||
 ## $2 -> Bin size used for binarization                           ||
-## $3 -> output file location                                     ||
+## $3 -> Chromosome number                                        ||
+## $4 -> output file location                                     ||
 ## ============================================================== ##
 ## OUTPUTS:                                                       ||
 ## A UCSC bed file with columns: chromosome, start, end, then     ||
@@ -44,7 +45,8 @@ if (!requireNamespace("dplyr", quietly = TRUE)) {
 arguments <- commandArgs(trailingOnly = TRUE)
 binary_file <- arguments[1]
 bin_size <- as.numeric(arguments[2])
-output_file_path <- arguments[3]
+chromosome <- arguments[3]
+output_file_path <- arguments[4]
 
 ## ======================== ##
 ##   LOADING BINARY FILES   ##
@@ -88,9 +90,6 @@ create_bed_file <- function(binary_file, chromosome, bin_size) {
 ## ======= ##
 ##  MAIN   ##
 ## ======= ##
-
-chromosome <-
-  stringr::str_extract(basename(binary_file), "(?<=_).*?(?=_)")
 
 bed_file <- create_bed_file(binary_file, chromosome, bin_size)
 
