@@ -51,7 +51,7 @@ output_file_path <- arguments[5]
 ## ================ ##
 
 baseline_annotation <- data.table::data.table(read.table(baseline_annotation))
-state_assignments <- scan(state_assignments, what = numeric(), sep = "\n")
+state_assignments <- as.numeric(readLines(state_assignments))
 mark_assignment <- data.table::data.table(read.table(mark_assignment))
 
 ## ======== ##

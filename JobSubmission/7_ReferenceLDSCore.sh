@@ -270,9 +270,9 @@ awk '{print $7}' > \
 
 # We get the mark names at the top of the file for the Rscript that appends
 # these columns to the annotation file later for convenience
-zcat "${binary_file}" |
-awk 'NR==2' \
-"${temporary_directory}/mark_assignments-${chromosome}.txt"
+# zcat "${binary_file}" |
+# awk 'NR==2' \
+# "${temporary_directory}/mark_assignments-${chromosome}.txt"
 
 bedtools intersect -wb \
 -a "${temporary_directory}/SNP_positions-${chromosome}.bed" \
