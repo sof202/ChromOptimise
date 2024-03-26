@@ -343,10 +343,10 @@ if [[ ${SLURM_ARRAY_TASK_ID} -eq 1 ]]; then
     --dependency=afterok:"${SLURM_ARRAY_JOB_ID}" \
     8_PartitionedHeritability.sh \
     --config="${configuration_directory}" \
-    --gwas="${gwas_pattern:='*'}" \
     --binsize="${bin_size}" \
     --samplesize="${sample_size}" \
-    --nummodels="${number_of_models}"
+    --nummodels="${number_of_models}" \
+    --gwas="${gwas_pattern}"
 
     finishing_statement 0
 fi
