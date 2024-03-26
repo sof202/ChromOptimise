@@ -346,7 +346,7 @@ if [[ ${SLURM_ARRAY_TASK_ID} -eq 1 ]]; then
     --binsize="${bin_size}" \
     --samplesize="${sample_size}" \
     --nummodels="${number_of_models}" \
-    --gwas="${gwas_pattern}"
+    --gwas="${gwas_pattern:='*'}"
 
     finishing_statement 0
 fi
