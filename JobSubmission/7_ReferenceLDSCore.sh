@@ -352,7 +352,7 @@ file."; finishing_statement 0; }
 
 sbatch 8_PartitionedHeritability.sh \
 --config="${configuration_directory}" \
---gwas="${gwas_pattern:=*}" \
+--gwas="${gwas_pattern:='*'}" \
 --binsize="${bin_size}" \
 --samplesize="${sample_size}" \
 --nummodels="${number_of_models}"
