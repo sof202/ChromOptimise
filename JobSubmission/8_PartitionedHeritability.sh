@@ -206,7 +206,7 @@ for file_name in ${gwas_traits}; do
     python \
     "${LD_SOFTWARE_DIR}/ldsc.py" \
     --h2          "${file_name}" \
-    --ref-ld-chr  "${ld_directory}/annotation/ChromHMM." \
+    --ref-ld-chr  "${ld_directory}/annotation/ChromOptimise." \
     --w-ld-chr    "${LD_WEIGHTS_DIR}/${weights_prefix}" \
     --frqfile-chr "${LD_FRQ_DIR}/${frq_prefix}" \
     --overlap-annot \

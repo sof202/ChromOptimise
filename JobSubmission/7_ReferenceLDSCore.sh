@@ -291,7 +291,7 @@ Rscript CreateAnnotationFile.R \
 <(cat "${temporary_directory}/state_assignments-${chromosome}.txt") \
 <(cat "${temporary_directory}/mark_assignments-${chromosome}.txt") \
 "${model_size}" \
-"${output_directory}/annotation/ChromHMM.${chromosome}.annot"
+"${output_directory}/annotation/ChromOptimise.${chromosome}.annot"
 
 rm -rf "${temporary_directory}"
 
@@ -318,8 +318,8 @@ python \
 --l2 \
 --bfile      "${LD_PLINK_DIR}/${plink_prefix}${chromosome}" \
 --ld-wind-cm 1 \
---annot      "${output_directory}/annotation/ChromHMM.${chromosome}.annot" \
---out        "${output_directory}/annotation/ChromHMM.${chromosome}"
+--annot      "${output_directory}/annotation/ChromOptimise.${chromosome}.annot" \
+--out        "${output_directory}/annotation/ChromOptimise.${chromosome}"
 
 
 ## ============================ ##
