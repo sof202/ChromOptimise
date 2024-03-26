@@ -5,7 +5,7 @@
 #SBATCH -p mrcq 
 # The time of this script increases linearly with the number of gwas traits
 # considered
-#SBATCH --time=2:00:00
+#SBATCH --time=24:00:00
 #SBATCH -A Research_Project-MRC190311 
 #SBATCH --nodes=1 
 #SBATCH --ntasks-per-node=16
