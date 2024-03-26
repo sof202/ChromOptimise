@@ -149,7 +149,7 @@ mv "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
 ##    VARIABLES    ##
 ## =============== ##
 
-if [[ -z "${gwas_pattern}" || "${gwas_pattern}" == '*' ]]; then
+if [[ -z "${gwas_pattern}" || "${gwas_pattern}" == "'*'" ]]; then
     gwas_pattern=""
     echo "No glob pattern was given for selecting gwas traits." \
     "All gwas traits will be considered."
