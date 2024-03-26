@@ -18,7 +18,7 @@
 #SBATCH --output=temp%A_%a.log
 # Temporary error file, later to be removed
 #SBATCH --error=temp%A_%a.err
-#SBATCH --job-name=7_LDSC
+#SBATCH --job-name=7_ReferenceLDSCore
 
 ## ===========================================================================##
 ##                                                                            ||
@@ -326,19 +326,6 @@ python \
 ##   PARTITIONED HERITABILITY   ##
 ## ============================ ##
 
-# We only need to calculate partitioned heritability (and produce the plots)
-# once, so if the number of chromosomes completed isn't yet 22, we exit early.
-chromosomes_completed=$(\
-find "${output_directory}/annotation/" \
--name "ChromHMM*.log" -size +0 | \
-wc -l)
-
-if [[ "${chromosomes_completed}" -ne 22 ]]; then
-    echo "Not all ld scores have been calculated in this array."
-    echo "Exiting early..."
-    finishing_statement 0
-fi
-
 # This job is being ran as an array, which means that the memory of the job
 # is split among each array task. This memory allocation is not dynamic and so
 # at this point in the program the task only has (max memory)/22 GB of memory.
@@ -346,15 +333,20 @@ fi
 # ~220GB of memory available). Hence at this point we run a new script with
 # sbatch
 
-cd "${SCRIPTS_DIR}/JobSubmission" || { echo "Could not find the JobSubmission \
-directory in ${SCRIPTS_DIR}/Jobsubmission. Please check your configuration \
-file."; finishing_statement 0; }
+if [[ ${SLURM_ARRAY_TASK_ID} -eq 1 ]]; then
+    cd "${SCRIPTS_DIR}/JobSubmission" || \
+    { echo "Could not find the JobSubmission  directory in \
+    ${SCRIPTS_DIR}/Jobsubmission. Please check your configuration file." \
+    finishing_statement 0; }
 
-sbatch 8_PartitionedHeritability.sh \
---config="${configuration_directory}" \
---gwas="${gwas_pattern:='*'}" \
---binsize="${bin_size}" \
---samplesize="${sample_size}" \
---nummodels="${number_of_models}"
+    sbatch \
+    --dependency=afterok:"${SLURM_ARRAY_JOB_ID}" \
+    8_PartitionedHeritability.sh \
+    --config="${configuration_directory}" \
+    --gwas="${gwas_pattern:='*'}" \
+    --binsize="${bin_size}" \
+    --samplesize="${sample_size}" \
+    --nummodels="${number_of_models}"
 
-finishing_statement 0
+    finishing_statement 0
+fi
