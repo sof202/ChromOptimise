@@ -50,9 +50,6 @@
 ## ===========================================================================##
 ## INPUTS:                                                                    ||
 ## -c|--config=     -> Full/relative file path for configuation file directory||
-## -g|--gwas=       -> The glob pattern used for selecting gwas traits to use ||
-##                     for heritability analysis, your input will be wrapped  ||
-##                     in "*"s                                                ||
 ## -t|--state=      -> (Override) Optimal number of states. Use this if you   ||
 ##                     want to look at the results for a different model.     ||
 ## -b|--binsize=    -> The bin size used in 4_BinarizeBamFiles                ||
@@ -81,9 +78,6 @@ Contact: s.o.fletcher@exeter.ac.uk
 Dependencies: R, LDSC, gwas traits, 1000 genomes files
 Inputs:
 -c|--config=     -> Full/relative file path for configuation file directory
--g|--gwas=       -> The glob pattern used for selecting gwas traits to use 
-                    for heritability analysis, your input will be wrapped
-                    in "*"s
 -t|--state=      -> (Override) Optimal number of states. Use this if you 
                     want to look at the results for a different model.
 -b|--binsize=    -> The bin size used in 4_BinarizeBamFiles
@@ -101,7 +95,7 @@ needs_argument() {
 
 if [[ ! $1 =~ -.* ]]; then usage; fi
 
-while getopts c:t:g:b:s:n:-: OPT; do
+while getopts c:t:b:s:n:-: OPT; do
     # Adds support for long options by reformulating OPT and OPTARG
     # This assumes that long options are in the form: "--long=option"
     if [ "$OPT" = "-" ]; then
@@ -112,7 +106,6 @@ while getopts c:t:g:b:s:n:-: OPT; do
     case "$OPT" in
         c | config )      needs_argument; configuration_directory="$OPTARG" ;;
         t | state )       needs_argument; model_size="$OPTARG" ;;
-        g | gwas )        needs_argument; gwas_pattern="$OPTARG" ;;
         b | binsize )     needs_argument; bin_size="$OPTARG" ;;
         s | samplesize )  needs_argument; sample_size="$OPTARG" ;;
         n | nummodels )   needs_argument; number_of_models="$OPTARG" ;;
@@ -345,8 +338,7 @@ if [[ ${SLURM_ARRAY_TASK_ID} -eq 1 ]]; then
     --config="${configuration_directory}" \
     --binsize="${bin_size}" \
     --samplesize="${sample_size}" \
-    --nummodels="${number_of_models}" \
-    --gwas="${gwas_pattern:='*'}"
+    --nummodels="${number_of_models}"
 
     finishing_statement 0
 fi
