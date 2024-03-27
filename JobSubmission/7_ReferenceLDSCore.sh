@@ -314,6 +314,7 @@ python \
 --annot      "${output_directory}/annotation/ChromOptimise.${chromosome}.annot" \
 --out        "${output_directory}/annotation/ChromOptimise.${chromosome}"
 
+conda deactivate
 
 ## ============================ ##
 ##   PARTITIONED HERITABILITY   ##
