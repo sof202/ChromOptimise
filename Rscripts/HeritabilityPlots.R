@@ -150,6 +150,8 @@ create_heatmap_data <- function(results_files, complete = FALSE) {
 
 create_enrichment_heatmap <- function(results_files, complete = FALSE) {
   enrichment_data <- create_heatmap_data(results_files, complete)
+  negative_palette <- c("red", "pink")
+  postitive_palette <- c("lightgreen", "darkgreen")
   enrichment_heatmap <-
     ggplot(enrichment_data, aes(gwas_trait,
       Category,
@@ -157,7 +159,11 @@ create_enrichment_heatmap <- function(results_files, complete = FALSE) {
       label = round(Enrichment, 2)
     )) +
     geom_tile(color = "black") +
-    scale_fill_gradient(low = "light green", high = "dark green") +
+    scale_fill_gradient(
+      low = negative_palette,
+      high = postitive_palette,
+      midpoint = 0
+    ) +
     geom_text() +
     theme(panel.background = element_rect(fill = "white")) +
     labs(title = "Enrichment of GWAS traits", x = "GWAS trait", y = "State") +
