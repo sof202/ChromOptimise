@@ -192,7 +192,7 @@ if [[ "${SLURM_ARRAY_TASK_ID}" -eq 1 ]]; then
     rm -rf "${output_directory:?}"
     mkdir -p "${output_directory}/annotation" \
     "${output_directory}/heritability" \
-    "${output_directory}/plots/State_Categories" \
+    "${output_directory}/plots/ChromOptimise_Categories" \
     "${output_directory}/plots/All_Categories" 
 fi
 

@@ -218,7 +218,7 @@ setwd(output_directory)
 
 for (plot in names(state_pvalue_barplots)) {
   plot_name <-
-    paste0("State_Categories/Enrichment_pvalues_", plot, ".png")
+    paste0("ChromOptimise_Categories/Enrichment_pvalues_", plot, ".png")
   ggsave(
     plot_name,
     plot = state_pvalue_barplots[[plot]],
@@ -228,7 +228,7 @@ for (plot in names(state_pvalue_barplots)) {
 }
 
 ggsave(
-  "State_Categories/Enrichment_heatmap.png",
+  "ChromOptimise_Categories/Enrichment_heatmap.png",
   state_enrichment_heatmap,
   limitsize = FALSE,
   width = length(results_files),
