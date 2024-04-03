@@ -277,7 +277,7 @@ ggsave(
 
 write.table(
   create_heatmap_data(results_files),
-  "ChromOptimise_Categories/Enrichments.txt",
+  "ChromOptimise_Categories/Enrichments.csv",
   quote = FALSE,
   sep = ","
 )
@@ -303,7 +303,7 @@ ggsave(
 
 write.table(
   create_heatmap_data(results_files, complete = TRUE),
-  "All_Categories/Enrichments.txt",
+  "All_Categories/Enrichments.csv",
   quote = FALSE,
   sep = ","
 )
