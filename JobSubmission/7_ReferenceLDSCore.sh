@@ -324,7 +324,7 @@ conda deactivate
 
 if [[ ${SLURM_ARRAY_TASK_ID} -eq 1 ]]; then
     cd "${SCRIPTS_DIR}/JobSubmission" || \
-    { echo "Could not find the JobSubmission  directory in \
+    { echo "Could not find the JobSubmission directory in \
     ${SCRIPTS_DIR}/Jobsubmission. Please check your configuration file." \
     finishing_statement 0; }
 
