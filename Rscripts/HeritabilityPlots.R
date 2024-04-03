@@ -140,7 +140,7 @@ create_heatmap_data <- function(results_files, complete = FALSE) {
   enrichment_data <- merge_results_files(results_files, "Enrichment")
   enrichment_data <- remove_l2_suffix(enrichment_data)
   if (!complete) {
-    state_assignment_rows <- grepl("^ChromOptimise.*", data$Category)
+    state_assignment_rows <- grepl("^ChromOptimise.*", enrichment_data$Category)
     enrichment_data <- enrichment_data[state_assignment_rows, ]
   }
 
