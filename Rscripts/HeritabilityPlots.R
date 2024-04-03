@@ -117,14 +117,16 @@ create_enrichment_heatmap <- function(results_files, complete = FALSE) {
 
   # pivot_longer is so heatmap can be plotted more easily
   enrichment_data <- tidyr::pivot_longer(enrichment_data,
-                                         cols = -Category,
-                                         names_to = "gwas_trait",
-                                         values_to = "Enrichment")
+    cols = -Category,
+    names_to = "gwas_trait",
+    values_to = "Enrichment"
+  )
   enrichment_heatmap <-
     ggplot(enrichment_data, aes(gwas_trait,
-                                Category,
-                                fill = Enrichment,
-                                label = round(Enrichment, 2))) +
+      Category,
+      fill = Enrichment,
+      label = round(Enrichment, 2)
+    )) +
     geom_tile(color = "black") +
     scale_fill_gradient(low = "light green", high = "dark green") +
     geom_text() +
@@ -134,7 +136,7 @@ create_enrichment_heatmap <- function(results_files, complete = FALSE) {
   return(enrichment_heatmap)
 }
 
-create_pvalue_barplots <- 
+create_pvalue_barplots <-
   function(results_files, pvalue_threshold, fdr_threshold, complete = FALSE) {
     list_of_pvalue_plots <- list()
 
@@ -149,7 +151,7 @@ create_pvalue_barplots <-
 
       data <- remove_l2_suffix(data)
       if (!complete) {
-        state_assignment_rows <- grepl("^state_[0-9]+$", data$Category)
+        state_assignment_rows <- grepl("^ChromOptimise.*", data$Category)
         data <- data[state_assignment_rows, ]
       }
       plot_title <- names(results_files)[[file]]
@@ -157,20 +159,28 @@ create_pvalue_barplots <-
       data$Enrichment_p <- -log10(data$Enrichment_p)
 
       bar_plot <-
-        ggplot(data,
-               aes(x = Category, y = Enrichment_p, fill = Enrichment_p)) +
+        ggplot(
+          data,
+          aes(x = Category, y = Enrichment_p, fill = Enrichment_p)
+        ) +
         geom_bar(stat = "identity", color = "black") +
         scale_fill_gradient(low = "light green", high = "dark green") +
         coord_flip() +
-        geom_hline(yintercept = bonferroni_threshold,
-                   linetype = "dashed",
-                   color = "black") +
-        geom_hline(yintercept = fdr_threshold,
-                   linetype = "dashed",
-                   color = "gray") +
-        labs(title = plot_title,
-             x = "State",
-             y = "-log_10(Enrichment p-value)") +
+        geom_hline(
+          yintercept = bonferroni_threshold,
+          linetype = "dashed",
+          color = "black"
+        ) +
+        geom_hline(
+          yintercept = fdr_threshold,
+          linetype = "dashed",
+          color = "gray"
+        ) +
+        labs(
+          title = plot_title,
+          x = "State",
+          y = "-log_10(Enrichment p-value)"
+        ) +
         theme(plot.title = element_text(hjust = 0.5))
 
       list_of_pvalue_plots[[file]] <- bar_plot

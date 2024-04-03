@@ -72,7 +72,7 @@ generate_state_columns <- function(model_size, state_assignments) {
     state_assignments
   )] <- 1
   binarized_state_columns <- data.table::as.data.table(binarized_state_columns)
-  names(binarized_state_columns) <- paste0("state_", 1:model_size)
+  names(binarized_state_columns) <- paste0("Chromoptimise_state_", 1:model_size)
 
   return(binarized_state_columns)
 }
