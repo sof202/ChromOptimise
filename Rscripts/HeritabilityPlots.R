@@ -83,7 +83,7 @@ remove_l2_suffix <- function(results) {
 }
 
 ## =============================== ##
-##   P-VALUE THRESHOLD FUNCTIONS   ##
+##   QUALITY ASSURANCE FUNCTIONS   ##
 ## =============================== ##
 
 bonferroni_correction <- function(results_files, pvalue_threshold) {
@@ -101,6 +101,30 @@ fdr_correction <- function(pvalues, fdr_threshold) {
     subset(adjusted_pvalues, adjusted_pvalues < fdr_threshold)
   critical_value <- max(significant_pvalues)
   return(-log10(critical_value))
+}
+
+negative_enrichment_proportion <- function(results_files) {
+  enrichment_data <- merge_results_files(results_files, "Enrichment")
+  number_of_negative_values <- sum(enrichment_data$Enrichment < 0, na.rm = TRUE)
+  return(number_of_negative_values / nrow(enrichment_data))
+}
+
+write_poor_enrichment_warning <- function(results_files) {
+  negative_enrichment <- negative_enrichment_proportion(results_files)
+  if (negative_enrichment > 0.05) {
+    lines <- c(
+      "WARNING: A significant proportion of enrichments are negative.",
+      "The proportion of negative enrichements for this run was:",
+      negative_enrichment,
+      "Please check the enrichment heatmap to gain more information.",
+      "The wiki gives information on how to avoid this."
+    )
+    writeLines(
+      lines,
+      "WARNING.txt"
+    )
+  }
+  invisible()
 }
 
 ## ====================== ##
@@ -272,3 +296,5 @@ write.table(
   quote = FALSE,
   sep = ","
 )
+
+write_poor_enrichment_warning(results_files)
