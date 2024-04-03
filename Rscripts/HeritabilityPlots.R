@@ -86,10 +86,15 @@ remove_l2_suffix <- function(results) {
 ##   QUALITY ASSURANCE FUNCTIONS   ##
 ## =============================== ##
 
+# The number of hypotheses is technically the number of traits multiplied by
+# the number of annotations. However, the user is not able to control the
+# number of annotations that come from the baseline annotation files. Thus
+# we discount these here when calculating bonferroni correction.
 bonferroni_correction <- function(results_files, pvalue_threshold) {
   number_of_traits <- length(results_files)
-  number_of_annotations <- nrow(results_files[[1]])
-  number_of_hypotheses <- number_of_traits * number_of_annotations
+  relevant_categories <-
+    sum(grepl("^ChromOptimise.*", results_files[[1]]$Category))
+  number_of_hypotheses <- number_of_traits * relevant_categories
   bonferroni_threshold <- pvalue_threshold / number_of_hypotheses
   return(-log10(bonferroni_threshold))
 }
