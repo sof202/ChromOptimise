@@ -131,11 +131,6 @@ ${configuration_directory}/FilePaths.txt"
 echo ""
 cat "${configuration_directory}/FilePaths.txt"
 echo ""
-echo "Configuration file used with Rscripts: \
-${configuration_directory}/config.R"
-echo ""
-cat "${configuration_directory}/config.R"
-echo ""
 
 source "${configuration_directory}/LogFileManagement.sh" || \
 { echo "The log file management script does not exist in the specified \
