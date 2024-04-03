@@ -107,11 +107,11 @@ fdr_correction <- function(pvalues, fdr_threshold) {
 ##   PLOTTING FUNCTIONS   ##
 ## ====================== ##
 
-create_enrichment_heatmap <- function(results_files, complete = FALSE) {
+create_heatmap_data <- function(results_files, complete = FALSE) {
   enrichment_data <- merge_results_files(results_files, "Enrichment")
   enrichment_data <- remove_l2_suffix(enrichment_data)
   if (!complete) {
-    state_assignment_rows <- grepl("^state_[0-9]+$", enrichment_data$Category)
+    state_assignment_rows <- grepl("^ChromOptimise.*", data$Category)
     enrichment_data <- enrichment_data[state_assignment_rows, ]
   }
 
@@ -121,6 +121,11 @@ create_enrichment_heatmap <- function(results_files, complete = FALSE) {
     names_to = "gwas_trait",
     values_to = "Enrichment"
   )
+  return(enrichment_data)
+}
+
+create_enrichment_heatmap <- function(results_files, complete = FALSE) {
+  enrichment_data <- create_heatmap_data(results_files, complete)
   enrichment_heatmap <-
     ggplot(enrichment_data, aes(gwas_trait,
       Category,
@@ -235,6 +240,13 @@ ggsave(
   height = (nrow(results_files[[1]]) - 47) / 5
 )
 
+write.table(
+  create_heatmap_data(results_files),
+  "ChromOptimise_Categories/Enrichments.txt",
+  quote = FALSE,
+  sep = ","
+)
+
 for (plot in names(complete_pvalue_barplots)) {
   plot_name <-
     paste0("All_Categories/Enrichment_pvalues_", plot, ".png")
@@ -252,4 +264,11 @@ ggsave(
   limitsize = FALSE,
   width = length(results_files),
   height = nrow(results_files[[1]]) / 5
+)
+
+write.table(
+  create_heatmap_data(results_files, complete = TRUE),
+  "All_Categories/Enrichments.txt",
+  quote = FALSE,
+  sep = ","
 )
