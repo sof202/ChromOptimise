@@ -164,7 +164,7 @@ create_enrichment_heatmap <- function(results_files, complete = FALSE) {
       label = round(Enrichment, 2)
     )) +
     geom_tile(color = "black") +
-    scale_fill_gradient(
+    scale_fill_gradient2(
       low = negative_palette,
       high = postitive_palette,
       midpoint = 0
