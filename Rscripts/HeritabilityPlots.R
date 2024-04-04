@@ -110,6 +110,11 @@ fdr_correction <- function(pvalues, fdr_threshold) {
 
 negative_enrichment_proportion <- function(results_files) {
   enrichment_data <- merge_results_files(results_files, "Enrichment")
+  enrichment_data <- tidyr::pivot_longer(enrichment_data,
+    cols = -Category,
+    names_to = "gwas_trait",
+    values_to = "Enrichment"
+  )
   number_of_negative_values <- sum(enrichment_data$Enrichment < 0, na.rm = TRUE)
   return(number_of_negative_values / nrow(enrichment_data))
 }
