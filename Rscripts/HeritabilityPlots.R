@@ -59,7 +59,7 @@ if (is.data.frame(results_files)) {
 }
 
 names(results_files) <- unlist(lapply(results_file_list, function(file) {
-  gsub("\\.sumstats.*", "", basename(file))
+  gsub("\\.results", "", basename(file))
 }))
 
 ## =============================== ##
