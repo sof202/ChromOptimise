@@ -68,7 +68,7 @@ names(results_files) <- unlist(lapply(results_file_list, function(file) {
 
 merge_results_files <- function(results_files, target_column) {
   merged_dataframe <- results_files[[1]]$Category
-  for (file in 1:length(results_files)) {
+  for (file in seq_len(results_files)) {
     merged_dataframe <-
       cbind(merged_dataframe, results_files[[file]][target_column])
   }
