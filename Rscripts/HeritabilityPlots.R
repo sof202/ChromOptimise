@@ -82,6 +82,16 @@ remove_l2_suffix <- function(results) {
   return(results)
 }
 
+pivot_enrichment_data <- function(enrichment_data) {
+  # pivot_longer is so heatmap can be plotted more easily
+  enrichment_data <- tidyr::pivot_longer(enrichment_data,
+    cols = -Category,
+    names_to = "gwas_trait",
+    values_to = "Enrichment"
+  )
+  return(enrichment_data)
+}
+
 ## =============================== ##
 ##   QUALITY ASSURANCE FUNCTIONS   ##
 ## =============================== ##
@@ -110,11 +120,7 @@ fdr_correction <- function(pvalues, fdr_threshold) {
 
 negative_enrichment_proportion <- function(results_files) {
   enrichment_data <- merge_results_files(results_files, "Enrichment")
-  enrichment_data <- tidyr::pivot_longer(enrichment_data,
-    cols = -Category,
-    names_to = "gwas_trait",
-    values_to = "Enrichment"
-  )
+  enrichment_data <- pivot_enrichment_data(enrichment_data)
   number_of_negative_values <- sum(enrichment_data$Enrichment < 0, na.rm = TRUE)
   return(number_of_negative_values / nrow(enrichment_data))
 }
@@ -151,19 +157,9 @@ create_heatmap_data <- function(results_files, complete = FALSE) {
   return(enrichment_data)
 }
 
-pivot_heatmap_data <- function(enrichment_data) {
-  # pivot_longer is so heatmap can be plotted more easily
-  enrichment_data <- tidyr::pivot_longer(enrichment_data,
-    cols = -Category,
-    names_to = "gwas_trait",
-    values_to = "Enrichment"
-  )
-  return(enrichment_data)
-}
-
 create_enrichment_heatmap <- function(results_files, complete = FALSE) {
   enrichment_data <- create_heatmap_data(results_files, complete)
-  enrichment_data <- pivot_heatmap_data(enrichment_data)
+  enrichment_data <- pivot_enrichment_data(enrichment_data)
 
   negative_palette <- c("red", "pink")
   postitive_palette <- c("lightgreen", "darkgreen")
