@@ -148,7 +148,10 @@ create_heatmap_data <- function(results_files, complete = FALSE) {
     state_assignment_rows <- grepl("^ChromOptimise.*", enrichment_data$Category)
     enrichment_data <- enrichment_data[state_assignment_rows, ]
   }
+  return(enrichment_data)
+}
 
+pivot_heatmap_data <- function(enrichment_data) {
   # pivot_longer is so heatmap can be plotted more easily
   enrichment_data <- tidyr::pivot_longer(enrichment_data,
     cols = -Category,
@@ -160,6 +163,8 @@ create_heatmap_data <- function(results_files, complete = FALSE) {
 
 create_enrichment_heatmap <- function(results_files, complete = FALSE) {
   enrichment_data <- create_heatmap_data(results_files, complete)
+  enrichment_data <- pivot_heatmap_data(enrichment_data)
+
   negative_palette <- c("red", "pink")
   postitive_palette <- c("lightgreen", "darkgreen")
   enrichment_heatmap <-
