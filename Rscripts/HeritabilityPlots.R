@@ -189,7 +189,7 @@ create_pvalue_barplots <-
     bonferroni_threshold <-
       bonferroni_correction(results_files, pvalue_threshold)
 
-    for (file in 1:length(results_files)) {
+    for (file in seq_len(results_files)) {
       data <- results_files[[file]]
       # We remove the base row as it is guaranteed to have a NaN p-value
       data <- data[-1, ]
