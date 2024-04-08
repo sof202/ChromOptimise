@@ -381,7 +381,6 @@ if [[ "${STARTING_SCRIPT}" -eq 7 ]]; then
     "7_RunLDSC.sh" \
     --config="${configuration_directory}" \
     --state="${OPTIMUM_NUMBER_OF_STATES}" \
-    --gwas="${GWAS_PATTERN}" \
     --binsize="${BIN_SIZE}" \
     --samplesize="${SAMPLE_SIZE}" \
     --nummodels="${NUMBER_OF_MODELS}" | \
@@ -398,7 +397,6 @@ elif [[ "${STARTING_SCRIPT}" -lt 7 ]]; then
     --dependency=afterok:"${jobID[Optimal_States]}" \
     "7_RunLDSC.sh" \
     --config="${configuration_directory}" \
-    --gwas="${GWAS_PATTERN}" \
     --binsize="${BIN_SIZE}" \
     --samplesize="${SAMPLE_SIZE}" \
     --nummodels="${NUMBER_OF_MODELS}" | \
