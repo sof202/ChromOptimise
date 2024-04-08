@@ -35,7 +35,7 @@ ${configuration_directory}"; exit 1; }
 
 mkdir -p "${DOWNLOAD_DIR}" "${RAW_DIR}" "${PROCESSED_DIR}" "${SUBSAMPLED_DIR}" \
 "${BINARY_DIR}" "${MODEL_DIR}" "${OPTIMUM_STATES_DIR}" "${LD_ASSESSMENT_DIR}" \
-"${COMPARE_DIR}" "${BIG_MODELS_DIR}"
+"${BIG_MODELS_DIR}"
 
 ## ============================= ##
 ##   DELETE UOE SPECIFIC LINES   ##
