@@ -111,8 +111,7 @@ export BINARY_DIR="${MAIN_DIR}/4_BinarizedBamFiles"
 export MODEL_DIR="${MAIN_DIR}/5_ModelFiles"
 export OPTIMUM_STATES_DIR="${MAIN_DIR}/6_OptimumNumberOfStates"
 export LD_ASSESSMENT_DIR="${MAIN_DIR}/7_LDSCFiles"
-export COMPARE_DIR="${MAIN_DIR}/8_ModelComparisonFiles"
-export BIG_MODELS_DIR="${MAIN_DIR}/9_BigModelFiles"
+export BIG_MODELS_DIR="${MAIN_DIR}/8_BigModelFiles"
 
 ## LDSC data directories
 
