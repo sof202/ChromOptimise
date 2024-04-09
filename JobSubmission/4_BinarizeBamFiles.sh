@@ -187,34 +187,42 @@ if [[ -z "$(find . -type f -name "Subsampled.${sample_size}*")" ]]; then
     finishing_statement 1; }
 fi
 
-## =================================== ##
-##    CREATE A CELL MARK FILE TABLE    ##
-## =================================== ##
+## ================================= ##
+##    CREATE CELL MARK FILE TABLE    ##
+## ================================= ##
 
 # As we have already merged files in 3_SubsampleBamFiles.sh, the cell mark
 # file table will just be 1 file for each mark that has been processed. The
 # only added level of complexity is obtaining the mark name from the file names.
 
-rm -f "cellmarkfiletable.txt" 
+rm -f "bam_cellmarkfiletable.txt" 
 for file in *"${sample_size}"*.bam; do
     # We're assuming here that there is only one cell type inspected
     echo -ne "ChromOptimise\t" >> \
-    "cellmarkfiletable.txt"
+    "bam_cellmarkfiletable.txt"
     # The subsampled files are named: subsampled.[SampleSize].[mark_name].bam. 
     # Below extracts the mark name
     mark_name=$(echo "$file" | cut -d "." -f 3) 
-    echo -ne "${mark_name}\t" >> "cellmarkfiletable.txt"
-    echo "$file" >> "cellmarkfiletable.txt"
+    echo -ne "${mark_name}\t" >> "bam_cellmarkfiletable.txt"
+    echo "$file" >> "bam_cellmarkfiletable.txt"
+done
+
+rm -f "bed_cellmarkfiletable.txt" 
+for file in *"${sample_size}"*.bed; do
+    # We're assuming here that there is only one cell type inspected
+    echo -ne "ChromOptimise\t" >> \
+    "bed_cellmarkfiletable.txt"
+    # The subsampled files are named: subsampled.[SampleSize].[mark_name].bam. 
+    # Below extracts the mark name
+    mark_name=$(echo "$file" | cut -d "." -f 3) 
+    echo -ne "${mark_name}\t" >> "bed_cellmarkfiletable.txt"
+    echo "$file" >> "bed_cellmarkfiletable.txt"
 done
 
 ## ================================= ##
 ##    BINARIZATION USING CHROMHMM    ##
 ## ================================= ##
-
-echo "Binarizing subsampled bam files found in [\${SUBSAMPLED_DIR} - \
-${SUBSAMPLED_DIR}] with sample size: ${sample_size} using a bin size \
-of: ${bin_size}."
-
+#
 cd "${BINARY_DIR}" || \
 { echo "ERROR: [\${BINARY_DIR} - ${BINARY_DIR}] doesn't exist, \
 make sure FilePaths.txt is pointing to the correct directory"
@@ -228,23 +236,53 @@ rm -f ./*
 module purge
 module load Java
 
-# Binarize the files in the subsampled directory.
+if [[ -s "${SUBSAMPLED_DIR}/bam_cellmarkfiletable.txt" ]]; then
+    echo "Binarizing subsampled bam files found in [\${SUBSAMPLED_DIR} - \
+    ${SUBSAMPLED_DIR}] with sample size: ${sample_size} using a bin size \
+    of: ${bin_size}."
+
+    java -mx4G \
+    -jar "${CHROMHMM_MAIN_DIR}/ChromHMM.jar" \
+    BinarizeBam \
+    -b "${bin_size}" \
+    -gzip \
+    "${CHROMHMM_CHROM_SIZES}/${assembly}.txt" \
+    "${SUBSAMPLED_DIR}" \
+    "${SUBSAMPLED_DIR}/bam_cellmarkfiletable.txt" \
+    "${BINARY_DIR}/BinSize_${bin_size}_SampleSize_${sample_size}/bam"
+fi
+
+if [[ -s "${SUBSAMPLED_DIR}/bed_cellmarkfiletable.txt" ]]; then
+    echo "Binarizing subsampled bed files found in [\${SUBSAMPLED_DIR} - \
+    ${SUBSAMPLED_DIR}] with sample size: ${sample_size} using a bin size \
+    of: ${bin_size}."
+
+    java -mx4G \
+    -jar "${CHROMHMM_MAIN_DIR}/ChromHMM.jar" \
+    BinarizeBed \
+    -b "${bin_size}" \
+    -gzip \
+    "${CHROMHMM_CHROM_SIZES}/${assembly}.txt" \
+    "${SUBSAMPLED_DIR}" \
+    "${SUBSAMPLED_DIR}/bed_cellmarkfiletable.txt" \
+    "${BINARY_DIR}/BinSize_${bin_size}_SampleSize_${sample_size}/bed"
+fi
+
 java -mx4G \
--jar "${CHROMHMM_MAIN_DIR}/ChromHMM.jar" BinarizeBam \
--b "${bin_size}" \
+-jar "${CHROMHMM_MAIN_DIR}/ChromHMM.jar" \
+MergeBinary \
 -gzip \
-"${CHROMHMM_CHROM_SIZES}/${assembly}.txt" "${SUBSAMPLED_DIR}" \
-"${SUBSAMPLED_DIR}/cellmarkfiletable.txt" \
+"${BINARY_DIR}/BinSize_${bin_size}_SampleSize_${sample_size}" \
 "${BINARY_DIR}/BinSize_${bin_size}_SampleSize_${sample_size}"
+
+rm -r "${BINARY_DIR}/BinSize_${bin_size}_SampleSize_${sample_size}/bam"
+rm -r "${BINARY_DIR}/BinSize_${bin_size}_SampleSize_${sample_size}/bed"
 
 # Non-autosomal chromosomes are not factored into ldsc step of the pipeline
 # so we minimise their impact by deleting their associated binary files
-cd "${BINARY_DIR}/BinSize_${bin_size}_SampleSize_${sample_size}" || \
-finishing_statement 1
-
-rm "*chrM*"
-rm "*chrX*"
-rm "*chrY*"
-
+find "${BINARY_DIR}/BinSize_${bin_size}_SampleSize_${sample_size}" \
+-type f \
+! -regex '.*[0-9].*' \
+-exec rm {} \;
 
 finishing_statement 0
