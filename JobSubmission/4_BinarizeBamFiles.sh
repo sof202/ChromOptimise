@@ -209,11 +209,8 @@ done
 
 rm -f "bed_cellmarkfiletable.txt" 
 for file in *"${sample_size}"*.bed; do
-    # We're assuming here that there is only one cell type inspected
     echo -ne "ChromOptimise\t" >> \
     "bed_cellmarkfiletable.txt"
-    # The subsampled files are named: subsampled.[SampleSize].[mark_name].bam. 
-    # Below extracts the mark name
     mark_name=$(echo "$file" | cut -d "." -f 3) 
     echo -ne "${mark_name}\t" >> "bed_cellmarkfiletable.txt"
     echo "$file" >> "bed_cellmarkfiletable.txt"
