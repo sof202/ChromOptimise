@@ -234,9 +234,9 @@ module purge
 module load Java
 
 if [[ -s "${SUBSAMPLED_DIR}/bam_cellmarkfiletable.txt" ]]; then
-    echo "Binarizing subsampled bam files found in [\${SUBSAMPLED_DIR} - \
-    ${SUBSAMPLED_DIR}] with sample size: ${sample_size} using a bin size \
-    of: ${bin_size}."
+    echo "Binarizing subsampled bam files found in [\${SUBSAMPLED_DIR} - "\
+    "${SUBSAMPLED_DIR}] with sample size: ${sample_size} using a bin size "\
+    "of: ${bin_size}."
 
     java -mx4G \
     -jar "${CHROMHMM_MAIN_DIR}/ChromHMM.jar" \
@@ -250,9 +250,9 @@ if [[ -s "${SUBSAMPLED_DIR}/bam_cellmarkfiletable.txt" ]]; then
 fi
 
 if [[ -s "${SUBSAMPLED_DIR}/bed_cellmarkfiletable.txt" ]]; then
-    echo "Binarizing subsampled bed files found in [\${SUBSAMPLED_DIR} - \
-    ${SUBSAMPLED_DIR}] with sample size: ${sample_size} using a bin size \
-    of: ${bin_size}."
+    echo "Binarizing subsampled bed files found in [\${SUBSAMPLED_DIR} - "\
+    "${SUBSAMPLED_DIR}] with sample size: ${sample_size} using a bin size "\
+    "of: ${bin_size}."
 
     java -mx4G \
     -jar "${CHROMHMM_MAIN_DIR}/ChromHMM.jar" \
