@@ -225,10 +225,9 @@ cd "${BINARY_DIR}" || \
 make sure FilePaths.txt is pointing to the correct directory"
 finishing_statement 1; }
 
+rm -rf "BinSize_${bin_size}_SampleSize_${sample_size}"
 mkdir -p "BinSize_${bin_size}_SampleSize_${sample_size}"
 cd "BinSize_${bin_size}_SampleSize_${sample_size}" || finishing_statement 1
-
-rm -f ./*
 
 module purge
 module load Java
