@@ -58,6 +58,8 @@
 ## -b|--binsize=    -> The bin size used in 4_BinarizeBamFiles                ||
 ## -s|--samplesize= -> The sample size used in 3_SubsampleBamFiles            ||
 ## -a|--assembly=   -> The assembly to use (default: hg19)                    ||
+## -r|--iterations= -> The maximum number of iterations for ChromHMM          ||
+##                     (default: 200)                                         ||
 ## ===========================================================================##
 ## OUTPUTS:                                                                   ||
 ## Emission parameter matrix for models (.png, .txt and .svg)                 ||
@@ -74,9 +76,9 @@
 
 usage() {
 cat <<EOF
-===========================================================================
+================================================================================
 5_batch_CreateIncrementalModels
-===========================================================================
+================================================================================
 Purpose: Uses ChromHMM's LearnModel command to generate several models
 with increasing numbers of states.
 Author: Sam Fletcher
@@ -88,7 +90,8 @@ Inputs:
 -b|--binsize=    -> The bin size used in 4_BinarizeBamFiles
 -s|--samplesize= -> The sample size used in 3_SubsampleBamFiles
 -a|--assembly=   -> The assembly to use (default: hg19)
-===========================================================================
+-r|--iterations= -> The maximum number of iterations for ChromHMM (default: 200)
+================================================================================
 EOF
     exit 0
 }
@@ -100,7 +103,7 @@ needs_argument() {
 
 if [[ ! $1 =~ -.* ]]; then usage; fi
 
-while getopts c:n:i:b:s:a:-: OPT; do
+while getopts c:n:i:b:s:a:r:-: OPT; do
     # Adds support for long options by reformulating OPT and OPTARG
     # This assumes that long options are in the form: "--long=option"
     if [ "$OPT" = "-" ]; then
@@ -114,6 +117,7 @@ while getopts c:n:i:b:s:a:-: OPT; do
         b | binsize )      needs_argument; bin_size="$OPTARG" ;;
         s | samplesize )   needs_argument; sample_size="$OPTARG" ;;
         a | assembly )     needs_argument; assembly="$OPTARG" ;;
+        r | iterations)    needs_argument; max_iterations="$OPTARG" ;;
         \? )               usage ;;  # Illegal short options are caught by getopts
         * )                usage ;;  # Illegal long option
     esac
@@ -160,6 +164,13 @@ if ! [[ "${number_of_models_to_generate}" =~ ^[0-9]+$ ]]; then
     number_of_models_to_generate=4
     echo "Value for 'number of models to generate' is invalid."
     echo "Using the default value of: ${number_of_models_to_generate} instead."
+fi
+
+if ! [[ "${max_iterations}" =~ ^[0-9]+$ ]]; then
+    max_iterations=200
+    echo "Invalid max iterations given, using the default value of" \
+    "${max_iterations} instead."\
+    
 fi
 
 if ! [[ "${bin_size}" =~ ^[0-9]+$  || "${sample_size}" =~ ^[0-9]+$ ]]; then
@@ -268,6 +279,7 @@ for numstates in ${sequence}; do
     -noautoopen \
     -printstatebyline \
     -b "${bin_size}" \
+    -r "${max_iterations}" \
     "${full_binary_path}" "${output_directory}" "${numstates}" "${assembly}" > \
     "ChromHMM.output.numstates.${numstates}.txt"
 
