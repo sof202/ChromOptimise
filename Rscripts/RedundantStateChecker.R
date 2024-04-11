@@ -57,22 +57,28 @@ setwd(output_file_path)
 ## ============================== ##
 
 euclidean_distances_file <-
-  paste0(output_file_path, "/Euclidean_distances/",
-         "Euclidean_distances_model-", model_size, ".txt")
+  paste0(
+    output_file_path, "/Euclidean_distances/",
+    "Euclidean_distances_model-", model_size, ".txt"
+  )
 
 euclidean_distances <- read.table(euclidean_distances_file, header = TRUE)
 
 
 flanking_states_file <-
-  paste0(output_file_path, "/Flanking_states/",
-         "Likeliest_flanking_states_model-", model_size, ".txt")
+  paste0(
+    output_file_path, "/Flanking_states/",
+    "Likeliest_flanking_states_model-", model_size, ".txt"
+  )
 
 flanking_data <- read.table(flanking_states_file, header = TRUE)
 
 
 isolation_scores_file <-
-  paste0(output_file_path, "/Isolation_scores/",
-         "Isolation_Scores_model-", model_size, ".txt")
+  paste0(
+    output_file_path, "/Isolation_scores/",
+    "Isolation_Scores_model-", model_size, ".txt"
+  )
 
 isolation_scores <- read.table(isolation_scores_file, header = TRUE)
 
@@ -109,27 +115,27 @@ find_flanks_pairs <- function(flanking_data, for_output = FALSE) {
 
 # This is for assessing states that satisfy (ii)(c)
 find_identical_flanks <- function(flanking_data) {
-  identical_flank_rows <- 
+  identical_flank_rows <-
     apply(flanking_data, 1, function(row) row[2] == row[3])
-  
+
   # We only need columns 1 and 2 here as columns 2 and 3 have the same data
   # (from the logic above). Adding column 3 adds no extra information.
   identical_flanks <- flanking_data[identical_flank_rows, 1:2]
-  
+
   return(identical_flanks)
 }
 
 # This is required as a state might satisfy (i) and (ii)(c), but the order
 # of the columns are the incorrect way around.
-# Suppose that state 2 is likely to be flanked on both sides by state 1 and 
-# states 1 and 2 have similar emission vectors. Then simply checking if the rows 
-# of the identical flanks and the similar state pairs are identical is not 
-# enough. The rows in this case will be c(2,1) and c(1,2) which are not 
+# Suppose that state 2 is likely to be flanked on both sides by state 1 and
+# states 1 and 2 have similar emission vectors. Then simply checking if the rows
+# of the identical flanks and the similar state pairs are identical is not
+# enough. The rows in this case will be c(2,1) and c(1,2) which are not
 # identical. They will be identical after sorting however.
 check_rows_have_same_values <- function(row1, row2) {
   row1_sorted <- sort(row1)
   row2_sorted <- sort(row2)
-  
+
   return(identical(row1_sorted, row2_sorted))
 }
 
@@ -139,11 +145,11 @@ check_rows_have_same_values <- function(row1, row2) {
 # the possibility of losing the information of "which state is flanking which"
 # (as the order of the rows could have flipped).
 find_equivalent_rows <- function(identical_flanks, similar_state_pairs) {
-  equivalent_rows <- data.frame( state = numeric(), flank = numeric())
+  equivalent_rows <- data.frame(state = numeric(), flank = numeric())
 
-  for (row1 in 1:nrow(identical_flanks)) {
+  for (row1 in seq_len(nrow(identical_flanks))) {
     reference_row <- unlist(identical_flanks[row1, ])
-    for (row2 in 1:nrow(similar_state_pairs)) {
+    for (row2 in seq_len(nrow(similar_state_pairs))) {
       comparison_row <- unlist(similar_state_pairs[row2, ])
 
       if (check_rows_have_same_values(reference_row, comparison_row)) {
@@ -163,8 +169,7 @@ find_equivalent_rows <- function(identical_flanks, similar_state_pairs) {
 
 ## Similar emission parameters ##
 low_euclidean_distances <-
-  euclidean_distances[euclidean_distances$euclidean_distance <
-                      emissions_threshold, ]
+  euclidean_distances[euclidean_distances$euclidean_distance < emissions_threshold, ]
 
 similar_state_pairs <- low_euclidean_distances[, 1:2]
 
@@ -188,7 +193,7 @@ identical_flanks <- find_identical_flanks(flanking_data)
 ## High isolation scores ##
 # Isolation score will be NA if the state in question was only assigned
 # once. We need to account for these separately.
-highly_isolated_states_data <-  isolation_scores[
+highly_isolated_states_data <- isolation_scores[
   isolation_scores$isolation_score > isolation_threshold &
     !is.na(isolation_scores$isolation_score),
 ]
@@ -218,9 +223,10 @@ isolated_states <- append(isolated_states, single_assigned_states)
 # reference_state will be strictly smaller than the one in comparison_state.
 # Therefore, simply merging the two dataframes will find all state pairs
 # that satisfy (i) and (ii)(b) simultaneously.
-redundant_state_candidates <- 
+redundant_state_candidates <-
   merge(similar_state_pairs, same_flank_pairs,
-        by = c("reference_state", "comparison_state"))[, 1:2]
+    by = c("reference_state", "comparison_state")
+  )[, 1:2]
 
 # This function is in place so that we can choose the state that has a higher
 # isolation score (as this state is more likely to be the redundant one).
@@ -230,8 +236,7 @@ if (nrow(redundant_state_candidates) > 0) {
   # If no candidates were found, this code will fail as there are no rows
   # to compare. The above if statement accounts for this scenario.
   redundant_states <- unlist(apply(redundant_state_candidates, 1, function(row) {
-    if (isolation_scores$isolation_score[row[1]] >
-          isolation_scores$isolation_score[row[2]]) {
+    if (isolation_scores$isolation_score[row[1]] > isolation_scores$isolation_score[row[2]]) {
       return(row[1])
     }
     return(row[2])
@@ -247,7 +252,7 @@ if (nrow(redundant_state_candidates) > 0) {
 # satisfies (i), as it is a part of a similar state pair. It also satisfies
 # (ii)(c), as it is flanked on both sides by the same state that it is in
 # a similar state pair with
-identical_flank_similar_state <- 
+identical_flank_similar_state <-
   find_equivalent_rows(identical_flanks, similar_state_pairs)
 
 # The state column of this dataframe holds the states that are BEING flanked
@@ -277,8 +282,10 @@ setwd(output_file_path)
 separator <- "<------------------------------------------------------------>"
 
 write_table_to_output <- function(table) {
-  write.table(table, file = output_file, append = TRUE,
-              row.names = FALSE, col.names = FALSE)
+  write.table(table,
+    file = output_file, append = TRUE,
+    row.names = FALSE, col.names = FALSE
+  )
   write(separator, file = output_file, append = TRUE)
 }
 
