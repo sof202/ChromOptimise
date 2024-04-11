@@ -44,6 +44,8 @@
 ##                     (default: 200)                                         ||
 ## -s|--samplesize= -> Sample size used in 3_SubsampleBamFiles.sh             ||
 ## -a|--assembly=   -> The assembly to use (default: hg19)                    ||
+## -r|--iterations= -> The maximum number of iterations for ChromHMM          ||
+##                     (default: 200)                                         ||
 ## ===========================================================================##
 ## OUTPUTS:                                                                   ||
 ## Binary signal files for every chromosome in the dataset                    ||
@@ -68,6 +70,7 @@ Inputs:
 -b|--binsize=    -> Bin size to be used by BinarizeBam command (default: 200)
 -s|--samplesize= -> Sample size used in 3_SubsampleBamFiles.sh
 -a|--assembly=   -> The assembly to use (default: hg19)
+-r|--iterations= -> The maximum number of iterations for ChromHMM (default: 200)
 ================================================================================
 EOF
     exit 0
@@ -80,7 +83,7 @@ needs_argument() {
 
 if [[ ! $1 =~ -.* ]]; then usage; fi
 
-while getopts c:b:s:a:-: OPT; do
+while getopts c:b:s:a:r:-: OPT; do
     # Adds support for long options by reformulating OPT and OPTARG
     # This assumes that long options are in the form: "--long=option"
     if [ "$OPT" = "-" ]; then
@@ -93,6 +96,7 @@ while getopts c:b:s:a:-: OPT; do
         b | binsize )      needs_argument; bin_size="$OPTARG" ;;
         s | samplesize )   needs_argument; sample_size="$OPTARG" ;;
         a | assembly )     needs_argument; assembly="$OPTARG" ;;
+        r | iterations)    needs_argument; max_iterations="$OPTARG" ;;
         \? )               usage ;;  # Illegal short options are caught by getopts
         * )                usage ;;  # Illegal long option
     esac
@@ -138,6 +142,13 @@ if ! [[ "${bin_size}" =~ ^[0-9]+$ ]]; then
     bin_size=200
     echo "Invalid bin size given, using the default value of ${bin_size}" \
     "instead."
+fi
+
+if ! [[ "${max_iterations}" =~ ^[0-9]+$ ]]; then
+    max_iterations=200
+    echo "Invalid max iterations given, using the default value of" \
+    "${max_iterations} instead."\
+    
 fi
 
 # 'Intelligently' find the sample size using first file name in the 
@@ -241,6 +252,7 @@ if [[ -s "${SUBSAMPLED_DIR}/bam_cellmarkfiletable.txt" ]]; then
     -jar "${CHROMHMM_MAIN_DIR}/ChromHMM.jar" \
     BinarizeBam \
     -b "${bin_size}" \
+    -r "${max_iterations}" \
     -gzip \
     "${CHROMHMM_CHROM_SIZES}/${assembly}.txt" \
     "${SUBSAMPLED_DIR}" \
@@ -257,6 +269,7 @@ if [[ -s "${SUBSAMPLED_DIR}/bed_cellmarkfiletable.txt" ]]; then
     -jar "${CHROMHMM_MAIN_DIR}/ChromHMM.jar" \
     BinarizeBed \
     -b "${bin_size}" \
+    -r "${max_iterations}" \
     -gzip \
     "${CHROMHMM_CHROM_SIZES}/${assembly}.txt" \
     "${SUBSAMPLED_DIR}" \
