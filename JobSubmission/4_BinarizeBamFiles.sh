@@ -276,9 +276,9 @@ rm -r "${BINARY_DIR}/BinSize_${bin_size}_SampleSize_${sample_size}/bed"
 
 # Non-autosomal chromosomes are not factored into ldsc step of the pipeline
 # so we minimise their impact by deleting their associated binary files
-find "${BINARY_DIR}/BinSize_${bin_size}_SampleSize_${sample_size}" \
+find . \
 -type f \
-! -regex '.*[0-9].*' \
+-regex '^[a-zA-Z\._\/]+$' \
 -exec rm {} \;
 
 finishing_statement 0
