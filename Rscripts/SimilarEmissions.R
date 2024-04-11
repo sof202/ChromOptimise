@@ -51,16 +51,18 @@ emissions_data <- subset(emissions_data, select = -V1)
 ## ================================ ##
 
 calculate_euclidean_distances <- function(emissions_data, model_size) {
-  state_pair_distances <- data.frame(reference_state = numeric(),
-                                     comparison_state = numeric(),
-                                     euclidean_distance = double())
+  state_pair_distances <- data.frame(
+    reference_state = numeric(),
+    comparison_state = numeric(),
+    euclidean_distance = double()
+  )
 
-  for (reference_state_index in 1:(model_size - 1)){
-    for (comparison_state_index in (reference_state_index + 1):model_size){
+  for (reference_state_index in 1:(model_size - 1)) {
+    for (comparison_state_index in (reference_state_index + 1):model_size) {
       reference_state <- as.numeric(emissions_data[reference_state_index, ])
       comparison_state <- as.numeric(emissions_data[comparison_state_index, ])
 
-      euclidean_distance <- sqrt(sum((reference_state - comparison_state) ^ 2))
+      euclidean_distance <- sqrt(sum((reference_state - comparison_state)^2))
 
       state_pair_distances[nrow(state_pair_distances) + 1, ] <-
         c(reference_state_index, comparison_state_index, euclidean_distance)
@@ -88,8 +90,9 @@ setwd(output_file_path)
 output_file_name <- paste0("Euclidean_distances_model-", model_size, ".txt")
 
 write.table(euclidean_distances_table,
-            output_file_name,
-            row.names = FALSE)
+  output_file_name,
+  row.names = FALSE
+)
 
 ## ============ ##
 ##   PLOTTING   ##
@@ -98,11 +101,12 @@ write.table(euclidean_distances_table,
 create_heatmap <- function(emissions_data) {
   eucldiean_distances <-
     calculate_euclidean_distances(emissions_data, model_size)
-  
-  euclidean_distances_heatmap <- 
+
+  euclidean_distances_heatmap <-
     ggplot(eucldiean_distances, aes(comparison_state,
-                                    reference_state,
-                                    fill = euclidean_distance)) +
+      reference_state,
+      fill = euclidean_distance
+    )) +
     geom_tile() +
     scale_fill_gradient(low = "blue", high = "white") +
     labs(title = "Heatmap of Euclidean distances between state pairs") +
@@ -115,14 +119,16 @@ create_heatmap <- function(emissions_data) {
 create_histogram <- function(emissions_data) {
   eucldiean_distances <-
     calculate_euclidean_distances(emissions_data, model_size)
-  
+
   euclidean_distance_histogram <-
     ggplot(eucldiean_distances, aes(x = euclidean_distance)) +
     geom_histogram(binwidth = 0.05, color = "black", fill = "white") +
-    labs(title = "Histogram of Euclidean distances",
-         x = "Euclidean Distance", y = "Frequency") +
+    labs(
+      title = "Histogram of Euclidean distances",
+      x = "Euclidean Distance", y = "Frequency"
+    ) +
     theme(plot.title = element_text(hjust = 0.5))
-  
+
   return(euclidean_distance_histogram)
 }
 
@@ -139,6 +145,7 @@ if (plotting_flag) {
   histogram_plot_name <-
     paste0("Euclidean_distances_histogram_model-", model_size, ".png")
 
+  options(bitmapType = "cairo")
   ggsave(
     heatmap_plot_name,
     plot = euclidean_distances_heatmap
