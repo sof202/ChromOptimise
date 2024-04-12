@@ -276,9 +276,10 @@ rm -r "${BINARY_DIR}/BinSize_${bin_size}_SampleSize_${sample_size}/bed"
 
 # Non-autosomal chromosomes are not factored into ldsc step of the pipeline
 # so we minimise their impact by deleting their associated binary files
-find . \
+find "${BINARY_DIR}/BinSize_${bin_size}_SampleSize_${sample_size}" \
 -type f \
--regex '^[a-zA-Z\._\/]+$' \
+! -name "ChromOptimise_chr[0-9]_binary.txt.gz" \
+-a ! -name "ChromOptimise_chr[0-9][0-9]_binary.txt.gz" \
 -exec rm {} \;
 
 finishing_statement 0
