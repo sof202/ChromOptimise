@@ -86,7 +86,7 @@ needs_argument() {
 
 if [[ ! $1 =~ -.* ]]; then usage; fi
 
-while getopts c:n:s:o:-: OPT; do
+while getopts c:n:r:b:s:a:-: OPT; do
     # Adds support for long options by reformulating OPT and OPTARG
     # This assumes that long options are in the form: "--long=option"
     if [ "$OPT" = "-" ]; then
