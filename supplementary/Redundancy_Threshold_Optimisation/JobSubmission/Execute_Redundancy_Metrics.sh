@@ -221,7 +221,7 @@ fi
 
 echo "Running SimilarEmissions.R for: ${model_size} states..."
 
-Rscript SimilarEmissions.R "${configuration_directory}/config.R" \
+Rscript SimilarEmissions.R \
 "${emissions_file}" \
 "${model_file_dir}/Euclidean_distances" \
 TRUE
@@ -229,7 +229,7 @@ TRUE
 
 echo "Running FlankingStates.R for: ${model_size} states..."
 
-Rscript FlankingStates.R "${configuration_directory}/config.R" \
+Rscript FlankingStates.R \
 "${transitions_file}" \
 "${model_file_dir}/Flanking_states"
 
@@ -238,7 +238,7 @@ Rscript FlankingStates.R "${configuration_directory}/config.R" \
 # (all data is considered) because the slow down is not that significant
 echo "Running IsolationScores.R for: ${model_size} states..."
 
-Rscript IsolationScores.R "${configuration_directory}/config.R" \
+Rscript IsolationScores.R \
 "${state_assignment_file}" \
 "${model_file_dir}/Isolation_scores" \
 "${model_size}" \
