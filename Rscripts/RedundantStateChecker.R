@@ -336,5 +336,9 @@ write("\nDetermined redundant states:", file = output_file, append = TRUE)
 if (length(redundant_states) == 0) {
   write("NONE", file = output_file, append = TRUE)
 } else {
-  write(redundant_states, file = output_file, append = TRUE)
+  write(redundant_states,
+    file = output_file,
+    ncolumns = length(redundant_states),
+    append = TRUE
+  )
 }
