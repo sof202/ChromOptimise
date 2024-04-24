@@ -45,7 +45,7 @@ After using this pipeline, the user will have greater knowledge over their datas
 ## Usage
 After completing ['getting started'](#getting-started), run the master script (ChromOptimise.sh) in the command line with:
 ```bash
-bash ChromOptimise path/to/configuration/directory
+bash ChromOptimise.sh path/to/configuration/directory
 ```
 
 Alternatively, you can run each of the shell scripts in [JobSubmission](https://github.com/sof202/ChromOptimise/tree/main/JobSubmission) sequentially for each epigenetic mark. For further information and **example usage** please consult the [pipeline explanation](https://sof202.github.io/ChromOptimise/category/main-pipeline---usage-and-explanation).
