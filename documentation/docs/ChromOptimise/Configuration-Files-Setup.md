@@ -34,6 +34,10 @@ A guide for the structure of the data directory is given below (You only need to
 
 ```text
 Main_Data_Directory
+├── 0_Processed_Bam_Files
+│   ├── Epigenetic_Mark_1
+│   ├── ...
+│   └── Epigenetic_Mark_n
 ├── 1_Subsampled_Bam_Files
 │   ├── cellmarkfiletable.txt
 │   └── Results_From_Run_n
@@ -94,12 +98,13 @@ LDSC_reference_files
 ## Data directories
 
 export MAIN_DIR="full/path/to/main/directory"
-export SUBSAMPLED_DIR="${MAIN_DIR}/3_SubsampledBamFiles"
-export BINARY_DIR="${MAIN_DIR}/4_BinarizedBamFiles"
-export MODEL_DIR="${MAIN_DIR}/5_ModelFiles"
-export OPTIMUM_STATES_DIR="${MAIN_DIR}/6_OptimumNumberOfStates"
-export LD_ASSESSMENT_DIR="${MAIN_DIR}/7_LDSCFiles"
-export BIG_MODELS_DIR="${MAIN_DIR}/8_BigModelFiles"
+export PROCESSED_DIR="${MAIN_DIR}/0_ProcessedBamFiles"
+export SUBSAMPLED_DIR="${MAIN_DIR}/1_SubsampledBamFiles"
+export BINARY_DIR="${MAIN_DIR}/2_BinarizedBamFiles"
+export MODEL_DIR="${MAIN_DIR}/3_ModelFiles"
+export OPTIMUM_STATES_DIR="${MAIN_DIR}/4_OptimumNumberOfStates"
+export LD_ASSESSMENT_DIR="${MAIN_DIR}/5_LDSCFiles"
+export BIG_MODELS_DIR="${MAIN_DIR}/6_BigModelFiles"
 
 ## LDSC data directories
 
