@@ -208,14 +208,6 @@ export STARTING_SCRIPT=
 # i.e. (mark1 mark2 mark3 mark4 ...)
 export LIST_OF_MARKS=
 
-# This is a FULL file path to the FOFN which contains files you want to
-# download using the pyega3 client
-export FILE_OF_FILE_NAMES=path/to/file
-
-# This is a threshold for the Phred score used in the processing stage
-# (which reads to discard due to low base accuracy)
-export PRED_SCORE_THRESHOLD=20
-
 # This is the sample size (as a percentage) to use in the subsampling stage
 # If your data is small in size, the recommended value is 100
 export SAMPLE_SIZE=50
@@ -247,19 +239,15 @@ export OPTIMUM_NUMBER_OF_STATES=
 # Variables are numbered by their corresponding script number 
 # (0 -> EGADownloading.sh)
 # Times must be in the format: hh:mm:ss
-export MAXTIME_0=96:00:00
-export MAXTIME_1=00:30:00
-export MAXTIME_2=12:00:00
+export MAXTIME_1=12:00:00
+export MAXTIME_2=01:00:00
 export MAXTIME_3=12:00:00
-export MAXTIME_4=04:00:00
+export MAXTIME_4=00:30:00
 export MAXTIME_5=12:00:00
-export MAXTIME_6=00:20:00
-export MAXTIME_7=00:10:00
 
 
 # The following are the array sizes you wish to use for batch jobs (processing
 # and model learning scripts). Using a number larger than the number of cores
 # on your system is not recommended
-export PROCESSING_ARRAY_SIZE=4
 export MODEL_LEARNING_ARRAY_SIZE=4
 ```
