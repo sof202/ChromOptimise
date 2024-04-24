@@ -337,4 +337,6 @@ if [[ ${SLURM_ARRAY_TASK_ID} -eq 1 ]]; then
     --nummodels="${number_of_models}"
 
     finishing_statement 0
+else
+    finishing_statement 0
 fi
