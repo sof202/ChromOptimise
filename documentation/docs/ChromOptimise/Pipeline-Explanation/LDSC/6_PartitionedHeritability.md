@@ -22,7 +22,7 @@ After extracting this information, the script will call the Rscript
 ## Usage
 
 Typically, this script will be ran after being called by 
-[7_ReferenceLDSCore.sh](./7_ReferenceLDSCore.md). However, one may want to use
+[7_ReferenceLDSCore.sh](./5_ReferenceLDSCore.md). However, one may want to use
 this script in isolation (perhaps for testing a different set of gwas traits).
 
 The reason why this script is split away from the previous script in the
