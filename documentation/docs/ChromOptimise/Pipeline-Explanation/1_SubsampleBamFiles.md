@@ -1,7 +1,7 @@
 ---
 title: 1_SubsampleBamFiles
 description: "The script used to merge and subsample processed files."
-sidebar_position: 5
+sidebar_position: 2
 ---
 
 # 1_SubsampleBamFiles

@@ -1,7 +1,7 @@
 ---
 title: 3_batch_CreateIncrementalModels
 description: "The script used to create/learn models using ChromHMM."
-sidebar_position: 7
+sidebar_position: 4
 ---
 
 # 3_batch_CreateIncrementalModels

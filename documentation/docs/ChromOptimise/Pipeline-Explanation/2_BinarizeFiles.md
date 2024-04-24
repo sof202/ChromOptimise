@@ -1,7 +1,7 @@
 ---
 title: 2_BinarizeFiles
 description: "The script used to binarize the dataset for ChromHMM."
-sidebar_position: 6
+sidebar_position: 3
 ---
 
 
