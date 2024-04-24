@@ -330,7 +330,7 @@ if [[ ${SLURM_ARRAY_TASK_ID} -eq 1 ]]; then
 
     sbatch \
     --dependency=afterok:"${SLURM_ARRAY_JOB_ID}" \
-    8_PartitionedHeritability.sh \
+    6_PartitionedHeritability.sh \
     --config="${configuration_directory}" \
     --binsize="${bin_size}" \
     --samplesize="${sample_size}" \
