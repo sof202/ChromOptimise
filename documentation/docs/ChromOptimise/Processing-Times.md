@@ -22,37 +22,7 @@ Note that processing times are likely to vary across systems, the scripts were t
     - L2 -> 256K
     - L3 -> 20 MB
 
-## 0_DownloadBluePrint.sh
-The time taken to download files using pyega3 will of course depend on internet speed, size of files and number of files being downloaded. The former of these three makes it difficult to create well informed estimates for the run time of this script. In testing, the internet speed did not appear throttled and was consistent across file downloads.
-
-## 1_MovingFilesToSingleDirectory.sh
-Moving files on Linux systems is generally very fast even when files are large or abundant. The main souce of processing time in this script is the `find` command. Depending on how many files exist in the main directory you are working with, the processing time for `find` can vary as more files need to be checked. 
-\
-Regardless, in previous tests moving 130 files (each being 1-2 GB) amongst ~1000 total files took roughly one minute. It is unlikely that the processing time will ever exceed the default maximum wall time set in the `#SBATCH` parameters at the top of this script.
-
-## 2_batch_ProcessBamFiles.sh
-The processing time for this script mainly depends on the sizes of the files that are being processed. In tests thus far, the main contributor to computational time comes from `samtools sort` and appears to have a linear relationship with file size.
-\
-In testing, the following was observed:
--  Processing a ~1.1 GB file took ~10 minutes
--  Processing a ~1.4 GB file took ~12 minutes
--  Processing a ~1.8 GB file took ~16 minutes
--  Processing a ~2.1 GB file took ~19 minutes
-
-The conclusion was made that one should expect that the processing time would be roughly:
-\
-[9 * file size (in GB)] minutes.
-\
-Additionally, it's important to note that this script is designed to be executed as an array through the SLURM workload manager. Therefore, the processing time is likely to vary depending on the number of cores assigned to each task in the array. Further note that if the size of the array is larger than the number of files being processed, all files will be processed by the highest indexed array element (causing slow down).
-\
-When applying an array of size 4, the following was observed:
--  Processing ~272 GB of files took ~ 11 hours and 45 minutes
--  Processing ~228 GB of files took ~ 9 hours and 53 minutes
--  Processing ~263 GB of files took ~ 10 hours and 47 minutes
-
-This to some extent supports the above claim for the processing time being linear. It is unlikely that using an array size of 4 will result in exactly 4 times faster processing time. Therefore, it is difficult to support the processing time equation previously given using these tests.  
-
-## 3_SubsampleBamFiles.sh
+## 1_SubsampleBamFiles.sh
 This script's largest contributor to computational time is `samtools merge`. Depending on the number of files and size of said files, the time taken can vary dramatically.
 \
 In testing, the following was observed:
@@ -75,7 +45,7 @@ Using a 100% sampling rate:
 
 Currently this shows a linear relationship with total file size. There is not enough information to determine the effect that the sampling rate has on the processing time (though it is likely to be minimal).
 
-## 4_BinarizeBamFiles.sh
+## 2_BinarizeBamFiles.sh
 The processing time for this script is of course mainly taken up by ChromHMM's `BinarizeBam` command. This command will generally take up more time if more data is inputted and if a smaller bin size is used.
 \
 In testing, the following was observed:
@@ -85,7 +55,7 @@ In testing, the following was observed:
     - Using a bin size of 200bp took 11 hours and 52 minutes
     - Using a bin size of 400bp took 11 hours and 47 minutes
 
-## 5_batch_CreateIncrementalModels.sh
+## 3_batch_CreateIncrementalModels.sh
 This script's largest contributor to computational time is ChromHMM's `LearnModel` command. This command will take up more time if the bin size was chosen to be smaller in 4_BinarizeBamFiles.sh (leading to a larger total size of binary signal files) and if the number of states to be used in the model increases.
 \
 From the [user manual](https://compbio.mit.edu/ChromHMM/ChromHMM_manual.pdf) and the [source code](https://github.com/jernst98/ChromHMM/blob/master/edu/mit/compbio/ChromHMM/ChromHMM.java), it is clear that the model training is completed via the forward-backwards algorithm and the Baum-Welch algorithm. These algorithms are standard in hidden Markov model training and likely take up the majority of processing time.
@@ -110,10 +80,10 @@ For 1.6 MB of binary data (400bp bins, 3 marks)
 
 It is important to note that this script is designed to be executed as an array through the SLURM workload manager. Therefore, the processing time is likely to vary depending on the number of cores assigned to each task in the array. Further note that if the size of the array is larger than the number of models to learn, all models will be learnt by the highest indexed array element (causing significant slow down).
 
-## 6_OptimalNumberOfStates.sh
+## 4_OptimalNumberOfStates.sh
 This script makes use of an R script that is inside of a loop. However, the Rscript has very little computational complexity and so the script is usually very fast. In previous tests with 8 state models, the script took ~14 seconds. It is unlikely that this script will ever exceed the default wall time set in the `#SBATCH` parameters at the top of the script.
 
-## 7_ReferenceLDSCore.sh
+## 5_ReferenceLDSCore.sh
 This script will take roughly the same amount of time regardless of the number
 of states in your model. In testing, the following times were found for the
 SNP assignment R script:
@@ -165,7 +135,7 @@ For the calculation of LDscores:
 - Chromosome 21 took: 2 minutes
 - Chromosome 22 took: 2 minutes
 
-## 8_PartitionedHeritability.sh
+## 6_PartitionedHeritability.sh
 This script will linearly increase in time with each additional gwas trait
 considered. The effect of having more annotations seems to be minimal however
 (more annotations only appears to increase 
