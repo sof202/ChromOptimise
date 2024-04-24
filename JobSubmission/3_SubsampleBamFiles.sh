@@ -163,7 +163,7 @@ cd "${PROCESSED_FULL_FILE_PATH}" || \
 doesn't exist, make sure that you typed the epigenetic mark correctly and that \
 FilePaths.txt is pointing to the correct directory."; finishing_statement 1; }
 
-find . -type f -name "*.sorted.filtered.noDuplicates.bam" \
+find . -type f -name "*.bam" \
 > List_Of_Bam_Files_To_Merge.txt
 
 module purge
