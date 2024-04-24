@@ -34,29 +34,20 @@ A guide for the structure of the data directory is given below (You only need to
 
 ```text
 Main_Data_Directory
-├── 0_Downloaded_Files
-├── 1_Organised_Raw_Bam_Files
-│   ├── Epigenetic_Mark_1
-│   ├── ...
-│   └── Epigenetic_Mark_n
-├── 2_Processed_Bam_Files
-│   ├── Epigenetic_Mark_1
-│   ├── ...
-│   └── Epigenetic_Mark_n
-├── 3_Subsampled_Bam_Files
+├── 1_Subsampled_Bam_Files
 │   ├── cellmarkfiletable.txt
 │   └── Results_From_Run_n
-├── 4_Binary_Files
+├── 2_Binary_Files
 │   └── Results_From_Run_n
 │       └── Binary_files for each chromosome
-├── 5_Model_Files
+├── 3_Model_Files
 │   └── Results_From_Run_n
 │       ├── Likelihood_Values
 │       │   └── likelihoods.txt 
 │       ├── state_assignments (STATEBYLINE)
 │       │   └── [cell].statebyline.txt 
 │       └── ChromHMM model files
-├── 6_Optimum_Number_Of_States
+├── 4_Optimum_Number_Of_States
 │   └── Results_From_Run_n
 │       ├── Euclidean_distances
 │       │   └── Euclidean_distances_model-n.txt 
@@ -66,7 +57,7 @@ Main_Data_Directory
 │       │   └── Isolation_scores_model-n.txt 
 │       ├── Redundant_states_model-n.txt 
 │       └── OptimumNumberOfStates.txt
-├── 7_LDSC_Assessment_Files
+├── 5_LDSC_Assessment_Files
 │   └── Results_From_Run_n
 │       ├── annotation
 │       │   ├── ChromHMM.n.l2.ldscore.gz
@@ -84,7 +75,7 @@ Main_Data_Directory
 │           └── State_categories
 │               ├── Enrichment_heatmap.png
 │               └── Enrichment_pvalues_gwas_trait_n.png
-└── 8_Big_Model_Files
+└── 6_Big_Model_Files
     └── Plots
         ├── Euclidean_Distance_Histrograms
         └── Transition_Maxima_Scatter_Plots
@@ -103,9 +94,6 @@ LDSC_reference_files
 ## Data directories
 
 export MAIN_DIR="full/path/to/main/directory"
-export DOWNLOAD_DIR="${MAIN_DIR}/0_Downloads"
-export RAW_DIR="${MAIN_DIR}/1_RawBamFiles"
-export PROCESSED_DIR="${MAIN_DIR}/2_ProcessedBamFiles"
 export SUBSAMPLED_DIR="${MAIN_DIR}/3_SubsampledBamFiles"
 export BINARY_DIR="${MAIN_DIR}/4_BinarizedBamFiles"
 export MODEL_DIR="${MAIN_DIR}/5_ModelFiles"
@@ -131,9 +119,7 @@ export LOG_DIR="${SCRIPTS_DIR}/LogFiles"
 ## Pyega3/conda directories
 
 export CONDA_SHELL="path/to/conda/etc/folder"
-export PYEGA_ENVIRONMENT="path/to/pyega3/conda/environment"
 export LDSC_ENVIRONMENT="path/to/ldsc/conda/environment"
-export CREDENTIALS="path/to/EGA/credentials"
 
 ## ChromHMM file locations
 
