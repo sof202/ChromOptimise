@@ -34,29 +34,25 @@ A guide for the structure of the data directory is given below (You only need to
 
 ```text
 Main_Data_Directory
-├── 0_Downloaded_Files
-├── 1_Organised_Raw_Bam_Files
+├── YourProcessedBamFiles
 │   ├── Epigenetic_Mark_1
+│   │   └── bam files for the mark 
 │   ├── ...
 │   └── Epigenetic_Mark_n
-├── 2_Processed_Bam_Files
-│   ├── Epigenetic_Mark_1
-│   ├── ...
-│   └── Epigenetic_Mark_n
-├── 3_Subsampled_Bam_Files
+├── 1_Subsampled_Bam_Files
 │   ├── cellmarkfiletable.txt
 │   └── Results_From_Run_n
-├── 4_Binary_Files
+├── 2_Binary_Files
 │   └── Results_From_Run_n
 │       └── Binary_files for each chromosome
-├── 5_Model_Files
+├── 3_Model_Files
 │   └── Results_From_Run_n
 │       ├── Likelihood_Values
 │       │   └── likelihoods.txt 
 │       ├── state_assignments (STATEBYLINE)
 │       │   └── [cell].statebyline.txt 
 │       └── ChromHMM model files
-├── 6_Optimum_Number_Of_States
+├── 4_Optimum_Number_Of_States
 │   └── Results_From_Run_n
 │       ├── Euclidean_distances
 │       │   └── Euclidean_distances_model-n.txt 
@@ -66,7 +62,7 @@ Main_Data_Directory
 │       │   └── Isolation_scores_model-n.txt 
 │       ├── Redundant_states_model-n.txt 
 │       └── OptimumNumberOfStates.txt
-├── 7_LDSC_Assessment_Files
+├── 5_LDSC_Assessment_Files
 │   └── Results_From_Run_n
 │       ├── annotation
 │       │   ├── ChromHMM.n.l2.ldscore.gz
@@ -84,7 +80,7 @@ Main_Data_Directory
 │           └── State_categories
 │               ├── Enrichment_heatmap.png
 │               └── Enrichment_pvalues_gwas_trait_n.png
-└── 8_Big_Model_Files
+└── 6_Big_Model_Files
     └── Plots
         ├── Euclidean_Distance_Histrograms
         └── Transition_Maxima_Scatter_Plots
@@ -92,9 +88,10 @@ Main_Data_Directory
 
 LDSC_reference_files
 ├── PLINK_files
-├── Weights
-├── Baseline_files 
-└── GWAS_traits
+├── frq_files 
+├── weights_files
+├── baseline_files 
+└── gwas_traits
 ```
 
 ## FilePaths.txt
@@ -103,15 +100,13 @@ LDSC_reference_files
 ## Data directories
 
 export MAIN_DIR="full/path/to/main/directory"
-export DOWNLOAD_DIR="${MAIN_DIR}/0_Downloads"
-export RAW_DIR="${MAIN_DIR}/1_RawBamFiles"
-export PROCESSED_DIR="${MAIN_DIR}/2_ProcessedBamFiles"
-export SUBSAMPLED_DIR="${MAIN_DIR}/3_SubsampledBamFiles"
-export BINARY_DIR="${MAIN_DIR}/4_BinarizedBamFiles"
-export MODEL_DIR="${MAIN_DIR}/5_ModelFiles"
-export OPTIMUM_STATES_DIR="${MAIN_DIR}/6_OptimumNumberOfStates"
-export LD_ASSESSMENT_DIR="${MAIN_DIR}/7_LDSCFiles"
-export BIG_MODELS_DIR="${MAIN_DIR}/8_BigModelFiles"
+export PROCESSED_DIR="${MAIN_DIR}/YourProcessedBamFiles"
+export SUBSAMPLED_DIR="${MAIN_DIR}/1_SubsampledBamFiles"
+export BINARY_DIR="${MAIN_DIR}/2_BinarizedBamFiles"
+export MODEL_DIR="${MAIN_DIR}/3_ModelFiles"
+export OPTIMUM_STATES_DIR="${MAIN_DIR}/4_OptimumNumberOfStates"
+export LD_ASSESSMENT_DIR="${MAIN_DIR}/5_LDSCFiles"
+export BIG_MODELS_DIR="${MAIN_DIR}/6_BigModelFiles"
 
 ## LDSC data directories
 
@@ -120,7 +115,7 @@ export LD_PLINK_DIR="${LD_DIR}/PLINK_files"
 export LD_WEIGHTS_DIR="${LD_DIR}/weights_files"
 export LD_FRQ_DIR="${LD_DIR}/frq_files"
 export LD_GWAS_TRAITS_DIR="${LD_DIR}/gwas_traits"
-export LD_BASELINE_DIR="${LD_DIR}/baseline"
+export LD_BASELINE_DIR="${LD_DIR}/baseline_files"
 
 ## Script directories
 
@@ -130,10 +125,11 @@ export LOG_DIR="${SCRIPTS_DIR}/LogFiles"
 
 ## Pyega3/conda directories
 
+# if you are struggling to find this, the path to the folder might be inside
+# of your .bashrc (or .zshrc/.cshrc etc.) file. Look for a line with the word
+# "conda" and "PATH" in it.
 export CONDA_SHELL="path/to/conda/etc/folder"
-export PYEGA_ENVIRONMENT="path/to/pyega3/conda/environment"
 export LDSC_ENVIRONMENT="path/to/ldsc/conda/environment"
-export CREDENTIALS="path/to/EGA/credentials"
 
 ## ChromHMM file locations
 
@@ -222,14 +218,6 @@ export STARTING_SCRIPT=
 # i.e. (mark1 mark2 mark3 mark4 ...)
 export LIST_OF_MARKS=
 
-# This is a FULL file path to the FOFN which contains files you want to
-# download using the pyega3 client
-export FILE_OF_FILE_NAMES=path/to/file
-
-# This is a threshold for the Phred score used in the processing stage
-# (which reads to discard due to low base accuracy)
-export PRED_SCORE_THRESHOLD=20
-
 # This is the sample size (as a percentage) to use in the subsampling stage
 # If your data is small in size, the recommended value is 100
 export SAMPLE_SIZE=50
@@ -261,19 +249,15 @@ export OPTIMUM_NUMBER_OF_STATES=
 # Variables are numbered by their corresponding script number 
 # (0 -> EGADownloading.sh)
 # Times must be in the format: hh:mm:ss
-export MAXTIME_0=96:00:00
-export MAXTIME_1=00:30:00
-export MAXTIME_2=12:00:00
+export MAXTIME_1=12:00:00
+export MAXTIME_2=01:00:00
 export MAXTIME_3=12:00:00
-export MAXTIME_4=04:00:00
+export MAXTIME_4=00:30:00
 export MAXTIME_5=12:00:00
-export MAXTIME_6=00:20:00
-export MAXTIME_7=00:10:00
 
 
 # The following are the array sizes you wish to use for batch jobs (processing
 # and model learning scripts). Using a number larger than the number of cores
 # on your system is not recommended
-export PROCESSING_ARRAY_SIZE=4
 export MODEL_LEARNING_ARRAY_SIZE=4
 ```

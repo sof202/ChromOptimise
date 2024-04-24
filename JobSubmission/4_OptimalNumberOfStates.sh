@@ -17,7 +17,7 @@
 #SBATCH --output=temp%j.log
 # Temporary error file, later to be removed
 #SBATCH --error=temp%j.err
-#SBATCH --job-name=6_Optimal_States
+#SBATCH --job-name=4_Optimal_States
 
 ## ===========================================================================##
 ##                                                                            ||
@@ -46,7 +46,7 @@
 ## CONTACT: s.o.fletcher@exeter.ac.uk                                         ||
 ## CREATED: December 2023                                                     ||
 ## ===========================================================================##
-## PREREQUISITES: Run: 5_batch_CreateIncrementalModels.sh                     ||
+## PREREQUISITES: Run: 3_batch_CreateIncrementalModels.sh                     ||
 ## ===========================================================================##
 ## DEPENDENCIES: R                                                            ||
 ## ===========================================================================##
@@ -75,7 +75,7 @@
 usage() {
 cat <<EOF
 ===========================================================================
-6_OptimalNumberOfStates
+4_OptimalNumberOfStates
 ===========================================================================
 Purpose: Determines the optimum number of states to use with the data.
 Author: Sam Fletcher

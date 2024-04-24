@@ -18,7 +18,7 @@
 #SBATCH --output=temp%A_%a.log
 # Temporary error file, later to be removed
 #SBATCH --error=temp%A_%a.err
-#SBATCH --job-name=7_ReferenceLDSCore
+#SBATCH --job-name=5_ReferenceLDSCore
 
 ## ===========================================================================##
 ##                                                                            ||
@@ -40,8 +40,8 @@
 ## CONTACT: s.o.fletcher@exeter.ac.uk                                         ||
 ## CREATED: March 2023                                                        ||
 ## ===========================================================================##
-## PREREQUISITES: Run: 5_batch_CreateIncrementalModels.sh                     ||
-##                     6_OptimalNumberOfStates.sh                             ||
+## PREREQUISITES: Run: 3_batch_CreateIncrementalModels.sh                     ||
+##                     4_OptimalNumberOfStates.sh                             ||
 ##                Create ldsc conda environment (follow instructions on       ||
 ##                GitHub page: https://github.com/bulik/ldsc)                 ||
 ## ===========================================================================##
@@ -70,7 +70,7 @@
 usage() {
 cat <<EOF
 ===========================================================================
-7_ReferenceLDSCore
+5_ReferenceLDSCore
 ===========================================================================
 Purpose: Generates reference LD scores after generating annotation files
 Author: Sam Fletcher
@@ -330,11 +330,13 @@ if [[ ${SLURM_ARRAY_TASK_ID} -eq 1 ]]; then
 
     sbatch \
     --dependency=afterok:"${SLURM_ARRAY_JOB_ID}" \
-    8_PartitionedHeritability.sh \
+    6_PartitionedHeritability.sh \
     --config="${configuration_directory}" \
     --binsize="${bin_size}" \
     --samplesize="${sample_size}" \
     --nummodels="${number_of_models}"
 
+    finishing_statement 0
+else
     finishing_statement 0
 fi

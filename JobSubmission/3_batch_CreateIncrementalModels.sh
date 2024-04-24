@@ -22,7 +22,7 @@
 #SBATCH --output=temp%A_%a.log
 # Temporary error file, later to be removed
 #SBATCH --error=temp%A_%a.err
-#SBATCH --job-name=5_Model_Learning
+#SBATCH --job-name=3_Model_Learning
 
 ## ===========================================================================##
 ##                                                                            ||
@@ -48,7 +48,7 @@
 ## CONTACT: s.o.fletcher@exeter.ac.uk                                         ||
 ## CREATED: November 2023                                                     ||
 ## ===========================================================================##
-## PREREQUISITES: Run 4_BinarizeBamFiles.sh                                   ||
+## PREREQUISITES: Run 2_BinarizeBamFiles.sh                                   ||
 ## ===========================================================================##
 ## DEPENDENCIES: Java, ChromHMM                                               ||
 ## ===========================================================================##
@@ -77,7 +77,7 @@
 usage() {
 cat <<EOF
 ================================================================================
-5_batch_CreateIncrementalModels
+3_batch_CreateIncrementalModels
 ================================================================================
 Purpose: Uses ChromHMM's LearnModel command to generate several models
 with increasing numbers of states.

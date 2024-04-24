@@ -17,7 +17,7 @@
 #SBATCH --output=temp%j.log
 # Temporary error file, later to be removed
 #SBATCH --error=temp%j.err
-#SBATCH --job-name=3_Merging_and_Subsampling
+#SBATCH --job-name=1_Merging_and_Subsampling
 
 ## ===========================================================================##
 ##                                                                            ||
@@ -26,8 +26,8 @@
 ## ===========================================================================##
 ## PURPOSE:                                                                   ||
 ## Obtain a sample of the bam files. The bam files have varying sizes due to  ||
-## the number of reads. Sampling the files produced in 2_ProcessBamFiles.sh   ||
-## will lead to samples with the same number of files that contain a different||
+## the number of reads. Sampling your bam files will likely lead to           ||
+## samples with the same number of files that contain a different             ||
 ## number of reads. This removes the reproducability of the proceedure.       ||
 ## To get around this, this script merges all of the processed .bam files and ||
 ## subsequently samples this larger file randomly.                            ||
@@ -36,7 +36,7 @@
 ## CONTACT: s.o.fletcher@exeter.ac.uk                                         ||
 ## CREATED: November 2023                                                     ||
 ## ===========================================================================##
-## PREREQUISITES: Run 2_batch_ProcessBamFiles.sh                              ||
+## PREREQUISITES: Sort Bam files into labelled folders for each mark          ||
 ## ===========================================================================##
 ## DEPENDENCIES: Samtools                                                     ||
 ## ===========================================================================##
@@ -56,7 +56,7 @@
 usage() {
 cat <<EOF
 ================================================================================
-3_SubsampleBamFiles
+1_SubsampleBamFiles
 ================================================================================
 Purpose: Merges and subsamples processed .bam files present in specified folder.
 Author: Sam Fletcher

@@ -1,10 +1,10 @@
 ---
-title: 8_PartitionedHeritability
+title: 6_PartitionedHeritability
 description: "Visualises the partitioned heritability (enrichment)"
 sidebar_position: 3
 ---
 
-# 8_PartitionedHeritability
+# 6_PartitionedHeritability
 
 ## Explanation
 
@@ -37,7 +37,7 @@ the plots once, we just use a separate script to run these analyses.
 ```bash
 # Generates heatmap of enrichments and bar plots for all GWAS-traits for the 
 # model in the BinSize_200_SampleSize_75_6 directory
-sbatch 7_RunLDSC.sh \
+sbatch 6_PartitionedHeritability.sh \
 --config="path/to/configuration/directory" \
 --binsize=200 \
 --samplesize=75 \
