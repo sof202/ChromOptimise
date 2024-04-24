@@ -97,28 +97,6 @@ if [[ "${STARTING_SCRIPT}" -eq 1 ]]; then
         echo "Submitted 1_SubsampleBamFiles.sh for $mark under job ID:"
         echo "${jobID[$array_index_merge]}"
     done
-   
-elif [[ "${STARTING_SCRIPT}" -lt 1 ]]; then
-    for mark in "${LIST_OF_MARKS[@]}"; do
-        array_index_process="${mark}_process"
-        array_index_merge="${mark}_merge"
-
-        # This script depends on .bam files (for specific mark) being already 
-        # processed (and with a specific file name)
-        jobID[$array_index_merge]=$( \
-        sbatch \
-        --time="${MAXTIME_1}" \
-        --dependency=afterok:"${jobID[${array_index_process}]}" \
-        "1_SubsampleBamFiles.sh" \
-        --config="${configuration_directory}" \
-        --mark="${mark}" \
-        --samplesize="${SAMPLE_SIZE}" | \
-        awk '{print $4}' \
-        )
-
-        echo "Submitted 1_SubsampleBamFiles.sh for $mark under job ID:"
-        echo "${jobID[$array_index_merge]}"
-    done
 fi
 ## -------------------------------------------------------------------------- ##
 
