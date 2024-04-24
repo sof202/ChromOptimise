@@ -18,7 +18,7 @@
 #SBATCH --output=temp%j.log
 # Temporary error file, later to be removed
 #SBATCH --error=temp%j.err
-#SBATCH --job-name=8_Heritability
+#SBATCH --job-name=6_Heritability
 
 ## ===========================================================================##
 ##                                                                            ||
@@ -35,7 +35,7 @@
 ## CONTACT: s.o.fletcher@exeter.ac.uk                                         ||
 ## CREATED: March 2023                                                        ||
 ## ===========================================================================##
-## PREREQUISITES: Run 7_ReferenceLDSCore.sh                                   ||
+## PREREQUISITES: Run 5_ReferenceLDSCore.sh                                   ||
 ## ===========================================================================##
 ## DEPENDENCIES: R, LDSC, gwas traits (BED files), conda                      ||
 ##               1000 genomes files (plink files, weights)                    ||
@@ -60,7 +60,7 @@
 usage() {
 cat <<EOF
 ===========================================================================
-8_PartitionedHeritability
+6_PartitionedHeritability
 ===========================================================================
 Purpose: Determines and plots partitioned heritability using LDSC
 Author: Sam Fletcher

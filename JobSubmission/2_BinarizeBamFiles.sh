@@ -16,7 +16,7 @@
 #SBATCH --output=temp%j.log
 # Temporary error file, later to be removed
 #SBATCH --error=temp%j.err
-#SBATCH --job-name=4_Binarization
+#SBATCH --job-name=2_Binarization
 
 ## ===========================================================================##
 ##                                                                            ||
@@ -34,7 +34,7 @@
 ## CONTACT: s.o.fletcher@exeter.ac.uk                                         ||
 ## CREATED: November 2023                                                     ||
 ## ===========================================================================##
-## PREREQUISITES: Run: 3_SubsampleBamFiles.sh                                 ||
+## PREREQUISITES: Run: 1_SubsampleBamFiles.sh                                 ||
 ## ===========================================================================##
 ## DEPENDENCIES: Java, ChromHMM                                               ||
 ## ===========================================================================##
@@ -56,7 +56,7 @@
 usage() {
 cat <<EOF
 ================================================================================
-4_BinarizeBamFiles
+2_BinarizeBamFiles
 ================================================================================
 Purpose: Creates a 'cell mark file table' and uses ChromHMM's BinarizeBam 
 command to binarize bam files.
