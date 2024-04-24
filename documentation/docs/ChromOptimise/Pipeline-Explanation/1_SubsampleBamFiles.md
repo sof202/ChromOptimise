@@ -24,8 +24,7 @@ they will likely have different sizes.
 
 :::note[Large number of files]
 If you are working with a lot of files, this step can use a large amount of 
-memory due to the way samtools merges files, see [memory 
-profiling](/ChromOptimise/Memory-Profiling.md) for more information.
+memory due to the way samtools merges files, see [memory profiling](/ChromOptimise/Memory-Profiling.md) for more information.
 :::
 
 :::warning[outdated samtools]
