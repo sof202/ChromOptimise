@@ -34,8 +34,9 @@ A guide for the structure of the data directory is given below (You only need to
 
 ```text
 Main_Data_Directory
-├── 0_Processed_Bam_Files
+├── YourProcessedBamFiles
 │   ├── Epigenetic_Mark_1
+│   │   └── bam files for the mark 
 │   ├── ...
 │   └── Epigenetic_Mark_n
 ├── 1_Subsampled_Bam_Files
@@ -87,9 +88,10 @@ Main_Data_Directory
 
 LDSC_reference_files
 ├── PLINK_files
-├── Weights
-├── Baseline_files 
-└── GWAS_traits
+├── frq_files 
+├── weights_files
+├── baseline_files 
+└── gwas_traits
 ```
 
 ## FilePaths.txt
@@ -98,7 +100,7 @@ LDSC_reference_files
 ## Data directories
 
 export MAIN_DIR="full/path/to/main/directory"
-export PROCESSED_DIR="${MAIN_DIR}/0_ProcessedBamFiles"
+export PROCESSED_DIR="${MAIN_DIR}/YourProcessedBamFiles"
 export SUBSAMPLED_DIR="${MAIN_DIR}/1_SubsampledBamFiles"
 export BINARY_DIR="${MAIN_DIR}/2_BinarizedBamFiles"
 export MODEL_DIR="${MAIN_DIR}/3_ModelFiles"
@@ -113,7 +115,7 @@ export LD_PLINK_DIR="${LD_DIR}/PLINK_files"
 export LD_WEIGHTS_DIR="${LD_DIR}/weights_files"
 export LD_FRQ_DIR="${LD_DIR}/frq_files"
 export LD_GWAS_TRAITS_DIR="${LD_DIR}/gwas_traits"
-export LD_BASELINE_DIR="${LD_DIR}/baseline"
+export LD_BASELINE_DIR="${LD_DIR}/baseline_files"
 
 ## Script directories
 
@@ -123,6 +125,9 @@ export LOG_DIR="${SCRIPTS_DIR}/LogFiles"
 
 ## Pyega3/conda directories
 
+# if you are struggling to find this, the path to the folder might be inside
+# of your .bashrc (or .zshrc/.cshrc etc.) file. Look for a line with the word
+# "conda" and "PATH" in it.
 export CONDA_SHELL="path/to/conda/etc/folder"
 export LDSC_ENVIRONMENT="path/to/ldsc/conda/environment"
 
