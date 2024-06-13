@@ -196,25 +196,29 @@ fi
 # only added level of complexity is obtaining the mark name from the file names.
 
 rm -f "bam_cellmarkfiletable.txt" 
-for file in *"${sample_size}"*.bam; do
-    # We're assuming here that there is only one cell type inspected
-    echo -ne "ChromOptimise\t" >> \
-    "bam_cellmarkfiletable.txt"
-    # The subsampled files are named: subsampled.[SampleSize].[mark_name].bam. 
-    # Below extracts the mark name
-    mark_name=$(echo "$file" | cut -d "." -f 3) 
-    echo -ne "${mark_name}\t" >> "bam_cellmarkfiletable.txt"
-    echo "$file" >> "bam_cellmarkfiletable.txt"
-done
+if [ $(find . -name "*${sample_size}*.bam" | head -1) ]; then
+    for file in *"${sample_size}"*.bam; do
+        # We're assuming here that there is only one cell type inspected
+        echo -ne "ChromOptimise\t" >> \
+        "bam_cellmarkfiletable.txt"
+        # The subsampled files are named: subsampled.[SampleSize].[mark_name].bam. 
+        # Below extracts the mark name
+        mark_name=$(echo "$file" | cut -d "." -f 3) 
+        echo -ne "${mark_name}\t" >> "bam_cellmarkfiletable.txt"
+        echo "$file" >> "bam_cellmarkfiletable.txt"
+    done
+fi
 
 rm -f "bed_cellmarkfiletable.txt" 
-for file in *"${sample_size}"*.bed; do
-    echo -ne "ChromOptimise\t" >> \
-    "bed_cellmarkfiletable.txt"
-    mark_name=$(echo "$file" | cut -d "." -f 3) 
-    echo -ne "${mark_name}\t" >> "bed_cellmarkfiletable.txt"
-    echo "$file" >> "bed_cellmarkfiletable.txt"
-done
+if [ $(find . -name "*${sample_size}*.bed" | head -1) ]; then
+    for file in *"${sample_size}"*.bed; do
+        echo -ne "ChromOptimise\t" >> \
+        "bed_cellmarkfiletable.txt"
+        mark_name=$(echo "$file" | cut -d "." -f 3) 
+        echo -ne "${mark_name}\t" >> "bed_cellmarkfiletable.txt"
+        echo "$file" >> "bed_cellmarkfiletable.txt"
+    done
+fi
 
 ## ================================= ##
 ##    BINARIZATION USING CHROMHMM    ##
