@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/sof202/ChromOptimise/assets/147140110/41a500d8-fa7d-4a3c-8270-297a16bf6b5c" />
+  <img src="https://github.com/sof202/ChromOptimise/assets/147140110/86c917e0-87ce-4e1f-b52e-f8018dcbb436" />
 </p>
 
 </p>
