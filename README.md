@@ -5,11 +5,11 @@
 </p>
 <p align="center">
     <a href="https://www.codefactor.io/repository/github/sof202/chromoptimise" alt="CodeFactor">
-        <img src="https://img.shields.io/codefactor/grade/github/sof202/ChromOptimise?style=for-the-badge&color=red" /></a>
+        <img src="https://img.shields.io/codefactor/grade/github/sof202/ChromOptimise?style=for-the-badge&color=dark-green" /></a>
     <a href="https://github.com/sof202/ChromOptimise/commits/main/" alt="Commit activity">
-        <img src="https://img.shields.io/github/commit-activity/m/sof202/ChromOptimise?style=for-the-badge&color=red" /></a>
+        <img src="https://img.shields.io/github/commit-activity/m/sof202/ChromOptimise?style=for-the-badge&color=dark-green" /></a>
     <a href="https://github.com/sof202/ChromOptimise/blob/main/LICENSE" alt="License">
-        <img src="https://img.shields.io/github/license/sof202/ChromOptimise?style=for-the-badge&color=red" /></a>
+        <img src="https://img.shields.io/github/license/sof202/ChromOptimise?style=for-the-badge&color=dark-green" /></a>
 </p>
 
 ChromOptimise is a pipeline that identifies the optimum number of states that should be used with [ChromHMM](https://compbio.mit.edu/ChromHMM/#:~:text=ChromHMM%20is%20software%20for%20learning,and%20spatial%20patterns%20of%20marks.)'s `LearnModel` command for a particular genomic dataset.
