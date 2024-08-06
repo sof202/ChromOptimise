@@ -147,7 +147,8 @@ for model_number in "${model_sizes[@]}"; do
         "${state_assignment_file}" \
         "${output_directory}/Isolation_scores" \
         "${model_number}" \
-        100 
+        100 \
+        FALSE
 
     echo "Running RedundantStateChecker.R for: ${model_number} states..."
 
