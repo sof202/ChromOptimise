@@ -1,19 +1,11 @@
-# Ignore all log files and config files
-LogFiles/*
-config.R
-FilePaths.txt
-LogFileManagement.sh
+# Ignore all log files
 *.log
 *.err
-
-# Ignore vscode project settings
-.vscode
 
 # Ignore R studio related files
 *.Rhistory
 *.Rdat
 *.Rproj
-
 
 # Dependencies
 documentation/node_modules
