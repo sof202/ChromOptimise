@@ -157,7 +157,7 @@ for each gwas trait (with a high of 7.01 minutes and a low of 6.05 minutes)
 
 ## Generate_Big_Model.sh 
 Computational time for this script follows the same logic as
-[3_batch_CreateIncrementalModels.sh](#3_batch_createincrementalmodelssh). The
+[2_batch_CreateIncrementalModels.sh](#2_batch_createincrementalmodelssh). The
 main contributor to computational time is ChromHMM's `LearnModel` command, only
 this time the models are likely to be much larger. As a result expect the
 processing time to be very long if a high number of states is to be used.

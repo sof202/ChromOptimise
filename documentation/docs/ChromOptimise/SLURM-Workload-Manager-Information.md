@@ -25,12 +25,11 @@ outside of `sbatch` is the error logs. If one runs the scripts normally, all
 outputs, warnings and errors will be printed to the terminal.
 
 There will also be error messages from the hard links that are created in the
-SET UP section of each script (see
-[LogFileManagement.sh](./Configuration-Files-Setup.md#logfilemanagementsh)).
-SLURM workload manager is unable to create folders in `#SBATCH` lines and
-naming of log files is limited. As a result, log files are generated under
-temporary names and a hard link is made with a file with a more descriptive
-name (which allows for a more organised structure of your log files).
+SET UP section of each script. SLURM workload manager is unable to create
+folders in `#SBATCH` lines and naming of log files is limited. As a result, log
+files are generated under temporary names and a hard link is made with a file
+with a more descriptive name (which allows for a more organised structure of
+your log files).
 
 ## SLURM environment variables 
 

@@ -65,7 +65,7 @@ this, the SLURM directive is set to 50GB of memory.
 
 ## Generate_Big_Model.sh 
 This script is similar to
-[3_batch_CreateIncrementalModels.sh](#3_batch_createincrementalmodelssh),
+[2_batch_CreateIncrementalModels.sh](#2_batch_createincrementalmodelssh),
 suggesting that the memory consumption pattern is likely to align with the
 conclusions drawn there. However, it's important to note that due to the
 computational time required for this script, utilizing heaptrack to monitor

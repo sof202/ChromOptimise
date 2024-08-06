@@ -44,5 +44,5 @@ just calculate the scores for the largest chromosome (chromosome 1).
 
 The user has the power to change the chromosome used in this analysis via the
 `--chromosome` flag used when calling
-[4_OptimalNumberOfStates.sh](./4_OptimalNumberOfStates.md). This could prove
+[3_OptimalNumberOfStates.sh](./3_OptimalNumberOfStates.md). This could prove
 useful if a particular chromosome is of interest.
