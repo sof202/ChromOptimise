@@ -18,7 +18,7 @@
 #SBATCH --output=temp%A_%a.log
 # Temporary error file, later to be removed
 #SBATCH --error=temp%A_%a.err
-#SBATCH --job-name=5_ReferenceLDSCore
+#SBATCH --job-name=4_ReferenceLDSCore
 
 usage() {
 cat <<EOF
@@ -189,12 +189,11 @@ Rscript CreateAnnotationFile.R \
 
 rm -rf "${temporary_directory}"
 
+module purge
+
 ## ======================= ##
 ##   REFERENCE LD SCORES   ##
 ## ======================= ##
-
-module purge
-module load Anaconda3/2020.02
 
 source "${CONDA_SHELL}" || \
 { echo "conda.sh does not exist in specified location: \
