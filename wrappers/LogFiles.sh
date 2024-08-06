@@ -1,20 +1,5 @@
 #!/bin/bash
 
-cat << START_MESSAGE
-Job ${SLURM_JOB_NAME} started at:
-$(date -u)
-
-File paths used:
-$(cat "${configuration_directory}/FilePaths.txt")
-
-R config used:
-$(cat "${configuration_directory}/config.R")
-
-START_MESSAGE
-
-start_time=$(date +%s)
-export start_time
-
 ## ===================== ##
 ##   LOG FILE MOVEMENT   ##
 ## ===================== ##
@@ -35,9 +20,28 @@ else
     "${LOG_FILE_PATH}/${SLURM_JOB_ID}~$timestamp.err"
 fi
 
-## ============= ##
-##   FUNCTIONS   ##
-## ============= ##
+## ================= ##
+##   START MESSAGE   ##
+## ================= ##
+
+cat << START_MESSAGE
+Job ${SLURM_JOB_NAME} started at:
+$(date -u)
+
+File paths used:
+$(cat "${configuration_directory}/FilePaths.txt")
+
+R config used:
+$(cat "${configuration_directory}/config.R")
+
+START_MESSAGE
+
+start_time=$(date +%s)
+export start_time
+
+## =============== ##
+##   END MESSAGE   ##
+## =============== ##
 
 ## ====== FUNCTION : finishing_statement() ===========================================
 ## Description: Give finishing message then exit

@@ -29,10 +29,10 @@ Author: Sam Fletcher
 Contact: s.o.fletcher@exeter.ac.uk
 Dependencies: Java, ChromHMM
 Inputs:
--c|--config=     -> Full/relative file path for configuation file directory
--b|--binsize=    -> Bin size to be used by BinarizeBam command (default: 200)
--s|--samplesize= -> Sample size used in 3_SubsampleBamFiles.sh
--a|--assembly=   -> The assembly to use (default: hg19)
+-c|--config=    -> Full/relative file path for configuation file directory
+-i|--input=     -> Input directory holding bed/bam files
+-b|--binsize=   -> Bin size to be used by BinarizeBam command (default: 200)
+-a|--assembly=  -> The assembly to use (default: hg19)
 ================================================================================
 EOF
     exit 0
@@ -45,7 +45,7 @@ needs_argument() {
 
 if [[ ! $1 =~ -.* ]]; then usage; fi
 
-while getopts c:b:s:a:-: OPT; do
+while getopts c:b:i:a:-: OPT; do
     # Adds support for long options by reformulating OPT and OPTARG
     # This assumes that long options are in the form: "--long=option"
     if [ "$OPT" = "-" ]; then
@@ -55,8 +55,8 @@ while getopts c:b:s:a:-: OPT; do
     fi
     case "$OPT" in
         c | config )       needs_argument; configuration_directory="$OPTARG" ;;
+        i | input )        needs_argument; input_directory="$OPTARG" ;;
         b | binsize )      needs_argument; bin_size="$OPTARG" ;;
-        s | samplesize )   needs_argument; sample_size="$OPTARG" ;;
         a | assembly )     needs_argument; assembly="$OPTARG" ;;
         \? )               usage ;;  # Illegal short options are caught by getopts
         * )                usage ;;  # Illegal long option
@@ -72,27 +72,9 @@ source "${configuration_directory}/FilePaths.txt" || \
 { echo "The configuration file does not exist in the specified location: \
 ${configuration_directory}"; exit 1; }
 
-# If a configuration file is changed during analysis, it is hard to tell
-# what configuration was used for a specific run through, below accounts for 
-# this
-echo "Configuration file used with this script: \
-${configuration_directory}/FilePaths.txt"
-echo ""
-cat "${configuration_directory}/FilePaths.txt"
-echo ""
-
-source "${configuration_directory}/LogFileManagement.sh" || \
+source "${WRAPPER_SCRIPT}" || \
 { echo "The log file management script does not exist in the specified \
 location: ${configuration_directory}"; exit 1; }
-
-
-# Temporary log files are moved like this as SLURM cannot create directories.
-# The alternative would be forcing the user to create the file structure
-# themselves and using full file paths in the SLURM directives (bad)
-mv "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" \
-"${LOG_FILE_PATH}/BinSize-${bin_size:=200}~${SLURM_JOB_ID}~${timestamp:=}.log"
-mv "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
-"${LOG_FILE_PATH}/BinSize-${bin_size:=200}~${SLURM_JOB_ID}~$timestamp.err"
 
 ## =============== ##
 ##    VARIABLES    ##
@@ -105,29 +87,6 @@ if ! [[ "${bin_size}" =~ ^[0-9]+$ ]]; then
     "instead."
 fi
 
-# 'Intelligently' find the sample size using first file name in the 
-# subsampled directory
-if [[ -z "${sample_size}" ]]; then
-    cd "${SUBSAMPLED_DIR}" || \
-    { >&2 echo "ERROR: \
-    [\${SUBSAMPLED_DIR} - ${SUBSAMPLED_DIR}] doesn't exist, make "\
-    "sure FilePaths.txt is pointing to the correct directory"
-    finishing_statement 1; }
-
-    sample_size=$(find . -type f -name "Subsampled*" | \
-    head -1 | \
-    cut -d "." -f 3)
-
-    echo -e "WARNING: No sample size was given.\n"\
-    "Assuming that ${sample_size} is the desired sample size..."
-fi
-
-# If no sample size was found, then the sampling script likely hasn't ran yet
-if [[ -z "${sample_size}" ]]; then
-    { >&2 echo -e "ERROR: No sample size even after fail safe. Please run "\
-    "3_SubsampleBamFiles.sh before running this script."
-    finishing_statement 1; }
-fi
 
 if [[ -z "${assembly}" ]]; then
     assembly=hg19
@@ -135,22 +94,6 @@ if [[ -z "${assembly}" ]]; then
     "${assembly} instead."
 fi
 ## =============================================================================
-
-## ================== ##
-##   FILE EXISTENCE   ##
-## ================== ##
-
-cd "${SUBSAMPLED_DIR}" || \
-{ >&2 echo "ERROR: \
-[\${SUBSAMPLED_DIR} - ${SUBSAMPLED_DIR}] doesn't exist, make \
-sure FilePaths.txt is pointing to the correct directory"
-finishing_statement 1; }
-
-if [[ -z "$(find . -type f -name "Subsampled.${sample_size}*")" ]]; then
-    { >&2 echo -e "ERROR: [\${SUBSAMPLED_DIR} - ${SUBSAMPLED_DIR}] is empty.\n"\
-    "Ensure that 3_SubsampleBamFiles.sh has been ran before this script."
-    finishing_statement 1; }
-fi
 
 ## ================================= ##
 ##    CREATE CELL MARK FILE TABLE    ##
@@ -160,47 +103,42 @@ fi
 # file table will just be 1 file for each mark that has been processed. The
 # only added level of complexity is obtaining the mark name from the file names.
 
-rm -f "bam_cellmarkfiletable.txt" 
-for file in *"${sample_size}"*.bam; do
+bam_CellMarkFileTable="${BINARY_DIR}/bed_cellmarkfiletable.txt"
+rm -f "${bam_CellMarkFileTable}" 
+for file in "${input_directory}"/*.bam; do
     # We're assuming here that there is only one cell type inspected
-    echo -ne "ChromOptimise\t" >> \
-    "bam_cellmarkfiletable.txt"
+    echo -ne "${CELL_TYPE}\t" >> \
+    "${bam_CellMarkFileTable}"
     # The subsampled files are named: subsampled.[SampleSize].[mark_name].bam. 
     # Below extracts the mark name
     mark_name=$(echo "$file" | cut -d "." -f 3) 
-    echo -ne "${mark_name}\t" >> "bam_cellmarkfiletable.txt"
-    echo "$file" >> "bam_cellmarkfiletable.txt"
+    echo -ne "${mark_name}\t" >> "${bam_CellMarkFileTable}"
+    echo "$file" >> "${bam_CellMarkFileTable}"
 done
 
-rm -f "bed_cellmarkfiletable.txt" 
-for file in *"${sample_size}"*.bed; do
-    echo -ne "ChromOptimise\t" >> \
-    "bed_cellmarkfiletable.txt"
+bed_CellMarkFileTable="${BINARY_DIR}/bed_cellmarkfiletable.txt"
+rm -f "${bed_CellMarkFileTable}" 
+for file in "${input_directory}"/*.bed; do
+    echo -ne "${CELL_TYPE}\t" >> \
+    "${bed_CellMarkFileTable}"
     mark_name=$(echo "$file" | cut -d "." -f 3) 
-    echo -ne "${mark_name}\t" >> "bed_cellmarkfiletable.txt"
-    echo "$file" >> "bed_cellmarkfiletable.txt"
+    echo -ne "${mark_name}\t" >> "${bed_CellMarkFileTable}"
+    echo "$file" >> "${bed_CellMarkFileTable}"
 done
 
 ## ================================= ##
 ##    BINARIZATION USING CHROMHMM    ##
 ## ================================= ##
-#
-cd "${BINARY_DIR}" || \
-{ echo "ERROR: [\${BINARY_DIR} - ${BINARY_DIR}] doesn't exist, \
-make sure FilePaths.txt is pointing to the correct directory"
-finishing_statement 1; }
 
-rm -rf "BinSize_${bin_size}_SampleSize_${sample_size}"
-mkdir -p "BinSize_${bin_size}_SampleSize_${sample_size}"
-cd "BinSize_${bin_size}_SampleSize_${sample_size}" || finishing_statement 1
+rm -rf "${BINARY_DIR}/BinSize_${bin_size}"
+mkdir -p "${BINARY_DIR}/BinSize_${bin_size}"
 
 module purge
 module load Java
 
-if [[ -s "${SUBSAMPLED_DIR}/bam_cellmarkfiletable.txt" ]]; then
-    echo "Binarizing subsampled bam files found in [\${SUBSAMPLED_DIR} - "\
-    "${SUBSAMPLED_DIR}] with sample size: ${sample_size} using a bin size "\
-    "of: ${bin_size}."
+if [[ -s "${bam_CellMarkFileTable}" ]]; then
+    echo "Binarizing bam files found in: "\
+    "${input_directory} using a bin size of: ${bin_size}."
 
     java -mx4G \
     -jar "${CHROMHMM_MAIN_DIR}/ChromHMM.jar" \
@@ -208,15 +146,14 @@ if [[ -s "${SUBSAMPLED_DIR}/bam_cellmarkfiletable.txt" ]]; then
     -b "${bin_size}" \
     -gzip \
     "${CHROMHMM_CHROM_SIZES}/${assembly}.txt" \
-    "${SUBSAMPLED_DIR}" \
-    "${SUBSAMPLED_DIR}/bam_cellmarkfiletable.txt" \
-    "${BINARY_DIR}/BinSize_${bin_size}_SampleSize_${sample_size}/bam"
+    "${input_directory}" \
+    "${BINARY_DIR}/bam_cellmarkfiletable.txt" \
+    "${BINARY_DIR}/BinSize_${bin_size}/bam"
 fi
 
 if [[ -s "${SUBSAMPLED_DIR}/bed_cellmarkfiletable.txt" ]]; then
-    echo "Binarizing subsampled bed files found in [\${SUBSAMPLED_DIR} - "\
-    "${SUBSAMPLED_DIR}] with sample size: ${sample_size} using a bin size "\
-    "of: ${bin_size}."
+    echo "Binarizing bed files found in: "\
+    "${input_directory} using a bin size of: ${bin_size}."
 
     java -mx4G \
     -jar "${CHROMHMM_MAIN_DIR}/ChromHMM.jar" \
@@ -224,24 +161,29 @@ if [[ -s "${SUBSAMPLED_DIR}/bed_cellmarkfiletable.txt" ]]; then
     -b "${bin_size}" \
     -gzip \
     "${CHROMHMM_CHROM_SIZES}/${assembly}.txt" \
-    "${SUBSAMPLED_DIR}" \
-    "${SUBSAMPLED_DIR}/bed_cellmarkfiletable.txt" \
-    "${BINARY_DIR}/BinSize_${bin_size}_SampleSize_${sample_size}/bed"
+    "${input_directory}" \
+    "${BINARY_DIR}/bam_cellmarkfiletable.txt" \
+    "${BINARY_DIR}/BinSize_${bin_size}/bed"
 fi
 
 java -mx4G \
 -jar "${CHROMHMM_MAIN_DIR}/ChromHMM.jar" \
 MergeBinary \
 -gzip \
-"${BINARY_DIR}/BinSize_${bin_size}_SampleSize_${sample_size}" \
-"${BINARY_DIR}/BinSize_${bin_size}_SampleSize_${sample_size}"
+"${BINARY_DIR}/BinSize_${bin_size}" \
+"${BINARY_DIR}/BinSize_${bin_size}"
 
-rm -r "${BINARY_DIR}/BinSize_${bin_size}_SampleSize_${sample_size}/bam"
-rm -r "${BINARY_DIR}/BinSize_${bin_size}_SampleSize_${sample_size}/bed"
+## ============ ##
+##   CLEAN UP   ##
+## ============ ##
+
+rm -r "${BINARY_DIR}/BinSize_${bin_size}/bam" \
+    "${BINARY_DIR}/BinSize_${bin_size}/bed" \
+    "${bam_CellMarkFileTable}" "${bed_CellMarkFileTable}"
 
 # Non-autosomal chromosomes are not factored into ldsc step of the pipeline
 # so we minimise their impact by deleting their associated binary files
-find "${BINARY_DIR}/BinSize_${bin_size}_SampleSize_${sample_size}" \
+find "${BINARY_DIR}/BinSize_${bin_size}" \
 -type f \
 ! -name "ChromOptimise_chr[0-9]_binary.txt.gz" \
 -a ! -name "ChromOptimise_chr[0-9][0-9]_binary.txt.gz" \

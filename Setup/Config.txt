@@ -10,6 +10,9 @@ export STARTING_SCRIPT= 1
 # i.e. (mark1 mark2 mark3 mark4 ...)
 export LIST_OF_MARKS=
 
+# Cell type represented by data
+export CELL_TYPE=bulk
+
 # This is the bin size to use during the binarization stage
 # ChromHMM recommends a default of 200
 export BIN_SIZE=200
