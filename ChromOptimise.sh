@@ -19,10 +19,6 @@ source "${configuration_directory}/Config.txt" || \
 { echo "The configuration file does not exist in the specified location: \
 ${configuration_directory}/Config.txt"; exit 1; }
 
-source "${configuration_directory}/Config.R" || \
-{ echo "The configuration file does not exist in the specified location: \
-${configuration_directory}/Config.R"; exit 1; }
-
 # We need an associative array to store the job ids for each SLURM job
 # that are submitted. This is so that we can use these job ids as dependencies.
 # Dependencies allow us to queue up job submissions and run certain scripts
