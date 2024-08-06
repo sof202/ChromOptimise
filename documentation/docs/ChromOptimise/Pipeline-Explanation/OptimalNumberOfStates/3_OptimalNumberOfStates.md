@@ -1,10 +1,10 @@
 ---
-title: 4_OptimalNumberOfStates
+title: 3_OptimalNumberOfStates
 description: "The script used to determine the optimum number of states."
 sidebar_position: 1
 ---
 
-# 4_OptimalNumberOfStates
+# 3_OptimalNumberOfStates
 
 ## Explanation
 
@@ -23,22 +23,16 @@ that it is 3 or greater. The additional information of a model with 4 states
 having redundant states is what confirms the model with 3 states is optimal.
 :::
 
-Note that you still need to input the bin size, sample size and the number of 
-models learned here. The reason for this is because the file structure is 
-designed such that multiple runs of the same dataset can be analysed concurrently.
-
 ## Thresholds
 
-The major factor that affects the output of this script lies in the thresholds 
-defined in the configuration file for R 
-[config.R](/ChromOptimise/Configuration-Files-Setup.md#configr). It can be
-difficult to determine suitable values for these thresholds without prior
-knowledge. To help with this, the supplementary pipeline was created. Running
-the supplementary pipeline can help the user in identifying 'good' values for
-these thresholds based off of the information gained from much larger models
-(that undoubtedly have redundant states). To learn more about this pipeline,
-consult [these
-pages](/category/supplementary-pipeline---usage-and-explanation).
+The major factor that affects the output of this script lies in the thresholds
+defined in the configuration file for R config.R. It can be difficult to
+determine suitable values for these thresholds without prior knowledge. To help
+with this, the supplementary pipeline was created. Running the supplementary
+pipeline can help the user in identifying 'good' values for these thresholds
+based off of the information gained from much larger models (that undoubtedly
+have redundant states). To learn more about this pipeline, consult 
+[these pages](/category/supplementary-pipeline---usage-and-explanation).
 
 ### The curse of dimensionality
 
@@ -68,16 +62,3 @@ about cubes and hyper cubes (*etc.*).
 As such, no value is given for the `emission_threshold`, this value should be
 changed depending on the number of marks you have included in your dataset.
 
-## Example usage
-
-```bash
-# Generates metrics and heuristics for the models currently in ${MODEL_DIR}
-# and uses these to determine  the optimal number of states for the binarized
-# data set.
-sbatch 4_OptimalNumberOfStates.sh \
---config="path/to/configuration/directory" \
---chromosome=1 \
---binsize=200 \
---samplesize=75 \
---nummodels=6 \
-```

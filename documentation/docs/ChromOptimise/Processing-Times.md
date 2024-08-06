@@ -34,34 +34,7 @@ properties:
     - L2 -> 256K
     - L3 -> 20 MB
 
-## 1_SubsampleBamFiles.sh
-This script's largest contributor to computational time is `samtools merge`.
-Depending on the number of files and size of said files, the time taken can
-vary dramatically.
-
-In testing, the following was observed:
-
-Using a 50% sampling rate:
-| Number of files | Average file size (GB) | time (minutes) |
-| --              | --                     | --             |
-| 2               | 3.5                    | 4
-| 2               | 6.5                    | 7
-| 133             | 8.3                    | 906
-| 171             | 6.2                    | 1010
-| 176             | 7.6                    | 1271
-
-Using a 100% sampling rate:
-| Number of files | Average file size (GB) | time (minutes) |
-| --              | --                     | --             |
-| 133             | 8.3                    | 909
-| 171             | 6.2                    | 1186
-| 176             | 7.6                    | 1366
-
-Currently this shows a linear relationship with total file size. There is not
-enough information to determine the effect that the sampling rate has on the
-processing time (though it is likely to be minimal).
-
-## 2_BinarizeBamFiles.sh
+## 1_BinarizeBamFiles.sh
 The processing time for this script is of course mainly taken up by ChromHMM's
 `BinarizeBam` command. This command will generally take up more time if more
 data is inputted and if a smaller bin size is used.
@@ -73,7 +46,7 @@ In testing, the following was observed:
     - Using a bin size of 200bp took 11 hours and 52 minutes
     - Using a bin size of 400bp took 11 hours and 47 minutes
 
-## 3_batch_CreateIncrementalModels.sh
+## 2_batch_CreateIncrementalModels.sh
 This script's largest contributor to computational time is ChromHMM's
 `LearnModel` command. This command will take up more time if the bin size was
 chosen to be smaller in 4_BinarizeBamFiles.sh (leading to a larger total size
@@ -115,14 +88,14 @@ Further note that if the size of the array is larger than the number of models
 to learn, all models will be learnt by the highest indexed array element
 (causing significant slow down).
 
-## 4_OptimalNumberOfStates.sh
+## 3_OptimalNumberOfStates.sh
 This script makes use of an R script that is inside of a loop. However, the
 Rscript has very little computational complexity and so the script is usually
 very fast. In previous tests with 8 state models, the script took ~14 seconds.
 It is unlikely that this script will ever exceed the default wall time set in
 the `#SBATCH` parameters at the top of the script.
 
-## 5_ReferenceLDSCore.sh
+## 4_ReferenceLDSCore.sh
 This script will take roughly the same amount of time regardless of the number
 of states in your model. In testing, the following times were found for the
 SNP assignment R script:
@@ -174,7 +147,7 @@ For the calculation of LDscores:
 - Chromosome 21 took: 2 minutes
 - Chromosome 22 took: 2 minutes
 
-## 6_PartitionedHeritability.sh
+## 5_PartitionedHeritability.sh
 This script will linearly increase in time with each additional gwas trait
 considered. The effect of having more annotations seems to be minimal however
 (more annotations only appears to increase 
@@ -184,7 +157,7 @@ for each gwas trait (with a high of 7.01 minutes and a low of 6.05 minutes)
 
 ## Generate_Big_Model.sh 
 Computational time for this script follows the same logic as
-[3_batch_CreateIncrementalModels.sh](#3_batch_createincrementalmodelssh). The
+[2_batch_CreateIncrementalModels.sh](#2_batch_createincrementalmodelssh). The
 main contributor to computational time is ChromHMM's `LearnModel` command, only
 this time the models are likely to be much larger. As a result expect the
 processing time to be very long if a high number of states is to be used.

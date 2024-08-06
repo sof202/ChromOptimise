@@ -1,0 +1,126 @@
+## ================= ##
+##   CONFIGURATION   ##
+## ================= ##
+
+# Which shell script to start from (provide a number from 1 to 5)
+export STARTING_SCRIPT= 1
+
+# This is the list of marks that you intend to use in the analysis
+# Please provide this as a white space separated array
+# i.e. (mark1 mark2 mark3 mark4 ...)
+export LIST_OF_MARKS=
+
+# Cell type represented by data
+export CELL_TYPE=bulk
+
+# This is the bin size to use during the binarization stage
+# ChromHMM recommends a default of 200
+export BIN_SIZE=200
+
+# This is the assembly that your data is alligned to.
+export ASSEMBLY=hg19
+
+# This is the number of models you wish to create in the model learning stage
+# Read the documentation on 2_batch_CreateIncrementalModel.sh for help
+# here
+export NUMBER_OF_MODELS=4
+
+# The following are the array sizes you wish to use for batch jobs (processing
+# and model learning scripts). Using a number larger than the number of cores
+# on your system is not recommended
+export MODEL_LEARNING_ARRAY_SIZE=4
+
+# Optional: Increase the number of iterations used in model learning step
+# This will become more useful for larger models 
+export MAX_ITERATIONS=200
+
+# This is the chromosome identifier (1-22, x,y,m) for the chromosome that is
+# to be used with the isolation metric (see Pipeline-explanation). Unless
+# this matters for your analysis, keep this at 1.
+export CHROMOSOME_IDENTIFIER=1
+
+# If you are running the script starting from script 4 (i.e. you have created 
+# your models yourself), you need to input the number of states
+# you deem to be optimal. You can also put a model number here if you want to
+# run scripts 4/5 with a sub-optimal number of states (for comparison).
+export OPTIMUM_NUMBER_OF_STATES=
+
+# SLURM requires a maximum wall time, defaults usually work for smaller 
+# datasets (<= 4 marks)
+# Times must be in the format: hh:mm:ss
+export MAXTIME_1=12:00:00
+export MAXTIME_2=01:00:00
+export MAXTIME_3=12:00:00
+export MAXTIME_4=00:30:00
+export MAXTIME_5=12:00:00
+
+
+## =============== ##
+##   DIRECTORIES   ##
+## =============== ##
+
+# Most of these are filled in for you. Please check all entries still
+
+## ---------------- ##
+## DATA DIRECTORIES ##
+## ---------------- ##
+
+export MAIN_DIR="full/path/to/main/data/directory"
+export INPUT_DIRECTORY="${MAIN_DIR}/input"
+
+export BINARY_DIR="${MAIN_DIR}/1_BinarizedFiles"
+export MODEL_DIR="${MAIN_DIR}/2_ModelFiles"
+export OPTIMUM_STATES_DIR="${MAIN_DIR}/3_OptimumStates"
+export LD_ASSESSMENT_DIR="${MAIN_DIR}/4_LDSCFiles"
+export BIG_MODELS_DIR="${MAIN_DIR}/5_BigModelFiles"
+
+## --------------------- ##
+## LDSC DATA DIRECTORIES ##
+## --------------------- ##
+
+export LD_DIR="full/path/to/ldsc/directory"
+
+export LD_PLINK_DIR="${LD_DIR}/PLINK_files"
+export LD_WEIGHTS_DIR="${LD_DIR}/weights_files"
+export LD_FRQ_DIR="${LD_DIR}/frq_files"
+export LD_GWAS_TRAITS_DIR="${LD_DIR}/gwas_traits"
+export LD_BASELINE_DIR="${LD_DIR}/baseline_files"
+
+## ------------------ ##
+## SCRIPT DIRECTORIES ##
+## ------------------ ##
+
+export REPO_DIR="full/path/to/this/repository"
+
+export JOBSUBMISSION_DIR="${SCRIPTS_DIR}/JobSubmission"
+export RSCRIPTS_DIR="${SCRIPTS_DIR}/Rscripts"
+export LOG_DIR="${SCRIPTS_DIR}/LogFiles"
+export WRAPPER_SCRIPT="${SCRIPTS_DIR}/wrappers/LogFiles.sh"
+
+## ----- ##
+## CONDA ##
+## ----- ##
+
+# The conda shell is required in order to ensure that conda environments can
+# be activated (this is not required on all systems, this is a compatibility
+# measure). You can find this file by using `which conda` and navigating 
+# to the etc/profile.d/ directory located nearby.
+export CONDA_SHELL="<path/to/conda>/etc/profile.d/conda.sh"
+
+## ----------------------- ##
+## CHROMHMM FILE LOCATIONS ##
+## ----------------------- ##
+
+export CHROMHMM_MAIN_DIR="/path/to/ChromHMM/main/directory"
+export CHROMHMM_CHROM_SIZES="${CHROMHMM_MAIN_DIR}/CHROMSIZES"
+
+## ------------- ##
+## LDSC SOFTWARE ##
+## ------------- ##
+
+export LD_SOFTWARE_DIR="path/to/ldsc/main/directory"
+
+# LDSC requires a conda environment to run. This is detailed in LDSC'
+# documentation. If you follow LDSC' setup verbatim, the below should just be
+# 'ldsc' (default)
+export LDSC_ENVIRONMENT="ldsc"

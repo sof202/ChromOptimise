@@ -1,10 +1,10 @@
 ---
-title: 6_PartitionedHeritability
+title: 5_PartitionedHeritability
 description: "Visualises the partitioned heritability (enrichment)"
 sidebar_position: 3
 ---
 
-# 6_PartitionedHeritability
+# 5_PartitionedHeritability
 
 ## Explanation
 
@@ -22,7 +22,7 @@ After extracting this information, the script will call the Rscript
 ## Usage
 
 Typically, this script will be ran after being called by 
-[7_ReferenceLDSCore.sh](./5_ReferenceLDSCore.md). However, one may want to use
+[4_ReferenceLDSCore.sh](./4_ReferenceLDSCore.md). However, one may want to use
 this script in isolation (perhaps for testing a different set of gwas traits).
 
 The reason why this script is split away from the previous script in the
@@ -31,16 +31,4 @@ to each task in the array is split evenly and is not dynamic. As a result,
 unless your machine/system has RAM in the 100s of GBs, the partitioned
 heritability step will return out of memory errors. As we only need to compute
 the plots once, we just use a separate script to run these analyses.
-
-## Example usage
-
-```bash
-# Generates heatmap of enrichments and bar plots for all GWAS-traits for the 
-# model in the BinSize_200_SampleSize_75_6 directory
-sbatch 6_PartitionedHeritability.sh \
---config="path/to/configuration/directory" \
---binsize=200 \
---samplesize=75 \
---nummodels=6 \
-```
 
