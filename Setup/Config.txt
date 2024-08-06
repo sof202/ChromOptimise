@@ -59,7 +59,9 @@ export MODEL_LEARNING_ARRAY_SIZE=4
 ## DATA DIRECTORIES ##
 ## ---------------- ##
 
-export MAIN_DIR="full/path/to/main/directory"
+export MAIN_DIR="full/path/to/main/data/directory"
+export INPUT_DIRECTORY="${MAIN_DIR}/input"
+
 export BINARY_DIR="${MAIN_DIR}/1_BinarizedFiles"
 export MODEL_DIR="${MAIN_DIR}/2_ModelFiles"
 export OPTIMUM_STATES_DIR="${MAIN_DIR}/3_OptimumStates"
@@ -71,6 +73,7 @@ export BIG_MODELS_DIR="${MAIN_DIR}/5_BigModelFiles"
 ## --------------------- ##
 
 export LD_DIR="full/path/to/ldsc/directory"
+
 export LD_PLINK_DIR="${LD_DIR}/PLINK_files"
 export LD_WEIGHTS_DIR="${LD_DIR}/weights_files"
 export LD_FRQ_DIR="${LD_DIR}/frq_files"
@@ -82,6 +85,7 @@ export LD_BASELINE_DIR="${LD_DIR}/baseline_files"
 ## ------------------ ##
 
 export REPO_DIR="full/path/to/this/repository"
+
 export JOBSUBMISSION_DIR="${SCRIPTS_DIR}/JobSubmission"
 export RSCRIPTS_DIR="${SCRIPTS_DIR}/Rscripts"
 export LOG_DIR="${SCRIPTS_DIR}/LogFiles"
