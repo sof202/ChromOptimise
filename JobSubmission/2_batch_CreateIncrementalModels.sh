@@ -16,11 +16,8 @@
 # Memory consumption doesn't appear to be dependent on number of states
 # Consult information/Memory_Profiling.md for expected memory usage
 #SBATCH --mem=5G
-# Send an email after the job is done
 #SBATCH --mail-type=END 
-# Temporary log file, later to be removed
 #SBATCH --output=temp%A_%a.log
-# Temporary error file, later to be removed
 #SBATCH --error=temp%A_%a.err
 #SBATCH --job-name=2_Model_Learning
 
@@ -103,7 +100,6 @@ fi
 # Ensures all array tasks have correct output directory structure before model
 # learning (avoiding stale file handles)
 sleep 5
-cd "${output_directory}/Likelihood_Values" || finishing_statement 1
 
 ## ========================== ##
 ##   PARALLELISATION SET UP   ##
@@ -147,23 +143,25 @@ seq "$starting_number_of_states" "$states_increment" "$ending_number_of_states"\
 
 echo "Learning models using a bin size of ${BIN_SIZE}..." 
 
+cd "${output_directory}/Likelihood_Values" || finishing_statement 1
 for numstates in ${sequence}; do
     echo "Learning model with: ${numstates} states..."
 
     # -noautoopen used so html files are not opened after model learning finshes.
     # -printstatebyline used to get the state assignment for isolation metrics
-    java -mx4G \
-    -jar "${CHROMHMM_MAIN_DIR}/ChromHMM.jar" \
-    LearnModel \
-    -noautoopen \
-    -printstatebyline \
-    -b "${BIN_SIZE}" \
-    -r "${MAX_ITERATIONS}" \
-    "${full_binary_path}" \
-    "${output_directory}" \
-    "${numstates}" \
-    "${ASSEMBLY}" > \
-    "ChromHMM_output_numstates_${numstates}.txt"
+    java \
+        -mx4G \
+        -jar "${CHROMHMM_MAIN_DIR}/ChromHMM.jar" \
+        LearnModel \
+        -noautoopen \
+        -printstatebyline \
+        -b "${BIN_SIZE}" \
+        -r "${MAX_ITERATIONS}" \
+        "${full_binary_path}" \
+        "${output_directory}" \
+        "${numstates}" \
+        "${ASSEMBLY}" > \
+        "ChromHMM_output_numstates_${numstates}.txt"
 
     echo "Writing estimated log likelihood to: likelihoods.txt..."
     echo "Estimated Log Likelihood for ${numstates} states: " >> \
@@ -178,7 +176,7 @@ for numstates in ${sequence}; do
     # Instead of storing chromHMM's log file in a separate location, it is
     # easier to just store the log in the existing log file
     grep "  " "ChromHMM_output_numstates_${numstates}.txt" >> \
-    "${LOG_FILE_PATH}/${SLURM_ARRAY_JOB_ID}~${SLURM_ARRAY_TASK_ID}~${timestamp:=}.log"
+    "${LOG_FILE_PATH}/${SLURM_ARRAY_JOB_ID}~${SLURM_ARRAY_TASK_ID}~${timestamp}.log"
 
     rm "ChromHMM_output_numstates_${numstates}.txt"
 done

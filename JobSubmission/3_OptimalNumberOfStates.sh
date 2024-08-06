@@ -59,6 +59,10 @@ if [[ -z "${CHROMOSOME_IDENTIFIER}" ]]; then
     "${CHROMOSOME_IDENTIFIER} instead."
 fi
 
+## ================== ##
+##   ERROR CATCHING   ##
+## ================== ##
+
 input_directory="${MODEL_DIR}/BinSize_${BIN_SIZE}_models_${NUMBER_OF_MODELS}"
 
 if [[ -z "$(ls -A "${input_directory}")" ]]; then
@@ -85,9 +89,10 @@ output_directory="${OPTIMUM_STATES_DIR}/BinSize_${BIN_SIZE}_models_${NUMBER_OF_M
 # Clear up the directory in case of repeat runs (with different thresholds)
 rm -rf "${output_directory}"
 
-mkdir -p "${output_directory}/Euclidean_distances"
-mkdir -p "${output_directory}/Flanking_states"
-mkdir -p "${output_directory}/Isolation_scores"
+mkdir -p \
+    "${output_directory}/Euclidean_distances" \
+    "${output_directory}/Flanking_states" \
+    "${output_directory}/Isolation_scores"
 
 module purge
 module load R/4.2.1-foss-2022a
@@ -126,29 +131,30 @@ for model_number in "${model_sizes[@]}"; do
     echo "Running SimilarEmissions.R for: ${model_number} states..."
 
     Rscript SimilarEmissions.R \
-    "${emissions_file}" \
-    "${output_directory}/Euclidean_distances" \
-    FALSE
+        "${emissions_file}" \
+        "${output_directory}/Euclidean_distances" \
+        FALSE
 
     echo "Running FlankingStates.R for: ${model_number} states..."
 
     Rscript FlankingStates.R \
-    "${transitions_file}" \
-    "${output_directory}/Flanking_states"
+        "${transitions_file}" \
+        "${output_directory}/Flanking_states"
 
     echo "Running IsolationScores.R for: ${model_number} states..."
 
     Rscript IsolationScores.R \
-    "${state_assignment_file}" \
-    "${output_directory}/Isolation_scores" \
-    "${model_number}" \
-    100 
+        "${state_assignment_file}" \
+        "${output_directory}/Isolation_scores" \
+        "${model_number}" \
+        100 
 
     echo "Running RedundantStateChecker.R for: ${model_number} states..."
 
-    Rscript RedundantStateChecker.R "${configuration_directory}/config.R" \
-    "${model_number}" \
-    "${output_directory}"
+    Rscript RedundantStateChecker.R \
+        "${configuration_directory}/config.R" \
+        "${model_number}" \
+        "${output_directory}"
 
     redundant_states_found=$(tail -1 \
     "${output_directory}/Redundant_states_model-${model_number}.txt")
@@ -160,7 +166,7 @@ for model_number in "${model_sizes[@]}"; do
     else
         echo -n "Model with ${model_number} states has redundant state(s):" >> \
         "${output_directory}/OptimumNumberOfStates.txt"
-        
+
         echo "${redundant_states_found}" >> \
         "${output_directory}/OptimumNumberOfStates.txt"
     fi
@@ -194,8 +200,8 @@ echo "Plotting the estimated log likelihoods of learned models against" \
 "one another..."
 
 Rscript PlotLikelihoods.R \
-"${input_directory}/Likelihood_Values/likelihoods.txt" \
-"${output_directory}"
+    "${input_directory}/Likelihood_Values/likelihoods.txt" \
+    "${output_directory}"
 
 # We plot the relative Bayesian information critereon for each model so the user
 # can use a less complex model if they wish. A less complex model may have a
@@ -215,10 +221,10 @@ done
 
 echo "Processing the Bayesian information critereon of learned models..."
 Rscript CalculateBIC.R \
-"${configuration_directory}/config.R" \
-"${input_directory}/Likelihood_Values/likelihoods.txt" \
-"${total_observations}" \
-"${output_directory}"
+    "${configuration_directory}/config.R" \
+    "${input_directory}/Likelihood_Values/likelihoods.txt" \
+    "${total_observations}" \
+    "${output_directory}"
 
 
 finishing_statement 0

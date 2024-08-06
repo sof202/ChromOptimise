@@ -10,11 +10,8 @@
 #SBATCH --ntasks-per-node=16
 # Memory consumption is generally fairly low
 #SBATCH --mem=4G 
-# Send an email after the job is done
 #SBATCH --mail-type=END 
-# Temporary log file, later to be removed
 #SBATCH --output=temp%j.log
-# Temporary error file, later to be removed
 #SBATCH --error=temp%j.err
 #SBATCH --job-name=1_Binarization
 
@@ -78,7 +75,7 @@ for file in "${INPUT_DIRECTORY}"/*.bam; do
     echo -ne "${CELL_TYPE}\t" >> \
     "${bam_CellMarkFileTable}"
 
-    # Assumed that mark names are given in file names
+    # Assumed that mark names are the base file names
     file_name=$(basename "$file") 
     mark_name=${file_name%.*}
 
@@ -113,38 +110,41 @@ if [[ -s "${bam_CellMarkFileTable}" ]]; then
     echo "Binarizing bam files found in: "\
     "${INPUT_DIRECTORY} using a bin size of: ${BIN_SIZE}."
 
-    java -mx4G \
-    -jar "${CHROMHMM_MAIN_DIR}/ChromHMM.jar" \
-    BinarizeBam \
-    -b "${BIN_SIZE}" \
-    -gzip \
-    "${CHROMHMM_CHROM_SIZES}/${ASSEMBLY}.txt" \
-    "${INPUT_DIRECTORY}" \
-    "${BINARY_DIR}/bam_cellmarkfiletable.txt" \
-    "${BINARY_DIR}/BinSize_${BIN_SIZE}/bam"
+    java \
+        -mx4G \
+        -jar "${CHROMHMM_MAIN_DIR}/ChromHMM.jar" \
+        BinarizeBam \
+        -b "${BIN_SIZE}" \
+        -gzip \
+        "${CHROMHMM_CHROM_SIZES}/${ASSEMBLY}.txt" \
+        "${INPUT_DIRECTORY}" \
+        "${BINARY_DIR}/bam_cellmarkfiletable.txt" \
+        "${BINARY_DIR}/BinSize_${BIN_SIZE}/bam"
 fi
 
 if [[ -s "${SUBSAMPLED_DIR}/bed_cellmarkfiletable.txt" ]]; then
     echo "Binarizing bed files found in: "\
     "${INPUT_DIRECTORY} using a bin size of: ${BIN_SIZE}."
 
-    java -mx4G \
-    -jar "${CHROMHMM_MAIN_DIR}/ChromHMM.jar" \
-    BinarizeBed \
-    -b "${BIN_SIZE}" \
-    -gzip \
-    "${CHROMHMM_CHROM_SIZES}/${ASSEMBLY}.txt" \
-    "${INPUT_DIRECTORY}" \
-    "${BINARY_DIR}/bed_cellmarkfiletable.txt" \
-    "${BINARY_DIR}/BinSize_${BIN_SIZE}/bed"
+    java \
+        -mx4G \
+        -jar "${CHROMHMM_MAIN_DIR}/ChromHMM.jar" \
+        BinarizeBed \
+        -b "${BIN_SIZE}" \
+        -gzip \
+        "${CHROMHMM_CHROM_SIZES}/${ASSEMBLY}.txt" \
+        "${INPUT_DIRECTORY}" \
+        "${BINARY_DIR}/bed_cellmarkfiletable.txt" \
+        "${BINARY_DIR}/BinSize_${BIN_SIZE}/bed"
 fi
 
-java -mx4G \
--jar "${CHROMHMM_MAIN_DIR}/ChromHMM.jar" \
-MergeBinary \
--gzip \
-"${BINARY_DIR}/BinSize_${BIN_SIZE}" \
-"${BINARY_DIR}/BinSize_${BIN_SIZE}"
+java \
+    -mx4G \
+    -jar "${CHROMHMM_MAIN_DIR}/ChromHMM.jar" \
+    MergeBinary \
+    -gzip \
+    "${BINARY_DIR}/BinSize_${BIN_SIZE}" \
+    "${BINARY_DIR}/BinSize_${BIN_SIZE}"
 
 ## ============ ##
 ##   CLEAN UP   ##
@@ -157,9 +157,9 @@ rm -r "${BINARY_DIR}/BinSize_${BIN_SIZE}/bam" \
 # Non-autosomal chromosomes are not factored into ldsc step of the pipeline
 # so we minimise their impact by deleting their associated binary files
 find "${BINARY_DIR}/BinSize_${BIN_SIZE}" \
--type f \
-! -name "*_chr[0-9]_binary.txt.gz" \
--a ! -name "*_chr[0-2][0-9]_binary.txt.gz" \
--exec rm {} \;
+    -type f \
+    ! -name "*_chr[0-9]_binary.txt.gz" \
+    -a ! -name "*_chr[0-2][0-9]_binary.txt.gz" \
+    -exec rm {} \;
 
 finishing_statement 0

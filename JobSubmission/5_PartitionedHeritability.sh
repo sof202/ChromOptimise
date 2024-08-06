@@ -85,13 +85,13 @@ for file_name in ${gwas_traits}; do
     output_file=$(basename "${file_name}" .sumstats.gz)
 
     python \
-    "${LD_SOFTWARE_DIR}/ldsc.py" \
-    --h2          "${file_name}" \
-    --ref-ld-chr  "${ld_directory}/annotation/ChromOptimise." \
-    --w-ld-chr    "${LD_WEIGHTS_DIR}/${weights_prefix}" \
-    --frqfile-chr "${LD_FRQ_DIR}/${frq_prefix}" \
-    --overlap-annot \
-    --out         "${ld_directory}/heritability/${output_file}"
+        "${LD_SOFTWARE_DIR}/ldsc.py" \
+        --h2          "${file_name}" \
+        --ref-ld-chr  "${ld_directory}/annotation/ChromOptimise." \
+        --w-ld-chr    "${LD_WEIGHTS_DIR}/${weights_prefix}" \
+        --frqfile-chr "${LD_FRQ_DIR}/${frq_prefix}" \
+        --overlap-annot \
+        --out         "${ld_directory}/heritability/${output_file}"
 done
 
 ## ================= ##
@@ -103,5 +103,5 @@ module purge
 module load R/4.2.1-foss-2022a
 
 Rscript "${RSCRIPTS_DIR}/HeritabilityPlots.R" \
-<(find "${ld_directory}/heritability" -name "*.results") \
-"${ld_directory}/plots"
+    <(find "${ld_directory}/heritability" -name "*.results") \
+    "${ld_directory}/plots"

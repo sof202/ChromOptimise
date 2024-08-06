@@ -7,6 +7,7 @@
 LOG_FILE_PATH="${LOG_DIR}/${USER}/${SLURM_JOB_NAME}"
 mkdir -p "${LOG_FILE_PATH}"
 timestamp=$(date +%d-%h~%H-%M)
+export timestamp
 
 if [[ -n ${SLURM_ARRAY_TASK_ID} ]]; then
     mv "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.log" \

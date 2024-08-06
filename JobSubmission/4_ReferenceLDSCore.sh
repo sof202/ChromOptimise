@@ -55,8 +55,7 @@ source "${WRAPPER_SCRIPT}" || exit 1
 ##    VARIABLES    ##
 ## =============== ##
 
-input_directory="${OPTIMUM_STATES_DIR}\
-/BinSize_${BIN_SIZE}_models_${NUMBER_OF_MODELS}"
+input_directory="${OPTIMUM_STATES_DIR}/BinSize_${BIN_SIZE}_models_${NUMBER_OF_MODELS}"
 
 if [[ -z "${OPTIMUM_NUMBER_OF_STATES}" ]]; then
     if [[ -z "$(ls -A "${input_directory}")" ]]; then
@@ -80,20 +79,19 @@ output_directory="${LD_ASSESSMENT_DIR}\
 
 if [[ "${SLURM_ARRAY_TASK_ID}" -eq 1 ]]; then
     rm -rf "${output_directory:?}"
-    mkdir -p "${output_directory}/annotation" \
-    "${output_directory}/heritability" \
-    "${output_directory}/plots/ChromOptimise_Categories" \
-    "${output_directory}/plots/All_Categories" 
+    mkdir -p \
+        "${output_directory}/annotation" \
+        "${output_directory}/heritability" \
+        "${output_directory}/plots/ChromOptimise_Categories" \
+        "${output_directory}/plots/All_Categories" 
 fi
 
 # We sleep here to ensure files are not removed prematurely
 sleep 5
 
-full_model_directory="${MODEL_DIR}\
-/BinSize_${BIN_SIZE}_models_${NUMBER_OF_MODELS}"
+full_model_directory="${MODEL_DIR}/BinSize_${BIN_SIZE}_models_${NUMBER_OF_MODELS}"
 
-full_binary_directory="${BINARY_DIR}\
-/BinSize_${BIN_SIZE}"
+full_binary_directory="${BINARY_DIR}/BinSize_${BIN_SIZE}"
 
 # We ignore non-autosomal chromosomes as 1000 genomes doesn't provide this data
 # Hence our chromosomes are just 1-22 (the array indices)
@@ -133,14 +131,14 @@ module purge
 module load R/4.2.1-foss-2022a
 
 Rscript BinarytoBed.R \
-<(zcat "${binary_file}") \
-"${BIN_SIZE}" \
-"chr${chromosome}" \
-"${temporary_directory}/binary-${chromosome}.bed"
+    <(zcat "${binary_file}") \
+    "${BIN_SIZE}" \
+    "chr${chromosome}" \
+    "${temporary_directory}/binary-${chromosome}.bed"
 
 Rscript BimtoBed.R \
-<(cat "${bim_file}") \
-"${temporary_directory}/SNP_positions-${chromosome}.bed"
+    <(cat "${bim_file}") \
+    "${temporary_directory}/SNP_positions-${chromosome}.bed"
 
 ## ----------------------------------- ##
 ##   FIND STATE AND MARK ASSIGNMENTS   ##
@@ -150,26 +148,26 @@ module purge
 module load BEDTools/2.29.2-GCC-9.3.0
 
 bedtools intersect -wb \
--a "${temporary_directory}/SNP_positions-${chromosome}.bed" \
--b "${dense_bed_file}" | \
-awk '{print $7}' > \
-"${temporary_directory}/state_assignments-${chromosome}.txt"
+    -a "${temporary_directory}/SNP_positions-${chromosome}.bed" \
+    -b "${dense_bed_file}" | \
+    awk '{print $7}' > \
+    "${temporary_directory}/state_assignments-${chromosome}.txt"
 
 # We get the mark names at the top of the file for the Rscript that appends
 # these columns to the annotation file later for convenience
 zcat "${binary_file}" | \
-awk 'NR==2 {for(i=1; i<=NF; i++) \
-printf "CELL_TYPE_%s%s", $i, (i==NF ? "\n" : "\t")}' > \
-"${temporary_directory}/mark_assignments-${chromosome}.txt"
+    awk 'NR==2 {for(i=1; i<=NF; i++) \
+    printf "CELL_TYPE_%s%s", $i, (i==NF ? "\n" : "\t")}' > \
+    "${temporary_directory}/mark_assignments-${chromosome}.txt"
 
 sed -i "s/CELL_TYPE/${CELL_TYPE}/g" \
     "${temporary_directory}/mark_assignments-${chromosome}.txt"
 
 bedtools intersect -wb \
--a "${temporary_directory}/SNP_positions-${chromosome}.bed" \
--b "${temporary_directory}/binary-${chromosome}.bed" | \
-awk '{ for (i=7; i<=NF; i++) printf "%s%s", $i, (i<NF ? "\t" : "\n") }' >> \
-"${temporary_directory}/mark_assignments-${chromosome}.txt"
+    -a "${temporary_directory}/SNP_positions-${chromosome}.bed" \
+    -b "${temporary_directory}/binary-${chromosome}.bed" | \
+    awk '{ for (i=7; i<=NF; i++) printf "%s%s", $i, (i<NF ? "\t" : "\n") }' >> \
+    "${temporary_directory}/mark_assignments-${chromosome}.txt"
 
 ## ----------------------- ##
 ##   GENERATE ANNOTATION   ##
@@ -181,11 +179,11 @@ module load R/4.2.1-foss-2022a
 baseline_annot="${LD_BASELINE_DIR}/baselineLD.${chromosome}.annot.gz"
 
 Rscript CreateAnnotationFile.R \
-<(zcat "${baseline_annot}") \
-<(cat "${temporary_directory}/state_assignments-${chromosome}.txt") \
-<(cat "${temporary_directory}/mark_assignments-${chromosome}.txt") \
-"${OPTIMUM_NUMBER_OF_STATES}" \
-"${output_directory}/annotation/ChromOptimise.${chromosome}.annot"
+    <(zcat "${baseline_annot}") \
+    <(cat "${temporary_directory}/state_assignments-${chromosome}.txt") \
+    <(cat "${temporary_directory}/mark_assignments-${chromosome}.txt") \
+    "${OPTIMUM_NUMBER_OF_STATES}" \
+    "${output_directory}/annotation/ChromOptimise.${chromosome}.annot"
 
 rm -rf "${temporary_directory}"
 
@@ -207,12 +205,12 @@ sed "s/22\..*//" \
 )
 
 python \
-"${LD_SOFTWARE_DIR}/ldsc.py" \
---l2 \
---bfile      "${LD_PLINK_DIR}/${plink_prefix}${chromosome}" \
---ld-wind-cm 1 \
---annot      "${output_directory}/annotation/ChromOptimise.${chromosome}.annot" \
---out        "${output_directory}/annotation/ChromOptimise.${chromosome}"
+    "${LD_SOFTWARE_DIR}/ldsc.py" \
+    --l2 \
+    --bfile      "${LD_PLINK_DIR}/${plink_prefix}${chromosome}" \
+    --ld-wind-cm 1 \
+    --annot      "${output_directory}/annotation/ChromOptimise.${chromosome}.annot" \
+    --out        "${output_directory}/annotation/ChromOptimise.${chromosome}"
 
 conda deactivate
 
@@ -234,9 +232,9 @@ if [[ ${SLURM_ARRAY_TASK_ID} -eq 1 ]]; then
     finishing_statement 0; }
 
     sbatch \
-    --dependency=afterok:"${SLURM_ARRAY_JOB_ID}" \
-    5_PartitionedHeritability.sh \
-    "${configuration_directory}"
+        --dependency=afterok:"${SLURM_ARRAY_JOB_ID}" \
+        5_PartitionedHeritability.sh \
+        "${configuration_directory}"
 
     finishing_statement 0
 else
