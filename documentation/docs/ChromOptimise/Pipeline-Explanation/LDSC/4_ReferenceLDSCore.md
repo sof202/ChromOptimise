@@ -1,10 +1,10 @@
 ---
-title: 5_ReferenceLDSCore 
+title: 4_ReferenceLDSCore 
 description: "Calculates the ldscores for annotation files."
 sidebar_position: 1
 ---
 
-# 5_ReferenceLDSCore
+# 4_ReferenceLDSCore
 
 ## Explanation
 
@@ -12,11 +12,6 @@ This is a script that will run 2 R scripts and also
 [LDSC](https://github.com/bulik/ldsc), which outputs information useful for 
 determining if a ChromHMM model has biologically relevant states (not just 
 statistically relevant).
-
-Note that you still need to input the bin size, sample size and the number of 
-models learned here. The reason for this is because the file structure is 
-designed such that multiple runs of the same dataset can be analysed 
-concurrently.
 
 The script achieves this using 
 [partitioned heritability](https://www.nature.com/articles/ng.3404) and 
@@ -31,26 +26,4 @@ from the online repository)
 - Collection of GWAS traits in sumstats format (again, best to get these from 
 the online repository)
 
-## Example usage
 
-```bash
-# Generates annotation and ldscore for each chromosome using the model with
-# 5 states in the model directory
-sbatch 5_ReferenceLDSCore.sh \
---config="path/to/configuration/directory" \
---state=5 \
---binsize=200 \
---samplesize=75 \
---nummodels=6 \
-```
-
-```bash
-# Generates annotation and ldscore for each chromosome using the model with
-# the optimum number of states (as decided by 4_OptimalNumberOfStates) 
-sbatch 5_ReferenceLDSCore.sh \
---config="path/to/configuration/directory" \
---gwas="height" \
---binsize=200 \
---samplesize=75 \
---nummodels=6 \
-```
