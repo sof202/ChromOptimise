@@ -122,7 +122,7 @@ if [[ -s "${bam_CellMarkFileTable}" ]]; then
         "${BINARY_DIR}/BinSize_${BIN_SIZE}/bam"
 fi
 
-if [[ -s "${SUBSAMPLED_DIR}/bed_cellmarkfiletable.txt" ]]; then
+if [[ -s "${bed_CellMarkFileTable}" ]]; then
     echo "Binarizing bed files found in: "\
     "${INPUT_DIRECTORY} using a bin size of: ${BIN_SIZE}."
 
