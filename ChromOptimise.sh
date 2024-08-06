@@ -3,7 +3,7 @@
 ## ========= ##
 ##   SETUP   ##
 ## ========= ##
-#
+
 cat << START_MESSAGE
 Config file used:
 $(cat "${configuration_directory}/Config.txt")
