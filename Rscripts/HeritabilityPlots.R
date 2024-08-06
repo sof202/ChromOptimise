@@ -116,7 +116,11 @@ fdr_correction <- function(pvalues, fdr_threshold) {
   adjusted_pvalues <- p.adjust(pvalues, method = "BH")
   significant_pvalues <-
     subset(adjusted_pvalues, adjusted_pvalues < fdr_threshold)
-  critical_value <- max(significant_pvalues[1:length(significant_pvalues)])
+
+  # I have no fucking idea why this needs to be done. But it does, you'll
+  # get errors as if the vector contains NA/Inf (despite the fact that it
+  # doesn't AT ALLLL).
+  critical_value <- max(significant_pvalues[seq_along(significant_pvalues)])
   return(-log10(critical_value))
 }
 
