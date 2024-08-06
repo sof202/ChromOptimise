@@ -83,12 +83,12 @@ remove_l2_suffix <- function(results) {
   return(results)
 }
 
-pivot_enrichment_data <- function(enrichment_data) {
+pivot_enrichment_data <- function(enrichment_data, column_name) {
   # pivot_longer is so heatmap can be plotted more easily
   enrichment_data <- tidyr::pivot_longer(enrichment_data,
     cols = -Category,
     names_to = "gwas_trait",
-    values_to = "Enrichment"
+    values_to = column_name
   )
   return(enrichment_data)
 }
@@ -151,17 +151,32 @@ write_poor_enrichment_warning <- function(results_files) {
 create_heatmap_data <- function(results_files, complete = FALSE) {
   enrichment_data <- merge_results_files(results_files, "Enrichment")
   enrichment_data <- remove_l2_suffix(enrichment_data)
+
+  enrichment_p_data <- merge_results_files(results_files, "Enrichment_p")
+  enrichment_p_data <- remove_l2_suffix(enrichment_p_data)
+
   if (!complete) {
     state_assignment_rows <-
       grepl(paste0("^", cell_type, ".*"), enrichment_data$Category)
     enrichment_data <- enrichment_data[state_assignment_rows, ]
+    enrichment_p_data <- enrichment_p_data[state_assignment_rows, ]
   }
+
+  enrichment_data <- pivot_enrichment_data(enrichment_data, "Enrichment")
+  enrichment_p_data <- pivot_enrichment_data(enrichment_p_data, "Enrichment_p")
+
+  enrichment_data <- cbind(enrichment_data, enrichment_p_data[, -1])
   return(enrichment_data)
 }
 
-create_enrichment_heatmap <- function(results_files, complete = FALSE) {
+create_enrichment_heatmap <- function(results_files,
+                                      pvalue_threshold,
+                                      complete = FALSE) {
   enrichment_data <- create_heatmap_data(results_files, complete)
-  enrichment_data <- pivot_enrichment_data(enrichment_data)
+
+  bonferroni_threshold <-
+    bonferroni_correction(results_files, pvalue_threshold)
+  fdr_threshold <- fdr_correction(data$Enrichment_p, pvalue_threshold)
 
   negative_palette <- c("red", "pink")
   postitive_palette <- c("lightgreen", "darkgreen")
@@ -169,7 +184,6 @@ create_enrichment_heatmap <- function(results_files, complete = FALSE) {
     ggplot(enrichment_data, aes(gwas_trait,
       Category,
       fill = Enrichment,
-      label = round(Enrichment, 2)
     )) +
     geom_tile(color = "black") +
     scale_fill_gradient2(
@@ -177,7 +191,15 @@ create_enrichment_heatmap <- function(results_files, complete = FALSE) {
       high = postitive_palette,
       midpoint = 0
     ) +
-    geom_text() +
+    geom_text(
+      aes(
+        label =
+          ifelse(Enrichment_p < !!bonferroni_threshold, "**",
+            ifelse(Enrichment_p < !!fdr_threshold, "*", "")
+          )
+      ),
+      color = "black"
+    ) +
     theme(panel.background = element_rect(fill = "white")) +
     labs(title = "Enrichment of GWAS traits", x = "GWAS trait", y = "State") +
     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
@@ -185,7 +207,7 @@ create_enrichment_heatmap <- function(results_files, complete = FALSE) {
 }
 
 create_pvalue_barplots <-
-  function(results_files, pvalue_threshold, fdr_threshold, complete = FALSE) {
+  function(results_files, pvalue_threshold, complete = FALSE) {
     list_of_pvalue_plots <- list()
 
     bonferroni_threshold <-
@@ -246,15 +268,15 @@ create_pvalue_barplots <-
 # assignments. This is because the complete heatmap and bar plots can be
 # difficult to read.
 complete_enrichment_heatmap <-
-  create_enrichment_heatmap(results_files, complete = TRUE)
+  create_enrichment_heatmap(results_files, 0.05, complete = TRUE)
 state_enrichment_heatmap <-
-  create_enrichment_heatmap(results_files)
+  create_enrichment_heatmap(results_files, 0.05)
 
 # pvalue threshold is arbitrarily chosen to be 0.05
 complete_pvalue_barplots <-
-  create_pvalue_barplots(results_files, 0.05, 0.05, complete = TRUE)
+  create_pvalue_barplots(results_files, 0.05, complete = TRUE)
 state_pvalue_barplots <-
-  create_pvalue_barplots(results_files, 0.05, 0.05)
+  create_pvalue_barplots(results_files, 0.05)
 
 names(complete_pvalue_barplots) <- names(results_files)
 names(state_pvalue_barplots) <- names(results_files)
