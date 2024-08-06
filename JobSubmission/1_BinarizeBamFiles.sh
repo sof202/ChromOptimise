@@ -18,45 +18,10 @@
 #SBATCH --error=temp%j.err
 #SBATCH --job-name=2_Binarization
 
-## ===========================================================================##
-##                                                                            ||
-##                                  PREAMBLE                                  ||
-##                                                                            ||
-## ===========================================================================##
-## PURPOSE:                                                                   ||
-## The subsampled files for each mark will now be binarized through the use   ||
-## of ChromHMM's BinarizeBam command. This script is to be ran after all of   ||
-## the epigenetic marks that one wants to inspect have been subsampled. The   ||
-## .bam files need to be binarized before they can be used by ChromHMM's      ||
-## LearnModel command.                                                        ||
-## ===========================================================================##
-## AUTHOR: Sam Fletcher                                                       ||
-## CONTACT: s.o.fletcher@exeter.ac.uk                                         ||
-## CREATED: November 2023                                                     ||
-## ===========================================================================##
-## PREREQUISITES: Run: 1_SubsampleBamFiles.sh                                 ||
-## ===========================================================================##
-## DEPENDENCIES: Java, ChromHMM                                               ||
-## ===========================================================================##
-## INPUTS:                                                                    ||
-## -c|--config=     -> Full/relative file path for configuation file directory||
-## -b|--binsize=    -> Bin size to be used by BinarizeBam command             ||
-##                     (default: 200)                                         ||
-## -s|--samplesize= -> Sample size used in 3_SubsampleBamFiles.sh             ||
-## -a|--assembly=   -> The assembly to use (default: hg19)                    ||
-## ===========================================================================##
-## OUTPUTS:                                                                   ||
-## Binary signal files for every chromosome in the dataset                    ||
-## ===========================================================================##
-
-## ===================== ##
-##   ARGUMENT PARSING    ##
-## ===================== ##
-
 usage() {
 cat <<EOF
 ================================================================================
-2_BinarizeBamFiles
+1_BinarizeBamFiles
 ================================================================================
 Purpose: Creates a 'cell mark file table' and uses ChromHMM's BinarizeBam 
 command to binarize bam files.

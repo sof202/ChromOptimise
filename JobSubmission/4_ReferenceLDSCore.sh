@@ -20,59 +20,13 @@
 #SBATCH --error=temp%A_%a.err
 #SBATCH --job-name=5_ReferenceLDSCore
 
-## ===========================================================================##
-##                                                                            ||
-##                                  PREAMBLE                                  ||
-##                                                                            ||
-## ===========================================================================##
-## PURPOSE:                                                                   ||
-## Creates partitioned heritability results using ldsc (linkage               ||
-## disequilibrium scores) for a selection of gwas traits. The partitions      ||
-## obviously being the state assignments from ChromHMM. These results files   ||
-## are then converted into heatmaps. The outputs are useful in sense checking ||
-## that a state assignment is biologically relevant (and not just             ||
-## statistically relevant)                                                    ||
-##                                                                            ||
-## In order for this to work, you will need to download 1000 genomes project  ||
-## files from: https://zenodo.org/records/10515792                            ||
-## ===========================================================================##
-## AUTHOR: Sam Fletcher                                                       ||
-## CONTACT: s.o.fletcher@exeter.ac.uk                                         ||
-## CREATED: March 2023                                                        ||
-## ===========================================================================##
-## PREREQUISITES: Run: 3_batch_CreateIncrementalModels.sh                     ||
-##                     4_OptimalNumberOfStates.sh                             ||
-##                Create ldsc conda environment (follow instructions on       ||
-##                GitHub page: https://github.com/bulik/ldsc)                 ||
-## ===========================================================================##
-## DEPENDENCIES: R, LDSC, gwas traits (BED files), conda                      ||
-##               1000 genomes files (plink files, weights)                    ||
-## ===========================================================================##
-## INPUTS:                                                                    ||
-## -c|--config=     -> Full/relative file path for configuation file directory||
-## -t|--state=      -> (Override) Optimal number of states. Use this if you   ||
-##                     want to look at the results for a different model.     ||
-## -b|--binsize=    -> The bin size used in 4_BinarizeBamFiles                ||
-## -s|--samplesize= -> The sample size used in 3_SubsampleBamFiles            ||
-## -n|--nummodels=  -> Number of models to learn (default: 4)                 ||
-## ===========================================================================##
-## OUTPUTS:                                                                   ||
-## Annotation files for each chromosome (annotations being all baseline       ||
-## categories and state assignments from ChromHMM).                           ||
-## LD scores for each category for each chromosome.                           ||
-## ===========================================================================##
-
-
-## ===================== ##
-##   ARGUMENT PARSING    ##
-## ===================== ##
-
 usage() {
 cat <<EOF
 ===========================================================================
-5_ReferenceLDSCore
+4_ReferenceLDSCore
 ===========================================================================
-Purpose: Generates reference LD scores after generating annotation files
+Purpose: Generates annotation files based on baseline annotations (LDSC)
+and ChromHMM state annotations. Obtains LDSCores from said annotation.
 Author: Sam Fletcher
 Contact: s.o.fletcher@exeter.ac.uk
 Dependencies: R, LDSC, gwas traits, 1000 genomes files

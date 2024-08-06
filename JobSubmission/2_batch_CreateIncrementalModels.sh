@@ -24,60 +24,10 @@
 #SBATCH --error=temp%A_%a.err
 #SBATCH --job-name=3_Model_Learning
 
-## ===========================================================================##
-##                                                                            ||
-##                                  PREAMBLE                                  ||
-##                                                                            ||
-## ===========================================================================##
-## PURPOSE:                                                                   ||
-## Uses ChromHMM's LearnModel command to generate models with increasing      ||
-## numbers of states. The idea here is to increment the number of states in   ||
-## the HMM so that they can later be compared when testing for redundant      ||
-## states, allowing for an 'intelligent' choice for the number of states in   ||
-## the model.                                                                 ||
-##                                                                            ||
-## IMPORTANT NOTE: The number of states in any one model cannot exceed 2^k,   ||
-## where k is the number of marks in the binary files. This is because the    ||
-## 'information' method is being used by ChromHMM's LearnModel command for    ||
-## reproducability. This 2^k limit is a hard cap, but depending on the data,  ||
-## a smaller soft cap may exist.                                              ||
-## ChromHMM outputs the maximum number of states allowed if the cap is        ||
-## exceeded, check the error logs for this message.                           ||
-## ===========================================================================##
-## AUTHOR: Sam Fletcher                                                       ||
-## CONTACT: s.o.fletcher@exeter.ac.uk                                         ||
-## CREATED: November 2023                                                     ||
-## ===========================================================================##
-## PREREQUISITES: Run 2_BinarizeBamFiles.sh                                   ||
-## ===========================================================================##
-## DEPENDENCIES: Java, ChromHMM                                               ||
-## ===========================================================================##
-## INPUTS:                                                                    ||
-## -c|--config=     -> Full/relative file path for configuation file directory||
-## -n|--nummodels=  -> Number of models to learn (default: 4)                 ||
-## -b|--binsize=    -> The bin size used in 4_BinarizeBamFiles                ||
-## -s|--samplesize= -> The sample size used in 3_SubsampleBamFiles            ||
-## -a|--assembly=   -> The assembly to use (default: hg19)                    ||
-## -r|--iterations= -> The maximum number of iterations for ChromHMM          ||
-##                     (default: 200)                                         ||
-## ===========================================================================##
-## OUTPUTS:                                                                   ||
-## Emission parameter matrix for models (.png, .txt and .svg)                 ||
-## Transition parameter matrix for models (.png, .txt and .svg)               ||
-## Full model files                                                           ||
-## The overlap and fold enrichment with existing genomic annotations for      ||
-##   models                                                                   ||
-## The maximum achieved estimated log likelihood achieved by each model       ||
-## ===========================================================================##
-
-## ===================== ##
-##   ARGUMENT PARSING    ##
-## ===================== ##
-
 usage() {
 cat <<EOF
 ================================================================================
-3_batch_CreateIncrementalModels
+2_batch_CreateIncrementalModels
 ================================================================================
 Purpose: Uses ChromHMM's LearnModel command to generate several models
 with increasing numbers of states.

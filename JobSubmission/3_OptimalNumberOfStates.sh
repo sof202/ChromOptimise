@@ -19,65 +19,12 @@
 #SBATCH --error=temp%j.err
 #SBATCH --job-name=4_Optimal_States
 
-## ===========================================================================##
-##                                                                            ||
-##                                  PREAMBLE                                  ||
-##                                                                            ||
-## ===========================================================================##
-## PURPOSE:                                                                   ||
-## Determines the optimum number of states by searching for redundant states  ||
-## in the model files (starting with most complex). Redundant states are      ||
-## states that satisfy the following criteria:                                ||
-##  (i) The state's emissions parameter vector is close to another state's    ||
-##      under the Euclidean distance metric,                                  ||
-## (ii) The state's transition parameter vector (towards the state) has a low ||
-##      maximum value.                                                        ||
-##                                                                            ||
-## If a model has redundant states it is rejected in favour of a simpler      ||
-## model. This then repeats, iterating across smaller and smaller models      ||
-## until no no redundant states are found.                                    ||
-##                                                                            ||
-## The script also creates a plot of the estimated log likelihood and the     ||
-## relative Bayesian information critereon against the number of states in    ||
-## each model for further analysis.                                           ||
-##                                                                            ||
-## ===========================================================================##
-## AUTHOR: Sam Fletcher                                                       ||
-## CONTACT: s.o.fletcher@exeter.ac.uk                                         ||
-## CREATED: December 2023                                                     ||
-## ===========================================================================##
-## PREREQUISITES: Run: 3_batch_CreateIncrementalModels.sh                     ||
-## ===========================================================================##
-## DEPENDENCIES: R                                                            ||
-## ===========================================================================##
-## INPUTS:                                                                    ||
-## -c|--config=     -> Full/relative file path for configuation file directory||
-## -h|--chromosome= -> The chromosome to look at the isolation score for      ||
-##                     (default:1)                                            ||
-## -b|--binsize=    -> The bin size used in 4_BinarizeBamFiles                ||
-## -s|--samplesize= -> The sample size used in 3_SubsampleBamFiles            ||
-## -n|--nummodels=  -> Number of models to learn (default: 4)                 ||
-## ===========================================================================##
-## OUTPUTS:                                                                   ||
-## File containing why models with too many states were rejected              ||
-## The optimum number of states to use with the data                          ||
-## Plot between estimated log likelihood and number of states                 ||
-## Plot between relative Akaike information critereon and the number of states||
-## Plot between relative Bayesian information critereon and the number of     ||
-##   states                                                                   ||
-## ===========================================================================##
-
-
-## ===================== ##
-##   ARGUMENT PARSING    ##
-## ===================== ##
-
 usage() {
 cat <<EOF
 ===========================================================================
-4_OptimalNumberOfStates
+3_OptimalNumberOfStates
 ===========================================================================
-Purpose: Determines the optimum number of states to use with the data.
+Purpose: Determines the optimum number of states to use with your dataset
 Author: Sam Fletcher
 Contact: s.o.fletcher@exeter.ac.uk
 Dependencies: R

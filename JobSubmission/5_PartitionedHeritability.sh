@@ -20,47 +20,10 @@
 #SBATCH --error=temp%j.err
 #SBATCH --job-name=6_Heritability
 
-## ===========================================================================##
-##                                                                            ||
-##                                  PREAMBLE                                  ||
-##                                                                            ||
-## ===========================================================================##
-## PURPOSE:                                                                   ||
-## This script will use ldsc to calculate the partitioned heritability for    ##
-## each gwas trait. It is automatically called by 7_ReferenceLDSCore.sh.      ##
-## After generating the results files, heatmaps of enrichment and bar plots   ##
-## for the p-values of these enrichments                                      ##
-## ===========================================================================##
-## AUTHOR: Sam Fletcher                                                       ||
-## CONTACT: s.o.fletcher@exeter.ac.uk                                         ||
-## CREATED: March 2023                                                        ||
-## ===========================================================================##
-## PREREQUISITES: Run 5_ReferenceLDSCore.sh                                   ||
-## ===========================================================================##
-## DEPENDENCIES: R, LDSC, gwas traits (BED files), conda                      ||
-##               1000 genomes files (plink files, weights)                    ||
-## ===========================================================================##
-## INPUTS:                                                                    ||
-## -c|--config=     -> Full/relative file path for configuation file directory||
-## -b|--binsize=    -> The bin size used in 4_BinarizeBamFiles                ||
-## -s|--samplesize= -> The sample size used in 3_SubsampleBamFiles            ||
-## -n|--nummodels=  -> Number of models to learn (default: 4)                 ||
-## ===========================================================================##
-## OUTPUTS:                                                                   ||
-## Results files for paritioned heritability for each GWAS trait              ||
-## Heatmap of enrichments from partitioned heritability for each GWAS trait   ||
-## Bar plots for enrichment p values for each GWAS trait                      ||
-## ===========================================================================##
-
-
-## ===================== ##
-##   ARGUMENT PARSING    ##
-## ===================== ##
-
 usage() {
 cat <<EOF
 ===========================================================================
-6_PartitionedHeritability
+5_PartitionedHeritability
 ===========================================================================
 Purpose: Determines and plots partitioned heritability using LDSC
 Author: Sam Fletcher
