@@ -34,12 +34,9 @@ declare -A jobID
 if [[ "${STARTING_SCRIPT}" -eq 1 ]]; then
     jobID[binarization]=$( \
     sbatch \
-    --time="${MAXTIME_2}" \
+    --time="${MAXTIME_1}" \
     "${JOBSUBMISSION_DIR}/1_BinarizeBamFiles.sh" \
-    --config="${configuration_directory}" \
-    --binsize="${BIN_SIZE}" \
-    --samplesize="${SAMPLE_SIZE}" \
-    --assembly="${ASSEMBLY}" | \
+    "${configuration_directory}" | \
     awk '{print $4}' \
     )
 

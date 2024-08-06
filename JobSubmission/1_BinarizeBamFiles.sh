@@ -29,69 +29,42 @@ Author: Sam Fletcher
 Contact: s.o.fletcher@exeter.ac.uk
 Dependencies: Java, ChromHMM
 Inputs:
--c|--config=    -> Full/relative file path for configuation file directory
--i|--input=     -> Input directory holding bed/bam files
--b|--binsize=   -> Bin size to be used by BinarizeBam command (default: 200)
--a|--assembly=  -> The assembly to use (default: hg19)
+\$1 -> Full/relative file path for configuation file directory
 ================================================================================
 EOF
     exit 0
 }
 
-needs_argument() {
-    # Required check in case user uses -a -b or -b -a (no argument given).
-    if [[ -z "$OPTARG" || "${OPTARG:0:1}" == - ]]; then usage; fi
-}
-
-if [[ ! $1 =~ -.* ]]; then usage; fi
-
-while getopts c:b:i:a:-: OPT; do
-    # Adds support for long options by reformulating OPT and OPTARG
-    # This assumes that long options are in the form: "--long=option"
-    if [ "$OPT" = "-" ]; then
-        OPT="${OPTARG%%=*}"
-        OPTARG="${OPTARG#"$OPT"}"
-        OPTARG="${OPTARG#=}"
-    fi
-    case "$OPT" in
-        c | config )       needs_argument; configuration_directory="$OPTARG" ;;
-        i | input )        needs_argument; input_directory="$OPTARG" ;;
-        b | binsize )      needs_argument; bin_size="$OPTARG" ;;
-        a | assembly )     needs_argument; assembly="$OPTARG" ;;
-        \? )               usage ;;  # Illegal short options are caught by getopts
-        * )                usage ;;  # Illegal long option
-    esac
-done
-shift $((OPTIND-1))
+if [[ $# -eq 0 ]]; then usage; fi
 
 ## ============ ##
 ##    SET UP    ##
 ## ============ ##
 
-source "${configuration_directory}/FilePaths.txt" || \
+configuration_directory=$1
+
+source "${configuration_directory}/Config.txt" || \
 { echo "The configuration file does not exist in the specified location: \
 ${configuration_directory}"; exit 1; }
 
-source "${WRAPPER_SCRIPT}" || \
-{ echo "The log file management script does not exist in the specified \
-location: ${configuration_directory}"; exit 1; }
+source "${WRAPPER_SCRIPT}" || exit 1
 
 ## =============== ##
 ##    VARIABLES    ##
 ## =============== ##
 
 ## ====== DEFAULTS =============================================================
-if ! [[ "${bin_size}" =~ ^[0-9]+$ ]]; then
-    bin_size=200
-    echo "Invalid bin size given, using the default value of ${bin_size}" \
+if ! [[ "${BIN_SIZE}" =~ ^[0-9]+$ ]]; then
+    BIN_SIZE=200
+    echo "Invalid bin size given, using the default value of ${BIN_SIZE}" \
     "instead."
 fi
 
 
-if [[ -z "${assembly}" ]]; then
-    assembly=hg19
+if [[ -z "${ASSEMBLY}" ]]; then
+    ASSEMBLY=hg19
     echo "No assembly was given, using the default value of" \
-    "${assembly} instead."
+    "${ASSEMBLY} instead."
 fi
 ## =============================================================================
 
@@ -99,29 +72,29 @@ fi
 ##    CREATE CELL MARK FILE TABLE    ##
 ## ================================= ##
 
-# As we have already merged files in 3_SubsampleBamFiles.sh, the cell mark
-# file table will just be 1 file for each mark that has been processed. The
-# only added level of complexity is obtaining the mark name from the file names.
-
 bam_CellMarkFileTable="${BINARY_DIR}/bed_cellmarkfiletable.txt"
 rm -f "${bam_CellMarkFileTable}" 
-for file in "${input_directory}"/*.bam; do
-    # We're assuming here that there is only one cell type inspected
+for file in "${INPUT_DIRECTORY}"/*.bam; do
     echo -ne "${CELL_TYPE}\t" >> \
     "${bam_CellMarkFileTable}"
-    # The subsampled files are named: subsampled.[SampleSize].[mark_name].bam. 
-    # Below extracts the mark name
-    mark_name=$(echo "$file" | cut -d "." -f 3) 
+
+    # Assumed that mark names are given in file names
+    file_name=$(basename "$file") 
+    mark_name=${file_name%.*}
+
     echo -ne "${mark_name}\t" >> "${bam_CellMarkFileTable}"
     echo "$file" >> "${bam_CellMarkFileTable}"
 done
 
 bed_CellMarkFileTable="${BINARY_DIR}/bed_cellmarkfiletable.txt"
 rm -f "${bed_CellMarkFileTable}" 
-for file in "${input_directory}"/*.bed; do
+for file in "${INPUT_DIRECTORY}"/*.bed; do
     echo -ne "${CELL_TYPE}\t" >> \
     "${bed_CellMarkFileTable}"
-    mark_name=$(echo "$file" | cut -d "." -f 3) 
+
+    file_name=$(basename "$file") 
+    mark_name=${file_name%.*}
+
     echo -ne "${mark_name}\t" >> "${bed_CellMarkFileTable}"
     echo "$file" >> "${bed_CellMarkFileTable}"
 done
@@ -130,63 +103,63 @@ done
 ##    BINARIZATION USING CHROMHMM    ##
 ## ================================= ##
 
-rm -rf "${BINARY_DIR}/BinSize_${bin_size}"
-mkdir -p "${BINARY_DIR}/BinSize_${bin_size}"
+rm -rf "${BINARY_DIR}/BinSize_${BIN_SIZE}"
+mkdir -p "${BINARY_DIR}/BinSize_${BIN_SIZE}"
 
 module purge
 module load Java
 
 if [[ -s "${bam_CellMarkFileTable}" ]]; then
     echo "Binarizing bam files found in: "\
-    "${input_directory} using a bin size of: ${bin_size}."
+    "${INPUT_DIRECTORY} using a bin size of: ${BIN_SIZE}."
 
     java -mx4G \
     -jar "${CHROMHMM_MAIN_DIR}/ChromHMM.jar" \
     BinarizeBam \
-    -b "${bin_size}" \
+    -b "${BIN_SIZE}" \
     -gzip \
-    "${CHROMHMM_CHROM_SIZES}/${assembly}.txt" \
-    "${input_directory}" \
+    "${CHROMHMM_CHROM_SIZES}/${ASSEMBLY}.txt" \
+    "${INPUT_DIRECTORY}" \
     "${BINARY_DIR}/bam_cellmarkfiletable.txt" \
-    "${BINARY_DIR}/BinSize_${bin_size}/bam"
+    "${BINARY_DIR}/BinSize_${BIN_SIZE}/bam"
 fi
 
 if [[ -s "${SUBSAMPLED_DIR}/bed_cellmarkfiletable.txt" ]]; then
     echo "Binarizing bed files found in: "\
-    "${input_directory} using a bin size of: ${bin_size}."
+    "${INPUT_DIRECTORY} using a bin size of: ${BIN_SIZE}."
 
     java -mx4G \
     -jar "${CHROMHMM_MAIN_DIR}/ChromHMM.jar" \
     BinarizeBed \
-    -b "${bin_size}" \
+    -b "${BIN_SIZE}" \
     -gzip \
-    "${CHROMHMM_CHROM_SIZES}/${assembly}.txt" \
-    "${input_directory}" \
-    "${BINARY_DIR}/bam_cellmarkfiletable.txt" \
-    "${BINARY_DIR}/BinSize_${bin_size}/bed"
+    "${CHROMHMM_CHROM_SIZES}/${ASSEMBLY}.txt" \
+    "${INPUT_DIRECTORY}" \
+    "${BINARY_DIR}/bed_cellmarkfiletable.txt" \
+    "${BINARY_DIR}/BinSize_${BIN_SIZE}/bed"
 fi
 
 java -mx4G \
 -jar "${CHROMHMM_MAIN_DIR}/ChromHMM.jar" \
 MergeBinary \
 -gzip \
-"${BINARY_DIR}/BinSize_${bin_size}" \
-"${BINARY_DIR}/BinSize_${bin_size}"
+"${BINARY_DIR}/BinSize_${BIN_SIZE}" \
+"${BINARY_DIR}/BinSize_${BIN_SIZE}"
 
 ## ============ ##
 ##   CLEAN UP   ##
 ## ============ ##
 
-rm -r "${BINARY_DIR}/BinSize_${bin_size}/bam" \
-    "${BINARY_DIR}/BinSize_${bin_size}/bed" \
+rm -r "${BINARY_DIR}/BinSize_${BIN_SIZE}/bam" \
+    "${BINARY_DIR}/BinSize_${BIN_SIZE}/bed" \
     "${bam_CellMarkFileTable}" "${bed_CellMarkFileTable}"
 
 # Non-autosomal chromosomes are not factored into ldsc step of the pipeline
 # so we minimise their impact by deleting their associated binary files
-find "${BINARY_DIR}/BinSize_${bin_size}" \
+find "${BINARY_DIR}/BinSize_${BIN_SIZE}" \
 -type f \
-! -name "ChromOptimise_chr[0-9]_binary.txt.gz" \
--a ! -name "ChromOptimise_chr[0-9][0-9]_binary.txt.gz" \
+! -name "*_chr[0-9]_binary.txt.gz" \
+-a ! -name "*_chr[0-2][0-9]_binary.txt.gz" \
 -exec rm {} \;
 
 finishing_statement 0
