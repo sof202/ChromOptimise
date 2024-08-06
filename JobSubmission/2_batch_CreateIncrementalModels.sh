@@ -4,8 +4,8 @@
 # Submit to the mrc queue for faster queue times
 #SBATCH -p mrcq
 # Consult information/Processing_Times.md for expected time
-# Forward backwards algorithm has time complexity of O(N^2T), where T is the number of
-# genomic bins and N is the number of states
+# Forward backwards algorithm has time complexity of O(N^2T), where T is the 
+# number of genomic bins and N is the number of states
 #SBATCH --time=01:00:00 
 #SBATCH -A Research_Project-MRC190311 
 #SBATCH --nodes=1 
@@ -22,7 +22,7 @@
 #SBATCH --output=temp%A_%a.log
 # Temporary error file, later to be removed
 #SBATCH --error=temp%A_%a.err
-#SBATCH --job-name=3_Model_Learning
+#SBATCH --job-name=2_Model_Learning
 
 usage() {
 cat <<EOF
@@ -35,118 +35,47 @@ Author: Sam Fletcher
 Contact: s.o.fletcher@exeter.ac.uk
 Dependencies: Java, ChromHMM
 Inputs:
--c|--config=     -> Full/relative file path for configuation file directory
--n|--nummodels=  -> Number of models to learn (default: 4)
--b|--binsize=    -> The bin size used in 4_BinarizeBamFiles
--s|--samplesize= -> The sample size used in 3_SubsampleBamFiles
--a|--assembly=   -> The assembly to use (default: hg19)
--r|--iterations= -> The maximum number of iterations for ChromHMM (default: 200)
+\$1 -> Full/relative file path for configuation file directory
 ================================================================================
 EOF
     exit 0
 }
 
-needs_argument() {
-    # Required check in case user uses -a -b or -b -a (no argument given).
-    if [[ -z "$OPTARG" || "${OPTARG:0:1}" == - ]]; then usage; fi
-}
-
-if [[ ! $1 =~ -.* ]]; then usage; fi
-
-while getopts c:n:i:b:s:a:r:-: OPT; do
-    # Adds support for long options by reformulating OPT and OPTARG
-    # This assumes that long options are in the form: "--long=option"
-    if [ "$OPT" = "-" ]; then
-        OPT="${OPTARG%%=*}"
-        OPTARG="${OPTARG#"$OPT"}"
-        OPTARG="${OPTARG#=}"
-    fi
-    case "$OPT" in
-        c | config )       needs_argument; configuration_directory="$OPTARG" ;;
-        n | nummodels)     needs_argument; number_of_models_to_generate="$OPTARG" ;;
-        b | binsize )      needs_argument; bin_size="$OPTARG" ;;
-        s | samplesize )   needs_argument; sample_size="$OPTARG" ;;
-        a | assembly )     needs_argument; assembly="$OPTARG" ;;
-        r | iterations)    needs_argument; max_iterations="$OPTARG" ;;
-        \? )               usage ;;  # Illegal short options are caught by getopts
-        * )                usage ;;  # Illegal long option
-    esac
-done
-shift $((OPTIND-1))
+if [[ $# -eq 0 ]]; then usage; fi
 
 ## ============ ##
 ##    SET UP    ##
 ## ============ ##
 
-source "${configuration_directory}/FilePaths.txt" || \
+configuration_directory=$1
+
+source "${configuration_directory}/Config.txt" || \
 { echo "The configuration file does not exist in the specified location: \
 ${configuration_directory}"; exit 1; }
 
-# If a configuration file is changed during analysis, it is hard to tell
-# what configuration was used for a specific run through, below accounts for 
-# this
-echo "Configuration file used with this script: \
-${configuration_directory}/FilePaths.txt"
-echo ""
-cat "${configuration_directory}/FilePaths.txt"
-echo ""
-
-source "${configuration_directory}/LogFileManagement.sh" || \
-{ echo "The log file management script does not exist in the specified \
-location: ${configuration_directory}"; exit 1; }
-
-
-
-# Temporary log files are moved like this as SLURM cannot create directories.
-# The alternative would be forcing the user to create the file structure
-# themselves and using full file paths in the SLURM directives (bad)
-mv "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.log" \
-"${LOG_FILE_PATH}/${SLURM_ARRAY_JOB_ID}~${SLURM_ARRAY_TASK_ID}~${timestamp:=}.log"
-mv "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err" \
-"${LOG_FILE_PATH}/${SLURM_ARRAY_JOB_ID}~${SLURM_ARRAY_TASK_ID}~$timestamp.err"
+source "${WRAPPER_SCRIPT}" || exit 1
 
 ## =============== ##
 ##    VARIABLES    ##
 ## =============== ##
 
 ## ====== DEFAULTS =============================================================
-if ! [[ "${number_of_models_to_generate}" =~ ^[0-9]+$ ]]; then
-    number_of_models_to_generate=4
-    echo "Value for 'number of models to generate' is invalid."
-    echo "Using the default value of: ${number_of_models_to_generate} instead."
+if ! [[ "${NUMBER_OF_MODELS}" =~ ^[0-9]+$ ]]; then
+    NUMBER_OF_MODELS=4
+    echo "Invalid value of number of models to learn given."
+    echo "Using the default value of: ${NUMBER_OF_MODELS} instead."
 fi
 
-if ! [[ "${max_iterations}" =~ ^[0-9]+$ ]]; then
-    max_iterations=200
+if ! [[ "${MAX_ITERATIONS}" =~ ^[0-9]+$ ]]; then
+    MAX_ITERATIONS=200
     echo "Invalid max iterations given, using the default value of" \
-    "${max_iterations} instead."\
-    
+    "${MAX_ITERATIONS} instead."
 fi
 
-if ! [[ "${bin_size}" =~ ^[0-9]+$  || "${sample_size}" =~ ^[0-9]+$ ]]; then
-    cd "${BINARY_DIR}" || \
-    { >&2 echo "ERROR: [\${BINARY_DIR} - ${BINARY_DIR}] doesn't exist, \
-    make sure FilePaths.txt is pointing to  the correct directory."
-    finishing_statement 1; }
-
-    # The bin size and sample size are given in the file names of the binary
-    # files. The following two commands find the first binary file in the
-    # binary directory and extract the bin and sample size. Which, given
-    # the directory structure, will be the 9th and 7th fields respectively
-    # of the file path when delimited by underscores.
-    bin_size=$(find . -type f -name "*.txt*.gz" | head -1 | cut -d "_" -f 9)
-    sample_size=$(find . -type f -name "*.txt*.gz" | head -1 | cut -d "_" -f 7)
-    
-    echo "Bin size or sample size given is invalid."
-    echo "Using the following values instead."
-    echo "Bin size: ${bin_size}. Sample Size: ${sample_size}."
-fi
-
-
-if [[ -z "${assembly}" ]]; then
-    assembly=hg19
+if [[ -z "${ASSEMBLY}" ]]; then
+    ASSEMBLY=hg19
     echo "No assembly was given, using the default value of" \
-    "${assembly} instead."
+    "${ASSEMBLY} instead."
 fi
 # ==============================================================================
 
@@ -154,34 +83,34 @@ fi
 ##   CLEAN UP AND ERROR CATCHING   ##
 ## =============================== ##
 
-full_binary_path="${BINARY_DIR}/BinSize_${bin_size}_SampleSize_${sample_size}"
+full_binary_path="${BINARY_DIR}/BinSize_${BIN_SIZE}"
 
-cd "${full_binary_path}" || \
-{ >&2 echo -e "ERROR: Binary directory for bin/sample size is empty.\n" \
-"Ensure that 4_BinarizeBamFiles.sh has been ran before this script."
-finishing_statement 1; }
-
-# Clean up from previous runs of script
-output_directory="${MODEL_DIR:?}\
-/BinSize_${bin_size}_SampleSize_${sample_size}_${number_of_models_to_generate}"
-
-# Avoid stale file handles by only deleting directory structure once
-if [[ "${SLURM_ARRAY_TASK_ID}" -eq 1 ]]; then
-    rm -rf "${output_directory}"
-    mkdir -p "${output_directory}/Likelihood_Values"
-    mkdir -p "${output_directory}/STATEBYLINE"
+if [[ ! -d ${full_binary_path} ]]; then
+   >&2 echo "ERROR: Binary directory for ${BIN_SIZE} is empty." \
+   "Ensure that 1_BinarizeFiles.sh has been ran before this script."
+   finishing_statement 1
 fi
 
+output_directory="${MODEL_DIR}/BinSize_${BIN_SIZE}_models_${NUMBER_OF_MODELS}"
+
+if [[ "${SLURM_ARRAY_TASK_ID}" -eq 1 ]]; then
+    rm -rf "${output_directory}"
+    mkdir -p \
+        "${output_directory}/Likelihood_Values" \
+        "${output_directory}/STATEBYLINE"
+fi
+
+# Ensures all array tasks have correct output directory structure before model
+# learning (avoiding stale file handles)
 sleep 5
 cd "${output_directory}/Likelihood_Values" || finishing_statement 1
-
 
 ## ========================== ##
 ##   PARALLELISATION SET UP   ##
 ## ========================== ##
 
-number_of_models_per_array=$((number_of_models_to_generate / SLURM_ARRAY_TASK_COUNT))
-remainder=$((number_of_models_to_generate % SLURM_ARRAY_TASK_COUNT))
+number_of_models_per_array=$((NUMBER_OF_MODELS / SLURM_ARRAY_TASK_COUNT))
+remainder=$((NUMBER_OF_MODELS % SLURM_ARRAY_TASK_COUNT))
 
 # By default, we assume that the user wants to learn every model from 2 upwards
 states_increment=1
@@ -216,53 +145,49 @@ sequence=$(\
 seq "$starting_number_of_states" "$states_increment" "$ending_number_of_states"\
 )
 
-echo "Learning models using a bin size of ${bin_size}..." 
+echo "Learning models using a bin size of ${BIN_SIZE}..." 
 
-# Main loop
 for numstates in ${sequence}; do
     echo "Learning model with: ${numstates} states..."
 
     # -noautoopen used so html files are not opened after model learning finshes.
     # -printstatebyline used to get the state assignment for isolation metrics
     java -mx4G \
-    -jar "${CHROMHMM_MAIN_DIR}/ChromHMM.jar" LearnModel \
+    -jar "${CHROMHMM_MAIN_DIR}/ChromHMM.jar" \
+    LearnModel \
     -noautoopen \
     -printstatebyline \
-    -b "${bin_size}" \
-    -r "${max_iterations}" \
-    "${full_binary_path}" "${output_directory}" "${numstates}" "${assembly}" > \
-    "ChromHMM.output.numstates.${numstates}.txt"
+    -b "${BIN_SIZE}" \
+    -r "${MAX_ITERATIONS}" \
+    "${full_binary_path}" \
+    "${output_directory}" \
+    "${numstates}" \
+    "${ASSEMBLY}" > \
+    "ChromHMM_output_numstates_${numstates}.txt"
 
-    echo "Writing estimated log likelihood to: likelihoods.txt"
+    echo "Writing estimated log likelihood to: likelihoods.txt..."
     echo "Estimated Log Likelihood for ${numstates} states: " >> \
     "likelihoods.txt"
 
     # grep selects terminal logs that are not associated with writing to files.
-    grep "  " "ChromHMM.output.numstates.${numstates}.txt" | \
+    grep "  " "ChromHMM_output_numstates_${numstates}.txt" | \
     tail -1 | \
     awk '{print $2}' >> \
     "likelihoods.txt"
 
     # Instead of storing chromHMM's log file in a separate location, it is
     # easier to just store the log in the existing log file
-    grep "  " "ChromHMM.output.numstates.${numstates}.txt" >> \
-    "${LOG_FILE_PATH}/${SLURM_ARRAY_JOB_ID}~${SLURM_ARRAY_TASK_ID}~${timestamp}.log"
+    grep "  " "ChromHMM_output_numstates_${numstates}.txt" >> \
+    "${LOG_FILE_PATH}/${SLURM_ARRAY_JOB_ID}~${SLURM_ARRAY_TASK_ID}~${timestamp:=}.log"
 
-    rm "ChromHMM.output.numstates.${numstates}.txt"
+    rm "ChromHMM_output_numstates_${numstates}.txt"
 done
 
-## ========================= ##
-##   RENAMING OUTPUT FILES   ##
-## ========================= ##
-
-# ChromHMM's output file names are not particularly descriptive for this
-# pipeline. A key feature of this pipeline is the bin and sample size used
-# The below code is in place to rename our output files so that this information
-# can be inferred from the file names.
-
-cd "${output_directory}" || finishing_statement 1
+## ============ ##
+##   CLEAN UP   ##
+## ============ ##
 
 # html files are not required for subsequent analysis
-rm ./*.html
+rm "${output_directory}"/*.html
 
 finishing_statement 0

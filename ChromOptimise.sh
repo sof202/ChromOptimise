@@ -35,12 +35,12 @@ if [[ "${STARTING_SCRIPT}" -eq 1 ]]; then
     jobID[binarization]=$( \
     sbatch \
     --time="${MAXTIME_1}" \
-    "${JOBSUBMISSION_DIR}/1_BinarizeBamFiles.sh" \
+    "${JOBSUBMISSION_DIR}/1_BinarizeFiles.sh" \
     "${configuration_directory}" | \
     awk '{print $4}' \
     )
 
-    echo "Submitted 1_BinarizeBamFiles.sh under job ID:"
+    echo "Submitted 1_BinarizeFiles.sh under job ID:"
     echo "${jobID[binarization]}"
 fi
 ## -------------------------------------------------------------------------- ##
@@ -53,11 +53,7 @@ if [[ "${STARTING_SCRIPT}" -eq 2 ]]; then
     --time="${MAXTIME_2}" \
     --array=1-"${MODEL_LEARNING_ARRAY_SIZE}" \
     "${JOBSUBMISSION_DIR}/2_batch_CreateIncrementalModels.sh" \
-    --config="${configuration_directory}" \
-    --nummodels="${NUMBER_OF_MODELS}" \
-    --binsize="${BIN_SIZE}" \
-    --samplesize="${SAMPLE_SIZE}" \
-    --assembly="${ASSEMBLY}" | \
+    "${configuration_directory}" | \
     awk '{print $4}' \
     )
 
@@ -71,11 +67,7 @@ elif [[ "${STARTING_SCRIPT}" -lt 2 ]]; then
     --array=1-"${MODEL_LEARNING_ARRAY_SIZE}" \
     --dependency=afterok:"${jobID[binarization]}" \
     "${JOBSUBMISSION_DIR}/2_batch_CreateIncrementalModels.sh" \
-    --config="${configuration_directory}" \
-    --nummodels="${NUMBER_OF_MODELS}" \
-    --binsize="${BIN_SIZE}" \
-    --samplesize="${SAMPLE_SIZE}" \
-    --assembly="${ASSEMBLY}" | \
+    "${configuration_directory}" | \
     awk '{print $4}' \
     )
 

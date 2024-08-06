@@ -25,6 +25,10 @@ export ASSEMBLY=hg19
 # here
 export NUMBER_OF_MODELS=4
 
+# Optional: Increase the number of iterations used in model learning step
+# This will become more useful for larger models 
+export MAX_ITERATIONS=200
+
 # This is the chromosome identifier (1-22, x,y,m) for the chromosome that is
 # to be used with the isolation metric (see Pipeline-explanation). Unless
 # this matters for your analysis, keep this at 1.
@@ -35,8 +39,8 @@ export CHROMOSOME_IDENTIFIER=1
 # you deem to be optimal. If starting on script <=4, this is not required
 export OPTIMUM_NUMBER_OF_STATES=
 
-# The following are the time you wish to allocate to each job.
-# Variables are numbered by their corresponding script number 
+# SLURM requires a maximum wall time, defaults usually work for smaller 
+# datasets (<= 4 marks)
 # Times must be in the format: hh:mm:ss
 export MAXTIME_1=12:00:00
 export MAXTIME_2=01:00:00
