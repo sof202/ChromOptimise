@@ -12,9 +12,13 @@
         <img src="https://img.shields.io/github/license/sof202/ChromOptimise?style=for-the-badge&color=dark-green" /></a>
 </p>
 
-ChromOptimise is a pipeline that identifies the optimum number of states that should be used with [ChromHMM](https://compbio.mit.edu/ChromHMM/#:~:text=ChromHMM%20is%20software%20for%20learning,and%20spatial%20patterns%20of%20marks.)'s `LearnModel` command for a particular genomic dataset.
+ChromOptimise is a pipeline that identifies the optimum number of states that 
+should be used with 
+[ChromHMM](https://compbio.mit.edu/ChromHMM/#:~:text=ChromHMM%20is%20software%20for%20learning,and%20spatial%20patterns%20of%20marks.)'s
+`LearnModel` command for a particular genomic dataset.
 
-For more specific information, please head over to the [**wiki**](https://sof202.github.io/ChromOptimise/).
+For more specific information, please head over to the 
+[**wiki**](https://sof202.github.io/ChromOptimise/).
 
 ## Table of contents
 - [About](#About)
@@ -23,40 +27,61 @@ For more specific information, please head over to the [**wiki**](https://sof202
 - [Software Requirements](#software-requirements)
 - [Further information](#further-information)
 
-## About
-When using [ChromHMM](https://compbio.mit.edu/ChromHMM/#:~:text=ChromHMM%20is%20software%20for%20learning,and%20spatial%20patterns%20of%20marks.) to learn hidden Markov models for genomic data, it is often difficult to determine how many states to include:
-- Including too many states will result in overfitting your data and introduces redundant states
-- Including too few states will result in underfitting your data and thus results in lower model accuracy
+## Motivation
+When using 
+[ChromHMM](https://compbio.mit.edu/ChromHMM/#:~:text=ChromHMM%20is%20software%20for%20learning,and%20spatial%20patterns%20of%20marks.)
+to learn hidden Markov models for genomic data, it is often difficult to 
+determine how many states to include:
 
-This pipeline identifies the optimal number of states to use by finding a model that avoids the two above points. 
+- Including too many states will result in overfitting your data and 
+introduces redundant states
+- Including too few states will result in underfitting your data and thus 
+results in lower model accuracy
 
-After using this pipeline, the user will have greater knowledge over their dataset in the context of ChromHMM, which will allow them to make more informed decisions as they continue to further downstream analysis.
+This pipeline identifies the optimal number of states to use by finding a 
+model that avoids the two above points. 
+
+After using this pipeline, the user will have greater knowledge over their
+dataset in the context of ChromHMM, which will allow them to make more informed
+decisions as they continue to further downstream analysis.
 
 ## Getting started
 1) Clone this repository
 2) Ensure all [required software](#software-requirements) is installed
-3) If using [LDSC](https://github.com/bulik/ldsc), download 1000 genomes files (or similar) from this [repository](https://zenodo.org/records/10515792)
-4) Create the configuration files using the [templates](https://sof202.github.io/ChromOptimise/ChromOptimise/Configuration-Files-Setup) provided and place them in a memorable location
-5) Run the [`setup`](https://github.com/sof202/ChromOptimise/blob/main/setup) executable 
-    - You may need to use `chmod +x setup` first
-    - The user will be prompted for whether they want to remove lines beginning with `module` (artefact of HPC system used at UoE)
-    - The user will also be prompted if they want to remove SLURM directives that are specific to the UoE HPC.
+3) If using [LDSC](https://github.com/bulik/ldsc), download 1000 genomes files 
+(or similar) from this [repository](https://zenodo.org/records/10515792)
+4) Create and fill in the configuration files using the templates provided in 
+[setup](https://github.com/sof202/ChromOptimise/tree/main/Setup) and place 
+them in a memorable location (recommended: next to your data)
+5) Run the [`setup`](https://github.com/sof202/ChromOptimise/tree/main/Setup/setup) 
+executable 
+    - The user will be prompted for whether they want to remove lines 
+    beginning with `module` (artefact of HPC system used at UoE)
+        - If your HPC also has a module based system, you may find it useful
+        to use the code structure inside of this script to replace `module load`
+        calls with the appropriate modules on your own system.
+    - The user will also be prompted if they want to remove SLURM directives 
+    that are specific to the UoE HPC.
 
 ## Usage
-After completing ['getting started'](#getting-started), run the master script (ChromOptimise.sh) in the command line with:
+After completing ['getting started'](#getting-started), run the master script 
+(ChromOptimise.sh) in the command line with:
 ```bash
-bash ChromOptimise.sh path/to/configuration/directory
+bash ChromOptimise.sh path/to/your/configuration/directory
 ```
 
-Alternatively, you can run each of the shell scripts in [JobSubmission](https://github.com/sof202/ChromOptimise/tree/main/JobSubmission) sequentially for each epigenetic mark. For further information and **example usage** please consult the [pipeline explanation](https://sof202.github.io/ChromOptimise/category/main-pipeline---usage-and-explanation).
+Alternatively, you can run each of the shell scripts in 
+[JobSubmission](https://github.com/sof202/ChromOptimise/tree/main/JobSubmission)
+sequentially for each epigenetic mark. For further information and **example
+usage** please consult the 
+[pipeline explanation](https://sof202.github.io/ChromOptimise/category/main-pipeline---usage-and-explanation).
 
-Depending on your chosen dataset, you may not need to run all scripts. For example:
-- If you are not downloading data from EGA, the first two scripts are not necessary 
-    - Just ensure that `.bam` files are organised into directories named [[epigenetic mark name]] within the [raw files directory](https://sof202.github.io/ChromOptimise/ChromOptimise/Configuration-Files-Setup#data-directory-structure)
-- If your data is already processed (quality controlled), then start from the subsampling script.
-    - Again, ensure that `.bam` files are organised into directories named [[epigenetic mark name]] within the [Processed files directory](https://sof202.github.io/ChromOptimise/ChromOptimise/Configuration-Files-Setup#data-directory-structure)
-
-There also exists supplementary scripts for further information on your chosen data set. Most importantly, thresholds used in redundancy analysis can be inferred from the results of [Redundancy_Threshold_Optimisation](https://github.com/sof202/ChromOptimise/tree/main/supplementary/Redundancy_Threshold_Optimisation). Further details for these scripts can be found in the [wiki](https://sof202.github.io/ChromOptimise/ChromOptimise/Supplementary-pipeline-explanation). 
+There also exists supplementary scripts for further information on your chosen
+data set. Most importantly, thresholds used in redundancy analysis can be
+inferred from the results of
+[Redundancy_Threshold_Optimisation](https://github.com/sof202/ChromOptimise/tree/main/supplementary/Redundancy_Threshold_Optimisation).
+Further details for these scripts can be found in the
+[wiki](https://sof202.github.io/ChromOptimise/ChromOptimise/Supplementary-pipeline-explanation). 
 
 
 ## Software requirements
@@ -73,7 +98,11 @@ This pipeline requires a unix-flavoured OS with the following software installed
 - [zcat (gzip)](https://www.gnu.org/software/gzip/) (>=1.5)
 
 ## Further information
-This study makes use of data generated by the Blueprint Consortium. A full list of the investigators who contributed to the generation of the data is available from www.blueprint-epigenome.eu. Funding for the project was provided by the European Union's Seventh Framework Programme (FP7/2007-2013) under grant agreement no 282510 – BLUEPRINT.
+This study makes use of data generated by the Blueprint Consortium. A full list
+of the investigators who contributed to the generation of the data is available
+from www.blueprint-epigenome.eu. Funding for the project was provided by the
+European Union's Seventh Framework Programme (FP7/2007-2013) under grant
+agreement no 282510 – BLUEPRINT.
 
 For any further enquiries, please open an issue or contact Sam Fletcher:
 \
