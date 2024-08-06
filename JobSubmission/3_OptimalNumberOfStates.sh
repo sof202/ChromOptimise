@@ -29,105 +29,41 @@ Author: Sam Fletcher
 Contact: s.o.fletcher@exeter.ac.uk
 Dependencies: R
 Inputs:
--c|--config=     -> Full/relative file path for configuation file directory
--h|--chromosome= -> The chromosome to look at the isolation score for 
-                    (default:1)
--b|--binsize=    -> The bin size used in 4_BinarizeBamFiles
--s|--samplesize= -> The sample size used in 3_SubsampleBamFiles
--n|--nummodels=  -> Number of models to learn (default: 4)
+\$1 -> Full/relative file path for configuation file directory
 ===========================================================================
 EOF
     exit 0
 }
 
-needs_argument() {
-    # Required check in case user uses -a -b or -b -a (no argument given).
-    if [[ -z "$OPTARG" || "${OPTARG:0:1}" == - ]]; then usage; fi
-}
-
-if [[ ! $1 =~ -.* ]]; then usage; fi
-
-while getopts c:h:b:s:n:-: OPT; do
-    # Adds support for long options by reformulating OPT and OPTARG
-    # This assumes that long options are in the form: "--long=option"
-    if [ "$OPT" = "-" ]; then
-        OPT="${OPTARG%%=*}"
-        OPTARG="${OPTARG#"$OPT"}"
-        OPTARG="${OPTARG#=}"
-    fi
-    case "$OPT" in
-        c | config )     needs_argument; configuration_directory="$OPTARG" ;;
-        h | chromosome)  needs_argument; chromosome_identifier="$OPTARG" ;;
-        b | binsize )    needs_argument; bin_size="$OPTARG" ;;
-        s | samplesize ) needs_argument; sample_size="$OPTARG" ;;
-        n | nummodels)   needs_argument; number_of_models="$OPTARG" ;;
-        \? )             usage ;;  # Illegal short options are caught by getopts
-        * )              usage ;;  # Illegal long option
-    esac
-done
-shift $((OPTIND-1))
+if [[ $# -eq 0 ]]; then usage; fi
 
 ## ============ ##
 ##    SET UP    ##
 ## ============ ##
 
-source "${configuration_directory}/FilePaths.txt" || \
+configuration_directory=$1
+
+source "${configuration_directory}/Config.txt" || \
 { echo "The configuration file does not exist in the specified location: \
 ${configuration_directory}"; exit 1; }
 
-# If a configuration file is changed during analysis, it is hard to tell
-# what configuration was used for a specific run through, below accounts for 
-# this
-echo "Configuration file used with this script: \
-${configuration_directory}/FilePaths.txt"
-echo ""
-cat "${configuration_directory}/FilePaths.txt"
-echo ""
-echo "Configuration file used with Rscripts: \
-${configuration_directory}/config.R"
-echo ""
-cat "${configuration_directory}/config.R"
-echo ""
-
-source "${configuration_directory}/LogFileManagement.sh" || \
-{ echo "The log file management script does not exist in the specified \
-location: ${configuration_directory}"; exit 1; }
-
-
-# Temporary log files are moved like this as SLURM cannot create directories.
-# The alternative would be forcing the user to create the file structure
-# themselves and using full file paths in the SLURM directives (bad)
-mv "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.log" \
-"${LOG_FILE_PATH}/${SLURM_JOB_ID}~${timestamp:=}.log"
-mv "${SLURM_SUBMIT_DIR}/temp${SLURM_JOB_ID}.err" \
-"${LOG_FILE_PATH}/${SLURM_JOB_ID}~$timestamp.err"
-
+source "${WRAPPER_SCRIPT}" || exit 1
 
 ## =============== ##
 ##    VARIABLES    ##
 ## =============== ##
 
-if [[ -z "${chromosome_identifier}" ]]; then
-    chromosome_identifier=1
+if [[ -z "${CHROMOSOME_IDENTIFIER}" ]]; then
+    CHROMOSOME_IDENTIFIER=1
     echo "No chromosome identifier was given, using the default value of:" \
-    "${chromosome_identifier} instead."
+    "${CHROMOSOME_IDENTIFIER} instead."
 fi
 
-if [[ -z "${bin_size}" || -z "${sample_size}" || -z "${number_of_models}" ]]; then
-    # If the user doesn't put in all of these options, our best hope is to look
-    # for the first approximate match
-    input_directory=$( \
-    find "${MODEL_DIR:?}" -type d \
-    -name "BinSize_*${bin_size}*_SampleSize_*${sample_size}*_*${number_of_models}*" | \
-    head -1)
-else
-input_directory="${MODEL_DIR:?}\
-/BinSize_${bin_size}_SampleSize_${sample_size}_${number_of_models}"
-fi
+input_directory="${MODEL_DIR}/BinSize_${BIN_SIZE}_models_${NUMBER_OF_MODELS}"
 
 if [[ -z "$(ls -A "${input_directory}")" ]]; then
     { >&2 echo -e "ERROR: No files found in: ${input_directory}.\n"\
-    "Please run 5_CreateIncrementalModels.sh before this script."
+    "Please run 2_CreateIncrementalModels.sh before this script."
     finishing_statement 1; }
 fi
 
@@ -139,12 +75,12 @@ fi
 # or transition files could have been used just the same.
 # We reverse the order as we plan on working from the most complex model
 # to the least until a model with no redundant states is found.
-mapfile -t model_sizes < <(find "${input_directory}" -type f -name "emissions*.txt" | \
-grep -oP "\d+(?=.txt)" | \
-sort -gr)
+mapfile -t model_sizes < \
+    <(find "${input_directory}" -type f -name "emissions*.txt" | \
+    grep -oP "\d+(?=.txt)" | \
+    sort -gr)
 
-output_directory="${OPTIMUM_STATES_DIR:?}\
-/BinSize_${bin_size}_SampleSize_${sample_size}_${number_of_models}"
+output_directory="${OPTIMUM_STATES_DIR}/BinSize_${BIN_SIZE}_models_${NUMBER_OF_MODELS}"
 
 # Clear up the directory in case of repeat runs (with different thresholds)
 rm -rf "${output_directory}"
@@ -158,21 +94,20 @@ module load R/4.2.1-foss-2022a
 
 cd "${RSCRIPTS_DIR}" || \
 { >&2 echo "ERROR: [\${RSCRIPTS_DIR} - ${RSCRIPTS_DIR}] doesn't exist, \
-make sure FilePaths.txt is pointing to the correct directory"
+make sure Config.txt is pointing to the correct directory"
 finishing_statement 1; }
 
 for model_number in "${model_sizes[@]}"; do
     # State assignments are named:
-    # CellType_SampleSize_BinSize_ModelSize_Chromosome_statebyline.txt
+    # CellType_BinSize_ModelSize_Chromosome_statebyline.txt
 
     # We only look at one chromosome as the decision of how to handle the
     # following case is rather arbitrary (see wiki): 
     # "A state is not assigned on one chromosome but has dense assignment
     # on another"
     state_assignment_file=$(\
-    find "${input_directory}" -name "*_${model_number}_chr${chromosome_identifier}_*" \
+    find "${input_directory}" -name "*_${model_number}_chr${CHROMOSOME_IDENTIFIER}_*" \
     )
-
     emissions_file=$(\
     find "${input_directory}" -name "emissions_${model_number}.txt*" \
     )
@@ -184,7 +119,7 @@ for model_number in "${model_sizes[@]}"; do
     # implies the existence of the emissions and transistions files.
     if [[ -z "$state_assignment_file" ]]; then
         { >&2 echo "ERROR: No state assignment file found for chromosome:" \
-        "${chromosome_identifier}, please check ${input_directory}/STATEBYLINE for" \
+        "${CHROMOSOME_IDENTIFIER}, please check ${input_directory}/STATEBYLINE for" \
         "the existence of this state assignment file"; finishing_statement 1; }
     fi
 
@@ -195,16 +130,12 @@ for model_number in "${model_sizes[@]}"; do
     "${output_directory}/Euclidean_distances" \
     FALSE
 
-
     echo "Running FlankingStates.R for: ${model_number} states..."
 
     Rscript FlankingStates.R \
     "${transitions_file}" \
     "${output_directory}/Flanking_states"
 
-
-    # IsolationScores.R is ran with a sample size of 100% 
-    # (all data is considered) because the slow down is not that significant
     echo "Running IsolationScores.R for: ${model_number} states..."
 
     Rscript IsolationScores.R \
@@ -212,7 +143,6 @@ for model_number in "${model_sizes[@]}"; do
     "${output_directory}/Isolation_scores" \
     "${model_number}" \
     100 
-
 
     echo "Running RedundantStateChecker.R for: ${model_number} states..."
 
@@ -245,10 +175,12 @@ done
 # does. This section checks for this scenario.
 
 if [[ $(wc -l < "${output_directory}/OptimumNumberOfStates.txt") -eq 1 ]]; then
-    { echo "${model_number} states may not be the optimum number of states."
-    echo "Try increasing the size of the most complex model or increasing "\
-    "the thresholds in the config.R file." 
-    } >> "${output_directory}/OptimumNumberOfStates.txt"
+cat >> "${output_directory}/OptimumNumberOfStates.txt" << EOF 
+WARNING: Largest model learned has no redundant states.
+${model_number} states may not be the optimum number of states.
+Try increasing the size of the most complex model or increasing 
+the thresholds in the config.R file.
+EOF
 else
     echo "Optimum number of states for the data is: ${model_number}" >> \
     "${output_directory}/OptimumNumberOfStates.txt"
@@ -273,7 +205,7 @@ Rscript PlotLikelihoods.R \
 # BIC requires the number of observations, which is the total number of lines  
 # in each binary file minus 2 times the number of files 
 # (due to the headers in each file).
-full_binary_path="${BINARY_DIR}/BinSize_${bin_size}_SampleSize_${sample_size}"
+full_binary_path="${BINARY_DIR}/BinSize_${BIN_SIZE}"
 
 total_observations=0
 for file in "${full_binary_path}"/*_binary.txt*; do

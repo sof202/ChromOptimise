@@ -83,11 +83,7 @@ if [[ "${STARTING_SCRIPT}" -eq 3 ]]; then
     sbatch \
     --time="${MAXTIME_3}" \
     "${JOBSUBMISSION_DIR}/3_OptimalNumberOfStates.sh" \
-    --config="${configuration_directory}" \
-    --chromosome="${CHROMOSOME_IDENTIFIER}" \
-    --binsize="${BIN_SIZE}" \
-    --samplesize="${SAMPLE_SIZE}" \
-    --nummodels="${NUMBER_OF_MODELS}" | \
+    "${configuration_directory}" | \
     awk '{print $4}' \
     )
 
@@ -97,14 +93,10 @@ if [[ "${STARTING_SCRIPT}" -eq 3 ]]; then
 elif [[ "${STARTING_SCRIPT}" -lt 3 ]]; then
     jobID[Optimal_States]=$( \
     sbatch \
-    --time="${MAXTIME_4}" \
+    --time="${MAXTIME_3}" \
     --dependency=afterok:"${jobID[Model_Learning]}" \
     "${JOBSUBMISSION_DIR}/3_OptimalNumberOfStates.sh" \
-    --config="${configuration_directory}" \
-    --chromosome="${CHROMOSOME_IDENTIFIER}" \
-    --binsize="${BIN_SIZE}" \
-    --samplesize="${SAMPLE_SIZE}" \
-    --nummodels="${NUMBER_OF_MODELS}" | \
+    "${configuration_directory}" | \
     awk '{print $4}' \
     )
 
