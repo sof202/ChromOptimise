@@ -9,40 +9,27 @@ sidebar_position: 2
 
 ## Explanation
 
-This uses ChromHMM's `BinarizeBam` command to binarize the subsampled `.bam` 
-file produced in the previous step.
+This uses ChromHMM's `BinarizeBam` and `BinarizeBed` commands to binarize the 
+`.bam` and `.bed` files that are your inputs.
 
-It is assumed at this point that the at least step 3 has been completed for 
-all of the epigenetic marks that you aim to use in the hidden Markov models, 
-and that the sample size used for each mark is the same.
+It is assumed that your bam/bed files are named as:
+
+mark-name-1.bed
+mark-name-2.bam
+mark-name-3.bed
+
+It is also assumed that you have one file per mark. If this is not the case,
+consider using `bedtools` or `samtools` to merge your `bed`/`bam` files into one.
 
 :::note[Unwanted chromosomes]
-In step 7, the tool ldsc is used to inspect biological relevance in the chromatin
+In step 4, the tool ldsc is used to inspect biological relevance in the chromatin
 states obtained from ChromHMM. This step specifically will only consider autosomal
 chromosomes. As a result, sex (and mitochondrial) binary files are deleted at the
 end of this script. Comment these lines out if you want to keep these chromosomes
-for the model generation step (step 5).
+for the model generation step (step 2).
 :::
 
-## Bed files
-
-You can also use bed files at this stage if you wish, you are not forced into
-using bam files. To use a bed file with this script, all you need to do is
-rename the bed file to have the form:
-
-> Subsampled.sample-size.mark-name.bed
-
-So for example, if the sample size for the data set is 100% and the mark is 
-H3K27me3, you'd rename the bed file to:
-
-> Subsampled.100.H3K27ac.bed
-
-The pipeline was designed to work with a single bam file per mark to make file
-management more bearable and allow for better subsampling. Note that when using
-this script, only the files that have the specified sample size (in the 
-command line)in their file name will be used in the binarization step.
-
-### Bin size
+## Bin size
 
 This step takes a user input for the bin size, this will have a noticable 
 effect on the quality of your models. ChromHMM recommends a bin size of 200 
@@ -55,3 +42,12 @@ To learn more about how the bin size (and other factors) affect the final
 result of the pipeline, head to
 [this page](/ChromOptimise/Factors-that-affect-the-output.md).
 
+
+## ChromBinarize
+
+ChromHMM's inbuilt binarization tools are fairly primitive and limited. You may
+instead want to use a tool specifically for peak calling (like MACS) or have
+data that cannot be peak called easily. For this reason, we have also developed
+[ChromBinarize](https://github.com/sof202/ChromBinarize). This is a tool that
+can convert ONT, BS-Seq and MACS peak called datasets into ChromHMM binary 
+format.
