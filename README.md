@@ -1,15 +1,15 @@
 <p align="center">
-  <img src="https://github.com/sof202/ChromOptimise/assets/147140110/41a500d8-fa7d-4a3c-8270-297a16bf6b5c" />
+  <img src="https://github.com/sof202/ChromOptimise/assets/147140110/86c917e0-87ce-4e1f-b52e-f8018dcbb436" />
 </p>
 
 </p>
 <p align="center">
-    <a href="https://img.shields.io/codefactor/grade/github/sof202/ChromOptimise" alt="CodeFactor">
-        <img src="https://img.shields.io/codefactor/grade/github/sof202/ChromOptimise" /></a>
-    <a href="https://img.shields.io/github/commit-activity/m/sof202/ChromOptimise" alt="Commit activity">
-        <img src="https://img.shields.io/github/commit-activity/m/sof202/ChromOptimise" /></a>
+    <a href="https://www.codefactor.io/repository/github/sof202/chromoptimise" alt="CodeFactor">
+        <img src="https://img.shields.io/codefactor/grade/github/sof202/ChromOptimise?style=for-the-badge&color=dark-green" /></a>
+    <a href="https://github.com/sof202/ChromOptimise/commits/main/" alt="Commit activity">
+        <img src="https://img.shields.io/github/commit-activity/m/sof202/ChromOptimise?style=for-the-badge&color=dark-green" /></a>
     <a href="https://github.com/sof202/ChromOptimise/blob/main/LICENSE" alt="License">
-        <img src="https://img.shields.io/github/license/sof202/Chromoptimise" /></a>
+        <img src="https://img.shields.io/github/license/sof202/ChromOptimise?style=for-the-badge&color=dark-green" /></a>
 </p>
 
 ChromOptimise is a pipeline that identifies the optimum number of states that should be used with [ChromHMM](https://compbio.mit.edu/ChromHMM/#:~:text=ChromHMM%20is%20software%20for%20learning,and%20spatial%20patterns%20of%20marks.)'s `LearnModel` command for a particular genomic dataset.
