@@ -16,7 +16,7 @@
 #SBATCH --output=temp%j.log
 # Temporary error file, later to be removed
 #SBATCH --error=temp%j.err
-#SBATCH --job-name=2_Binarization
+#SBATCH --job-name=1_Binarization
 
 usage() {
 cat <<EOF
