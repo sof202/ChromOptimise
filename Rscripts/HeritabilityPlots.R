@@ -42,6 +42,7 @@ library(ggplot2)
 arguments <- commandArgs(trailingOnly = TRUE)
 results_file_list <- readLines(arguments[1])
 output_directory <- arguments[2]
+cell_type <- arguments[3]
 
 ## ================= ##
 ##   LOADING FILES   ##
@@ -103,7 +104,7 @@ pivot_enrichment_data <- function(enrichment_data) {
 bonferroni_correction <- function(results_files, pvalue_threshold) {
   number_of_traits <- length(results_files)
   relevant_categories <-
-    sum(grepl("^ChromOptimise.*", results_files[[1]]$Category))
+    sum(grepl(paste0("^", cell_type, ".*"), results_files[[1]]$Category))
   number_of_hypotheses <- number_of_traits * relevant_categories
   bonferroni_threshold <- pvalue_threshold / number_of_hypotheses
   return(-log10(bonferroni_threshold))
@@ -151,7 +152,8 @@ create_heatmap_data <- function(results_files, complete = FALSE) {
   enrichment_data <- merge_results_files(results_files, "Enrichment")
   enrichment_data <- remove_l2_suffix(enrichment_data)
   if (!complete) {
-    state_assignment_rows <- grepl("^ChromOptimise.*", enrichment_data$Category)
+    state_assignment_rows <-
+      grepl(paste0("^", cell_type, ".*"), enrichment_data$Category)
     enrichment_data <- enrichment_data[state_assignment_rows, ]
   }
   return(enrichment_data)
@@ -197,7 +199,8 @@ create_pvalue_barplots <-
 
       data <- remove_l2_suffix(data)
       if (!complete) {
-        state_assignment_rows <- grepl("^ChromOptimise.*", data$Category)
+        state_assignment_rows <-
+          grepl(paste0("^", cell_type, ".*"), data$Category)
         data <- data[state_assignment_rows, ]
       }
       plot_title <- names(results_files)[[file]]
