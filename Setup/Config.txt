@@ -25,6 +25,11 @@ export ASSEMBLY=hg19
 # here
 export NUMBER_OF_MODELS=4
 
+# The following are the array sizes you wish to use for batch jobs (processing
+# and model learning scripts). Using a number larger than the number of cores
+# on your system is not recommended
+export MODEL_LEARNING_ARRAY_SIZE=4
+
 # Optional: Increase the number of iterations used in model learning step
 # This will become more useful for larger models 
 export MAX_ITERATIONS=200
@@ -34,9 +39,10 @@ export MAX_ITERATIONS=200
 # this matters for your analysis, keep this at 1.
 export CHROMOSOME_IDENTIFIER=1
 
-# If you are running the script starting from script 4 (in which case this
-# master script is a little overkill), you need to input the number of states
-# you deem to be optimal. If starting on script <=4, this is not required
+# If you are running the script starting from script 4 (i.e. you have created 
+# your models yourself), you need to input the number of states
+# you deem to be optimal. You can also put a model number here if you want to
+# run scripts 4/5 with a sub-optimal number of states (for comparison).
 export OPTIMUM_NUMBER_OF_STATES=
 
 # SLURM requires a maximum wall time, defaults usually work for smaller 
@@ -48,10 +54,6 @@ export MAXTIME_3=12:00:00
 export MAXTIME_4=00:30:00
 export MAXTIME_5=12:00:00
 
-# The following are the array sizes you wish to use for batch jobs (processing
-# and model learning scripts). Using a number larger than the number of cores
-# on your system is not recommended
-export MODEL_LEARNING_ARRAY_SIZE=4
 
 ## =============== ##
 ##   DIRECTORIES   ##
@@ -117,3 +119,8 @@ export CHROMHMM_CHROM_SIZES="${CHROMHMM_MAIN_DIR}/CHROMSIZES"
 ## ------------- ##
 
 export LD_SOFTWARE_DIR="path/to/ldsc/main/directory"
+
+# LDSC requires a conda environment to run. This is detailed in LDSC'
+# documentation. If you follow LDSC' setup verbatim, the below should just be
+# 'ldsc' (default)
+export LDSC_ENVIRONMENT="ldsc"

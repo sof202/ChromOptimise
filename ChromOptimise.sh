@@ -111,11 +111,7 @@ if [[ "${STARTING_SCRIPT}" -eq 4 ]]; then
     sbatch \
     --time="${MAXTIME_4}" \
     "${JOBSUBMISSION_DIR}/4_ReferenceLDSCore.sh" \
-    --config="${configuration_directory}" \
-    --state="${OPTIMUM_NUMBER_OF_STATES}" \
-    --binsize="${BIN_SIZE}" \
-    --samplesize="${SAMPLE_SIZE}" \
-    --nummodels="${NUMBER_OF_MODELS}" | \
+    "${configuration_directory}" | \
     awk '{print $4}' \
     )
 
@@ -128,10 +124,7 @@ elif [[ "${STARTING_SCRIPT}" -lt 4 ]]; then
     --time="${MAXTIME_4}" \
     --dependency=afterok:"${jobID[Optimal_States]}" \
     "${JOBSUBMISSION_DIR}/4_ReferenceLDSCore.sh" \
-    --config="${configuration_directory}" \
-    --binsize="${BIN_SIZE}" \
-    --samplesize="${SAMPLE_SIZE}" \
-    --nummodels="${NUMBER_OF_MODELS}" | \
+    "${configuration_directory}" | \
     awk '{print $4}' \
     )
 

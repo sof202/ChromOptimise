@@ -29,114 +29,55 @@ Purpose: Generates annotation files based on baseline annotations (LDSC)
 and ChromHMM state annotations. Obtains LDSCores from said annotation.
 Author: Sam Fletcher
 Contact: s.o.fletcher@exeter.ac.uk
-Dependencies: R, LDSC, gwas traits, 1000 genomes files
+Dependencies: R, Bedtools, LDSC, gwas traits, 1000 genomes files
 Inputs:
--c|--config=     -> Full/relative file path for configuation file directory
--t|--state=      -> (Override) Optimal number of states. Use this if you 
-                    want to look at the results for a different model.
--b|--binsize=    -> The bin size used in 4_BinarizeBamFiles
--s|--samplesize= -> The sample size used in 3_SubsampleBamFiles
--n|--nummodels=  -> Number of models to learn (default: 4)
+\$1 -> Full/relative file path for configuation file directory
 ===========================================================================
 EOF
     exit 0
 }
 
-needs_argument() {
-    # Required check in case user uses -a -b or -b -a (no argument given).
-    if [[ -z "$OPTARG" || "${OPTARG:0:1}" == - ]]; then usage; fi
-}
-
-if [[ ! $1 =~ -.* ]]; then usage; fi
-
-while getopts c:t:b:s:n:-: OPT; do
-    # Adds support for long options by reformulating OPT and OPTARG
-    # This assumes that long options are in the form: "--long=option"
-    if [ "$OPT" = "-" ]; then
-        OPT="${OPTARG%%=*}"
-        OPTARG="${OPTARG#"$OPT"}"
-        OPTARG="${OPTARG#=}"
-    fi
-    case "$OPT" in
-        c | config )      needs_argument; configuration_directory="$OPTARG" ;;
-        t | state )       needs_argument; model_size="$OPTARG" ;;
-        b | binsize )     needs_argument; bin_size="$OPTARG" ;;
-        s | samplesize )  needs_argument; sample_size="$OPTARG" ;;
-        n | nummodels )   needs_argument; number_of_models="$OPTARG" ;;
-        \? )              usage ;;  # Illegal short options are caught by getopts
-        * )               usage ;;  # Illegal long option
-    esac
-done
-shift $((OPTIND-1))
+if [[ $# -eq 0 ]]; then usage; fi
 
 ## ============ ##
 ##    SET UP    ##
 ## ============ ##
 
-source "${configuration_directory}/FilePaths.txt" || \
+configuration_directory=$1
+
+source "${configuration_directory}/Config.txt" || \
 { echo "The configuration file does not exist in the specified location: \
 ${configuration_directory}"; exit 1; }
 
-# If a configuration file is changed during analysis, it is hard to tell
-# what configuration was used for a specific run through, below accounts for 
-# this
-echo "Configuration file used with this script: \
-${configuration_directory}/FilePaths.txt"
-echo ""
-cat "${configuration_directory}/FilePaths.txt"
-echo ""
-
-source "${configuration_directory}/LogFileManagement.sh" || \
-{ echo "The log file management script does not exist in the specified \
-location: ${configuration_directory}"; exit 1; }
-
-
-# Temporary log files are moved like this as SLURM cannot create directories.
-# The alternative would be forcing the user to create the file structure
-# themselves and using full file paths in the SLURM directives (bad)
-mv "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.log" \
-"${LOG_FILE_PATH}/${SLURM_ARRAY_JOB_ID}~${SLURM_ARRAY_TASK_ID}~${timestamp:=}.log"
-mv "${SLURM_SUBMIT_DIR}/temp${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err" \
-"${LOG_FILE_PATH}/${SLURM_ARRAY_JOB_ID}~${SLURM_ARRAY_TASK_ID}~$timestamp.err"
-
+source "${WRAPPER_SCRIPT}" || exit 1
 
 ## =============== ##
 ##    VARIABLES    ##
 ## =============== ##
 
-if [[ -z "${bin_size}" || -z "${sample_size}" || -z "${number_of_models}" ]]; then
-    # If the user doesn't put in all of these options, our best hope is to look
-    # for the first approximate match
-    input_directory=$( \
-    find "${OPTIMUM_STATES_DIR}" -type d \
-    -name "BinSize_*${bin_size}*_SampleSize_*${sample_size}*_*${number_of_models}*" | \
-    head -1)
-
-    bin_size=$(basename "${input_directory}" | cut -d_ -f2)
-    sample_size=$(basename "${input_directory}" | cut -d_ -f4)
-    number_of_models=$(basename "${input_directory}" | cut -d_ -f5)
-else
 input_directory="${OPTIMUM_STATES_DIR}\
-/BinSize_${bin_size}_SampleSize_${sample_size}_${number_of_models}"
-fi
+/BinSize_${BIN_SIZE}_models_${NUMBER_OF_MODELS}"
 
-if [[ -z "${model_size}" ]]; then
+if [[ -z "${OPTIMUM_NUMBER_OF_STATES}" ]]; then
     if [[ -z "$(ls -A "${input_directory}")" ]]; then
         { >&2 echo -e "ERROR: No files found in: ${input_directory}.\n"\
-        "Please run 6_OptimumNumberOfStates.sh before this script."
+        "Please run 3_OptimumNumberOfStates.sh before this script."
         finishing_statement 1; }
     fi
     optimum_state_file="${input_directory}/OptimumNumberOfStates.txt"
-    model_size=$(tail -1 "${optimum_state_file}" | \
+    OPTIMUM_NUMBER_OF_STATES=$(tail -1 "${optimum_state_file}" | \
     cut -d: -f2 | \
     tr -d ' ')
-    echo "Optimum model size found was: ${model_size}"
+    echo "Optimum model size found was: ${OPTIMUM_NUMBER_OF_STATES}"
 fi
 
-output_directory="${LD_ASSESSMENT_DIR}\
-/BinSize_${bin_size}_SampleSize_${sample_size}_${number_of_models}"
+## =================== ##
+##   FILE MANAGEMENT   ##
+## =================== ##
 
-# If jobs get queued, some files will be deleted prematurely
+output_directory="${LD_ASSESSMENT_DIR}\
+/BinSize_${BIN_SIZE}_models_${NUMBER_OF_MODELS}"
+
 if [[ "${SLURM_ARRAY_TASK_ID}" -eq 1 ]]; then
     rm -rf "${output_directory:?}"
     mkdir -p "${output_directory}/annotation" \
@@ -148,15 +89,11 @@ fi
 # We sleep here to ensure files are not removed prematurely
 sleep 5
 
-## =================== ##
-##   FILE MANAGEMENT   ##
-## =================== ##
-
 full_model_directory="${MODEL_DIR}\
-/BinSize_${bin_size}_SampleSize_${sample_size}_${number_of_models}"
+/BinSize_${BIN_SIZE}_models_${NUMBER_OF_MODELS}"
 
 full_binary_directory="${BINARY_DIR}\
-/BinSize_${bin_size}_SampleSize_${sample_size}"
+/BinSize_${BIN_SIZE}"
 
 # We ignore non-autosomal chromosomes as 1000 genomes doesn't provide this data
 # Hence our chromosomes are just 1-22 (the array indices)
@@ -169,7 +106,7 @@ mkdir -p "${temporary_directory}"
 
 dense_bed_file=$(\
 find "${full_model_directory}" \
--name "*_${model_size}_dense.bed")
+-name "*_${OPTIMUM_NUMBER_OF_STATES}_dense.bed")
 
 binary_file=$(\
     find "${full_binary_directory}" \
@@ -188,18 +125,26 @@ cd "${RSCRIPTS_DIR}" || \
 make sure FilePaths.txt is pointing to the correct directory"
 finishing_statement 1; }
 
+## ---------------------- ##
+##  CONVERT TO BED FORMAT ## 
+## ---------------------- ##
+
 module purge
 module load R/4.2.1-foss-2022a
 
 Rscript BinarytoBed.R \
 <(zcat "${binary_file}") \
-"${bin_size}" \
+"${BIN_SIZE}" \
 "chr${chromosome}" \
 "${temporary_directory}/binary-${chromosome}.bed"
 
 Rscript BimtoBed.R \
 <(cat "${bim_file}") \
 "${temporary_directory}/SNP_positions-${chromosome}.bed"
+
+## ----------------------------------- ##
+##   FIND STATE AND MARK ASSIGNMENTS   ##
+## ----------------------------------- ##
 
 module purge
 module load BEDTools/2.29.2-GCC-9.3.0
@@ -214,14 +159,21 @@ awk '{print $7}' > \
 # these columns to the annotation file later for convenience
 zcat "${binary_file}" | \
 awk 'NR==2 {for(i=1; i<=NF; i++) \
-printf "ChromOptimise_%s%s", $i, (i==NF ? "\n" : "\t")}' > \
+printf "CELL_TYPE_%s%s", $i, (i==NF ? "\n" : "\t")}' > \
 "${temporary_directory}/mark_assignments-${chromosome}.txt"
+
+sed -i "s/CELL_TYPE/${CELL_TYPE}/g" \
+    "${temporary_directory}/mark_assignments-${chromosome}.txt"
 
 bedtools intersect -wb \
 -a "${temporary_directory}/SNP_positions-${chromosome}.bed" \
 -b "${temporary_directory}/binary-${chromosome}.bed" | \
 awk '{ for (i=7; i<=NF; i++) printf "%s%s", $i, (i<NF ? "\t" : "\n") }' >> \
 "${temporary_directory}/mark_assignments-${chromosome}.txt"
+
+## ----------------------- ##
+##   GENERATE ANNOTATION   ##
+## ----------------------- ##
 
 module purge
 module load R/4.2.1-foss-2022a
@@ -232,7 +184,7 @@ Rscript CreateAnnotationFile.R \
 <(zcat "${baseline_annot}") \
 <(cat "${temporary_directory}/state_assignments-${chromosome}.txt") \
 <(cat "${temporary_directory}/mark_assignments-${chromosome}.txt") \
-"${model_size}" \
+"${OPTIMUM_NUMBER_OF_STATES}" \
 "${output_directory}/annotation/ChromOptimise.${chromosome}.annot"
 
 rm -rf "${temporary_directory}"
@@ -244,8 +196,8 @@ rm -rf "${temporary_directory}"
 module purge
 module load Anaconda3/2020.02
 
-source "${CONDA_SHELL}/profile.d/conda.sh" || \
-{ echo "profile.d/conda.sh does not exist in specified location: \
+source "${CONDA_SHELL}" || \
+{ echo "conda.sh does not exist in specified location: \
 [\${CONDA_SHELL} - ${CONDA_SHELL}]"; exit 1; }
 conda activate "${LDSC_ENVIRONMENT}"
 
@@ -284,11 +236,8 @@ if [[ ${SLURM_ARRAY_TASK_ID} -eq 1 ]]; then
 
     sbatch \
     --dependency=afterok:"${SLURM_ARRAY_JOB_ID}" \
-    6_PartitionedHeritability.sh \
-    --config="${configuration_directory}" \
-    --binsize="${bin_size}" \
-    --samplesize="${sample_size}" \
-    --nummodels="${number_of_models}"
+    5_PartitionedHeritability.sh \
+    "${configuration_directory}"
 
     finishing_statement 0
 else
