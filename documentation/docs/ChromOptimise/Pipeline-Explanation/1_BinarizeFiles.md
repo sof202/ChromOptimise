@@ -1,11 +1,11 @@
 ---
-title: 2_BinarizeFiles
+title: 1_BinarizeFiles
 description: "The script used to binarize the dataset for ChromHMM."
-sidebar_position: 3
+sidebar_position: 2
 ---
 
 
-# 2_BinarizeFiles
+# 1_BinarizeFiles
 
 ## Explanation
 
@@ -55,14 +55,3 @@ To learn more about how the bin size (and other factors) affect the final
 result of the pipeline, head to
 [this page](/ChromOptimise/Factors-that-affect-the-output.md).
 
-# Example usage
-
-```bash
-# Takes all files in ${SUBSAMPLE_DIR} that used a sample size of 75% and
-# binarizes them using a bin size of 200 and the hg19 assembly
-sbatch 2_BinarizeFiles.sh \
---config="path/to/configuration/directory" \
---binsize=200 \
---samplesize=75 \
---assembly=hg19
-```
