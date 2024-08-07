@@ -31,6 +31,10 @@
 
 rm(list = ls())
 
+if (!requireNamespace("ggplot2", quietly = TRUE)) {
+  install.packages("ggplot2")
+}
+
 library(ggplot2)
 
 arguments <- commandArgs(trailingOnly = TRUE)
@@ -52,9 +56,13 @@ names(likelihood_data) <- c("number_of_states", "estimated_log_likelihood")
 ##    PLOTTING    ##
 ## ============== ##
 
-likelihood_plot <- ggplot(likelihood_data,
-                          aes(x = number_of_states,
-                              y = estimated_log_likelihood))
+likelihood_plot <- ggplot(
+  likelihood_data,
+  aes(
+    x = number_of_states,
+    y = estimated_log_likelihood
+  )
+)
 
 likelihood_plot +
   geom_smooth(formula = y ~ log(x), color = "blue", se = FALSE, span = 1.2) +

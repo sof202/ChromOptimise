@@ -37,6 +37,14 @@ if (!requireNamespace("tidyr", quietly = TRUE)) {
   install.packages("tidyr")
 }
 
+if (!requireNamespace("dplyr", quietly = TRUE)) {
+  install.packages("dplyr")
+}
+
+if (!requireNamespace("ggplot2", quietly = TRUE)) {
+  install.packages("ggplot2")
+}
+
 library(ggplot2)
 
 arguments <- commandArgs(trailingOnly = TRUE)

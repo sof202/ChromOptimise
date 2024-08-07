@@ -32,6 +32,10 @@
 
 rm(list = ls())
 
+if (!requireNamespace("ggplot2", quietly = TRUE)) {
+  install.packages("ggplot2")
+}
+
 library(ggplot2)
 
 arguments <- commandArgs(trailingOnly = TRUE)
@@ -66,7 +70,7 @@ log_observations <- log(number_of_observations)
 # number_of_marks is coming from Config.R
 likelihood_data$parameters <-
   (likelihood_data$number_of_states * number_of_marks) +
-  (likelihood_data$number_of_states ^ 2)
+  (likelihood_data$number_of_states^2)
 
 likelihood_data$bic <- (log_observations * likelihood_data$parameters) -
   (2 * likelihood_data$estimated_log_likelihood)
@@ -86,8 +90,10 @@ relative_bic_scatter <-
 relative_bic_scatter +
   geom_point() +
   scale_x_continuous(breaks = seq_along(likelihood_data$number_of_states)) +
-  labs(title = "Bayesian Information Critereon",
-       x = "Number of States", y = "BIC (relative to minimum BIC)") +
+  labs(
+    title = "Bayesian Information Critereon",
+    x = "Number of States", y = "BIC (relative to minimum BIC)"
+  ) +
   theme_bw() +
   theme(plot.title = element_text(hjust = 0.5))
 
@@ -98,5 +104,7 @@ setwd(output_file_path)
 ggsave(
   "Bayesian_Information_Criterion.png"
 )
-write.csv(likelihood_data, paste0(output_file_path,
-                                  "/Bayesian_Information_Criterion.csv"))
+write.csv(likelihood_data, paste0(
+  output_file_path,
+  "/Bayesian_Information_Criterion.csv"
+))

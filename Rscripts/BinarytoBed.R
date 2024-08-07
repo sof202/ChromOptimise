@@ -34,10 +34,6 @@
 
 rm(list = ls())
 
-if (!requireNamespace("stringr", quietly = TRUE)) {
-  install.packages("stringr")
-}
-
 if (!requireNamespace("dplyr", quietly = TRUE)) {
   install.packages("dplyr")
 }
