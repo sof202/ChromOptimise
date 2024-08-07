@@ -105,4 +105,3 @@ module load R/4.2.1-foss-2022a
 Rscript "${RSCRIPTS_DIR}/HeritabilityPlots.R" \
     <(find "${ld_directory}/heritability" -name "*.results") \
     "${ld_directory}/plots"
-    "${CELL_TYPE}"

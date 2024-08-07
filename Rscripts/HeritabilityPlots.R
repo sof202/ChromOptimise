@@ -42,7 +42,6 @@ library(ggplot2)
 arguments <- commandArgs(trailingOnly = TRUE)
 results_file_list <- readLines(arguments[1])
 output_directory <- arguments[2]
-cell_type <- arguments[3]
 
 ## ================= ##
 ##   LOADING FILES   ##
