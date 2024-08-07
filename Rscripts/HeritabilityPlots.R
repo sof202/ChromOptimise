@@ -82,13 +82,14 @@ remove_l2_suffix <- function(results) {
   return(results)
 }
 
-pivot_enrichment_data <- function(enrichment_data) {
+pivot_enrichment_data <- function(enrichment_data, column_name) {
   # pivot_longer is so heatmap can be plotted more easily
   enrichment_data <- tidyr::pivot_longer(enrichment_data,
     cols = -Category,
     names_to = "gwas_trait",
-    values_to = "Enrichment"
+    values_to = "value"
   )
+  colnames(enrichment_data)[[ncol(enrichment_data)]] <- column_name
   return(enrichment_data)
 }
 
@@ -103,7 +104,7 @@ pivot_enrichment_data <- function(enrichment_data) {
 bonferroni_correction <- function(results_files, pvalue_threshold) {
   number_of_traits <- length(results_files)
   relevant_categories <-
-    sum(grepl("^ChromOptimise.*", results_files[[1]]$Category))
+    sum(grepl("^state_.*", results_files[[1]]$Category))
   number_of_hypotheses <- number_of_traits * relevant_categories
   bonferroni_threshold <- pvalue_threshold / number_of_hypotheses
   return(-log10(bonferroni_threshold))
@@ -114,13 +115,17 @@ fdr_correction <- function(pvalues, fdr_threshold) {
   adjusted_pvalues <- p.adjust(pvalues, method = "BH")
   significant_pvalues <-
     subset(adjusted_pvalues, adjusted_pvalues < fdr_threshold)
-  critical_value <- max(significant_pvalues)
+
+  # I have no fucking idea why this needs to be done. But it does, you'll
+  # get errors as if the vector contains NA/Inf (despite the fact that it
+  # doesn't AT ALLLL).
+  critical_value <- max(significant_pvalues[seq_along(significant_pvalues)])
   return(-log10(critical_value))
 }
 
 negative_enrichment_proportion <- function(results_files) {
   enrichment_data <- merge_results_files(results_files, "Enrichment")
-  enrichment_data <- pivot_enrichment_data(enrichment_data)
+  enrichment_data <- pivot_enrichment_data(enrichment_data, "Enrichment")
   number_of_negative_values <- sum(enrichment_data$Enrichment < 0, na.rm = TRUE)
   return(number_of_negative_values / nrow(enrichment_data))
 }
@@ -150,24 +155,49 @@ write_poor_enrichment_warning <- function(results_files) {
 create_heatmap_data <- function(results_files, complete = FALSE) {
   enrichment_data <- merge_results_files(results_files, "Enrichment")
   enrichment_data <- remove_l2_suffix(enrichment_data)
+
+  enrichment_p_data <- merge_results_files(results_files, "Enrichment_p")
+  enrichment_p_data <- remove_l2_suffix(enrichment_p_data)
+
   if (!complete) {
-    state_assignment_rows <- grepl("^ChromOptimise.*", enrichment_data$Category)
+    state_assignment_rows <-
+      grepl("^state.*", enrichment_data$Category)
     enrichment_data <- enrichment_data[state_assignment_rows, ]
+    enrichment_p_data <- enrichment_p_data[state_assignment_rows, ]
   }
+
+  enrichment_data <- pivot_enrichment_data(enrichment_data, "Enrichment")
+  enrichment_p_data <- pivot_enrichment_data(enrichment_p_data, "Enrichment_p")
+
+  enrichment_data <-
+    cbind(enrichment_data, enrichment_p_data[, ncol(enrichment_p_data)])
   return(enrichment_data)
 }
 
-create_enrichment_heatmap <- function(results_files, complete = FALSE) {
+create_enrichment_heatmap <- function(results_files,
+                                      pvalue_threshold,
+                                      complete = FALSE) {
   enrichment_data <- create_heatmap_data(results_files, complete)
-  enrichment_data <- pivot_enrichment_data(enrichment_data)
+
+  bonferroni_threshold <-
+    bonferroni_correction(results_files, pvalue_threshold)
+  fdr_threshold <-
+    fdr_correction(enrichment_data$Enrichment_p, pvalue_threshold)
+
+  enrichment_data <- dplyr::mutate(
+    enrichment_data,
+    Enrichment_p = -log10(Enrichment_p)
+  )
+
+  enrichment_data[is.na(enrichment_data)] <- 1
 
   negative_palette <- c("red", "pink")
   postitive_palette <- c("lightgreen", "darkgreen")
   enrichment_heatmap <-
-    ggplot(enrichment_data, aes(gwas_trait,
-      Category,
+    ggplot(enrichment_data, aes(
+      x = gwas_trait,
+      y = Category,
       fill = Enrichment,
-      label = round(Enrichment, 2)
     )) +
     geom_tile(color = "black") +
     scale_fill_gradient2(
@@ -175,7 +205,15 @@ create_enrichment_heatmap <- function(results_files, complete = FALSE) {
       high = postitive_palette,
       midpoint = 0
     ) +
-    geom_text() +
+    geom_text(
+      aes(
+        label =
+          ifelse(Enrichment_p > !!bonferroni_threshold, "**",
+            ifelse(Enrichment_p > !!fdr_threshold, "*", "")
+          )
+      ),
+      color = "black"
+    ) +
     theme(panel.background = element_rect(fill = "white")) +
     labs(title = "Enrichment of GWAS traits", x = "GWAS trait", y = "State") +
     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
@@ -183,7 +221,7 @@ create_enrichment_heatmap <- function(results_files, complete = FALSE) {
 }
 
 create_pvalue_barplots <-
-  function(results_files, pvalue_threshold, fdr_threshold, complete = FALSE) {
+  function(results_files, pvalue_threshold, complete = FALSE) {
     list_of_pvalue_plots <- list()
 
     bonferroni_threshold <-
@@ -197,7 +235,8 @@ create_pvalue_barplots <-
 
       data <- remove_l2_suffix(data)
       if (!complete) {
-        state_assignment_rows <- grepl("^ChromOptimise.*", data$Category)
+        state_assignment_rows <-
+          grepl("^state_.*", data$Category)
         data <- data[state_assignment_rows, ]
       }
       plot_title <- names(results_files)[[file]]
@@ -243,15 +282,16 @@ create_pvalue_barplots <-
 # assignments. This is because the complete heatmap and bar plots can be
 # difficult to read.
 complete_enrichment_heatmap <-
-  create_enrichment_heatmap(results_files, complete = TRUE)
-state_enrichment_heatmap <-
-  create_enrichment_heatmap(results_files)
+  create_enrichment_heatmap(results_files, 0.5, complete = TRUE)
 
+state_enrichment_heatmap <-
+  create_enrichment_heatmap(results_files, 0.05)
+state_enrichment_heatmap
 # pvalue threshold is arbitrarily chosen to be 0.05
 complete_pvalue_barplots <-
-  create_pvalue_barplots(results_files, 0.05, 0.05, complete = TRUE)
+  create_pvalue_barplots(results_files, 0.05, complete = TRUE)
 state_pvalue_barplots <-
-  create_pvalue_barplots(results_files, 0.05, 0.05)
+  create_pvalue_barplots(results_files, 0.05)
 
 names(complete_pvalue_barplots) <- names(results_files)
 names(state_pvalue_barplots) <- names(results_files)
@@ -277,7 +317,7 @@ ggsave(
   "ChromOptimise_Categories/Enrichment_heatmap.png",
   state_enrichment_heatmap,
   limitsize = FALSE,
-  width = length(results_files),
+  width = max(length(results_files), 10),
   height = (nrow(results_files[[1]]) - 47) / 5
 )
 

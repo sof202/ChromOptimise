@@ -149,7 +149,8 @@ Rscript IsolationScores.R \
     "${state_assignment_file}" \
     "${model_file_dir}/Isolation_scores" \
     "${model_size}" \
-    100 
+    100 \
+    TRUE
 
 
 finishing_statement 0

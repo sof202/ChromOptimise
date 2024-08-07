@@ -39,6 +39,7 @@ state_assignments_file <- arguments[1]
 output_file_path <- arguments[2]
 model_size <- as.numeric(arguments[3])
 isolation_sample_size <- as.numeric(arguments[4])
+plotting_flag <- arguments[5]
 
 ## =================== ##
 ##   FILE PROCESSING   ##
@@ -104,7 +105,7 @@ get_isolation_score <- function(bin_indicies) {
   }
 
   sum_of_distances <- 0
-  for (bin_index in bin_indicies){
+  for (bin_index in bin_indicies) {
     sum_of_distances <- sum_of_distances + matching_bin_distance(bin_index)
   }
 
@@ -139,6 +140,43 @@ subsample_target_bins <- function(target_state, sample_percent) {
   return(sampled_bin_indices)
 }
 
+## ============ ##
+##   PLOTTING   ##
+## ============ ##
+
+create_isolation_score_plot <- function(isolation_scores) {
+  isolation_scores <- dplyr::mutate(
+    isolation_scores,
+    "bins" = cut(
+      isolation_score,
+      breaks = c(0, 5, 10, 50, 100, 500, 1000, 10000, Inf),
+      labels = c(
+        "0-5",
+        "5-10",
+        "10-50",
+        "50-100",
+        "100-500",
+        "500-1000",
+        "1000-10000",
+        "10000+"
+      )
+    )
+  )
+
+  isolation_score_plot <-
+    ggplot(isolation_scores, aes(x = bins)) +
+    geom_bar() +
+    theme_bw() +
+    labs(
+      title = "Isolation scores for each state",
+      x = "Isolation score",
+      y = "Number of states"
+    ) +
+    theme(plot.title = element_text(hjust = 0.5))
+
+  return(isolation_score_plot)
+}
+
 ## ======== ##
 ##   MAIN   ##
 ## ======== ##
@@ -165,6 +203,24 @@ setwd(output_file_path)
 
 output_file_name <- paste0("Isolation_Scores_model-", model_size, ".txt")
 
-write.table(sorted_isolation_scores,
-            output_file_name,
-            row.names = FALSE)
+write.table(
+  sorted_isolation_scores,
+  output_file_name,
+  row.names = FALSE
+)
+
+if (!exists("plotting_flag")) {
+  plotting_flag <- FALSE
+}
+
+if (plotting_flag) {
+  isolation_score_plot <- create_isolation_score_plot(sorted_isolation_scores)
+  isolation_score_plot_name <-
+    paste0("Isolation_score_histogram_model-", model_size, ".png")
+
+  options(bitmapType = "cairo")
+  ggsave(
+    isolation_score_plot_name,
+    plot = isolation_score_plot
+  )
+}
