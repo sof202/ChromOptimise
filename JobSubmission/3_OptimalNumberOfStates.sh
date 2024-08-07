@@ -233,5 +233,8 @@ Rscript CalculateBIC.R \
     "${total_observations}" \
     "${output_directory}" \
 
+cp "${input_directory}/model_${optimum_number_of_states}.txt" \
+    "${output_directory}/optimum_model.txt"
+
 finishing_statement 0
 
