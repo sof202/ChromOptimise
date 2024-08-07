@@ -62,3 +62,20 @@ about cubes and hyper cubes (*etc.*).
 As such, no value is given for the `emission_threshold`, this value should be
 changed depending on the number of marks you have included in your dataset.
 
+### Output
+
+Upon completion, this script will copy the model with the optimum number of
+states into the optimum states directory (for the bin size and number of 
+models). This file will contain all of the emission and transition parameters.
+ChromHMM is capable of regenerating all other associated files with a model
+from this file (*i.e.* the html, state assignment, heatmaps *etc.*). You can
+do this with the following command:
+
+```bash
+java \
+-mx4G \
+-jar path/to/ChromHMM.jar \
+LearnModel \
+-init load \
+-m path/to/model/file
+```
