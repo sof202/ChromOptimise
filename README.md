@@ -56,9 +56,9 @@ decisions as they continue to further downstream analysis.
     - ggplot2
 3) If using [LDSC](https://github.com/bulik/ldsc), download 1000 genomes files 
 (or similar) from this [repository](https://zenodo.org/records/10515792)
-4) Create and fill in the configuration files using the templates provided in 
-[setup](https://github.com/sof202/ChromOptimise/tree/main/Setup) and place 
-them in a memorable location (recommended: next to your data)
+4) Copy the configuration files to a memorable location (recommended: next to 
+your data) and then fill them in using the templates provided. DO NOT CHANGE
+THE NAMES OF THESE FILES.
 5) Run the [`setup`](https://github.com/sof202/ChromOptimise/tree/main/Setup/setup) 
 executable 
     - The user will be prompted for whether they want to remove lines 
@@ -72,14 +72,20 @@ executable
 ## Usage
 After completing ['getting started'](#getting-started), run the master script 
 (ChromOptimise.sh) in the command line with:
+
 ```bash
 bash ChromOptimise.sh path/to/your/configuration/directory
 ```
 
 Alternatively, you can run each of the shell scripts in 
 [JobSubmission](https://github.com/sof202/ChromOptimise/tree/main/JobSubmission)
-sequentially for each epigenetic mark. For further information and **example
-usage** please consult the 
+sequentially. 
+
+```bash
+sbatch 1_BinarizeFiles.sh path/to/your/configuration/directory
+```
+
+For further information please see the
 [pipeline explanation](https://sof202.github.io/ChromOptimise/category/main-pipeline---usage-and-explanation).
 
 There also exists supplementary scripts for further information on your chosen
