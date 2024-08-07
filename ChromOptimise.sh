@@ -52,6 +52,7 @@ if [[ "${STARTING_SCRIPT}" -eq 2 ]]; then
     sbatch \
     --time="${MAXTIME_2}" \
     --array=1-"${MODEL_LEARNING_ARRAY_SIZE}" \
+    --mem=$((MODEL_LEARNING_ARRAY_SIZE * 4))G \
     "${JOBSUBMISSION_DIR}/2_batch_CreateIncrementalModels.sh" \
     "${configuration_directory}" | \
     awk '{print $4}' \
@@ -65,6 +66,7 @@ elif [[ "${STARTING_SCRIPT}" -lt 2 ]]; then
     sbatch \
     --time="${MAXTIME_2}" \
     --array=1-"${MODEL_LEARNING_ARRAY_SIZE}" \
+    --mem=$((MODEL_LEARNING_ARRAY_SIZE * 4))G \
     --dependency=afterok:"${jobID[binarization]}" \
     "${JOBSUBMISSION_DIR}/2_batch_CreateIncrementalModels.sh" \
     "${configuration_directory}" | \
