@@ -48,6 +48,12 @@ decisions as they continue to further downstream analysis.
 ## Getting started
 1) Clone this repository
 2) Ensure all [required software](#software-requirements) is installed
+  - There is an `InstallLibraries.R` script in .../Rscripts that you may find
+  useful if you don't have the following required R packages installed already:
+    - data.table
+    - dplyr
+    - tidyr
+    - ggplot2
 3) If using [LDSC](https://github.com/bulik/ldsc), download 1000 genomes files 
 (or similar) from this [repository](https://zenodo.org/records/10515792)
 4) Create and fill in the configuration files using the templates provided in 
