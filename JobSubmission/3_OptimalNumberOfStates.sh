@@ -17,7 +17,7 @@
 #SBATCH --output=temp%j.log
 # Temporary error file, later to be removed
 #SBATCH --error=temp%j.err
-#SBATCH --job-name=4_Optimal_States
+#SBATCH --job-name=3_Optimal_States
 
 usage() {
 cat <<EOF
