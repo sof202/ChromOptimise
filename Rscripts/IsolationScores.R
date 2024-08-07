@@ -165,13 +165,12 @@ create_isolation_score_plot <- function(isolation_scores) {
 
   isolation_score_plot <-
     ggplot(isolation_scores, aes(x = bins)) +
-    geom_histogram(bins = 8) +
-    scale_y_continuous(trans = "log10") +
+    geom_bar() +
     theme_bw() +
     labs(
-      title = "Histogram of Isolation scores for each state",
-      x = "isolation_score",
-      y = "Log_10(frequency)"
+      title = "Isolation scores for each state",
+      x = "Isolation score",
+      y = "Number of states"
     ) +
     theme(plot.title = element_text(hjust = 0.5))
 
