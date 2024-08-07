@@ -3,7 +3,7 @@
 ## ================= ##
 
 # Which shell script to start from (provide a number from 1 to 5)
-export STARTING_SCRIPT= 1
+export STARTING_SCRIPT=1
 
 # Cell type represented by data
 export CELL_TYPE=bulk
