@@ -89,7 +89,7 @@ export REPO_DIR="full/path/to/this/repository"
 
 export JOBSUBMISSION_DIR="${REPO_DIR}/JobSubmission"
 export RSCRIPTS_DIR="${REPO_DIR}/Rscripts"
-export LOG_DIR="${REPO_DIR}/LogFiles"
+export LOG_DIR="${MAIN_DIR}/LogFiles"
 export WRAPPER_SCRIPT="${REPO_DIR}/wrappers/LogFiles.sh"
 
 ## ----- ##
