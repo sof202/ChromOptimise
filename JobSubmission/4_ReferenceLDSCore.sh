@@ -215,29 +215,3 @@ python \
 
 conda deactivate
 
-## ============================ ##
-##   PARTITIONED HERITABILITY   ##
-## ============================ ##
-
-# This job is being ran as an array, which means that the memory of the job
-# is split among each array task. This memory allocation is not dynamic and so
-# at this point in the program the task only has (max memory)/22 GB of memory.
-# This is not enough to handle the partitioned heritability (unless you have
-# ~220GB of memory available). Hence at this point we run a new script with
-# sbatch
-
-if [[ ${SLURM_ARRAY_TASK_ID} -eq 1 ]]; then
-    cd "${JOBSUBMISSION_DIR}" || \
-    { echo "Could not find the JobSubmission directory in \
-    ${JOBSUBMISSION_DIR}/Jobsubmission. Please check your configuration file." \
-    finishing_statement 0; }
-
-    sbatch \
-        --dependency=afterok:"${SLURM_ARRAY_JOB_ID}" \
-        5_PartitionedHeritability.sh \
-        "${configuration_directory}"
-
-    finishing_statement 0
-else
-    finishing_statement 0
-fi

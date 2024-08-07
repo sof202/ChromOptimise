@@ -134,3 +134,31 @@ elif [[ "${STARTING_SCRIPT}" -lt 4 ]]; then
     echo "${jobID[LDSC]}"
 fi
 ## -------------------------------------------------------------------------- ##
+
+## ---5_PartitionedHeritability.sh------------------------------------------- ##
+if [[ "${STARTING_SCRIPT}" -eq 5 ]]; then
+    jobID[Heritability]=$( \
+    sbatch \
+    --time="${MAXTIME_5}" \
+    "${JOBSUBMISSION_DIR}/5_PartitionedHeritability.sh" \
+    "${configuration_directory}" | \
+    awk '{print $4}' \
+    )
+
+    echo "Submitted 5_PartitionedHeritability.sh under job ID:"
+    echo "${jobID[Heritability]}"
+
+elif [[ "${STARTING_SCRIPT}" -lt 5 ]]; then
+    jobID[Heritability]=$( \
+    sbatch \
+    --time="${MAXTIME_5}" \
+    --dependency=afterok:"${jobID[LDSC]}" \
+    "${JOBSUBMISSION_DIR}/5_PartitionedHeritability.sh" \
+    "${configuration_directory}" | \
+    awk '{print $4}' \
+    )
+
+    echo "Submitted 5_PartitionedHeritability.sh under job ID:"
+    echo "${jobID[Heritability]}"
+fi
+## -------------------------------------------------------------------------- ##
