@@ -93,7 +93,7 @@ module load Java
 
 cd "${BIG_MODELS_DIR}" || \
 { >&2 echo "ERROR: [\${BIG_MODELS_DIR} - ${BIG_MODELS_DIR}] \
-doesn't exist, make sure FilePaths.txt is pointing to the correct directory."
+doesn't exist, make sure Config.txt is pointing to the correct directory."
 finishing_statement 1; }
 
 java \

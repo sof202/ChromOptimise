@@ -30,10 +30,10 @@ Job ${SLURM_JOB_NAME} started at:
 $(date -u)
 
 File paths used:
-$(cat "${configuration_directory}/FilePaths.txt")
+$(cat "${configuration_directory}/Config.txt")
 
 R config used:
-$(cat "${configuration_directory}/config.R")
+$(cat "${configuration_directory}/Config.R")
 
 START_MESSAGE
 

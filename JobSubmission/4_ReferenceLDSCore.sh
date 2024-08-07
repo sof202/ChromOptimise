@@ -120,7 +120,7 @@ bim_file=$(\
 
 cd "${RSCRIPTS_DIR}" || \
 { >&2 echo "ERROR: [\${RSCRIPTS_DIR} - ${RSCRIPTS_DIR}] doesn't exist, \
-make sure FilePaths.txt is pointing to the correct directory"
+make sure Config.txt is pointing to the correct directory"
 finishing_statement 1; }
 
 ## ---------------------- ##

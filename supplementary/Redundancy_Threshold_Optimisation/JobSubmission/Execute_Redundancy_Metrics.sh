@@ -22,7 +22,7 @@ cat <<EOF
 ===========================================================================
 Execute_Redundancy_Metrics
 ===========================================================================
-Purpose: Generates plots to aid in thresholds used in config.R which
+Purpose: Generates plots to aid in thresholds used in Config.R which
 are used in 6_OptimumNumberOfStates.sh in determining redundant states.
 Author: Sam Fletcher
 Contact: s.o.fletcher@exeter.ac.uk
@@ -91,7 +91,7 @@ module load R/4.2.1-foss-2022a
 
 cd "${RSCRIPTS_DIR}" || \
 { >&2 echo "ERROR: make sure [\${RSCRIPTS_DIR} - ${RSCRIPTS_DIR}] \
-in FilePaths.txt is pointing to the correct directory"; finishing_statement 1; }
+in Config.txt is pointing to the correct directory"; finishing_statement 1; }
 
 mkdir -p \
     "${BIG_MODELS_DIR}/Isolation_scores" \

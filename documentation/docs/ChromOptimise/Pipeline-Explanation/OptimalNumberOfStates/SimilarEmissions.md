@@ -13,5 +13,5 @@ file parsed and calculates the Euclidean distance between them. The script has
 an optional flag that causes the script to create a heatmap and a histogram of
 all of the Euclidean distances calculated. These plots can be useful in
 identifying a suitable threshold parameter to use in the configuration file
-(config.R) when used on exceptionally large models in the supplementary 
+(Config.R) when used on exceptionally large models in the supplementary 
 pipeline.
