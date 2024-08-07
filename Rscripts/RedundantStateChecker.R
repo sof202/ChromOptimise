@@ -283,8 +283,11 @@ separator <- "<------------------------------------------------------------>"
 
 write_table_to_output <- function(table) {
   write.table(table,
-    file = output_file, append = TRUE,
-    row.names = FALSE, col.names = FALSE
+    file = output_file,
+    append = TRUE,
+    row.names = FALSE,
+    col.names = FALSE,
+    sep = "\t\t"
   )
   write(separator, file = output_file, append = TRUE)
 }
@@ -297,7 +300,7 @@ write_text_to_output <- function(text) {
 ## Similar emission parameters ##
 write_text_to_output("States with similar emission probabilities:\n")
 
-write_text_to_output("|State pair| |Euclidean distance between states|")
+write_text_to_output("|State pair|\t|Euclidean distance between states|")
 
 write_table_to_output(low_euclidean_distances)
 
@@ -305,7 +308,7 @@ write_table_to_output(low_euclidean_distances)
 
 write_text_to_output("\nState pairs with the same flanking states:\n")
 
-write_text_to_output("|State pair| |Upstream flank| |Downstream flank|")
+write_text_to_output("|State pair|\t|Upstream flank|\t|Downstream flank|")
 
 write_table_to_output(same_flank_pairs_for_output)
 
@@ -313,14 +316,14 @@ write_table_to_output(same_flank_pairs_for_output)
 
 write_text_to_output("\nStates with identical flanking states:\n")
 
-write_text_to_output("|State| |Flanking state|")
+write_text_to_output("|State|\t|Flanking state|")
 
 write_table_to_output(identical_flanks)
 
 ## Highly isolated states ##
 write_text_to_output("\nStates with high isolation score:\n")
 
-write_text_to_output("|State| |Isolation Score|")
+write_text_to_output("|State|\t|Isolation Score|")
 
 write_table_to_output(highly_isolated_states_data)
 
