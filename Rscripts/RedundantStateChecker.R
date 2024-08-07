@@ -279,7 +279,7 @@ redundant_states <- unique(redundant_states)
 
 output_file <- paste0("Redundant_states_model-", model_size, ".txt")
 setwd(output_file_path)
-separator <- "<------------------------------------------------------------>"
+separator <- paste0("<<", strrep("-", 100), ">>")
 
 write_table_to_output <- function(table) {
   write.table(table,
