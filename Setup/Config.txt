@@ -87,10 +87,10 @@ export LD_BASELINE_DIR="${LD_DIR}/baseline_files"
 
 export REPO_DIR="full/path/to/this/repository"
 
-export JOBSUBMISSION_DIR="${SCRIPTS_DIR}/JobSubmission"
-export RSCRIPTS_DIR="${SCRIPTS_DIR}/Rscripts"
-export LOG_DIR="${SCRIPTS_DIR}/LogFiles"
-export WRAPPER_SCRIPT="${SCRIPTS_DIR}/wrappers/LogFiles.sh"
+export JOBSUBMISSION_DIR="${REPO_DIR}/JobSubmission"
+export RSCRIPTS_DIR="${REPO_DIR}/Rscripts"
+export LOG_DIR="${REPO_DIR}/LogFiles"
+export WRAPPER_SCRIPT="${REPO_DIR}/wrappers/LogFiles.sh"
 
 ## ----- ##
 ## CONDA ##
