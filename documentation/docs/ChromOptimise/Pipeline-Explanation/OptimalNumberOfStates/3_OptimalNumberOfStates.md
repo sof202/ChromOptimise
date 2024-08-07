@@ -26,7 +26,7 @@ having redundant states is what confirms the model with 3 states is optimal.
 ## Thresholds
 
 The major factor that affects the output of this script lies in the thresholds
-defined in the configuration file for R config.R. It can be difficult to
+defined in the configuration file for R Config.R. It can be difficult to
 determine suitable values for these thresholds without prior knowledge. To help
 with this, the supplementary pipeline was created. Running the supplementary
 pipeline can help the user in identifying 'good' values for these thresholds

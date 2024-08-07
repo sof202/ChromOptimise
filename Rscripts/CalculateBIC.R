@@ -63,7 +63,7 @@ names(likelihood_data) <- c("number_of_states", "estimated_log_likelihood")
 # L -> Likelihood function (output of chromHMM already in ln(L) form)
 log_observations <- log(number_of_observations)
 
-# number_of_marks is coming from config.R
+# number_of_marks is coming from Config.R
 likelihood_data$parameters <-
   (likelihood_data$number_of_states * number_of_marks) +
   (likelihood_data$number_of_states ^ 2)

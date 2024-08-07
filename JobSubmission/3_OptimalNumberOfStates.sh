@@ -153,7 +153,7 @@ for model_number in "${model_sizes[@]}"; do
     echo "Running RedundantStateChecker.R for: ${model_number} states..."
 
     Rscript RedundantStateChecker.R \
-        "${configuration_directory}/config.R" \
+        "${configuration_directory}/Config.R" \
         "${model_number}" \
         "${output_directory}"
 
@@ -186,7 +186,7 @@ cat >> "${output_directory}/OptimumNumberOfStates.txt" << EOF
 WARNING: Largest model learned has no redundant states.
 ${model_number} states may not be the optimum number of states.
 Try increasing the size of the most complex model or increasing 
-the thresholds in the config.R file.
+the thresholds in the Config.R file.
 EOF
 else
     echo "Optimum number of states for the data is: ${model_number}" >> \
@@ -222,7 +222,7 @@ done
 
 echo "Processing the Bayesian information critereon of learned models..."
 Rscript CalculateBIC.R \
-    "${configuration_directory}/config.R" \
+    "${configuration_directory}/Config.R" \
     "${input_directory}/Likelihood_Values/likelihoods.txt" \
     "${total_observations}" \
     "${output_directory}"
