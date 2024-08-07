@@ -49,7 +49,8 @@ library(ggplot2)
 
 arguments <- commandArgs(trailingOnly = TRUE)
 results_file_list <- readLines(arguments[1])
-output_directory <- arguments[2]
+cell_type <- arguments[2]
+output_directory <- arguments[3]
 
 ## ================= ##
 ##   LOADING FILES   ##
@@ -112,7 +113,7 @@ pivot_enrichment_data <- function(enrichment_data, column_name) {
 bonferroni_correction <- function(results_files, pvalue_threshold) {
   number_of_traits <- length(results_files)
   relevant_categories <-
-    sum(grepl("^state_.*", results_files[[1]]$Category))
+    sum(grepl(paste0("^",cell_type, "state_.*"), results_files[[1]]$Category))
   number_of_hypotheses <- number_of_traits * relevant_categories
   bonferroni_threshold <- pvalue_threshold / number_of_hypotheses
   return(-log10(bonferroni_threshold))
@@ -169,7 +170,7 @@ create_heatmap_data <- function(results_files, complete = FALSE) {
 
   if (!complete) {
     state_assignment_rows <-
-      grepl("^state.*", enrichment_data$Category)
+      grepl(paste0("^",cell_type, "state_.*"), enrichment_data$Category)
     enrichment_data <- enrichment_data[state_assignment_rows, ]
     enrichment_p_data <- enrichment_p_data[state_assignment_rows, ]
   }
@@ -244,7 +245,7 @@ create_pvalue_barplots <-
       data <- remove_l2_suffix(data)
       if (!complete) {
         state_assignment_rows <-
-          grepl("^state_.*", data$Category)
+          grepl(paste0("^", cell_type, "state_.*"), data$Category)
         data <- data[state_assignment_rows, ]
       }
       plot_title <- names(results_files)[[file]]

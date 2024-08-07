@@ -183,6 +183,7 @@ Rscript CreateAnnotationFile.R \
     <(cat "${temporary_directory}/state_assignments-${chromosome}.txt") \
     <(cat "${temporary_directory}/mark_assignments-${chromosome}.txt") \
     "${OPTIMUM_NUMBER_OF_STATES}" \
+    "${CELL_TYPE}" \
     "${output_directory}/annotation/ChromOptimise.${chromosome}.annot"
 
 rm -rf "${temporary_directory}"
