@@ -41,8 +41,9 @@ library(ggplot2)
 arguments <- commandArgs(trailingOnly = TRUE)
 config_file_location <- arguments[1]
 likelihoods_file <- arguments[2]
-number_of_observations <- as.numeric(arguments[3])
-output_file_path <- arguments[4]
+optimum_states <- as.numeric(arguments[3])
+number_of_observations <- as.numeric(arguments[4])
+output_file_path <- arguments[5]
 
 source(config_file_location)
 
@@ -80,14 +81,34 @@ likelihood_data$bic <- (log_observations * likelihood_data$parameters) -
 min_bic <- min(likelihood_data$bic)
 likelihood_data$relative_bic <- likelihood_data$bic / min_bic
 
+## =================== ##
+##   WARNING MESSAGE   ##
+## =================== ##
+
+# It's not the worst thing, but the user should be warned if a model has a
+# larger BIC than the next smallest state
+
+sub_optimum_states <- optimum_states - 1
+optimum_states_bic <-
+  subset(likelihood_data, number_of_states == optimum_states)[["bic"]]
+sub_optimum_states_bic <-
+  subset(likelihood_data, number_of_states == sub_optimum_states)[["bic"]]
+
+if (optimum_states_bic > sub_optimum_states_bic) {
+  warning(
+    "WARNING: A less complex model has a smaller BIC ",
+    "than the model with the determined optimum number of states (",
+    optimum_states,
+    ")"
+  )
+}
+
 ## =========== ##
 ##   OUTPUTS   ##
 ## =========== ##
 
 relative_bic_scatter <-
-  ggplot(likelihood_data, aes(number_of_states, relative_bic))
-
-relative_bic_scatter +
+  ggplot(likelihood_data, aes(number_of_states, relative_bic)) +
   geom_point() +
   scale_x_continuous(breaks = seq_along(likelihood_data$number_of_states)) +
   labs(

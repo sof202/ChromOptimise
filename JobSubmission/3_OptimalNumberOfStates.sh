@@ -220,13 +220,18 @@ for file in "${full_binary_path}"/*_binary.txt*; do
     total_observations=$((total_observations + observations - 2))
 done
 
+optimum_number_of_states=$(\
+tail -1 "${output_directory}/OptimumNumberOfStates.txt" | \
+cut -d: -f2 | \
+tr -d ' ')
+
 echo "Processing the Bayesian information critereon of learned models..."
 Rscript CalculateBIC.R \
     "${configuration_directory}/Config.R" \
     "${input_directory}/Likelihood_Values/likelihoods.txt" \
+    "${optimum_number_of_states}" \
     "${total_observations}" \
-    "${output_directory}"
-
+    "${output_directory}" \
 
 finishing_statement 0
 
