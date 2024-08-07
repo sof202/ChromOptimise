@@ -9,7 +9,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=16
 # Very low memory usage is expected from generating the plots
-#SBATCH --mem=1G 
+#SBATCH --mem=2G 
 #SBATCH --mail-type=END # Send an email after the job is done
 # Temporary log file, later to be removed
 #SBATCH --output=temp%j.log
