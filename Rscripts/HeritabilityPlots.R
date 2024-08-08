@@ -202,6 +202,10 @@ create_enrichment_heatmap <- function(results_files,
   )
 
   enrichment_data[is.na(enrichment_data)] <- 1
+  enrichment_data <- dplyr::mutate(
+    enrichment_data,
+    Enrichment = if_else(Enrichment < 0, NA, Enrichment)
+  )
 
   negative_palette <- c("red", "pink")
   postitive_palette <- c("lightgreen", "darkgreen")
@@ -215,7 +219,8 @@ create_enrichment_heatmap <- function(results_files,
     scale_fill_gradient2(
       low = negative_palette,
       high = postitive_palette,
-      midpoint = 0
+      midpoint = 0,
+      na.value = "blue"
     ) +
     geom_text(
       aes(
