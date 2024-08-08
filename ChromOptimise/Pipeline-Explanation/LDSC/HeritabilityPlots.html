@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="generator" content="Docusaurus v3.3.2">
 <title data-rh="true">HeritabilityPlots | ChromOptimise</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:image" content="https://sof202.github.io/ChromOptimise/img/dna.png"><meta data-rh="true" name="twitter:image" content="https://sof202.github.io/ChromOptimise/img/dna.png"><meta data-rh="true" property="og:url" content="https://sof202.github.io/ChromOptimise/ChromOptimise/Pipeline-Explanation/LDSC/HeritabilityPlots"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="HeritabilityPlots | ChromOptimise"><meta data-rh="true" name="description" content="The script used to create plots of partitioned heritability."><meta data-rh="true" property="og:description" content="The script used to create plots of partitioned heritability."><link data-rh="true" rel="icon" href="/ChromOptimise/img/dna.ico"><link data-rh="true" rel="canonical" href="https://sof202.github.io/ChromOptimise/ChromOptimise/Pipeline-Explanation/LDSC/HeritabilityPlots"><link data-rh="true" rel="alternate" href="https://sof202.github.io/ChromOptimise/ChromOptimise/Pipeline-Explanation/LDSC/HeritabilityPlots" hreflang="en"><link data-rh="true" rel="alternate" href="https://sof202.github.io/ChromOptimise/ChromOptimise/Pipeline-Explanation/LDSC/HeritabilityPlots" hreflang="x-default"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.13.24/dist/katex.min.css" integrity="sha384-odtC+0UGzzFL/6PNoE8rX/SPcQDXBJ+uRepguP4QkPCm2LBxH3FA3y+fKSiJ+AmM" crossorigin="anonymous"><link rel="stylesheet" href="/ChromOptimise/assets/css/styles.cefcd80b.css">
-<script src="/ChromOptimise/assets/js/runtime~main.fd627fef.js" defer="defer"></script>
+<script src="/ChromOptimise/assets/js/runtime~main.fbd7708a.js" defer="defer"></script>
 <script src="/ChromOptimise/assets/js/main.5f46b232.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -26,6 +26,7 @@ input data).</p>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="interpretation">Interpretation<a href="#interpretation" class="hash-link" aria-label="Direct link to Interpretation" title="Direct link to Interpretation">​</a></h2>
 <p>The colour palette of the heatmap is such that higher enrichment values
 are a darker green and lower enrichment values are closer to white/light green.
+Any negative enrichment is given with a pink box.
 The actual values for the enrichment heatmap are also given and all information
 is printed to a csv file.</p>
 <p>Enrichment is defined as:</p>
@@ -34,7 +35,7 @@ is printed to a csv file.</p>
 SNPs</p>
 </blockquote>
 <p>In general you should ignore negative enrichment as
-this usually stems from negative heritability (which is nonsensicle). For
+this usually stems from negative heritability (which is nonsensicle).For
 positive values however, the following interpretations can be made:</p>
 <ul>
 <li>An enrichment value greater than 1 implies that the regions defined by the
@@ -49,11 +50,6 @@ accounted for). Base therefore explains 100% of SNP heritability and contains
 100% of all SNPs, resulting in an enrichment of 1. An enrichment of 1 is not
 a significant result of partitioned heritability.</li>
 </ul>
-<p>After viewing the heatmap, you will likely identify certain states/marks that
-are of biological significance (high enrichment for traits you are interested
-in). Before making any conclusions from this observation, make sure to look
-at the relevant p-value barplot to check if the result is significant. The
-high level (or low level) of enrichment might have ocurred purely by chance.</p>
 <h3 class="anchor anchorWithStickyNavbar_LWe7" id="p-value-thresholds">p-value thresholds<a href="#p-value-thresholds" class="hash-link" aria-label="Direct link to p-value thresholds" title="Direct link to p-value thresholds">​</a></h3>
 <p>A baseline value of 0.01 was chosen for a p-value threshold. This was arbitrary
 and the user is free to change this in the associated script
@@ -67,6 +63,10 @@ correction and FDR correction (using Benjamini and Hochberg method). The FDR
 threshold is given by the grey dotted line on the bar plots and Bonferroni
 threshold is given by the black dotted line. These correction methods help
 mitigate the possibility of accepting a low pvalue that ocurred due to chance.</p>
+<p>The heatmap gives you a quick overview of the p-values with stars. A single
+star means that the enrichment is fdr significant, 2 stars means the enrichment
+is Bonferroni significant. For more indepth information look at the bar charts
+for each gwas trait.</p>
 <div class="theme-admonition theme-admonition-info admonition_xJq3 alert alert--info"><div class="admonitionHeading_Gvgb"><span class="admonitionIcon_Rf37"><svg viewBox="0 0 14 16"><path fill-rule="evenodd" d="M7 2.3c3.14 0 5.7 2.56 5.7 5.7s-2.56 5.7-5.7 5.7A5.71 5.71 0 0 1 1.3 8c0-3.14 2.56-5.7 5.7-5.7zM7 1C3.14 1 0 4.14 0 8s3.14 7 7 7 7-3.14 7-7-3.14-7-7-7zm1 3H6v5h2V4zm0 6H6v2h2v-2z"></path></svg></span>Number of hypotheses</div><div class="admonitionContent_BuS1"><p>The number of hypotheses should be equal to the number of entries in the
 complete (all categories) heatmap. However, the user is not actaully able to
 control the number of annotations that come from the baseline files provided
