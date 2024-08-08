@@ -204,7 +204,7 @@ create_enrichment_heatmap <- function(results_files,
   enrichment_data[is.na(enrichment_data)] <- 1
   enrichment_data <- dplyr::mutate(
     enrichment_data,
-    Enrichment = dplyr::if_else(Enrichment < 0, NA, Enrichment)
+    Enrichment = dplyr::if_else(Enrichment < 0, NA_real_, Enrichment)
   )
 
   negative_palette <- c("red", "pink")
