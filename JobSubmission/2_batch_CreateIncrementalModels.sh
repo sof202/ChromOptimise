@@ -164,7 +164,7 @@ for numstates in ${sequence}; do
         "ChromHMM_output_numstates_${numstates}.txt"
 
     echo "Writing estimated log likelihood to: likelihoods.txt..."
-    echo "Estimated Log Likelihood for ${numstates} states: " >> \
+    echo -n "Estimated Log Likelihood for ${numstates} states: " >> \
     "likelihoods.txt"
 
     # grep selects terminal logs that are not associated with writing to files.
