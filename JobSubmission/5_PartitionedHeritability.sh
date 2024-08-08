@@ -60,6 +60,16 @@ ld_directory="${LD_ASSESSMENT_DIR}/BinSize_${BIN_SIZE}_models_${NUMBER_OF_MODELS
 ##   PARTITIONED HERITABILITY   ##
 ## ============================ ##
 
+rm -rf \
+    "${ld_directory}/heritability" \
+    "${ld_directory}/plots/chromoptimise_categories" \
+    "${ld_directory}/plots/all_categories" 
+
+mkdir -p \
+    "${ld_directory}/heritability" \
+    "${ld_directory}/plots/chromoptimise_categories" \
+    "${ld_directory}/plots/all_categories" 
+
 source "${CONDA_SHELL}" || \
 { echo "conda.sh does not exist in specified location: \
 [\${CONDA_SHELL} - ${CONDA_SHELL}]"; exit 1; }

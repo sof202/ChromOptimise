@@ -79,11 +79,7 @@ output_directory="${LD_ASSESSMENT_DIR}\
 
 if [[ "${SLURM_ARRAY_TASK_ID}" -eq 1 ]]; then
     rm -rf "${output_directory:?}"
-    mkdir -p \
-        "${output_directory}/annotation" \
-        "${output_directory}/heritability" \
-        "${output_directory}/plots/ChromOptimise_Categories" \
-        "${output_directory}/plots/All_Categories" 
+    mkdir -p "${output_directory}/annotation"
 fi
 
 # We sleep here to ensure files are not removed prematurely
