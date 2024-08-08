@@ -6,6 +6,7 @@
 *.Rhistory
 *.Rdat
 *.Rproj
+Rplots.pdf
 
 # Dependencies
 documentation/node_modules
