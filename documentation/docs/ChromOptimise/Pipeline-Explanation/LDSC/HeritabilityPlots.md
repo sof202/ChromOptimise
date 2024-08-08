@@ -26,6 +26,7 @@ input data).
 
 The colour palette of the heatmap is such that higher enrichment values
 are a darker green and lower enrichment values are closer to white/light green.
+Any negative enrichment is given with a pink box.
 The actual values for the enrichment heatmap are also given and all information
 is printed to a csv file.
 
@@ -34,7 +35,7 @@ Enrichment is defined as:
 SNPs
 
 In general you should ignore negative enrichment as
-this usually stems from negative heritability (which is nonsensicle). For 
+this usually stems from negative heritability (which is nonsensicle).For 
 positive values however, the following interpretations can be made:
 
 - An enrichment value greater than 1 implies that the regions defined by the
@@ -48,12 +49,6 @@ base. Base is a category that every SNP falls into (to ensure all SNPs are
 accounted for). Base therefore explains 100% of SNP heritability and contains
 100% of all SNPs, resulting in an enrichment of 1. An enrichment of 1 is not
 a significant result of partitioned heritability.
-
-After viewing the heatmap, you will likely identify certain states/marks that
-are of biological significance (high enrichment for traits you are interested
-in). Before making any conclusions from this observation, make sure to look
-at the relevant p-value barplot to check if the result is significant. The
-high level (or low level) of enrichment might have ocurred purely by chance.
 
 ### p-value thresholds
 
@@ -70,6 +65,11 @@ correction and FDR correction (using Benjamini and Hochberg method). The FDR
 threshold is given by the grey dotted line on the bar plots and Bonferroni
 threshold is given by the black dotted line. These correction methods help
 mitigate the possibility of accepting a low pvalue that ocurred due to chance.
+
+The heatmap gives you a quick overview of the p-values with stars. A single
+star means that the enrichment is fdr significant, 2 stars means the enrichment
+is Bonferroni significant. For more indepth information look at the bar charts 
+for each gwas trait.
 
 :::info[Number of hypotheses]
 The number of hypotheses should be equal to the number of entries in the
