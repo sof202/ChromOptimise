@@ -113,7 +113,7 @@ pivot_enrichment_data <- function(enrichment_data, column_name) {
 bonferroni_correction <- function(results_files, pvalue_threshold) {
   number_of_traits <- length(results_files)
   relevant_categories <-
-    sum(grepl(paste0("^", cell_type, "_state_.*"), results_files[[1]]$Category))
+    sum(grepl(paste0(cell_type, "_*"), results_files[[1]]$Category))
   number_of_hypotheses <- number_of_traits * relevant_categories
   bonferroni_threshold <- pvalue_threshold / number_of_hypotheses
   return(-log10(bonferroni_threshold))
@@ -125,11 +125,13 @@ fdr_correction <- function(pvalues, fdr_threshold) {
   significant_pvalues <-
     subset(adjusted_pvalues, adjusted_pvalues < fdr_threshold)
 
-  # I have no fucking idea why this needs to be done. But it does, you'll
-  # get errors as if the vector contains NA/Inf (despite the fact that it
-  # doesn't AT ALLLL).
-  critical_value <-
-    max(significant_pvalues[seq_along(significant_pvalues)], na.rm = TRUE)
+  # It is possible for significant_pvalues to be empty if the adjusted_pvalues
+  # are too great
+  if (length(significant_pvalues) == 0) {
+    critical_value <- fdr_threshold
+  } else {
+    critical_value <- max(significant_pvalues)
+  }
   return(-log10(critical_value))
 }
 
@@ -171,7 +173,7 @@ create_heatmap_data <- function(results_files, complete = FALSE) {
 
   if (!complete) {
     state_assignment_rows <-
-      grepl(paste0("^", cell_type, "_state_.*"), enrichment_data$Category)
+      grepl(paste0(cell_type, "_*"), enrichment_data$Category)
     enrichment_data <- enrichment_data[state_assignment_rows, ]
     enrichment_p_data <- enrichment_p_data[state_assignment_rows, ]
   }
@@ -246,7 +248,7 @@ create_pvalue_barplots <-
       data <- remove_l2_suffix(data)
       if (!complete) {
         state_assignment_rows <-
-          grepl(paste0("^", cell_type, "_state_.*"), data$Category)
+          grepl(paste0(cell_type, "_*"), data$Category)
         data <- data[state_assignment_rows, ]
       }
       plot_title <- names(results_files)[[file]]

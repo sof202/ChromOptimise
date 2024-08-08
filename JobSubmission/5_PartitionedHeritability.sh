@@ -62,12 +62,12 @@ ld_directory="${LD_ASSESSMENT_DIR}/BinSize_${BIN_SIZE}_models_${NUMBER_OF_MODELS
 
 rm -rf \
     "${ld_directory}/heritability" \
-    "${ld_directory}/plots/Chromoptimise_Categories" \
+    "${ld_directory}/plots/ChromOptimise_Categories" \
     "${ld_directory}/plots/All_Categories" 
 
 mkdir -p \
     "${ld_directory}/heritability" \
-    "${ld_directory}/plots/Chromoptimise_Categories" \
+    "${ld_directory}/plots/ChromOptimise_Categories" \
     "${ld_directory}/plots/All_Categories" 
 
 source "${CONDA_SHELL}" || \
