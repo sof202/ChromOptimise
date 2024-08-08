@@ -207,6 +207,7 @@ create_enrichment_heatmap <- function(results_files,
     Enrichment = dplyr::if_else(Enrichment < 0, NA_real_, Enrichment)
   )
 
+  negative_palette <- c("red", "pink")
   postitive_palette <- c("lightgreen", "darkgreen")
   enrichment_heatmap <-
     ggplot(enrichment_data, aes(
@@ -216,6 +217,7 @@ create_enrichment_heatmap <- function(results_files,
     )) +
     geom_tile(color = "black") +
     scale_fill_gradient2(
+      low = negative_palette,
       high = postitive_palette,
       midpoint = 0,
       na.value = "pink"
