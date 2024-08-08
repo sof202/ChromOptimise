@@ -98,15 +98,15 @@ chromosome=${SLURM_ARRAY_TASK_ID}
 temporary_directory="${output_directory}/temp_${chromosome}"
 mkdir -p "${temporary_directory}"
 
-dense_bed_file=$(\
+dense_bed_files=$(\
 find "${full_model_directory}" \
 -name "*_${OPTIMUM_NUMBER_OF_STATES}_dense.bed")
 
-binary_file=$(\
+binary_files=$(\
     find "${full_binary_directory}" \
--name "*_chr${chromosome}_binary*")
+-iname "${CELL_TYPE}*_chr${chromosome}_binary*")
 
-bim_file=$(\
+bim_files=$(\
     find "${LD_PLINK_DIR}" \
 -name "*.${chromosome}.bim")
 
@@ -127,13 +127,13 @@ module purge
 module load R/4.2.1-foss-2022a
 
 Rscript BinarytoBed.R \
-    <(zcat "${binary_file}") \
+    <(zcat "${binary_files}") \
     "${BIN_SIZE}" \
     "chr${chromosome}" \
     "${temporary_directory}/binary-${chromosome}.bed"
 
 Rscript BimtoBed.R \
-    <(cat "${bim_file}") \
+    <(cat "${bim_files}") \
     "${temporary_directory}/SNP_positions-${chromosome}.bed"
 
 ## ----------------------------------- ##
@@ -145,13 +145,13 @@ module load BEDTools/2.29.2-GCC-9.3.0
 
 bedtools intersect -wb \
     -a "${temporary_directory}/SNP_positions-${chromosome}.bed" \
-    -b "${dense_bed_file}" | \
+    -b "${dense_bed_files}" | \
     awk '{print $7}' > \
     "${temporary_directory}/state_assignments-${chromosome}.txt"
 
 # We get the mark names at the top of the file for the Rscript that appends
 # these columns to the annotation file later for convenience
-zcat "${binary_file}" | \
+zcat "${binary_files}" | \
     awk 'NR==2 {for(i=1; i<=NF; i++) \
     printf "CELL_TYPE_%s%s", $i, (i==NF ? "\n" : "\t")}' > \
     "${temporary_directory}/mark_assignments-${chromosome}.txt"
