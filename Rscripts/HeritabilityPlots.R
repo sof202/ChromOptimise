@@ -261,13 +261,13 @@ create_pvalue_barplots <- function(results_files,
         grepl(paste0(cell_type, "_*"), barplot_data[["Category"]])
       barplot_data <- barplot_data[state_assignment_rows, ]
     }
-    plot_title <- names(results_files)[[file]]
 
     barplot_data <- dplyr::mutate(
       barplot_data,
       Enrichment_p = -log10(Enrichment_p)
     )
 
+    plot_title <- names(results_files)[[file]]
     bar_plot <-
       ggplot(
         barplot_data,
