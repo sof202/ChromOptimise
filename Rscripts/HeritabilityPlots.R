@@ -250,26 +250,27 @@ create_pvalue_barplots <- function(results_files,
     get_bonferroni_threshold(results_files, pvalue_threshold)
 
   for (file in seq_along(results_files)) {
-    data <- results_files[[file]]
-    data <- remove_l2_suffix(data)
+    barplot_data <- results_files[[file]]
+    barplot_data <- remove_l2_suffix(barplot_data)
 
-    fdr_threshold <- get_fdr_threshold(data[["Enrichment_p"]], pvalue_threshold)
+    fdr_threshold <-
+      get_fdr_threshold(barplot_data[["Enrichment_p"]], pvalue_threshold)
 
     if (!complete) {
       state_assignment_rows <-
-        grepl(paste0(cell_type, "_*"), data[["Category"]])
-      data <- data[state_assignment_rows, ]
+        grepl(paste0(cell_type, "_*"), barplot_data[["Category"]])
+      barplot_data <- barplot_data[state_assignment_rows, ]
     }
     plot_title <- names(results_files)[[file]]
 
-    data <- dplyr::mutate(
-      data,
+    barplot_data <- dplyr::mutate(
+      barplot_data,
       Enrichment_p = -log10(Enrichment_p)
     )
 
     bar_plot <-
       ggplot(
-        data,
+        barplot_data,
         aes(x = Category, y = Enrichment_p, fill = Enrichment_p)
       ) +
       geom_bar(stat = "identity", color = "black") +
