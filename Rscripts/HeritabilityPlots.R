@@ -196,12 +196,12 @@ create_enrichment_heatmap <- function(results_files,
   fdr_threshold <-
     get_fdr_threshold(heatmap_data$Enrichment_p, pvalue_threshold)
 
+  heatmap_data[is.na(heatmap_data)] <- 1
   heatmap_data <- dplyr::mutate(
     heatmap_data,
     Enrichment_p = -log10(Enrichment_p)
   )
 
-  heatmap_data[is.na(heatmap_data)] <- 1
   heatmap_data <- dplyr::mutate(
     heatmap_data,
     Enrichment = dplyr::if_else(Enrichment < 0, NA_real_, Enrichment)
