@@ -154,7 +154,7 @@ write_poor_enrichment_warning <- function(results_files) {
     )
     writeLines(
       lines,
-      file.path(output_directory,"WARNING.txt")
+      file.path(output_directory, "WARNING.txt")
     )
   }
   invisible()
@@ -172,45 +172,45 @@ create_heatmap_data <- function(results_files, complete = FALSE) {
   enrichment_p_data <- remove_l2_suffix(enrichment_p_data)
 
   if (!complete) {
-    state_assignment_rows <-
-      grepl(paste0(cell_type, "_*"), enrichment_data$Category)
-    enrichment_data <- enrichment_data[state_assignment_rows, ]
-    enrichment_p_data <- enrichment_p_data[state_assignment_rows, ]
+    chromoptimise_rows <-
+      grepl(paste0(cell_type, "_*"), enrichment_data[["Category"]])
+    enrichment_data <- enrichment_data[chromoptimise_rows, ]
+    enrichment_p_data <- enrichment_p_data[chromoptimise_rows, ]
   }
 
   enrichment_data <- pivot_enrichment_data(enrichment_data, "Enrichment")
   enrichment_p_data <- pivot_enrichment_data(enrichment_p_data, "Enrichment_p")
 
-  enrichment_data <-
+  heatmap_data <-
     cbind(enrichment_data, enrichment_p_data[, ncol(enrichment_p_data)])
-  return(enrichment_data)
+  return(heatmap_data)
 }
 
 create_enrichment_heatmap <- function(results_files,
                                       pvalue_threshold,
                                       complete = FALSE) {
-  enrichment_data <- create_heatmap_data(results_files, complete)
+  heatmap_data <- create_heatmap_data(results_files, complete)
 
   bonferroni_threshold <-
     get_bonferroni_threshold(results_files, pvalue_threshold)
   fdr_threshold <-
-    get_fdr_threshold(enrichment_data$Enrichment_p, pvalue_threshold)
+    get_fdr_threshold(heatmap_data$Enrichment_p, pvalue_threshold)
 
-  enrichment_data <- dplyr::mutate(
-    enrichment_data,
+  heatmap_data <- dplyr::mutate(
+    heatmap_data,
     Enrichment_p = -log10(Enrichment_p)
   )
 
-  enrichment_data[is.na(enrichment_data)] <- 1
-  enrichment_data <- dplyr::mutate(
-    enrichment_data,
+  heatmap_data[is.na(heatmap_data)] <- 1
+  heatmap_data <- dplyr::mutate(
+    heatmap_data,
     Enrichment = dplyr::if_else(Enrichment < 0, NA_real_, Enrichment)
   )
 
   negative_palette <- c("red", "pink")
   postitive_palette <- c("lightgreen", "darkgreen")
   enrichment_heatmap <-
-    ggplot(enrichment_data, aes(
+    ggplot(heatmap_data, aes(
       x = gwas_trait,
       y = Category,
       fill = Enrichment,
