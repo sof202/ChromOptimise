@@ -241,58 +241,59 @@ create_enrichment_heatmap <- function(results_files,
   return(enrichment_heatmap)
 }
 
-create_pvalue_barplots <-
-  function(results_files, pvalue_threshold, complete = FALSE) {
-    list_of_pvalue_plots <- list()
+create_pvalue_barplots <- function(results_files,
+                                   pvalue_threshold,
+                                   complete = FALSE) {
+  list_of_pvalue_plots <- list()
 
-    bonferroni_threshold <-
-      get_bonferroni_threshold(results_files, pvalue_threshold)
+  bonferroni_threshold <-
+    get_bonferroni_threshold(results_files, pvalue_threshold)
 
-    for (file in seq_along(results_files)) {
-      data <- results_files[[file]]
-      # We remove the base row as it is guaranteed to have a NaN p-value
-      data <- data[-1, ]
-      fdr_threshold <- get_fdr_threshold(data$Enrichment_p, pvalue_threshold)
+  for (file in seq_along(results_files)) {
+    data <- results_files[[file]]
+    # We remove the base row as it is guaranteed to have a NaN p-value
+    data <- data[-1, ]
+    fdr_threshold <- get_fdr_threshold(data$Enrichment_p, pvalue_threshold)
 
-      data <- remove_l2_suffix(data)
-      if (!complete) {
-        state_assignment_rows <-
-          grepl(paste0(cell_type, "_*"), data$Category)
-        data <- data[state_assignment_rows, ]
-      }
-      plot_title <- names(results_files)[[file]]
-
-      data$Enrichment_p <- -log10(data$Enrichment_p)
-
-      bar_plot <-
-        ggplot(
-          data,
-          aes(x = Category, y = Enrichment_p, fill = Enrichment_p)
-        ) +
-        geom_bar(stat = "identity", color = "black") +
-        scale_fill_gradient(low = "light green", high = "dark green") +
-        coord_flip() +
-        geom_hline(
-          yintercept = bonferroni_threshold,
-          linetype = "dashed",
-          color = "black"
-        ) +
-        geom_hline(
-          yintercept = fdr_threshold,
-          linetype = "dashed",
-          color = "gray"
-        ) +
-        labs(
-          title = plot_title,
-          x = "Category",
-          y = "-log_10(Enrichment p-value)"
-        ) +
-        theme(plot.title = element_text(hjust = 0.5))
-
-      list_of_pvalue_plots[[file]] <- bar_plot
+    data <- remove_l2_suffix(data)
+    if (!complete) {
+      state_assignment_rows <-
+        grepl(paste0(cell_type, "_*"), data$Category)
+      data <- data[state_assignment_rows, ]
     }
-    return(list_of_pvalue_plots)
+    plot_title <- names(results_files)[[file]]
+
+    data$Enrichment_p <- -log10(data$Enrichment_p)
+
+    bar_plot <-
+      ggplot(
+        data,
+        aes(x = Category, y = Enrichment_p, fill = Enrichment_p)
+      ) +
+      geom_bar(stat = "identity", color = "black") +
+      scale_fill_gradient(low = "light green", high = "dark green") +
+      coord_flip() +
+      geom_hline(
+        yintercept = bonferroni_threshold,
+        linetype = "dashed",
+        color = "black"
+      ) +
+      geom_hline(
+        yintercept = fdr_threshold,
+        linetype = "dashed",
+        color = "gray"
+      ) +
+      labs(
+        title = plot_title,
+        x = "Category",
+        y = "-log_10(Enrichment p-value)"
+      ) +
+      theme(plot.title = element_text(hjust = 0.5))
+
+    list_of_pvalue_plots[[file]] <- bar_plot
   }
+  return(list_of_pvalue_plots)
+}
 
 
 ## =========== ##
