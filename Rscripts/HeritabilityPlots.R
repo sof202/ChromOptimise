@@ -154,7 +154,7 @@ write_poor_enrichment_warning <- function(results_files) {
     )
     writeLines(
       lines,
-      "WARNING.txt"
+      file.path(output_directory,"WARNING.txt")
     )
   }
   invisible()
