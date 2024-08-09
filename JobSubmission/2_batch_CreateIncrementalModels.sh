@@ -30,7 +30,7 @@ Purpose: Uses ChromHMM's LearnModel command to generate several models
 with increasing numbers of states.
 Author: Sam Fletcher
 Contact: s.o.fletcher@exeter.ac.uk
-Dependencies: Java, ChromHMM
+Dependencies: Java, ChromHMM, awk, gzip
 Inputs:
 \$1 -> Full/relative file path for configuation file directory
 ================================================================================

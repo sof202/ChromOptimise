@@ -27,7 +27,7 @@ Purpose: Generates a model unrestricted by ChromHMM LearnModel's
 default size limits by using random initialisation.
 Author: Sam Fletcher
 Contact: s.o.fletcher@exeter.ac.uk
-Dependencies: Java, ChromHMM
+Dependencies: Java, ChromHMM, gzip, awk
 Inputs:
 \$1 -> Full/relative file path for configuation file directory
 \$2 -> Size of model to learn

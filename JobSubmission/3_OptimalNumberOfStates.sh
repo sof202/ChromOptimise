@@ -27,7 +27,7 @@ cat <<EOF
 Purpose: Determines the optimum number of states to use with your dataset
 Author: Sam Fletcher
 Contact: s.o.fletcher@exeter.ac.uk
-Dependencies: R
+Dependencies: R, gzip
 Inputs:
 \$1 -> Full/relative file path for configuation file directory
 ===========================================================================

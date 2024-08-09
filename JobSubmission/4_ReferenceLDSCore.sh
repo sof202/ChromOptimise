@@ -29,7 +29,7 @@ Purpose: Generates annotation files based on baseline annotations (LDSC)
 and ChromHMM state annotations. Obtains LDSCores from said annotation.
 Author: Sam Fletcher
 Contact: s.o.fletcher@exeter.ac.uk
-Dependencies: R, Bedtools, LDSC, gwas traits, 1000 genomes files
+Dependencies: R, Bedtools, LDSC, gwas traits, 1000 genomes files, awk, gzip
 Inputs:
 \$1 -> Full/relative file path for configuation file directory
 ===========================================================================

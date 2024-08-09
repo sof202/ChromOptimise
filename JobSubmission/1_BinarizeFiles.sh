@@ -24,7 +24,7 @@ Purpose: Creates a 'cell mark file table' and uses ChromHMM's BinarizeBam
 command to binarize bam files.
 Author: Sam Fletcher
 Contact: s.o.fletcher@exeter.ac.uk
-Dependencies: Java, ChromHMM
+Dependencies: Java, ChromHMM, gzip
 Inputs:
 \$1 -> Full/relative file path for configuation file directory
 ================================================================================
