@@ -4,6 +4,29 @@
 ##   SETUP   ##
 ## ========= ##
 
+usage() {
+cat << EOF
+================================================================================
+ChromOptimise.sh
+================================================================================
+Purpose: Runs the ChromOptimise pipeline using the specified configuration files
+Author: Sam Fletcher
+Contact: s.o.fletcher@exeter.ac.uk
+Inputs:
+\$1 -> Full/relative file path for configuation file directory
+================================================================================
+EOF
+    exit 0
+}
+
+if [[ $# -ne 1 ]]; then usage; fi
+
+configuration_directory=$1
+
+source "${configuration_directory}/Config.txt" || \
+{ echo "The configuration file does not exist in the specified location: \
+${configuration_directory}/Config.txt"; exit 1; }
+
 cat << START_MESSAGE
 Config file used:
 $(cat "${configuration_directory}/Config.txt")
@@ -13,11 +36,6 @@ $(cat "${configuration_directory}/Config.R")
 
 START_MESSAGE
 
-configuration_directory=$1
-
-source "${configuration_directory}/Config.txt" || \
-{ echo "The configuration file does not exist in the specified location: \
-${configuration_directory}/Config.txt"; exit 1; }
 
 # We need an associative array to store the job ids for each SLURM job
 # that are submitted. This is so that we can use these job ids as dependencies.
