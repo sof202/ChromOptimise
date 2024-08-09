@@ -262,7 +262,10 @@ create_pvalue_barplots <- function(results_files,
     }
     plot_title <- names(results_files)[[file]]
 
-    data[["Enrichment_p"]] <- -log10(data[["Enrichment_p"]])
+    data <- dplyr::mutate(
+      data,
+      Enrichment_p = -log10(Enrichment_p)
+    )
 
     bar_plot <-
       ggplot(
