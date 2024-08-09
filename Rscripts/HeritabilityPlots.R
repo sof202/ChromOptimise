@@ -324,13 +324,13 @@ names(chromoptimise_only_barplots) <- names(results_files)
 # to start the PNG device
 options(bitmapType = "cairo")
 
-setwd(output_directory)
-
 for (plot in names(chromoptimise_only_barplots)) {
   plot_name <-
-    paste0("ChromOptimise_Categories/Enrichment_pvalues_", plot, ".png")
+    paste0("Enrichment_pvalues_", plot, ".png")
+  plot_file_path <-
+    file.path(output_directory, "ChromOptimise_Categories", plot_name)
   ggsave(
-    plot_name,
+    plot_file_path,
     plot = chromoptimise_only_barplots[[plot]],
     limitsize = FALSE,
     height = (nrow(results_files[[1]]) - 47) / 5
@@ -338,7 +338,11 @@ for (plot in names(chromoptimise_only_barplots)) {
 }
 
 ggsave(
-  "ChromOptimise_Categories/Enrichment_heatmap.png",
+  file.path(
+    output_directory,
+    "ChromOptimise_Categories",
+    "Enrichment_heatmap.png"
+  ),
   chromoptimise_only_heatmap,
   limitsize = FALSE,
   width = max(length(results_files), 10),
@@ -347,16 +351,19 @@ ggsave(
 
 write.table(
   create_heatmap_data(results_files),
-  "ChromOptimise_Categories/Enrichments.csv",
+  file.path(output_directory, "ChromOptimise_Categories", "Enrichments.csv"),
   quote = FALSE,
+  row.names = FALSE,
   sep = ","
 )
 
 for (plot in names(complete_barplots)) {
   plot_name <-
-    paste0("All_Categories/Enrichment_pvalues_", plot, ".png")
+    paste0("Enrichment_pvalues_", plot, ".png")
+  plot_file_path <-
+    file.path(output_directory, "All_Categories", plot_name)
   ggsave(
-    plot_name,
+    plot_file_path,
     plot = complete_barplots[[plot]],
     limitsize = FALSE,
     height = nrow(results_files[[1]]) / 5
@@ -364,7 +371,7 @@ for (plot in names(complete_barplots)) {
 }
 
 ggsave(
-  "All_Categories/Enrichment_heatmap.png",
+  file.path(output_directory, "All_Categories", "Enrichment_heatmap.png"),
   complete_heatmap,
   limitsize = FALSE,
   width = length(results_files),
@@ -373,7 +380,7 @@ ggsave(
 
 write.table(
   create_heatmap_data(results_files, complete = TRUE),
-  "All_Categories/Enrichments.csv",
+  file.path(output_directory, "All_Categories", "Enrichments.csv"),
   quote = FALSE,
   sep = ","
 )
