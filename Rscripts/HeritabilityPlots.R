@@ -119,16 +119,16 @@ get_bonferroni_threshold <- function(results_files, pvalue_threshold) {
   return(-log10(bonferroni_threshold))
 }
 
-get_fdr_threshold <- function(pvalues, fdr_threshold) {
+get_fdr_threshold <- function(pvalues, pvalue_threshold) {
   pvalues <- pvalues[!is.na(pvalues)]
   adjusted_pvalues <- p.adjust(pvalues, method = "BH")
   significant_pvalues <-
-    subset(adjusted_pvalues, adjusted_pvalues < fdr_threshold)
+    subset(adjusted_pvalues, adjusted_pvalues < pvalue_threshold)
 
   # It is possible for significant_pvalues to be empty if the adjusted_pvalues
   # are too great
   if (length(significant_pvalues) == 0) {
-    critical_value <- fdr_threshold
+    critical_value <- pvalue_threshold
   } else {
     critical_value <- max(significant_pvalues)
   }
