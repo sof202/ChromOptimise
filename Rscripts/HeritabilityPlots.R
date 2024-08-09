@@ -232,7 +232,11 @@ create_enrichment_heatmap <- function(results_files,
       color = "black"
     ) +
     theme(panel.background = element_rect(fill = "white")) +
-    labs(title = "Enrichment of GWAS traits", x = "GWAS trait", y = "State") +
+    labs(
+      title = "Enrichment of GWAS traits",
+      x = "GWAS trait",
+      y = "Category"
+    ) +
     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
   return(enrichment_heatmap)
 }
@@ -280,7 +284,7 @@ create_pvalue_barplots <-
         ) +
         labs(
           title = plot_title,
-          x = "State",
+          x = "Category",
           y = "-log_10(Enrichment p-value)"
         ) +
         theme(plot.title = element_text(hjust = 0.5))
