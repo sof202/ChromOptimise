@@ -144,6 +144,9 @@ seq "$starting_number_of_states" "$states_increment" "$ending_number_of_states"\
 echo "Learning models using a bin size of ${BIN_SIZE}..." 
 
 cd "${output_directory}/Likelihood_Values" || finishing_statement 1
+
+# Fixes problems with X11 servers (when local PC shuts down)
+unset DISPLAY
 for numstates in ${sequence}; do
     echo "Learning model with: ${numstates} states..."
 
