@@ -41,7 +41,8 @@ export CHROMOSOME_IDENTIFIER=1
 export OPTIMUM_NUMBER_OF_STATES=
 
 # SLURM requires a maximum wall time, defaults usually work for smaller 
-# datasets (<= 4 marks)
+# datasets (<= 4 marks). For an idea of what to use, please see the Processing
+# Times page on the wiki.
 # Times must be in the format: hh:mm:ss
 export MAXTIME_1=01:00:00
 export MAXTIME_2=24:00:00
