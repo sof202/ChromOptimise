@@ -309,13 +309,13 @@ create_pvalue_barplots <- function(results_files,
 complete_heatmap <-
   create_enrichment_heatmap(results_files, 0.05, complete = TRUE)
 chromoptimise_only_heatmap <-
-  create_enrichment_heatmap(results_files, 0.05)
+  create_enrichment_heatmap(results_files, 0.05, complete = FALSE)
 
 # pvalue threshold is arbitrarily chosen to be 0.05
 complete_barplots <-
   create_pvalue_barplots(results_files, 0.05, complete = TRUE)
 chromoptimise_only_barplots <-
-  create_pvalue_barplots(results_files, 0.05)
+  create_pvalue_barplots(results_files, 0.05, complete = FALSE)
 
 names(complete_barplots) <- names(results_files)
 names(chromoptimise_only_barplots) <- names(results_files)
