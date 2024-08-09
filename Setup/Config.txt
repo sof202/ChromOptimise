@@ -43,11 +43,11 @@ export OPTIMUM_NUMBER_OF_STATES=
 # SLURM requires a maximum wall time, defaults usually work for smaller 
 # datasets (<= 4 marks)
 # Times must be in the format: hh:mm:ss
-export MAXTIME_1=12:00:00
-export MAXTIME_2=01:00:00
-export MAXTIME_3=12:00:00
-export MAXTIME_4=00:30:00
-export MAXTIME_5=12:00:00
+export MAXTIME_1=01:00:00
+export MAXTIME_2=24:00:00
+export MAXTIME_3=02:00:00
+export MAXTIME_4=02:30:00
+export MAXTIME_5=03:00:00
 
 
 ## =============== ##
