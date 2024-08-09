@@ -40,6 +40,11 @@ export CHROMOSOME_IDENTIFIER=1
 # run scripts 4/5 with a sub-optimal number of states (for comparison).
 export OPTIMUM_NUMBER_OF_STATES=
 
+# This is the base significance used for the p-value threshold used when
+# generating the plots for partioned heritability. This value is completely
+# arbitrary of course.
+export SIGNIFICANCE=0.05
+
 # SLURM requires a maximum wall time, defaults usually work for smaller 
 # datasets (<= 4 marks). For an idea of what to use, please see the Processing
 # Times page on the wiki.

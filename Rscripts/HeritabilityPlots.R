@@ -50,7 +50,8 @@ library(ggplot2)
 arguments <- commandArgs(trailingOnly = TRUE)
 results_file_list <- readLines(arguments[1])
 cell_type <- arguments[2]
-output_directory <- arguments[3]
+pvalue_threshold <- as.numeric(arguments[3])
+output_directory <- arguments[4]
 
 ## ================= ##
 ##   LOADING FILES   ##
@@ -307,15 +308,14 @@ create_pvalue_barplots <- function(results_files,
 # assignments. This is because the complete heatmap and bar plots can be
 # difficult to read.
 complete_heatmap <-
-  create_enrichment_heatmap(results_files, 0.05, complete = TRUE)
+  create_enrichment_heatmap(results_files, pvalue_threshold, complete = TRUE)
 chromoptimise_only_heatmap <-
-  create_enrichment_heatmap(results_files, 0.05, complete = FALSE)
+  create_enrichment_heatmap(results_files, pvalue_threshold, complete = FALSE)
 
-# pvalue threshold is arbitrarily chosen to be 0.05
 complete_barplots <-
-  create_pvalue_barplots(results_files, 0.05, complete = TRUE)
+  create_pvalue_barplots(results_files, pvalue_threshold, complete = TRUE)
 chromoptimise_only_barplots <-
-  create_pvalue_barplots(results_files, 0.05, complete = FALSE)
+  create_pvalue_barplots(results_files, pvalue_threshold, complete = FALSE)
 
 names(complete_barplots) <- names(results_files)
 names(chromoptimise_only_barplots) <- names(results_files)
