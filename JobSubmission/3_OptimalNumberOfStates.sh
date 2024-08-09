@@ -111,7 +111,8 @@ for model_number in "${model_sizes[@]}"; do
     # "A state is not assigned on one chromosome but has dense assignment
     # on another"
     state_assignment_file=$(\
-    find "${input_directory}" -name "*_${model_number}_chr${CHROMOSOME_IDENTIFIER}_*" \
+    find "${input_directory}" \
+    -iname "${CELL_TYPE}*_${model_number}_chr${CHROMOSOME_IDENTIFIER}_*" \
     )
     emissions_file=$(\
     find "${input_directory}" -name "emissions_${model_number}.txt*" \
