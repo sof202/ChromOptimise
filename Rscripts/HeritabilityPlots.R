@@ -306,19 +306,19 @@ create_pvalue_barplots <- function(results_files,
 # We create plots that conatin all of the categories as well as just the state
 # assignments. This is because the complete heatmap and bar plots can be
 # difficult to read.
-complete_enrichment_heatmap <-
+complete_heatmap <-
   create_enrichment_heatmap(results_files, 0.05, complete = TRUE)
-state_enrichment_heatmap <-
+chromoptimise_only_heatmap <-
   create_enrichment_heatmap(results_files, 0.05)
 
 # pvalue threshold is arbitrarily chosen to be 0.05
-complete_pvalue_barplots <-
+complete_barplots <-
   create_pvalue_barplots(results_files, 0.05, complete = TRUE)
-state_pvalue_barplots <-
+chromoptimise_only_barplots <-
   create_pvalue_barplots(results_files, 0.05)
 
-names(complete_pvalue_barplots) <- names(results_files)
-names(state_pvalue_barplots) <- names(results_files)
+names(complete_barplots) <- names(results_files)
+names(chromoptimise_only_barplots) <- names(results_files)
 
 # This usually helps to remove errors around being unable
 # to start the PNG device
@@ -326,12 +326,12 @@ options(bitmapType = "cairo")
 
 setwd(output_directory)
 
-for (plot in names(state_pvalue_barplots)) {
+for (plot in names(chromoptimise_only_barplots)) {
   plot_name <-
     paste0("ChromOptimise_Categories/Enrichment_pvalues_", plot, ".png")
   ggsave(
     plot_name,
-    plot = state_pvalue_barplots[[plot]],
+    plot = chromoptimise_only_barplots[[plot]],
     limitsize = FALSE,
     height = (nrow(results_files[[1]]) - 47) / 5
   )
@@ -339,7 +339,7 @@ for (plot in names(state_pvalue_barplots)) {
 
 ggsave(
   "ChromOptimise_Categories/Enrichment_heatmap.png",
-  state_enrichment_heatmap,
+  chromoptimise_only_heatmap,
   limitsize = FALSE,
   width = max(length(results_files), 10),
   height = (nrow(results_files[[1]]) - 47) / 5
@@ -352,12 +352,12 @@ write.table(
   sep = ","
 )
 
-for (plot in names(complete_pvalue_barplots)) {
+for (plot in names(complete_barplots)) {
   plot_name <-
     paste0("All_Categories/Enrichment_pvalues_", plot, ".png")
   ggsave(
     plot_name,
-    plot = complete_pvalue_barplots[[plot]],
+    plot = complete_barplots[[plot]],
     limitsize = FALSE,
     height = nrow(results_files[[1]]) / 5
   )
@@ -365,7 +365,7 @@ for (plot in names(complete_pvalue_barplots)) {
 
 ggsave(
   "All_Categories/Enrichment_heatmap.png",
-  complete_enrichment_heatmap,
+  complete_heatmap,
   limitsize = FALSE,
   width = length(results_files),
   height = nrow(results_files[[1]]) / 5
