@@ -307,11 +307,10 @@ create_pvalue_barplots <- function(results_files,
 # assignments. This is because the complete heatmap and bar plots can be
 # difficult to read.
 complete_enrichment_heatmap <-
-  create_enrichment_heatmap(results_files, 0.5, complete = TRUE)
-
+  create_enrichment_heatmap(results_files, 0.05, complete = TRUE)
 state_enrichment_heatmap <-
   create_enrichment_heatmap(results_files, 0.05)
-state_enrichment_heatmap
+
 # pvalue threshold is arbitrarily chosen to be 0.05
 complete_pvalue_barplots <-
   create_pvalue_barplots(results_files, 0.05, complete = TRUE)
