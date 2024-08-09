@@ -110,7 +110,7 @@ pivot_enrichment_data <- function(enrichment_data, column_name) {
 # the number of annotations. However, the user is not able to control the
 # number of annotations that come from the baseline annotation files. Thus
 # we discount these here when calculating bonferroni correction.
-bonferroni_correction <- function(results_files, pvalue_threshold) {
+get_bonferroni_threshold <- function(results_files, pvalue_threshold) {
   number_of_traits <- length(results_files)
   relevant_categories <-
     sum(grepl(paste0(cell_type, "_*"), results_files[[1]]$Category))
@@ -119,7 +119,7 @@ bonferroni_correction <- function(results_files, pvalue_threshold) {
   return(-log10(bonferroni_threshold))
 }
 
-fdr_correction <- function(pvalues, fdr_threshold) {
+get_fdr_threshold <- function(pvalues, fdr_threshold) {
   pvalues <- pvalues[!is.na(pvalues)]
   adjusted_pvalues <- p.adjust(pvalues, method = "BH")
   significant_pvalues <-
@@ -192,9 +192,9 @@ create_enrichment_heatmap <- function(results_files,
   enrichment_data <- create_heatmap_data(results_files, complete)
 
   bonferroni_threshold <-
-    bonferroni_correction(results_files, pvalue_threshold)
+    get_bonferroni_threshold(results_files, pvalue_threshold)
   fdr_threshold <-
-    fdr_correction(enrichment_data$Enrichment_p, pvalue_threshold)
+    get_fdr_threshold(enrichment_data$Enrichment_p, pvalue_threshold)
 
   enrichment_data <- dplyr::mutate(
     enrichment_data,
@@ -242,13 +242,13 @@ create_pvalue_barplots <-
     list_of_pvalue_plots <- list()
 
     bonferroni_threshold <-
-      bonferroni_correction(results_files, pvalue_threshold)
+      get_bonferroni_threshold(results_files, pvalue_threshold)
 
     for (file in seq_along(results_files)) {
       data <- results_files[[file]]
       # We remove the base row as it is guaranteed to have a NaN p-value
       data <- data[-1, ]
-      fdr_threshold <- fdr_correction(data$Enrichment_p, pvalue_threshold)
+      fdr_threshold <- get_fdr_threshold(data$Enrichment_p, pvalue_threshold)
 
       data <- remove_l2_suffix(data)
       if (!complete) {
