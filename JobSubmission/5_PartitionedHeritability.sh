@@ -28,7 +28,7 @@ cat <<EOF
 Purpose: Determines and plots partitioned heritability using LDSC
 Author: Sam Fletcher
 Contact: s.o.fletcher@exeter.ac.uk
-Dependencies: R, LDSC, gwas traits, 1000 genomes files, python
+Dependencies: R, LDSC, gwas traits, 1000 genomes files
 Inputs:
 \$1 -> Full/relative file path for configuation file directory
 ===========================================================================
