@@ -251,19 +251,18 @@ create_pvalue_barplots <- function(results_files,
 
   for (file in seq_along(results_files)) {
     data <- results_files[[file]]
-    # We remove the base row as it is guaranteed to have a NaN p-value
-    data <- data[-1, ]
-    fdr_threshold <- get_fdr_threshold(data$Enrichment_p, pvalue_threshold)
-
     data <- remove_l2_suffix(data)
+
+    fdr_threshold <- get_fdr_threshold(data[["Enrichment_p"]], pvalue_threshold)
+
     if (!complete) {
       state_assignment_rows <-
-        grepl(paste0(cell_type, "_*"), data$Category)
+        grepl(paste0(cell_type, "_*"), data[["Category"]])
       data <- data[state_assignment_rows, ]
     }
     plot_title <- names(results_files)[[file]]
 
-    data$Enrichment_p <- -log10(data$Enrichment_p)
+    data[["Enrichment_p"]] <- -log10(data[["Enrichment_p"]])
 
     bar_plot <-
       ggplot(
