@@ -46,7 +46,7 @@ if [[ $# -ne 3 ]]; then usage; fi
 ## ======== ##
 
 module purge
-module load R/4.2.1-foss-2022a
+module load "${R_MODULE}"
 
 Rscript \
     "${RSCRIPTS_DIR}/RecreateTransitionMatrix.R" \

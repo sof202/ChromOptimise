@@ -87,7 +87,7 @@ fi
 ## ======== ##
 
 module purge
-module load R/4.2.1-foss-2022a
+module load "${R_MODULE}"
 
 cd "${RSCRIPTS_DIR}" || \
 { >&2 echo "ERROR: make sure [\${RSCRIPTS_DIR} - ${RSCRIPTS_DIR}] \

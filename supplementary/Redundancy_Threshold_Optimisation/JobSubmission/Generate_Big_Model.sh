@@ -89,7 +89,7 @@ finishing_statement 1; }
 echo "Learning a model with ${model_size} states and random seed: ${seed}..."
 
 module purge
-module load Java
+module load "${JAVA_MODULE}"
 
 cd "${BIG_MODELS_DIR}" || \
 { >&2 echo "ERROR: [\${BIG_MODELS_DIR} - ${BIG_MODELS_DIR}] \

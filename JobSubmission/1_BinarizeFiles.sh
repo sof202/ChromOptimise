@@ -104,7 +104,7 @@ rm -rf "${BINARY_DIR}/BinSize_${BIN_SIZE}"
 mkdir -p "${BINARY_DIR}/BinSize_${BIN_SIZE}"
 
 module purge
-module load Java
+module load "${JAVA_MODULE}"
 
 if [[ -s "${bam_CellMarkFileTable}" ]]; then
     echo "Binarizing bam files found in: "\

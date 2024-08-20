@@ -55,6 +55,20 @@ export MAXTIME_3=02:00:00
 export MAXTIME_4=02:30:00
 export MAXTIME_5=03:00:00
 
+## ============ ##
+##   SOFTWARE   ##
+## ============ ##
+
+# Assuming the system you are using uses modules (which is highly common
+# among HPCs in my limited experience), you can specify the modules to load
+# using the variables below
+
+# If your HPC doesn't have a module for these, it is better to remove instances
+# of `module load` commands using either `sed` or the setup script.
+
+BEDTOOLS_MODULE=
+R_MODULE=
+JAVA_MODULE=
 
 ## =============== ##
 ##   DIRECTORIES   ##
