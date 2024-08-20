@@ -124,7 +124,7 @@ finishing_statement 1; }
 ## ---------------------- ##
 
 module purge
-module load R/4.2.1-foss-2022a
+module load "${R_MODULE}"
 
 Rscript BinarytoBed.R \
     <(zcat "${binary_files}") \
@@ -141,7 +141,7 @@ Rscript BimtoBed.R \
 ## ----------------------------------- ##
 
 module purge
-module load BEDTools/2.29.2-GCC-9.3.0
+module load "${BEDTOOLS_MODULE}"
 
 bedtools intersect -wb \
     -a "${temporary_directory}/SNP_positions-${chromosome}.bed" \
@@ -170,7 +170,7 @@ bedtools intersect -wb \
 ## ----------------------- ##
 
 module purge
-module load R/4.2.1-foss-2022a
+module load "${R_MODULE}"
 
 baseline_annot="${LD_BASELINE_DIR}/baselineLD.${chromosome}.annot.gz"
 

@@ -135,7 +135,7 @@ fi
 ## ===================== ##
 
 module purge
-module load Java
+module load "${JAVA_MODULE}"
 
 sequence=$(\
 seq "$starting_number_of_states" "$states_increment" "$ending_number_of_states"\
