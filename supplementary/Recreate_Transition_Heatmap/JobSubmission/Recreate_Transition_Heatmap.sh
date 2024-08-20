@@ -17,11 +17,7 @@ cat << EOF
 ================================================================================
 Recreate_Transition_Heatmap.sh
 ================================================================================
-Purpose: Creates a transition heatmap from a ChromHMM transitions data file
-but removes the main diagonal. The main diagonal is usually values close to 1
-which means you can't make out the smaller differences between the rest of the
-transition parameters. Removing the main diagonal allows the user to gain 
-more information at a glance.
+Purpose: Creates a heatmap for transition parameters without the main diagonal
 Author: Sam Fletcher
 Contact: s.o.fletcher@exeter.ac.uk
 Inputs:
