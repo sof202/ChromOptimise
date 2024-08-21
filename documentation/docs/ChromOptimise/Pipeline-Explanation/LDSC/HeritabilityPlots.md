@@ -24,11 +24,11 @@ input data).
 
 ## Interpretation
 
-The colour palette of the heatmap is such that higher enrichment values
-are a darker green and lower enrichment values are closer to white/light green.
-Any negative enrichment is given with a pink box.
-The actual values for the enrichment heatmap are also given and all information
-is printed to a csv file.
+The colour palette of the heatmap is such that higher enrichment values (>1)
+are redish and lower enrichment values (<1) are yellowish. Any negative
+enrichment or ridiculously high enrichment (>100) is given with a grey box. The
+actual values for the enrichment heatmap are also given in the outputted csv
+file (Enrichments.csv)
 
 Enrichment is defined as:
 > The proportion of SNP heritability explained divided by the proportion of
@@ -38,17 +38,17 @@ In general you should ignore negative enrichment as
 this usually stems from negative heritability (which is nonsensicle).For 
 positive values however, the following interpretations can be made:
 
-- An enrichment value greater than 1 implies that the regions defined by the
-annotation explain a high proportion of snp heritability considering they have 
-a relatively small percentage of all snps.
-- An enrichment value less than 1 implies the opposite. Regions defined by the
-annotaiton generally explain very little snp heritabilty considering the
-total percentage of SNPs they account for.
+- An enrichment value greater than 1 (redish) implies that the regions defined
+  by the annotation explain a high proportion of snp heritability considering
+  they have a relatively small percentage of all snps.
+- An enrichment value less than 1 (yellowish) implies the opposite. Regions
+  defined by the annotaiton generally explain very little snp heritabilty
+  considering the total percentage of SNPs they account for.
 - An enrichment value close to 1 is what you would see for a category like
-base. Base is a category that every SNP falls into (to ensure all SNPs are
-accounted for). Base therefore explains 100% of SNP heritability and contains
-100% of all SNPs, resulting in an enrichment of 1. An enrichment of 1 is not
-a significant result of partitioned heritability.
+  base. Base is a category that every SNP falls into (to ensure all SNPs are
+  accounted for). Base therefore explains 100% of SNP heritability and contains
+  100% of all SNPs, resulting in an enrichment of 1. An enrichment of 1 is not
+  a significant result of partitioned heritability.
 
 ### p-value thresholds
 
