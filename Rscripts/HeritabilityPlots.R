@@ -214,8 +214,8 @@ create_enrichment_heatmap <- function(results_files,
   # we mainly care about how the enrichment compares to 1. So we scale the
   # colours of our heatmap around this value
   max_enrichment <- max(heatmap_data[["Enrichment"]], na.rm = TRUE)
-  colour_palette <- c("yellow", "red", "grey")
-  colour_scale <- c(0, 1, max_enrichment) / max_enrichment
+  colour_palette <- c("yellow", "pink", "red", "grey")
+  colour_scale <- c(0, 1, max_enrichment - 0.5, max_enrichment) / max_enrichment
 
   enrichment_heatmap <-
     ggplot(heatmap_data, aes(
