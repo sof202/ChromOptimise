@@ -52,7 +52,7 @@ positive values however, the following interpretations can be made:
 
 ### p-value thresholds
 
-A baseline value of 0.01 was chosen for a p-value threshold. This was arbitrary
+A baseline value of 0.05 was chosen for a p-value threshold. This was arbitrary
 and the user is free to change this in the associated script 
 (`HeritabilityPlots.R`). However, this p-value threshold is under jeopardy due
 to the high number of hypotheses that are being tested at once. If you are
