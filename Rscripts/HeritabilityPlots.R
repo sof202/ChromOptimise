@@ -211,8 +211,12 @@ create_enrichment_heatmap <- function(results_files,
     Enrichment = dplyr::if_else(Enrichment > 100, NA_real_, Enrichment)
   )
 
-  negative_palette <- c("red", "pink")
-  postitive_palette <- c("lightgreen", "darkgreen")
+  # we mainly care about how the enrichment compares to 1. So we scale the
+  # colours of our heatmap around this value
+  max_enrichment <- max(heatmap_data[["Enrichment"]], na.rm = TRUE)
+  colour_palette <- c("yellow", "red", "grey")
+  colour_scale <- c(0, 1, max_enrichment) / max_enrichment
+
   enrichment_heatmap <-
     ggplot(heatmap_data, aes(
       x = gwas_trait,
@@ -220,11 +224,10 @@ create_enrichment_heatmap <- function(results_files,
       fill = Enrichment,
     )) +
     geom_tile(color = "black") +
-    scale_fill_gradient2(
-      low = negative_palette,
-      high = postitive_palette,
-      midpoint = 0,
-      na.value = "pink"
+    scale_fill_gradientn(
+      colors = colour_palette,
+      values = colour_scale,
+      na.value = "grey"
     ) +
     geom_text(
       aes(
