@@ -24,9 +24,9 @@ input data).
 
 ## Interpretation
 
-The colour palette of the heatmap is such that higher enrichment values (>1)
-are redish and lower enrichment values (<1) are yellowish. Any negative
-enrichment or ridiculously high enrichment (>100) is given with a grey box. The
+The colour palette of the heatmap is such that higher enrichment values ($>1$)
+are redish and lower enrichment values ($<1$) are yellowish. Any negative
+enrichment or ridiculously high enrichment ($>100$) is given with a grey box. The
 actual values for the enrichment heatmap are also given in the outputted csv
 file (Enrichments.csv)
 
