@@ -25,10 +25,13 @@ input data).
 ## Interpretation
 
 The colour palette of the heatmap is such that higher enrichment values ($>1$)
-are redish and lower enrichment values ($<1$) are yellowish. Any negative
-enrichment or ridiculously high enrichment ($>100$) is given with a grey box. The
-actual values for the enrichment heatmap are also given in the outputted csv
-file (Enrichments.csv)
+are redish and lower enrichment values ($<1$) are yellowish. So a deeper red
+colour signifies high enrichment (annotation has high proportion of SNP
+heritability explained divided by the proportion of SNPs it covers), a deeper
+yellow colour signifies a lower enrichment (closer to 0). Any negative
+enrichment or ridiculously high enrichment ($>100$) is given with a grey box.
+The actual values for the enrichment heatmap are also given in the outputted
+csv file (Enrichments.csv)
 
 Enrichment is defined as:
 > The proportion of SNP heritability explained divided by the proportion of
