@@ -203,9 +203,12 @@ create_enrichment_heatmap <- function(results_files,
     Enrichment_p = -log10(Enrichment_p)
   )
 
+  # Enrichment values greater than 100 have always been within annotations
+  # that have lots of negative enrichments in my experience.
   heatmap_data <- dplyr::mutate(
     heatmap_data,
-    Enrichment = dplyr::if_else(Enrichment < 0, NA_real_, Enrichment)
+    Enrichment = dplyr::if_else(Enrichment < 0, NA_real_, Enrichment),
+    Enrichment = dplyr::if_else(Enrichment > 100, NA_real_, Enrichment)
   )
 
   negative_palette <- c("red", "pink")
