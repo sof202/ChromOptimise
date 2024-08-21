@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="generator" content="Docusaurus v3.3.2">
 <title data-rh="true">HeritabilityPlots | ChromOptimise</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:image" content="https://sof202.github.io/ChromOptimise/img/dna.png"><meta data-rh="true" name="twitter:image" content="https://sof202.github.io/ChromOptimise/img/dna.png"><meta data-rh="true" property="og:url" content="https://sof202.github.io/ChromOptimise/ChromOptimise/Pipeline-Explanation/LDSC/HeritabilityPlots"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="HeritabilityPlots | ChromOptimise"><meta data-rh="true" name="description" content="The script used to create plots of partitioned heritability."><meta data-rh="true" property="og:description" content="The script used to create plots of partitioned heritability."><link data-rh="true" rel="icon" href="/ChromOptimise/img/dna.ico"><link data-rh="true" rel="canonical" href="https://sof202.github.io/ChromOptimise/ChromOptimise/Pipeline-Explanation/LDSC/HeritabilityPlots"><link data-rh="true" rel="alternate" href="https://sof202.github.io/ChromOptimise/ChromOptimise/Pipeline-Explanation/LDSC/HeritabilityPlots" hreflang="en"><link data-rh="true" rel="alternate" href="https://sof202.github.io/ChromOptimise/ChromOptimise/Pipeline-Explanation/LDSC/HeritabilityPlots" hreflang="x-default"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.13.24/dist/katex.min.css" integrity="sha384-odtC+0UGzzFL/6PNoE8rX/SPcQDXBJ+uRepguP4QkPCm2LBxH3FA3y+fKSiJ+AmM" crossorigin="anonymous"><link rel="stylesheet" href="/ChromOptimise/assets/css/styles.cefcd80b.css">
-<script src="/ChromOptimise/assets/js/runtime~main.cbab9455.js" defer="defer"></script>
+<script src="/ChromOptimise/assets/js/runtime~main.2a49d3d8.js" defer="defer"></script>
 <script src="/ChromOptimise/assets/js/main.8b599893.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -24,11 +24,11 @@ little enrichment for any of the traits that you are considering, this
 suggests that the model is too specific still (or there is a problem with your
 input data).</p>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="interpretation">Interpretation<a href="#interpretation" class="hash-link" aria-label="Direct link to Interpretation" title="Direct link to Interpretation">​</a></h2>
-<p>The colour palette of the heatmap is such that higher enrichment values
-are a darker green and lower enrichment values are closer to white/light green.
-Any negative enrichment is given with a pink box.
-The actual values for the enrichment heatmap are also given and all information
-is printed to a csv file.</p>
+<p>The colour palette of the heatmap is such that higher enrichment values (<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>&gt;</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">&gt;1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2778em"></span></span><span class="base"><span class="strut" style="height:0.6444em"></span><span class="mord">1</span></span></span></span>)
+are redish and lower enrichment values (<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>&lt;</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">&lt;1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2778em"></span></span><span class="base"><span class="strut" style="height:0.6444em"></span><span class="mord">1</span></span></span></span>) are yellowish. Any negative
+enrichment or ridiculously high enrichment (<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>&gt;</mo><mn>100</mn></mrow><annotation encoding="application/x-tex">&gt;100</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2778em"></span></span><span class="base"><span class="strut" style="height:0.6444em"></span><span class="mord">100</span></span></span></span>) is given with a grey box. The
+actual values for the enrichment heatmap are also given in the outputted csv
+file (Enrichments.csv)</p>
 <p>Enrichment is defined as:</p>
 <blockquote>
 <p>The proportion of SNP heritability explained divided by the proportion of
@@ -38,12 +38,12 @@ SNPs</p>
 this usually stems from negative heritability (which is nonsensicle).For
 positive values however, the following interpretations can be made:</p>
 <ul>
-<li>An enrichment value greater than 1 implies that the regions defined by the
-annotation explain a high proportion of snp heritability considering they have
-a relatively small percentage of all snps.</li>
-<li>An enrichment value less than 1 implies the opposite. Regions defined by the
-annotaiton generally explain very little snp heritabilty considering the
-total percentage of SNPs they account for.</li>
+<li>An enrichment value greater than 1 (redish) implies that the regions defined
+by the annotation explain a high proportion of snp heritability considering
+they have a relatively small percentage of all snps.</li>
+<li>An enrichment value less than 1 (yellowish) implies the opposite. Regions
+defined by the annotaiton generally explain very little snp heritabilty
+considering the total percentage of SNPs they account for.</li>
 <li>An enrichment value close to 1 is what you would see for a category like
 base. Base is a category that every SNP falls into (to ensure all SNPs are
 accounted for). Base therefore explains 100% of SNP heritability and contains
@@ -51,7 +51,7 @@ accounted for). Base therefore explains 100% of SNP heritability and contains
 a significant result of partitioned heritability.</li>
 </ul>
 <h3 class="anchor anchorWithStickyNavbar_LWe7" id="p-value-thresholds">p-value thresholds<a href="#p-value-thresholds" class="hash-link" aria-label="Direct link to p-value thresholds" title="Direct link to p-value thresholds">​</a></h3>
-<p>A baseline value of 0.01 was chosen for a p-value threshold. This was arbitrary
+<p>A baseline value of 0.05 was chosen for a p-value threshold. This was arbitrary
 and the user is free to change this in the associated script
 (<code>HeritabilityPlots.R</code>). However, this p-value threshold is under jeopardy due
 to the high number of hypotheses that are being tested at once. If you are
