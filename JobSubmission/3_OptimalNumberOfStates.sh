@@ -174,6 +174,8 @@ for model_number in "${model_sizes[@]}"; do
     fi
 done
 
+optimum_states="${model_number}"
+
 ## ========================= ##
 ##   OPTIMUM STATES CHECK    ##
 ## ========================= ##
@@ -185,14 +187,70 @@ done
 if [[ $(wc -l < "${output_directory}/OptimumNumberOfStates.txt") -eq 1 ]]; then
 cat >> "${output_directory}/OptimumNumberOfStates.txt" << EOF 
 WARNING: Largest model learned has no redundant states.
-${model_number} states may not be the optimum number of states.
+${optimum_states} states may not be the optimum number of states.
 Try increasing the size of the most complex model or increasing 
 the thresholds in the Config.R file.
 EOF
 else
-    echo "Optimum number of states for the data is: ${model_number}" >> \
+    echo "Optimum number of states for the data is: ${optimum_states}" >> \
     "${output_directory}/OptimumNumberOfStates.txt"
 fi
+
+
+next_smallest_model_number=$((optimum_states - 1))
+
+# There is a small chance that the optimum states is 2, in which case no model
+# with one state exists (the below would fail in this case)
+if [[ "${next_smallest_model_number}" -gt 1 ]]; then
+smaller_overlap_file=$(\
+    find "${input_directory}" \
+    -name "*${next_smallest_model_number}_overlap.txt" \
+)
+smaller_emissions_file=$(\
+    find "${input_directory}" \
+    -name "emissions_${next_smallest_model_number}.txt*" \
+)
+optimum_overlap_file=$(\
+    find "${input_directory}" \
+    -name "*${optimum_states}_overlap.txt" \
+)
+optimum_emissions_file=$(\
+    find "${input_directory}" \
+    -name "emissions_${optimum_states}.txt*" \
+)
+
+are_overlaps_a_subset=$(\
+    "${RSCRIPTS_DIR}/CheckModelSubset.r" \
+    "${configuration_directory}/config.r" \
+    "${smaller_overlap_file}" \
+    "${optimum_overlap_file}" \
+    "overlap" \
+)
+
+are_emissions_a_subset=$(\
+    "${RSCRIPTS_DIR}/CheckModelSubset.r" \
+    "${configuration_directory}/config.r" \
+    "${smaller_emissions_file}" \
+    "${optimum_emissions_file}" \
+    "emissions" \
+)
+
+if [[ "${are_overlaps_a_subset}" =~ "FALSE" ]] || [[ "${are_emissions_a_subset}" =~ "FALSE" ]]; then
+cat >> "${output_directory}/OptimumNumberOfStates.txt" << EOF
+WARNING: A model that is smaller than the determined 'optimum' model
+($next_smallest_model_number states) has states that are not included in the
+determined optimum model ($optimum_states states). Smaller models should be
+subsets of larger models in general. If a smaller model has different states to
+the model with the 'optimum' number of states, then the 'optimal' model misses
+crucial information (despite its higher complexity). 
+
+It is reccomended to look at both of these models and determine if you want to
+keep the more complex model, or use the smaller model in subsequent analysis.
+You can manually change the OPTIMUM_NUMBER_OF_STATES in Config.txt.
+EOF
+fi
+fi
+
 
 ## ============== ##
 ##    PLOTTING    ##

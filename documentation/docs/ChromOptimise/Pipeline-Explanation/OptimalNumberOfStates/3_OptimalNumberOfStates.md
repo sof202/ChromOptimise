@@ -62,7 +62,32 @@ about cubes and hyper cubes (*etc.*).
 As such, no value is given for the `emission_threshold`, this value should be
 changed depending on the number of marks you have included in your dataset.
 
-### Output
+## Extra check
+
+After checking that the 'optimal' model has no redundant states, one final
+check is carried out. That is, if the next smallest model has a state that is
+not described by a state in the optimum model (here described means, 'similar
+spatially and in emission parameters'), then the optimum model is more complex
+and yet misses out on important information. This is unwanted of course and 
+the user is warned of this in OptimumNumberOfStates.txt. If this situation
+befalls the user, they are encouraged to look at both models and decide if 
+their thresholds are too tight (*i.e.* is there a clear line up of states
+between the two models in question).
+
+This part of the script finds the minimum Euclidean distance between states in
+the smaller model and each state in the determined optimum model (this is for
+the overlap files and the emission files). If any state in the smaller model
+has no close neighbour in the larger file, then this is flagged. The thresholds
+used for this are `emissions_threshold` (the same one used in the optimisation
+process) and `overlap_threshold`. Choosing a value for `overlap_threshold` is
+subjective of course, some suggested values are given for ChromHMM's defaults.
+However, if the user decides to add more annotation bed files to the `COORDS`
+directory of ChromHMM, they are encouraged to change the value of
+`overlap_threshold` (much like they should upon changing the number of marks
+used in the analysis). See (#the-curse-of-dimensionality) for further 
+information.
+
+## Output
 
 Upon completion, this script will copy the model with the optimum number of
 states into the optimum states directory (for the bin size and number of 
