@@ -45,6 +45,11 @@ export OPTIMUM_NUMBER_OF_STATES=
 # arbitrary of course.
 export SIGNIFICANCE=0.05
 
+# This is optional, if LDSC is giving lots of negative partioned heritability
+# (you will see a WARNING.txt in the LDSC directory), it is suggested to
+# reduce the window size (default is 1 centimorgan)
+export LD_WINDOW_SIZE=1
+
 # SLURM requires a maximum wall time, defaults usually work for smaller 
 # datasets (<= 4 marks). For an idea of what to use, please see the Processing
 # Times page on the wiki.
