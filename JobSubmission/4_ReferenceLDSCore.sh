@@ -205,7 +205,7 @@ python \
     "${LD_SOFTWARE_DIR}/ldsc.py" \
     --l2 \
     --bfile      "${LD_PLINK_DIR}/${plink_prefix}${chromosome}" \
-    --ld-wind-cm 1 \
+    --ld-wind-cm "${LD_WINDOW_SIZE}" \
     --annot      "${output_directory}/annotation/ChromOptimise.${chromosome}.annot" \
     --out        "${output_directory}/annotation/ChromOptimise.${chromosome}"
 

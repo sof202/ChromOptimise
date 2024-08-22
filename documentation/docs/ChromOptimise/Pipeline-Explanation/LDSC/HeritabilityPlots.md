@@ -114,7 +114,7 @@ enriched than not?
 - Are the negative enrichment values somewhat evenly distributed throughout the
 heatmap?
   - If so, then make the window size smaller in `7_ReferenceLDSCore.sh`. Change
-  the flag `--ld-wind-cm 1` to have a smaller value than 1.
+  the value in $LD_WINDOW_SIZE (config) to have a smaller value than 1.
   - This line can be found in the reference LD scores section of the script
 
 If problems continue to persist, there may be a problem with the dataset that
