@@ -1,9 +1,11 @@
-## Redundancy parameters
-
+# Suggested values
+# 4 marks : 0.5
+# 8 marks : 0.35
 emissions_threshold <- VALUE
+
+# Suggested value: 10
 isolation_threshold <- VALUE
 
-## Number of marks used in analysis
 # Suggested values (for vanilla chromHMM, no changes to COORDS directory):
 # hg19 : 0.25
 # hg38 : 0.2
