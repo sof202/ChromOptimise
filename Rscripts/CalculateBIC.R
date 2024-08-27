@@ -118,14 +118,16 @@ relative_bic_scatter <-
   theme_bw() +
   theme(plot.title = element_text(hjust = 0.5))
 
-write_csv(likelihood_data, file.path(output_file_path, "Bayesian_Information_Criterion.csv"))
+write.csv(
+  likelihood_data,
+  file.path(
+    output_file_path,
+    "Bayesian_Information_Criterion.csv"
+  )
+)
 
 
 setwd(output_file_path)
 ggsave(
   "Bayesian_Information_Criterion.png"
 )
-write.csv(likelihood_data, paste0(
-  output_file_path,
-  "/Bayesian_Information_Criterion.csv"
-))
