@@ -126,8 +126,11 @@ write.csv(
   )
 )
 
-
-setwd(output_file_path)
+options(bitmapType = "cairo")
 ggsave(
-  "Bayesian_Information_Criterion.png"
+  relative_bic_scatter,
+  file.path(
+    output_file_path,
+    "Bayesian_Information_Criterion.png"
+  )
 )

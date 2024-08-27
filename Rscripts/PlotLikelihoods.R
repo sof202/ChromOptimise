@@ -70,7 +70,11 @@ likelihood_plot +
   labs(x = "Number of States", y = "Estimated Log likelihood") +
   theme_bw()
 
-setwd(output_file_path)
+options(bitmapType = "cairo")
 ggsave(
-  "LikelihoodPlot.png"
+  likelihood_plot,
+  file.path(
+    output_file_path,
+    "LikelihoodPlot.png"
+  )
 )
