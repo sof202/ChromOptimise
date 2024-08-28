@@ -73,9 +73,9 @@ downstream_flank <- function(transitions_data, state) {
   # Rows give the transition probability of travelling from our selected state
   # to some other state
   state_row <- transitions_data[state, ]
-  
+
   state_row[state] <- NA
-  
+
   # The state that has the maximum probability of being transitioned to
   # from the selected state is our most likely downstream flank
   return(which.max(state_row))
@@ -90,27 +90,37 @@ model_size <- nrow(transitions_data)
 
 list_of_states <- seq_along(1:model_size)
 
-list_of_upstream_flanks <- 
-  sapply(list_of_states,
-         function(state) upstream_flank(transitions_data, state))
+list_of_upstream_flanks <-
+  sapply(
+    list_of_states,
+    function(state) upstream_flank(transitions_data, state)
+  )
 
-list_of_downstream_flanks <- 
-  sapply(list_of_states,
-         function(state) downstream_flank(transitions_data, state))
+list_of_downstream_flanks <-
+  sapply(
+    list_of_states,
+    function(state) downstream_flank(transitions_data, state)
+  )
 
 flanking_states_table <-
-  data.frame(state = list_of_states,
-             likeliest_upstream_flank = list_of_upstream_flanks,
-             likeliest_downstream_flank = list_of_downstream_flanks)
+  data.frame(
+    state = list_of_states,
+    likeliest_upstream_flank = list_of_upstream_flanks,
+    likeliest_downstream_flank = list_of_downstream_flanks
+  )
 
 ## =========== ##
 ##   OUTPUTS   ##
 ## =========== ##
 
-setwd(output_file_path)
 output_file_name <-
   paste0("Likeliest_flanking_states_model-", model_size, ".txt")
 
-write.table(flanking_states_table,
-            output_file_name,
-            row.names = FALSE)
+write.table(
+  flanking_states_table,
+  file.path(
+    output_file_path,
+    output_file_name
+  ),
+  row.names = FALSE
+)

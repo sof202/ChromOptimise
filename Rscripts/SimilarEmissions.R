@@ -89,12 +89,14 @@ euclidean_distances_table <-
 ##   OUTPUT   ##
 ## ========== ##
 
-setwd(output_file_path)
-
 output_file_name <- paste0("Euclidean_distances_model-", model_size, ".txt")
 
-write.table(euclidean_distances_table,
-  output_file_name,
+write.table(
+  euclidean_distances_table,
+  file.path(
+    output_file_path,
+    output_file_name
+  ),
   row.names = FALSE
 )
 
@@ -151,11 +153,17 @@ if (plotting_flag) {
 
   options(bitmapType = "cairo")
   ggsave(
-    heatmap_plot_name,
+    file.path(
+      output_file_path,
+      heatmap_plot_name
+    ),
     plot = euclidean_distances_heatmap
   )
   ggsave(
-    histogram_plot_name,
+    file.path(
+      output_file_path,
+      histogram_plot_name
+    ),
     plot = eucldiean_distances_histogram
   )
 }

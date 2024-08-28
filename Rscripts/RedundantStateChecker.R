@@ -50,34 +50,36 @@ model_size <- as.numeric(arguments[2])
 output_file_path <- arguments[3]
 
 source(config_file_location)
-setwd(output_file_path)
 
 ## ============================== ##
 ##   COLLATE REDUNDANCY METRICS   ##
 ## ============================== ##
 
 euclidean_distances_file <-
-  paste0(
-    output_file_path, "/Euclidean_distances/",
-    "Euclidean_distances_model-", model_size, ".txt"
+  file.path(
+    output_file_path,
+    "Euclidean_distances",
+    paste0("Euclidean_distances_model-", model_size, ".txt")
   )
 
 euclidean_distances <- read.table(euclidean_distances_file, header = TRUE)
 
 
 flanking_states_file <-
-  paste0(
-    output_file_path, "/Flanking_states/",
-    "Likeliest_flanking_states_model-", model_size, ".txt"
+  file.path(
+    output_file_path,
+    "Flanking_states",
+    paste0("Likeliest_flanking_states_model-", model_size, ".txt")
   )
 
 flanking_data <- read.table(flanking_states_file, header = TRUE)
 
 
 isolation_scores_file <-
-  paste0(
-    output_file_path, "/Isolation_scores/",
-    "Isolation_Scores_model-", model_size, ".txt"
+  file.path(
+    output_file_path,
+    "Isolation_scores",
+    paste0("Isolation_Scores_model-", model_size, ".txt")
   )
 
 isolation_scores <- read.table(isolation_scores_file, header = TRUE)
@@ -277,24 +279,39 @@ redundant_states <- unique(redundant_states)
 # This is pretty gross looking, but one look at the actual output file should
 # clear things up
 
-output_file <- paste0("Redundant_states_model-", model_size, ".txt")
-setwd(output_file_path)
+output_file <- file.path(
+  output_file_path,
+  paste0("Redundant_states_model-", model_size, ".txt")
+)
 separator <- paste0("<<", strrep("-", 100), ">>")
 
 write_table_to_output <- function(table) {
-  write.table(table,
+  write.table(
+    table,
     file = output_file,
     append = TRUE,
     row.names = FALSE,
     col.names = FALSE,
     sep = "\t"
   )
-  write(separator, file = output_file, append = TRUE)
+  write(
+    separator,
+    file = output_file,
+    append = TRUE
+  )
 }
 
 write_text_to_output <- function(text) {
-  write(text, file = output_file, append = TRUE)
-  write(separator, file = output_file, append = TRUE)
+  write(
+    text,
+    file = output_file,
+    append = TRUE
+  )
+  write(
+    separator,
+    file = output_file,
+    append = TRUE
+  )
 }
 
 ## Similar emission parameters ##
@@ -337,9 +354,14 @@ write_table_to_output(unassigned_states)
 ## Redundant states ##
 write("\nDetermined redundant states:", file = output_file, append = TRUE)
 if (length(redundant_states) == 0) {
-  write("NONE", file = output_file, append = TRUE)
+  write(
+    "NONE",
+    file = output_file,
+    append = TRUE
+  )
 } else {
-  write(redundant_states,
+  write(
+    redundant_states,
     file = output_file,
     ncolumns = length(redundant_states),
     append = TRUE

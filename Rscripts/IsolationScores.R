@@ -207,13 +207,14 @@ sorted_isolation_scores <-
 ##   OUTPUTS   ##
 ## =========== ##
 
-setwd(output_file_path)
-
 output_file_name <- paste0("Isolation_Scores_model-", model_size, ".txt")
 
 write.table(
   sorted_isolation_scores,
-  output_file_name,
+  file.path(
+    output_file_path,
+    output_file_name
+  ),
   row.names = FALSE
 )
 
@@ -228,7 +229,10 @@ if (plotting_flag) {
 
   options(bitmapType = "cairo")
   ggsave(
-    isolation_score_plot_name,
+    file.path(
+      output_file_path,
+      isolation_score_plot_name
+    ),
     plot = isolation_score_plot
   )
 }
