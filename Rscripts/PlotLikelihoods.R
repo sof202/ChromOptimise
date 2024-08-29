@@ -72,9 +72,9 @@ likelihood_plot +
 
 options(bitmapType = "cairo")
 ggsave(
-  likelihood_plot,
   file.path(
     output_file_path,
     "LikelihoodPlot.png"
-  )
+  ),
+  likelihood_plot
 )
