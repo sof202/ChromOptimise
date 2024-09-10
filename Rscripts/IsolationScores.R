@@ -30,16 +30,6 @@
 ##   SET UP   ##
 ## ========== ##
 
-rm(list = ls())
-
-if (!requireNamespace("ggplot2", quietly = TRUE)) {
-  install.packages("ggplot2")
-}
-
-if (!requireNamespace("dplyr", quietly = TRUE)) {
-  install.packages("dplyr")
-}
-
 library(ggplot2)
 
 arguments <- commandArgs(trailingOnly = TRUE)

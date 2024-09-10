@@ -30,8 +30,6 @@
 ##   SET UP   ##
 ## ========== ##
 
-rm(list = ls())
-
 arguments <- commandArgs(trailingOnly = TRUE)
 transitions_file <- arguments[1]
 output_file_path <- arguments[2]

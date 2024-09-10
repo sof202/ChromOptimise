@@ -27,16 +27,6 @@
 ##   SET UP   ##
 ## ========== ##
 
-rm(list = ls())
-
-if (!requireNamespace("data.table", quietly = TRUE)) {
-  install.packages("data.table")
-}
-
-if (!requireNamespace("dplyr", quietly = TRUE)) {
-  install.packages("dplyr")
-}
-
 arguments <- commandArgs(trailingOnly = TRUE)
 bim_file <- arguments[1]
 output_file_path <- arguments[2]

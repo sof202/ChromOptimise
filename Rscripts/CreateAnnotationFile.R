@@ -29,16 +29,6 @@
 ##   SET UP   ##
 ## ========== ##
 
-rm(list = ls())
-
-if (!requireNamespace("data.table", quietly = TRUE)) {
-  install.packages("data.table")
-}
-
-if (!requireNamespace("dplyr", quietly = TRUE)) {
-  install.packages("dplyr")
-}
-
 arguments <- commandArgs(trailingOnly = TRUE)
 baseline_annotation <- arguments[1]
 state_assignments <- arguments[2]

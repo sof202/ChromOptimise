@@ -32,12 +32,6 @@
 ##   SET UP   ##
 ## ========== ##
 
-rm(list = ls())
-
-if (!requireNamespace("dplyr", quietly = TRUE)) {
-  install.packages("dplyr")
-}
-
 arguments <- commandArgs(trailingOnly = TRUE)
 binary_file <- arguments[1]
 bin_size <- as.numeric(arguments[2])

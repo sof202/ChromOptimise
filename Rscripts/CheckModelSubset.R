@@ -28,8 +28,6 @@
 ##   SET UP   ##
 ## ========== ##
 
-rm(list = ls())
-
 arguments <- commandArgs(trailingOnly = TRUE)
 config_file_location <- arguments[1]
 smaller_file <- arguments[2]
