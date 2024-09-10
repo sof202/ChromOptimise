@@ -18,7 +18,7 @@
 ## ============================================================== ##
 ## INPUTS:                                                        ||
 ## $1 -> The dense assignments bed file (chromHMM output)         ||
-## $2 -> The number of states used by the model in question       ||
+## $2 -> The bin size used with ChromHMM                          ||
 ## $3 -> The desired output directory for plots and metrics       ||
 ## ============================================================== ##
 ## OUTPUTS:                                                       ||
@@ -37,7 +37,8 @@ library(ggplot2)
 args <- commandArgs(trailingOnly = TRUE)
 
 dense_assignment_file <- args[1]
-output_directory <- args[2]
+bin_size <- as.numeric(args[2])
+output_directory <- args[3]
 
 number_of_states <- gsub(".*_([0-9]+)_.*", "\\1", dense_assignment_file)
 
@@ -53,10 +54,10 @@ colnames(dense_assignments) <- c("chr", "start", "end", "state")
 ##   FUNCTIONS   ##
 ## ============= ##
 
-create_list_of_sizes <- function(dense_assignments, state_number) {
+create_list_of_sizes <- function(dense_assignments, state_number, bin_size) {
   assignment_sizes <- dense_assignments |>
     dplyr::filter(state == !!state_number) |>
-    dplyr::mutate(length = end - start) |>
+    dplyr::mutate(length = (end - start) / !!bin_size) |>
     dplyr::pull(length)
   return(unlist(assignment_sizes))
 }
@@ -64,12 +65,13 @@ create_list_of_sizes <- function(dense_assignments, state_number) {
 
 create_histogram <- function(state_number,
                              dense_assignments,
-                             output_directory) {
+                             output_directory,
+                             bin_size) {
   plot_title <- paste(
     "Size of contiguous regions with state assignment",
     state_number
   )
-  sizes <- create_list_of_sizes(dense_assignments, state_number)
+  sizes <- create_list_of_sizes(dense_assignments, state_number, bin_size)
   plot <-
     ggplot() +
     aes(sizes) +
@@ -98,7 +100,7 @@ generate_metrics <- function(number_of_states, dense_assignments) {
     "variance" = double()
   )
   for (state in 1:number_of_states) {
-    sizes <- create_list_of_sizes(dense_assignments, state)
+    sizes <- create_list_of_sizes(dense_assignments, state_number, bin_size)
     region_metrics <- rbind(
       region_metrics,
       list(state, mean(sizes), var(sizes))
