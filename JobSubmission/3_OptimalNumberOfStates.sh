@@ -220,16 +220,16 @@ optimum_emissions_file=$(\
 )
 
 are_overlaps_a_subset=$(\
-    "${RSCRIPTS_DIR}/CheckModelSubset.r" \
-    "${configuration_directory}/config.r" \
+    "${RSCRIPTS_DIR}/CheckModelSubset.R" \
+    "${configuration_directory}/config.R" \
     "${smaller_overlap_file}" \
     "${optimum_overlap_file}" \
     "overlap" \
 )
 
 are_emissions_a_subset=$(\
-    "${RSCRIPTS_DIR}/CheckModelSubset.r" \
-    "${configuration_directory}/config.r" \
+    "${RSCRIPTS_DIR}/CheckModelSubset.R" \
+    "${configuration_directory}/config.R" \
     "${smaller_emissions_file}" \
     "${optimum_emissions_file}" \
     "emissions" \
