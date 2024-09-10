@@ -117,8 +117,8 @@ lapply(
 
 region_metrics <- generate_metrics(number_of_states, dense_assignments)
 data.table::fwrite(
-  file.path(output_directory, "key_metrics.tsv"),
   region_metrics,
+  file.path(output_directory, "key_metrics.tsv"),
   sep = "\t",
   row.names = FALSE,
   col.names = TRUE
