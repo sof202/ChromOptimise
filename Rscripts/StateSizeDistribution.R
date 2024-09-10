@@ -93,14 +93,14 @@ create_histogram <- function(state_number,
 }
 
 
-generate_metrics <- function(number_of_states, dense_assignments) {
+generate_metrics <- function(number_of_states, dense_assignments, bin_size) {
   region_metrics <- data.table::data.table(
     "state" = integer(),
     "mean" = double(),
     "variance" = double()
   )
   for (state in 1:number_of_states) {
-    sizes <- create_list_of_sizes(dense_assignments, state_number, bin_size)
+    sizes <- create_list_of_sizes(dense_assignments, state, bin_size)
     region_metrics <- rbind(
       region_metrics,
       list(state, mean(sizes), var(sizes))
@@ -118,12 +118,13 @@ invisible(
   lapply(
     1:number_of_states,
     function(state) {
-      create_histogram(state, dense_assignments, output_directory)
+      create_histogram(state, dense_assignments, output_directory, bin_size)
     }
   )
 )
 
-region_metrics <- generate_metrics(number_of_states, dense_assignments)
+region_metrics <-
+  generate_metrics(number_of_states, dense_assignments, bin_size)
 data.table::fwrite(
   region_metrics,
   file.path(output_directory, "key_metrics.tsv"),
