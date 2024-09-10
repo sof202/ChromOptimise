@@ -1,3 +1,33 @@
+## ============================================================== ##
+##                                                                ||
+##                            PREAMBLE                            ||
+##                                                                ||
+## ============================================================== ##
+## PURPOSE:                                                       ||
+## Produces a series of plots that show the distribution of the   ||
+## lenths of contiguous regions assigned the same state by        ||
+## ChromHMM. It also spits out some key metrics about these       ||
+## distributions                                                  ||
+## ============================================================== ##
+## AUTHOR: Sam Fletcher                                           ||
+## CONTACT: s.o.fletcher@exeter.ac.uk                             ||
+## CREATED: September 2024                                        ||
+## ============================================================== ##
+## PREREQUISITES:                                                 ||
+## Learn a model using ChromHMM                                   ||
+## ============================================================== ##
+## INPUTS:                                                        ||
+## $1 -> The dense assignments bed file (chromHMM output)         ||
+## $2 -> The number of states used by the model in question       ||
+## $3 -> The desired output directory for plots and metrics       ||
+## ============================================================== ##
+## OUTPUTS:                                                       ||
+## Histogram plots for the lengths of contiguous regions with     ||
+## the same state assignment                                      ||
+## tsv detailing key metrics of distributions                     ||
+## ============================================================== ##
+
+
 ## ========== ##
 ##   SET UP   ##
 ## ========== ##
