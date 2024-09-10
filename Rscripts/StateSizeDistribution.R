@@ -71,12 +71,17 @@ create_histogram <- function(state_number,
     "Size of contiguous regions with state assignment",
     state_number
   )
+  x_axis_label <- paste0(
+    "length (in bins of length: ",
+    bin_size,
+    ")"
+  )
   sizes <- create_list_of_sizes(dense_assignments, state_number, bin_size)
   plot <-
     ggplot() +
     aes(sizes) +
     geom_histogram(bins = 50) +
-    labs(title = plot_title, x = "length") +
+    labs(title = plot_title, x = x_axis_label) +
     theme_bw()
 
   plot_name <- paste0(
