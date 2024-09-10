@@ -111,7 +111,7 @@ generate_metrics <- function(number_of_states, dense_assignments) {
 options(bitmapType = "cairo")
 lapply(
   1:number_of_states,
-  create_histogram,
+  invisible(create_histogram),
   dense_assignments,
   output_directory
 )
