@@ -62,7 +62,6 @@ names(likelihood_data) <- c("number_of_states", "estimated_log_likelihood")
 # L -> Likelihood function (output of chromHMM already in ln(L) form)
 log_observations <- log(number_of_observations)
 
-# number_of_marks is coming from Config.R
 likelihood_data$parameters <-
   (likelihood_data$number_of_states * number_of_marks) +
   (likelihood_data$number_of_states^2)
@@ -70,17 +69,12 @@ likelihood_data$parameters <-
 likelihood_data$bic <- (log_observations * likelihood_data$parameters) -
   (2 * likelihood_data$estimated_log_likelihood)
 
-# Relative BIC (to the maximum BIC)
-# Lower BIC is usally better, note that this is a heuristic not a metric
 min_bic <- min(likelihood_data$bic)
 likelihood_data$relative_bic <- likelihood_data$bic / min_bic
 
 ## =================== ##
 ##   WARNING MESSAGE   ##
 ## =================== ##
-
-# It's not the worst thing, but the user should be warned if a model has a
-# larger BIC than the next smallest state
 
 optimum_states_bic <- dplyr::filter(
   likelihood_data,
