@@ -37,8 +37,9 @@ library(ggplot2)
 args <- commandArgs(trailingOnly = TRUE)
 
 dense_assignment_file <- args[1]
-number_of_states <- as.numeric(args[2])
-output_directory <- args[3]
+output_directory <- args[2]
+
+number_of_states <- gsub(".*_([0-9]+)_.*", "\\1", dense_assignment_file)
 
 ## ================ ##
 ##   LOADING FILE   ##
