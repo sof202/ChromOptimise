@@ -82,13 +82,17 @@ likelihood_data$relative_bic <- likelihood_data$bic / min_bic
 # It's not the worst thing, but the user should be warned if a model has a
 # larger BIC than the next smallest state
 
-sub_optimum_states <- optimum_states - 1
-optimum_states_bic <-
-  subset(likelihood_data, number_of_states == optimum_states)[["bic"]]
-sub_optimum_states_bic <-
-  subset(likelihood_data, number_of_states == sub_optimum_states)[["bic"]]
+optimum_states_bic <- dplyr::filter(
+  likelihood_data,
+  number_of_states == optimum_states
+)[["bic"]]
 
-if (optimum_states_bic > sub_optimum_states_bic) {
+sub_optimum_states_bic <- dplyr::filter(
+  likelihood_data,
+  number_of_states < optimum_states
+)[["bic"]]
+
+if (any(optimum_states_bic > sub_optimum_states_bic)) {
   warning(
     "WARNING: A less complex model has a smaller BIC ",
     "than the model with the determined optimum number of states (",
