@@ -82,9 +82,11 @@ create_histogram <- function(state_number,
     state_number,
     "_contiguous_length_distribution.png"
   )
-  ggsave(
-    file.path(output_directory, plot_name),
-    plot
+  suppressMessages(
+    ggsave(
+      file.path(output_directory, plot_name),
+      plot
+    )
   )
 }
 
@@ -108,11 +110,13 @@ generate_metrics <- function(number_of_states, dense_assignments) {
 ## ======== ##
 
 options(bitmapType = "cairo")
-lapply(
-  1:number_of_states,
-  function(x) {
-    invisible(create_histogram(x, dense_assignment_file, output_directory))
-  }
+invisible(
+  lapply(
+    1:number_of_states,
+    function(state) {
+      create_histogram(state, dense_assignments, output_directory)
+    }
+  )
 )
 
 region_metrics <- generate_metrics(number_of_states, dense_assignments)
