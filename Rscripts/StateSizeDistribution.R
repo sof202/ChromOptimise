@@ -99,8 +99,10 @@ generate_metrics <- function(number_of_states, dense_assignments) {
   )
   for (state in 1:number_of_states) {
     sizes <- create_list_of_sizes(dense_assignments, state)
-    region_metrics[nrow(region_metrics) + 1, ] <-
-      c(state, mean(sizes), var(sizes))
+    region_metrics <- rbind(
+      region_metrics,
+      list(state, mean(sizes), var(sizes))
+    )
   }
   return(region_metrics)
 }
