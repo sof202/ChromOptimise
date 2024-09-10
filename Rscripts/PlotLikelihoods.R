@@ -40,9 +40,9 @@ output_file_path <- arguments[2]
 ##   PROCESSING   ##
 ## ============== ##
 
-likelihood_data <- read.table(likelihoods_file)
+likelihood_data <- data.table::fread(likelihoods_file)
 
-likelihood_data <- subset(likelihood_data, select = c(V5, V7))
+likelihood_data <- dplyr::select(likelihood_data, c(V5, V7))
 names(likelihood_data) <- c("number_of_states", "estimated_log_likelihood")
 
 
