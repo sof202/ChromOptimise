@@ -76,7 +76,7 @@ source "${CONDA_SHELL}" || \
 conda activate "${LDSC_ENVIRONMENT}"
 
 weights_prefix=$(\
-find "${LD_WEIGHTS_DIR}" -type f -name "*22.l2*" -print0 | \
+find "${LD_WEIGHTS_DIR}" -type f -name "*22.l2.ldscore*" -print0 | \
 xargs -0 basename | \
 sed "s/22\..*//" \
 )
