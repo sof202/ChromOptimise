@@ -191,11 +191,10 @@ ${optimum_states} states may not be the optimum number of states.
 Try increasing the size of the most complex model or increasing 
 the thresholds in the Config.R file.
 EOF
-else
-    echo "Optimum number of states for the data is: ${optimum_states}" >> \
-    "${output_directory}/OptimumNumberOfStates.txt"
 fi
 
+echo "Optimum number of states for the data is: ${optimum_states}" >> \
+"${output_directory}/OptimumNumberOfStates.txt"
 
 next_smallest_model_number=$((optimum_states - 1))
 
