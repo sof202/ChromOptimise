@@ -114,6 +114,10 @@ for model_number in "${model_sizes[@]}"; do
     find "${input_directory}" \
     -iname "${CELL_TYPE}*_${model_number}_chr${CHROMOSOME_IDENTIFIER}_*" \
     )
+    dense_assignment_file=$(\
+    find "${input_directory}" \
+    -iname "${CELL_TYPE}_${model_number}_dense.bed" \
+    )
     emissions_file=$(\
     find "${input_directory}" -name "emissions_${model_number}.txt*" \
     )
@@ -154,7 +158,7 @@ for model_number in "${model_sizes[@]}"; do
     echo "Running ContiguousStateLengths.R for: ${model_number} states..."
 
     Rscript ContiguousStateLengths.R \
-        "${state_assignment_file}" \
+        "${dense_assignment_file}" \
         "${output_directory}/Contiguous_lengths" \
         "${model_number}" \
         "${BIN_SIZE}" \
