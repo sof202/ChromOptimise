@@ -286,7 +286,7 @@ redundant_states <-
 ## Accounts for (d) being satisfied ##
 redundant_states <- append(
   redundant_states,
-  intersect(small_contiguous_length_states, states_in_similar_pairs)
+  intersect(small_contiguous_length_states[["state"]], states_in_similar_pairs)
 )
 
 # Some redundant states might be added multiple times from our criteria
