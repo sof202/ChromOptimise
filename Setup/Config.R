@@ -6,7 +6,7 @@ emissions_threshold <- VALUE
 # Suggested value: 10
 isolation_threshold <- VALUE
 
-# Suggested value: 5
+# Suggested value: 600
 contiguous_lengths_threshold <- VALUE
 
 # Suggested values (for vanilla chromHMM, no changes to COORDS directory):
