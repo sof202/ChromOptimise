@@ -103,8 +103,7 @@ create_histogram <- function(state_number,
 generate_metrics <- function(number_of_states, dense_assignments, bin_size) {
   region_metrics <- data.table::data.table(
     "state" = integer(),
-    "mean" = double(),
-    "variance" = double()
+    "median" = double(),
   )
   for (state in 1:number_of_states) {
     sizes <- create_list_of_sizes(dense_assignments, state, bin_size)
