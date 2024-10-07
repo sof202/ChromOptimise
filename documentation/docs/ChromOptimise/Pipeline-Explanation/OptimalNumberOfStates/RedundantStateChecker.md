@@ -1,7 +1,7 @@
 ---
 title: RedundantStateChecker
 description: "The script used to determine the redundant states in a model."
-sidebar_position: 5
+sidebar_position: 6
 ---
 
 # RedundantStateChecker
@@ -56,6 +56,16 @@ spatially significant.
 Being highly isolated is not good enough on its own however. Transcriptional
 start sites are highly isolated functional elements of the genome, but that
 doesn't make them 'random noise', quite the opposite. 
+
+### Low contiguous assignments of the state
+
+If a state is not assigned to a large stretch of contiguous bins by ChromHMM,
+this suggests that the state is somewhat 'fragile'. It would be hard to
+interpret a state that is never assigned to a single large contiguous region
+of the genome. Due to the expected noise in genomic datasets (and all of the
+necessary steps to get to peak called data), such states would be very hard
+to verify. Any functionaly properties of such a state therefore are not
+biologically relevant with today's technology unfortunately.
 
 ### Flanking states
 
