@@ -38,7 +38,7 @@ args <- commandArgs(trailingOnly = TRUE)
 
 dense_assignment_file <- args[1]
 output_directory <- args[2]
-model_size <- as.numeric(arguments[3])
+model_size <- as.numeric(args[3])
 bin_size <- as.numeric(args[4])
 plotting_flag <- args[5]
 
