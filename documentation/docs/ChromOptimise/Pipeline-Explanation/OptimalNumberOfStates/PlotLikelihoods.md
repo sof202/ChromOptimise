@@ -1,7 +1,7 @@
 ---
 title: PlotLikelihoods
 description: "The script used to plot the likelihoods of the models."
-sidebar_position: 6
+sidebar_position: 8
 ---
 
 # PlotLikelihoods
