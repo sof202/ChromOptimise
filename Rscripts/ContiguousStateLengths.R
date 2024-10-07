@@ -37,10 +37,10 @@ library(ggplot2)
 args <- commandArgs(trailingOnly = TRUE)
 
 dense_assignment_file <- args[1]
-bin_size <- as.numeric(args[2])
-output_directory <- args[3]
-
-number_of_states <- gsub(".*_([0-9]+)_.*", "\\1", dense_assignment_file)
+output_directory <- args[2]
+model_size <- as.numeric(args[3])
+bin_size <- as.numeric(args[4])
+plotting_flag <- args[5]
 
 ## ================ ##
 ##   LOADING FILE   ##
@@ -54,10 +54,10 @@ colnames(dense_assignments) <- c("chr", "start", "end", "state")
 ##   FUNCTIONS   ##
 ## ============= ##
 
-create_list_of_sizes <- function(dense_assignments, state_number, bin_size) {
+create_list_of_sizes <- function(dense_assignments, state_number) {
   assignment_sizes <- dense_assignments |>
     dplyr::filter(state == !!state_number) |>
-    dplyr::mutate(length = (end - start) / !!bin_size) |>
+    dplyr::mutate(length = (end - start)) |>
     dplyr::pull(length)
   return(unlist(assignment_sizes))
 }
@@ -76,7 +76,8 @@ create_histogram <- function(state_number,
     bin_size,
     ")"
   )
-  sizes <- create_list_of_sizes(dense_assignments, state_number, bin_size)
+  # Dividing by bin size to make histograms more interpretable
+  sizes <- create_list_of_sizes(dense_assignments, state_number) / bin_size
   plot <-
     ggplot() +
     aes(sizes) +
@@ -98,17 +99,16 @@ create_histogram <- function(state_number,
 }
 
 
-generate_metrics <- function(number_of_states, dense_assignments, bin_size) {
+generate_metrics <- function(model_size, dense_assignments) {
   region_metrics <- data.table::data.table(
     "state" = integer(),
-    "mean" = double(),
-    "variance" = double()
+    "median" = double()
   )
-  for (state in 1:number_of_states) {
-    sizes <- create_list_of_sizes(dense_assignments, state, bin_size)
+  for (state in 1:model_size) {
+    sizes <- create_list_of_sizes(dense_assignments, state)
     region_metrics <- rbind(
       region_metrics,
-      list(state, mean(sizes), var(sizes))
+      list(state, median(sizes))
     )
   }
   return(region_metrics)
@@ -118,22 +118,32 @@ generate_metrics <- function(number_of_states, dense_assignments, bin_size) {
 ##   MAIN   ##
 ## ======== ##
 
-options(bitmapType = "cairo")
-invisible(
-  lapply(
-    1:number_of_states,
-    function(state) {
-      create_histogram(state, dense_assignments, output_directory, bin_size)
-    }
-  )
-)
-
 region_metrics <-
-  generate_metrics(number_of_states, dense_assignments, bin_size)
+  generate_metrics(model_size, dense_assignments)
+
+output_file_name <- paste0("Contiguous_state_length_model-", model_size, ".txt")
+
 data.table::fwrite(
   region_metrics,
-  file.path(output_directory, "key_metrics.tsv"),
+  file.path(output_directory, output_file_name),
   sep = "\t",
+  quote = FALSE,
   row.names = FALSE,
   col.names = TRUE
 )
+
+if (!exists("plotting_flag")) {
+  plotting_flag <- FALSE
+}
+
+if (plotting_flag) {
+  options(bitmapType = "cairo")
+  invisible(
+    lapply(
+      1:model_size,
+      function(state) {
+        create_histogram(state, dense_assignments, output_directory, bin_size)
+      }
+    )
+  )
+}

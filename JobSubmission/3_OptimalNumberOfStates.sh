@@ -92,7 +92,8 @@ rm -rf "${output_directory}"
 mkdir -p \
     "${output_directory}/Euclidean_distances" \
     "${output_directory}/Flanking_states" \
-    "${output_directory}/Isolation_scores"
+    "${output_directory}/Isolation_scores" \
+    "${output_directory}/Contiguous_lengths"
 
 module purge
 module load "${R_MODULE}"
@@ -113,6 +114,10 @@ for model_number in "${model_sizes[@]}"; do
     state_assignment_file=$(\
     find "${input_directory}" \
     -iname "${CELL_TYPE}*_${model_number}_chr${CHROMOSOME_IDENTIFIER}_*" \
+    )
+    dense_assignment_file=$(\
+    find "${input_directory}" \
+    -iname "${CELL_TYPE}_${model_number}_dense.bed" \
     )
     emissions_file=$(\
     find "${input_directory}" -name "emissions_${model_number}.txt*" \
@@ -149,6 +154,15 @@ for model_number in "${model_sizes[@]}"; do
         "${output_directory}/Isolation_scores" \
         "${model_number}" \
         100 \
+        FALSE
+
+    echo "Running ContiguousStateLengths.R for: ${model_number} states..."
+
+    Rscript ContiguousStateLengths.R \
+        "${dense_assignment_file}" \
+        "${output_directory}/Contiguous_lengths" \
+        "${model_number}" \
+        "${BIN_SIZE}" \
         FALSE
 
     echo "Running RedundantStateChecker.R for: ${model_number} states..."
