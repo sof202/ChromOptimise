@@ -372,6 +372,11 @@ write_table_to_output(single_assigned_states)
 
 write_table_to_output(unassigned_states)
 
+## Small contiguous assignment length ##
+write_text_to_output("\nStates with low contiguous assignment length:\n")
+
+write_table_to_output(small_contiguous_length_states)
+
 ## Redundant states ##
 write("\nDetermined redundant states:", file = output_file, append = TRUE)
 if (length(redundant_states) == 0) {
