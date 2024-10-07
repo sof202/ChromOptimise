@@ -42,8 +42,6 @@ model_size <- as.numeric(arguments[3])
 bin_size <- as.numeric(args[4])
 plotting_flag <- args[5]
 
-number_of_states <- gsub(".*_([0-9]+)_.*", "\\1", dense_assignment_file)
-
 ## ================ ##
 ##   LOADING FILE   ##
 ## ================ ##
@@ -100,12 +98,12 @@ create_histogram <- function(state_number,
 }
 
 
-generate_metrics <- function(number_of_states, dense_assignments, bin_size) {
+generate_metrics <- function(model_size, dense_assignments, bin_size) {
   region_metrics <- data.table::data.table(
     "state" = integer(),
     "median" = double(),
   )
-  for (state in 1:number_of_states) {
+  for (state in 1:model_size) {
     sizes <- create_list_of_sizes(dense_assignments, state, bin_size)
     region_metrics <- rbind(
       region_metrics,
@@ -120,7 +118,7 @@ generate_metrics <- function(number_of_states, dense_assignments, bin_size) {
 ## ======== ##
 
 region_metrics <-
-  generate_metrics(number_of_states, dense_assignments, bin_size)
+  generate_metrics(model_size, dense_assignments, bin_size)
 
 output_file_name <- paste0("Contiguous_state_length_model-", model_size, ".txt")
 
@@ -141,7 +139,7 @@ if (plotting_flag) {
   options(bitmapType = "cairo")
   invisible(
     lapply(
-      1:number_of_states,
+      1:model_size,
       function(state) {
         create_histogram(state, dense_assignments, output_directory, bin_size)
       }
