@@ -16,6 +16,8 @@
 ##          same states                                           ||
 ##      (c) At least one of the similar states is flanked on both ||
 ##          sides by the other state (in the similar state pair)  ||
+##      (d) The state usually has a contiguous assignment over    ||
+##          very few states.                                      ||
 ##                                                                ||
 ## In the event that (i) and (ii)(b) are triggered, the state     ||
 ## with the higher isolation score is assumed to be the redundant ||
@@ -81,6 +83,15 @@ isolation_scores_file <-
   )
 
 isolation_scores <- read.table(isolation_scores_file, header = TRUE)
+
+contiguous_lengths_file <-
+  file.path(
+    output_file_path,
+    "Isolation_scores",
+    paste0("Isolation_Scores_model-", model_size, ".txt")
+  )
+
+contiguous_lengths <- read.table(contiguous_lengths_file, header = TRUE)
 
 ## ============= ##
 ##   FUNCTIONS   ##
@@ -211,6 +222,12 @@ single_assigned_states <-
   isolation_scores$state[is.na(isolation_scores$isolation_score)]
 isolated_states <- append(isolated_states, single_assigned_states)
 
+## Small contiguous lengths (d) ##
+small_contiguous_length_states <- dplyr::filter(
+  contiguous_lengths,
+  median < contiguous_lengths_threshold
+)
+
 ## ================================== ##
 ##   REDUNDANT STATE IDENTIFICATION   ##
 ## ================================== ##
@@ -265,6 +282,12 @@ redundant_states <-
 ## Accounts for (i) and (ii)(a) being satisfied ##
 redundant_states <-
   append(redundant_states, intersect(isolated_states, states_in_similar_pairs))
+
+## Accounts for (d) being satisfied ##
+redundant_states <- append(
+  redundant_states,
+  intersect(small_contiguous_length_states, states_in_similar_pairs)
+)
 
 # Some redundant states might be added multiple times from our criteria
 # we only find the unique ones to help with readability of the output file.
