@@ -169,7 +169,7 @@ find_equivalent_rows <- function(identical_flanks, similar_state_pairs) {
 
 ## Similar emission parameters ##
 low_euclidean_distances <-
-  euclidean_distances[euclidean_distances$euclidean_distance < emissions_threshold, ]
+  dplyr::filter(euclidean_distances, euclidean_distance < emissions_threshold)
 
 similar_state_pairs <- low_euclidean_distances[, 1:2]
 
