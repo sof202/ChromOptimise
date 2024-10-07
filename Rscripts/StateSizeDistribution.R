@@ -126,6 +126,7 @@ data.table::fwrite(
   region_metrics,
   file.path(output_directory, "key_metrics.tsv"),
   sep = "\t",
+  quote = FALSE,
   row.names = FALSE,
   col.names = TRUE
 )
