@@ -151,6 +151,15 @@ for model_number in "${model_sizes[@]}"; do
         100 \
         FALSE
 
+    echo "Running ContiguousStateLengths.R for: ${model_number} states..."
+
+    Rscript ContiguousStateLengths.R \
+        "${state_assignment_file}" \
+        "${output_directory}/Contiguous_lengths" \
+        "${model_number}" \
+        "${BIN_SIZE}" \
+        FALSE
+
     echo "Running RedundantStateChecker.R for: ${model_number} states..."
 
     Rscript RedundantStateChecker.R \
