@@ -92,7 +92,8 @@ rm -rf "${output_directory}"
 mkdir -p \
     "${output_directory}/Euclidean_distances" \
     "${output_directory}/Flanking_states" \
-    "${output_directory}/Isolation_scores"
+    "${output_directory}/Isolation_scores" \
+    "${output_directory}/Contiguous_lengths"
 
 module purge
 module load "${R_MODULE}"
