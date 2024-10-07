@@ -39,6 +39,7 @@ args <- commandArgs(trailingOnly = TRUE)
 dense_assignment_file <- args[1]
 bin_size <- as.numeric(args[2])
 output_directory <- args[3]
+plotting_flag <- args[4]
 
 number_of_states <- gsub(".*_([0-9]+)_.*", "\\1", dense_assignment_file)
 
@@ -118,18 +119,9 @@ generate_metrics <- function(number_of_states, dense_assignments, bin_size) {
 ##   MAIN   ##
 ## ======== ##
 
-options(bitmapType = "cairo")
-invisible(
-  lapply(
-    1:number_of_states,
-    function(state) {
-      create_histogram(state, dense_assignments, output_directory, bin_size)
-    }
-  )
-)
-
 region_metrics <-
   generate_metrics(number_of_states, dense_assignments, bin_size)
+
 data.table::fwrite(
   region_metrics,
   file.path(output_directory, "key_metrics.tsv"),
@@ -137,3 +129,19 @@ data.table::fwrite(
   row.names = FALSE,
   col.names = TRUE
 )
+
+if (!exists("plotting_flag")) {
+  plotting_flag <- FALSE
+}
+
+if (plotting_flag) {
+  options(bitmapType = "cairo")
+  invisible(
+    lapply(
+      1:number_of_states,
+      function(state) {
+        create_histogram(state, dense_assignments, output_directory, bin_size)
+      }
+    )
+  )
+}
