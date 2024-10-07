@@ -109,7 +109,7 @@ generate_metrics <- function(number_of_states, dense_assignments, bin_size) {
     sizes <- create_list_of_sizes(dense_assignments, state, bin_size)
     region_metrics <- rbind(
       region_metrics,
-      list(state, mean(sizes), var(sizes))
+      list(state, median(sizes))
     )
   }
   return(region_metrics)
