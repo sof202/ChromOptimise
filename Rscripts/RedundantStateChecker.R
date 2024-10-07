@@ -87,8 +87,8 @@ isolation_scores <- read.table(isolation_scores_file, header = TRUE)
 contiguous_lengths_file <-
   file.path(
     output_file_path,
-    "Isolation_scores",
-    paste0("Isolation_Scores_model-", model_size, ".txt")
+    "Contiguous_lengths",
+    paste0("Contiguous_state_length_model-", model_size, ".txt")
   )
 
 contiguous_lengths <- read.table(contiguous_lengths_file, header = TRUE)
