@@ -27,9 +27,6 @@
 ## CONTACT: s.o.fletcher@exeter.ac.uk                             ||
 ## CREATED: February 2023                                         ||
 ## ============================================================== ##
-## PREREQUISITES:                                                 ||
-## Run 5_batch_CreateIncrementalModels.sh                         ||
-## ============================================================== ##
 ## INPUTS:                                                        ||
 ## $1 -> Location of configuation file                            ||
 ## $2 -> Model size                                               ||

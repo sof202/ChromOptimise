@@ -14,9 +14,6 @@
 ## CONTACT: s.o.fletcher@exeter.ac.uk                             ||
 ## CREATED: February 2022                                         ||
 ## ============================================================== ##
-## PREREQUISITES:                                                 ||
-## Run 5_batch_CreateIncrementalModels.sh                         ||
-## ============================================================== ##
 ## INPUTS:                                                        ||
 ## $1 -> Location of transition matrix file                       ||
 ## $2 -> Directory to place output files into                     ||

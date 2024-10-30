@@ -10,10 +10,6 @@
 ## CONTACT: s.o.fletcher@exeter.ac.uk                             ||
 ## CREATED: March 2022                                            ||
 ## ============================================================== ##
-## PREREQUISITES:                                                 ||
-## Download PLINK files from Zenodo:                              ||
-## https://zenodo.org/records/10515792                            ||
-## ============================================================== ##
 ## INPUTS:                                                        ||
 ## $1 -> bim file location                                        ||
 ## $2 -> output file location                                     ||
