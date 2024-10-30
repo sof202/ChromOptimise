@@ -38,7 +38,7 @@ declare -A jobID
 ##   RUN CHROMOPTIMISE   ##
 ## ===================== ##
 
-## ---1_BinarizeBamFiles.sh-------------------------------------------------- ##
+## ------------------------------------------------------------------------- ##
 if [[ "${STARTING_SCRIPT}" -eq 1 ]]; then
     jobID[binarization]=$( \
     sbatch \
@@ -51,10 +51,10 @@ if [[ "${STARTING_SCRIPT}" -eq 1 ]]; then
     echo "Submitted 1_BinarizeFiles.sh under job ID:"
     echo "${jobID[binarization]}"
 fi
-## -------------------------------------------------------------------------- ##
+## ------------------------------------------------------------------------- ##
 
 
-## ---2_batch_CreateIncrementalModels.sh------------------------------------- ##
+## ------------------------------------------------------------------------- ##
 if [[ "${STARTING_SCRIPT}" -eq 2 ]]; then
     jobID[Model_Learning]=$( \
     sbatch \
@@ -84,10 +84,10 @@ elif [[ "${STARTING_SCRIPT}" -lt 2 ]]; then
     echo "Submitted 2_batch_CreateIncrementalModels.sh under job ID:"
     echo "${jobID[Model_Learning]}"
 fi
-## -------------------------------------------------------------------------- ##
+## ------------------------------------------------------------------------- ##
 
 
-## ---3_OptimalNumberOfStates.sh--------------------------------------------- ##
+## ------------------------------------------------------------------------- ##
 if [[ "${STARTING_SCRIPT}" -eq 3 ]]; then
     jobID[Optimal_States]=$( \
     sbatch \
@@ -113,9 +113,9 @@ elif [[ "${STARTING_SCRIPT}" -lt 3 ]]; then
     echo "Submitted 3_OptimalNumberOfStates.sh under job ID:"
     echo "${jobID[Optimal_States]}"
 fi
-## -------------------------------------------------------------------------- ##
+## ------------------------------------------------------------------------- ##
 
-## ---4_ReferenceLDSCore.sh-------------------------------------------------- ##
+## ------------------------------------------------------------------------- ##
 if [[ "${STARTING_SCRIPT}" -eq 4 ]]; then
     jobID[LDSC]=$( \
     sbatch \
@@ -141,9 +141,9 @@ elif [[ "${STARTING_SCRIPT}" -lt 4 ]]; then
     echo "Submitted 4_ReferenceLDSCore.sh under job ID:"
     echo "${jobID[LDSC]}"
 fi
-## -------------------------------------------------------------------------- ##
+## ------------------------------------------------------------------------- ##
 
-## ---5_PartitionedHeritability.sh------------------------------------------- ##
+## ------------------------------------------------------------------------- ##
 if [[ "${STARTING_SCRIPT}" -eq 5 ]]; then
     jobID[Heritability]=$( \
     sbatch \
@@ -169,4 +169,4 @@ elif [[ "${STARTING_SCRIPT}" -lt 5 ]]; then
     echo "Submitted 5_PartitionedHeritability.sh under job ID:"
     echo "${jobID[Heritability]}"
 fi
-## -------------------------------------------------------------------------- ##
+## ------------------------------------------------------------------------- ##
