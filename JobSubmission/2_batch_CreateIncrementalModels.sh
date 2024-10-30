@@ -84,7 +84,7 @@ full_binary_path="${BINARY_DIR}/BinSize_${BIN_SIZE}"
 
 if [[ ! -d ${full_binary_path} ]]; then
    >&2 echo "ERROR: Binary directory for ${BIN_SIZE} is empty." \
-   "Ensure that 1_BinarizeFiles.sh has been ran before this script."
+   "Ensure that binary files exist before running this script."
    finishing_statement 1
 fi
 

@@ -23,7 +23,7 @@ cat <<EOF
 $(basename "$0")
 ===========================================================================
 Purpose: Generates plots to aid in thresholds used in Config.R which
-are used in 6_OptimumNumberOfStates.sh in determining redundant states.
+are used in determining redundant states.
 Author: Sam Fletcher
 Contact: s.o.fletcher@exeter.ac.uk
 Dependencies: R
@@ -78,8 +78,9 @@ fi
 # and is more descriptive than what R will output.
 if [[ -z $(find "${BIG_MODELS_DIR}" -type f -name "emissions*") ]]; then
     { >&2 echo -e "ERROR: No model files were found in ${BIG_MODELS_DIR}.\n"\
-    "Ensure that you have ran Generate_Big_Model.sh or ChromHMM's "\
-    "LearnModel command before using this script."; finishing_statement 1; }  
+    "Ensure that you have created a large model using the dedicated script or" \
+    "used ChromHMM's LearnModel command before using this script."
+    finishing_statement 1; }  
 fi
 
 ## ======== ##
