@@ -13,9 +13,6 @@
 ## CONTACT: s.o.fletcher@exeter.ac.uk                             ||
 ## CREATED: March 2022                                            ||
 ## ============================================================== ##
-## PREREQUISITES:                                                 ||
-## Run 4_BinarizeBamFiles.sh                                      ||
-## ============================================================== ##
 ## INPUTS:                                                        ||
 ## $1 -> Binary file location (from ChromHMM)                     ||
 ## $2 -> Bin size used for binarization                           ||

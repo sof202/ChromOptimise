@@ -23,7 +23,7 @@
 usage() {
 cat <<EOF
 ===========================================================================
-5_PartitionedHeritability
+$(basename "$0")
 ===========================================================================
 Purpose: Determines and plots partitioned heritability using LDSC
 Author: Sam Fletcher

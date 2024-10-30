@@ -12,9 +12,6 @@
 ## CONTACT: s.o.fletcher@exeter.ac.uk                             ||
 ## CREATED: November 2023                                         ||
 ## ============================================================== ##
-## PREREQUISITES:                                                 ||
-## Run 5_batch_CreateIncrementalModels.sh                         ||
-## ============================================================== ##
 ## INPUTS:                                                        ||
 ## $1 -> Location of likelihoods file                             ||
 ## $2 -> Directory to place output files into                     ||

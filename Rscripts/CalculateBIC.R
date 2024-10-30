@@ -12,9 +12,6 @@
 ## CONTACT: s.o.fletcher@exeter.ac.uk                             ||
 ## CREATED: January 2024                                          ||
 ## ============================================================== ##
-## PREREQUISITES:                                                 ||
-## Run 6_CompareModels.sh                                         ||
-## ============================================================== ##
 ## INPUTS:                                                        ||
 ## $1 -> Location of configuation file                            ||
 ## $2 -> Location of likelihoods file                             ||

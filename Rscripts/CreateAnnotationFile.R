@@ -10,10 +10,6 @@
 ## CONTACT: s.o.fletcher@exeter.ac.uk                             ||
 ## CREATED: March 2022                                            ||
 ## ============================================================== ##
-## PREREQUISITES:                                                 ||
-## Download Baseline files from Zenodo:                           ||
-## https://zenodo.org/records/10515792                            ||
-## ============================================================== ##
 ## INPUTS:                                                        ||
 ## $1 -> baseline annotation file                                 ||
 ## $2 -> file of state assignments                                ||

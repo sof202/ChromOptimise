@@ -23,7 +23,7 @@
 usage() {
 cat <<EOF
 ===========================================================================
-4_ReferenceLDSCore
+$(basename "$0")
 ===========================================================================
 Purpose: Generates annotation files based on baseline annotations (LDSC)
 and ChromHMM state annotations. Obtains LDSCores from said annotation.
@@ -60,7 +60,7 @@ input_directory="${OPTIMUM_STATES_DIR}/BinSize_${BIN_SIZE}_models_${NUMBER_OF_MO
 if [[ -z "${OPTIMUM_NUMBER_OF_STATES}" ]]; then
     if [[ -z "$(ls -A "${input_directory}")" ]]; then
         { >&2 echo -e "ERROR: No files found in: ${input_directory}.\n"\
-        "Please run 3_OptimumNumberOfStates.sh before this script."
+        "Please run the optimum number of states script before this script."
         finishing_statement 1; }
     fi
     optimum_state_file="${input_directory}/OptimumNumberOfStates.txt"

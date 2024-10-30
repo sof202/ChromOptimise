@@ -21,7 +21,7 @@
 usage() {
 cat <<EOF
 ===========================================================================
-Generate_Big_Model
+$(basename "$0")
 ===========================================================================
 Purpose: Generates a model unrestricted by ChromHMM LearnModel's
 default size limits by using random initialisation.
@@ -79,7 +79,7 @@ full_binary_path="${BINARY_DIR}/BinSize_${BIN_SIZE}"
 
 cd "${full_binary_path}" || \
 { >&2 echo -e "ERROR: Binary directory for bin/sample size is empty.\n" \
-"Ensure that 4_BinarizeBamFiles.sh has been ran before this script."
+   "Ensure that binary files exist before running this script."
 finishing_statement 1; }
 
 ## ========== ##

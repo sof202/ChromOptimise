@@ -13,9 +13,6 @@
 ## CONTACT: s.o.fletcher@exeter.ac.uk                             ||
 ## CREATED: September 2024                                        ||
 ## ============================================================== ##
-## PREREQUISITES:                                                 ||
-## Learn a model using ChromHMM                                   ||
-## ============================================================== ##
 ## INPUTS:                                                        ||
 ## $1 -> The dense assignments bed file (chromHMM output)         ||
 ## $2 -> The bin size used with ChromHMM                          ||

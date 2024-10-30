@@ -12,10 +12,6 @@
 ## CONTACT: s.o.fletcher@exeter.ac.uk                             ||
 ## CREATED: March 2022                                            ||
 ## ============================================================== ##
-## PREREQUISITES:                                                 ||
-## Run 5_batch_CreateIncrementalModels.sh                         ||
-## Run partitioned heritability analysis with ldsc                ||
-## ============================================================== ##
 ## INPUTS:                                                        ||
 ## $1 -> A list of all .results files                             ||
 ## $2 -> The complete path for the output plots                   ||

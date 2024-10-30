@@ -16,8 +16,6 @@ export BIN_SIZE=200
 export ASSEMBLY=hg19
 
 # This is the number of models you wish to create in the model learning stage
-# Read the documentation on 2_batch_CreateIncrementalModel.sh for help
-# here
 export NUMBER_OF_MODELS=4
 
 # The following are the array sizes you wish to use for batch jobs (processing

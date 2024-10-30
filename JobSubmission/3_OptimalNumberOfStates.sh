@@ -22,7 +22,7 @@
 usage() {
 cat <<EOF
 ===========================================================================
-3_OptimalNumberOfStates
+$(basename "$0")
 ===========================================================================
 Purpose: Determines the optimum number of states to use with your dataset
 Author: Sam Fletcher
@@ -67,7 +67,7 @@ input_directory="${MODEL_DIR}/BinSize_${BIN_SIZE}_models_${NUMBER_OF_MODELS}"
 
 if [[ -z "$(ls -A "${input_directory}")" ]]; then
     { >&2 echo -e "ERROR: No files found in: ${input_directory}.\n"\
-    "Please run 2_CreateIncrementalModels.sh before this script."
+    "Please run the model generation script before this one."
     finishing_statement 1; }
 fi
 
