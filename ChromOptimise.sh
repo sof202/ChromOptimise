@@ -7,7 +7,7 @@
 usage() {
 cat << EOF
 ================================================================================
-ChromOptimise.sh
+$(basename "$0")
 ================================================================================
 Purpose: Runs the ChromOptimise pipeline using the specified configuration files
 Author: Sam Fletcher

@@ -15,7 +15,7 @@
 usage() {
 cat << EOF
 ================================================================================
-Recreate_Transition_Heatmap.sh
+$(basename "$0")
 ================================================================================
 Purpose: Creates a heatmap for transition parameters without the main diagonal
 Author: Sam Fletcher

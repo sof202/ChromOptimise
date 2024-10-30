@@ -20,7 +20,7 @@
 usage() {
 cat <<EOF
 ===========================================================================
-Execute_Redundancy_Metrics
+$(basename "$0")
 ===========================================================================
 Purpose: Generates plots to aid in thresholds used in Config.R which
 are used in 6_OptimumNumberOfStates.sh in determining redundant states.

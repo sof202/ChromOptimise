@@ -21,7 +21,7 @@
 usage() {
 cat <<EOF
 ===========================================================================
-Generate_Big_Model
+$(basename "$0")
 ===========================================================================
 Purpose: Generates a model unrestricted by ChromHMM LearnModel's
 default size limits by using random initialisation.

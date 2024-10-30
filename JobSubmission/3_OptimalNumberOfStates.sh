@@ -22,7 +22,7 @@
 usage() {
 cat <<EOF
 ===========================================================================
-3_OptimalNumberOfStates
+$(basename "$0")
 ===========================================================================
 Purpose: Determines the optimum number of states to use with your dataset
 Author: Sam Fletcher

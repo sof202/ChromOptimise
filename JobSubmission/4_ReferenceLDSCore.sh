@@ -23,7 +23,7 @@
 usage() {
 cat <<EOF
 ===========================================================================
-4_ReferenceLDSCore
+$(basename "$0")
 ===========================================================================
 Purpose: Generates annotation files based on baseline annotations (LDSC)
 and ChromHMM state annotations. Obtains LDSCores from said annotation.

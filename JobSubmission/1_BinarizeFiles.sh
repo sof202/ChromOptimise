@@ -18,7 +18,7 @@
 usage() {
 cat <<EOF
 ================================================================================
-1_BinarizeBamFiles
+$(basename "$0")
 ================================================================================
 Purpose: Creates a 'cell mark file table' and uses ChromHMM's BinarizeBam 
 command to binarize bam files.
