@@ -129,12 +129,14 @@ conda deactivate
 conda activate ChromOptimise-R-java
 
 Rscript BinarytoBed.R \
+    "${REPO_DIR}" \
     <(zcat "${binary_files}") \
     "${BIN_SIZE}" \
     "chr${chromosome}" \
     "${temporary_directory}/binary-${chromosome}.bed"
 
 Rscript BimtoBed.R \
+    "${REPO_DIR}" \
     <(cat "${bim_files}") \
     "${temporary_directory}/SNP_positions-${chromosome}.bed"
 
@@ -177,6 +179,7 @@ conda activate ChromOptimise-R-java
 baseline_annot="${LD_BASELINE_DIR}/baselineLD.${chromosome}.annot.gz"
 
 Rscript CreateAnnotationFile.R \
+    "${REPO_DIR}" \
     <(zcat "${baseline_annot}") \
     <(cat "${temporary_directory}/state_assignments-${chromosome}.txt") \
     <(cat "${temporary_directory}/mark_assignments-${chromosome}.txt") \

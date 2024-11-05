@@ -27,11 +27,6 @@
 ## CONTACT: s.o.fletcher@exeter.ac.uk                             ||
 ## CREATED: February 2023                                         ||
 ## ============================================================== ##
-## INPUTS:                                                        ||
-## $1 -> Location of configuation file                            ||
-## $2 -> Model size                                               ||
-## $3 -> Directory containing redundancy criteria files           ||
-## ============================================================== ##
 ## OUTPUTS:                                                       ||
 ## Boolean response for the presence of redundant states          ||
 ## List of states that are considered redundant                   ||
@@ -42,11 +37,13 @@
 ## ========== ##
 
 arguments <- commandArgs(trailingOnly = TRUE)
-config_file_location <- arguments[1]
-model_size <- as.numeric(arguments[2])
-output_file_path <- arguments[3]
+renv_environment <- args[1]
+config_file_location <- arguments[2]
+model_size <- as.numeric(arguments[3])
+output_file_path <- arguments[4]
 
 source(config_file_location)
+renv::load(renv_environment)
 
 ## ============================== ##
 ##   COLLATE REDUNDANCY METRICS   ##

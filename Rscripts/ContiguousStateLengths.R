@@ -13,11 +13,6 @@
 ## CONTACT: s.o.fletcher@exeter.ac.uk                             ||
 ## CREATED: September 2024                                        ||
 ## ============================================================== ##
-## INPUTS:                                                        ||
-## $1 -> The dense assignments bed file (chromHMM output)         ||
-## $2 -> The bin size used with ChromHMM                          ||
-## $3 -> The desired output directory for plots and metrics       ||
-## ============================================================== ##
 ## OUTPUTS:                                                       ||
 ## Histogram plots for the lengths of contiguous regions with     ||
 ## the same state assignment                                      ||
@@ -29,15 +24,16 @@
 ##   SET UP   ##
 ## ========== ##
 
-library(ggplot2)
-
 args <- commandArgs(trailingOnly = TRUE)
+renv_environment <- args[1]
+dense_assignment_file <- args[2]
+output_directory <- args[3]
+model_size <- as.numeric(args[4])
+bin_size <- as.numeric(args[5])
+plotting_flag <- args[6]
 
-dense_assignment_file <- args[1]
-output_directory <- args[2]
-model_size <- as.numeric(args[3])
-bin_size <- as.numeric(args[4])
-plotting_flag <- args[5]
+renv::load(renv_environment)
+library(ggplot2)
 
 ## ================ ##
 ##   LOADING FILE   ##

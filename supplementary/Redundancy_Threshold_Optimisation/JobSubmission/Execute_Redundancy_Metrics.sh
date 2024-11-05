@@ -132,6 +132,7 @@ fi
 echo "Running SimilarEmissions.R for: ${model_size} states..."
 
 Rscript SimilarEmissions.R \
+    "${REPO_DIR}" \
     "${emissions_file}" \
     "${BIG_MODELS_DIR}/Euclidean_distances" \
     TRUE
@@ -140,6 +141,7 @@ Rscript SimilarEmissions.R \
 echo "Running FlankingStates.R for: ${model_size} states..."
 
 Rscript FlankingStates.R \
+    "${REPO_DIR}" \
     "${transitions_file}" \
     "${model_file_dir}/Flanking_states"
 
@@ -149,6 +151,7 @@ Rscript FlankingStates.R \
 echo "Running IsolationScores.R for: ${model_size} states..."
 
 Rscript IsolationScores.R \
+    "${REPO_DIR}" \
     "${state_assignment_file}" \
     "${model_file_dir}/Isolation_scores" \
     "${model_size}" \

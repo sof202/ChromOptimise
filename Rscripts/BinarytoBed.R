@@ -13,12 +13,6 @@
 ## CONTACT: s.o.fletcher@exeter.ac.uk                             ||
 ## CREATED: March 2022                                            ||
 ## ============================================================== ##
-## INPUTS:                                                        ||
-## $1 -> Binary file location (from ChromHMM)                     ||
-## $2 -> Bin size used for binarization                           ||
-## $3 -> Chromosome number                                        ||
-## $4 -> output file location                                     ||
-## ============================================================== ##
 ## OUTPUTS:                                                       ||
 ## A UCSC bed file with columns: chromosome, start, end, then     ||
 ## Boolean columns signifying the presence/absence of each mark   ||
@@ -30,10 +24,13 @@
 ## ========== ##
 
 arguments <- commandArgs(trailingOnly = TRUE)
-binary_file <- arguments[1]
-bin_size <- as.numeric(arguments[2])
-chromosome <- arguments[3]
-output_file_path <- arguments[4]
+renv_environment <- args[1]
+binary_file <- arguments[2]
+bin_size <- as.numeric(arguments[3])
+chromosome <- arguments[4]
+output_file_path <- arguments[5]
+
+renv::load(renv_environment)
 
 ## ======================== ##
 ##   LOADING BINARY FILES   ##

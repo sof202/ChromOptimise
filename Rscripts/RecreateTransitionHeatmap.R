@@ -1,8 +1,9 @@
 args <- commandArgs(trailingOnly = TRUE)
+renv_environment <- args[1]
+transitions_file <- args[2]
+output_directory <- args[3]
 
-transitions_file <- args[1]
-output_directory <- args[2]
-
+renv::load(renv_environment)
 library(ggplot2)
 
 # Transitions files an annoying header (doesn't line up with

@@ -12,10 +12,6 @@
 ## CONTACT: s.o.fletcher@exeter.ac.uk                             ||
 ## CREATED: March 2022                                            ||
 ## ============================================================== ##
-## INPUTS:                                                        ||
-## $1 -> A list of all .results files                             ||
-## $2 -> The complete path for the output plots                   ||
-## ============================================================== ##
 ## OUTPUTS:                                                       ||
 ## A heatmap for the enrichment seen across GWAS traits and       ||
 ## ChromHMM states                                                ||
@@ -27,13 +23,15 @@
 ##   SET UP   ##
 ## ========== ##
 
-library(ggplot2)
-
 arguments <- commandArgs(trailingOnly = TRUE)
-results_file_list <- readLines(arguments[1])
-cell_type <- arguments[2]
-pvalue_threshold <- as.numeric(arguments[3])
-output_directory <- arguments[4]
+renv_environment <- args[1]
+results_file_list <- readLines(arguments[2])
+cell_type <- arguments[3]
+pvalue_threshold <- as.numeric(arguments[4])
+output_directory <- arguments[5]
+
+renv::load(renv_environment)
+library(ggplot2)
 
 ## ================= ##
 ##   LOADING FILES   ##
