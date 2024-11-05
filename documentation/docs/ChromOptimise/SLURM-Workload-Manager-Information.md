@@ -79,12 +79,3 @@ scripts. If one executes the script normally, the absence of these should not
 matter. One may want to implement artificial maximum wall times regardless as
 some programs can take a long time to finish and cause too much memory pile up
 (resulting in a crash).
-
-## `module purge` and `module load` 
-
-In most scripts you will see lines: `module purge` and `module load`. This is 
-due to the large quantity of software on the
-HPC systems here at UoE. These commands are a part of the 'Modules' tool and
-help with compatability between different programs. The setup file in the home
-directory of the repository gives one the option to remove all such lines
-(reccomended).
