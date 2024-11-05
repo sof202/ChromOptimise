@@ -9,6 +9,10 @@ source "${configuration_directory}/Config.txt" || \
 { echo "The configuration file does not exist in the specified location: \
 ${configuration_directory}"; exit 1; }
 
+cd "${REPO_DIR}" || \
+{ echo "The configuration file does not point to the correct script directory: \
+${REPO_DIR}"; exit 1; }
+
 ## ============================== ##
 ##   CREATION OF FILE STRUCTURE   ##
 ## ============================== ##
@@ -38,10 +42,6 @@ conda create \
 ## ============================= ##
 ##   DELETE UOE SPECIFIC LINES   ##
 ## ============================= ##
-
-cd "${REPO_DIR}" || \
-{ echo "The configuration file does not point to the correct script directory: \
-${REPO_DIR}"; exit 1; }
 
 script_list=$(find . -type f -name "*.sh")
 
