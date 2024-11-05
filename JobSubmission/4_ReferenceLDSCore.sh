@@ -190,7 +190,7 @@ rm -rf "${temporary_directory}"
 ##   REFERENCE LD SCORES   ##
 ## ======================= ##
 
-conda activate "${LDSC_ENVIRONMENT}"
+conda activate ldsc
 
 plink_prefix=$(\
 find "${LD_PLINK_DIR}" -type f -name "*22.bim" -print0 | \

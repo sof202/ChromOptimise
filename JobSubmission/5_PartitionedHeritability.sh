@@ -73,7 +73,7 @@ mkdir -p \
 source "${CONDA_SHELL}" || \
 { echo "conda.sh does not exist in specified location: \
 [\${CONDA_SHELL} - ${CONDA_SHELL}]"; exit 1; }
-conda activate "${LDSC_ENVIRONMENT}"
+conda activate ldsc
 
 weights_prefix=$(\
 find "${LD_WEIGHTS_DIR}" -type f -name "*22.l2.ldscore*" -print0 -quit | \

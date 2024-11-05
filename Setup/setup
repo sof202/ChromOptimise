@@ -39,6 +39,10 @@ conda create \
     --name ChromOptimise-bedtools \
     --file "${REPO_DIR}/requirements-bedtools.txt"
 
+conda create \
+    --name ldsc \
+    --file "${REPO_DIR}/requirements-ldsc.txt"
+
 ## ============================= ##
 ##   DELETE UOE SPECIFIC LINES   ##
 ## ============================= ##

@@ -122,8 +122,3 @@ export CHROMHMM_CHROM_SIZES="${CHROMHMM_MAIN_DIR}/CHROMSIZES"
 ## ------------- ##
 
 export LD_SOFTWARE_DIR="path/to/ldsc/main/directory"
-
-# LDSC requires a conda environment to run. This is detailed in LDSC'
-# documentation. If you follow LDSC' setup verbatim, the below should just be
-# 'ldsc' (default)
-export LDSC_ENVIRONMENT="ldsc"
