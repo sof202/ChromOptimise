@@ -49,7 +49,7 @@ conda create \
 
 conda activate ChromOptimise-R-java
 Rscript -e "install.packages('renv', repo='https://cloud.r-project.org')"
-Rscript -e "renv::restore(); library(fitdistrplus); print('success')"
+Rscript -e "renv::restore(); library(data.table); print('success')"
 conda deactivate
 
 ## ============================= ##
