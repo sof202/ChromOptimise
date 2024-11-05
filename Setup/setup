@@ -16,6 +16,22 @@ ${configuration_directory}"; exit 1; }
 mkdir -p  "${BINARY_DIR}" "${MODEL_DIR}" "${OPTIMUM_STATES_DIR}" \
     "${LD_ASSESSMENT_DIR}" "${BIG_MODELS_DIR}"
 
+## ====================== ##
+##   CONDA ENVIRONMENTS   ##
+## ====================== ##
+
+source "${CONDA_SHELL}" || { echo "Could not find conda shell at:
+${CONDA_SHELL}"; exit 1; }
+conda config --add channels bioconda
+conda config --add channels conda-forge
+
+conda create \
+    --name ChromOptimise-R-java \
+    --file "${REPO_DIR}/requirements-R-java.txt"
+conda create \
+    --name ChromOptimise-bedtools \
+    --file "${REPO_DIR}/requirements-bedtools.txt"
+
 ## ============================= ##
 ##   DELETE UOE SPECIFIC LINES   ##
 ## ============================= ##
