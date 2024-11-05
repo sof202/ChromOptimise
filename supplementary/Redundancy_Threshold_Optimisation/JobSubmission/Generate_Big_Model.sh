@@ -88,8 +88,10 @@ finishing_statement 1; }
 
 echo "Learning a model with ${model_size} states and random seed: ${seed}..."
 
-module purge
-module load "${JAVA_MODULE}"
+source "${CONDA_SHELL}" || { echo "Could not find conda shell at:
+${CONDA_SHELL}"; exit 1; }
+conda deactivate
+conda activate ChromOptimise-R-java
 
 cd "${BIG_MODELS_DIR}" || \
 { >&2 echo "ERROR: [\${BIG_MODELS_DIR} - ${BIG_MODELS_DIR}] \
@@ -109,6 +111,8 @@ java \
     "${model_size}" \
     "${ASSEMBLY}" > \
     "ChromHMM.Output.ModelSize.${model_size}.txt"
+
+conda deactivate
 
 # grep removes the terminal logs associated with writing to files.
 # The tail and awk locate the final estimated log likelihood

@@ -103,8 +103,10 @@ done
 rm -rf "${BINARY_DIR}/BinSize_${BIN_SIZE}"
 mkdir -p "${BINARY_DIR}/BinSize_${BIN_SIZE}"
 
-module purge
-module load "${JAVA_MODULE}"
+source "${CONDA_SHELL}" || { echo "Could not find conda shell at:
+${CONDA_SHELL}"; exit 1; }
+conda deactivate
+conda activate ChromOptimise-R-java
 
 if [[ -s "${bam_CellMarkFileTable}" ]]; then
     echo "Binarizing bam files found in: "\
@@ -145,6 +147,8 @@ java \
     -gzip \
     "${BINARY_DIR}/BinSize_${BIN_SIZE}" \
     "${BINARY_DIR}/BinSize_${BIN_SIZE}"
+
+conda deactivate
 
 ## ============ ##
 ##   CLEAN UP   ##

@@ -109,11 +109,12 @@ done
 ## ================= ##
 
 conda deactivate
-module purge
-module load "${R_MODULE}"
+conda activate ChromOptimise-R-java
 
 Rscript "${RSCRIPTS_DIR}/HeritabilityPlots.R" \
     <(find "${ld_directory}/heritability" -name "*.results") \
     "${CELL_TYPE}" \
     "${SIGNIFICANCE}" \
     "${ld_directory}/plots"
+
+conda deactivate

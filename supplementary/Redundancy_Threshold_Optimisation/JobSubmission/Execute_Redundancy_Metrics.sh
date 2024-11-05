@@ -87,8 +87,10 @@ fi
 ##   MAIN   ##
 ## ======== ##
 
-module purge
-module load "${R_MODULE}"
+source "${CONDA_SHELL}" || { echo "Could not find conda shell at:
+${CONDA_SHELL}"; exit 1; }
+conda deactivate
+conda activate ChromOptimise-R-java
 
 cd "${RSCRIPTS_DIR}" || \
 { >&2 echo "ERROR: make sure [\${RSCRIPTS_DIR} - ${RSCRIPTS_DIR}] \

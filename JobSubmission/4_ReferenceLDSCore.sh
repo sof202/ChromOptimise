@@ -123,8 +123,10 @@ finishing_statement 1; }
 ##  CONVERT TO BED FORMAT ## 
 ## ---------------------- ##
 
-module purge
-module load "${R_MODULE}"
+source "${CONDA_SHELL}" || { echo "Could not find conda shell at:
+${CONDA_SHELL}"; exit 1; }
+conda deactivate
+conda activate ChromOptimise-R-java
 
 Rscript BinarytoBed.R \
     <(zcat "${binary_files}") \
@@ -140,8 +142,8 @@ Rscript BimtoBed.R \
 ##   FIND STATE AND MARK ASSIGNMENTS   ##
 ## ----------------------------------- ##
 
-module purge
-module load "${BEDTOOLS_MODULE}"
+conda deactivate
+conda activate ChromOptimise-bedtools
 
 bedtools intersect -wb \
     -a "${temporary_directory}/SNP_positions-${chromosome}.bed" \
@@ -169,8 +171,8 @@ bedtools intersect -wb \
 ##   GENERATE ANNOTATION   ##
 ## ----------------------- ##
 
-module purge
-module load "${R_MODULE}"
+conda deactivate
+conda activate ChromOptimise-R-java
 
 baseline_annot="${LD_BASELINE_DIR}/baselineLD.${chromosome}.annot.gz"
 
@@ -184,15 +186,10 @@ Rscript CreateAnnotationFile.R \
 
 rm -rf "${temporary_directory}"
 
-module purge
-
 ## ======================= ##
 ##   REFERENCE LD SCORES   ##
 ## ======================= ##
 
-source "${CONDA_SHELL}" || \
-{ echo "conda.sh does not exist in specified location: \
-[\${CONDA_SHELL} - ${CONDA_SHELL}]"; exit 1; }
 conda activate "${LDSC_ENVIRONMENT}"
 
 plink_prefix=$(\

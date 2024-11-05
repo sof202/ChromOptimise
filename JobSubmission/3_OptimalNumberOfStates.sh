@@ -95,8 +95,10 @@ mkdir -p \
     "${output_directory}/Isolation_scores" \
     "${output_directory}/Contiguous_lengths"
 
-module purge
-module load "${R_MODULE}"
+source "${CONDA_SHELL}" || { echo "Could not find conda shell at:
+${CONDA_SHELL}"; exit 1; }
+conda deactivate
+conda activate ChromOptimise-R-java
 
 cd "${RSCRIPTS_DIR}" || \
 { >&2 echo "ERROR: [\${RSCRIPTS_DIR} - ${RSCRIPTS_DIR}] doesn't exist, \
@@ -304,6 +306,8 @@ Rscript CalculateBIC.R \
     "${optimum_number_of_states}" \
     "${total_observations}" \
     "${output_directory}" \
+
+conda deactivate
 
 cp "${input_directory}/model_${optimum_number_of_states}.txt" \
     "${output_directory}/optimum_model.txt"
