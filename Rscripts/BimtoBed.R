@@ -10,10 +10,6 @@
 ## CONTACT: s.o.fletcher@exeter.ac.uk                             ||
 ## CREATED: March 2022                                            ||
 ## ============================================================== ##
-## INPUTS:                                                        ||
-## $1 -> bim file location                                        ||
-## $2 -> output file location                                     ||
-## ============================================================== ##
 ## OUTPUTS:                                                       ||
 ## A UCSC bed file with genomic regions corresponding to the SNPS ||
 ## in the inputted bim file                                       ||
@@ -24,8 +20,11 @@
 ## ========== ##
 
 arguments <- commandArgs(trailingOnly = TRUE)
-bim_file <- arguments[1]
-output_file_path <- arguments[2]
+renv_environment <- args[1]
+bim_file <- arguments[2]
+output_file_path <- arguments[3]
+
+renv::load(renv_environment)
 
 ## ===================== ##
 ##   LOADING BIM FILES   ##

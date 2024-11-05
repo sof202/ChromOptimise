@@ -12,12 +12,6 @@
 ## CONTACT: s.o.fletcher@exeter.ac.uk                             ||
 ## CREATED: January 2024                                          ||
 ## ============================================================== ##
-## INPUTS:                                                        ||
-## $1 -> Location of configuation file                            ||
-## $2 -> Location of likelihoods file                             ||
-## $3 -> Total size of binary files                               ||
-## $4 -> Directory to place output files into                     ||
-## ============================================================== ##
 ## OUTPUTS:                                                       ||
 ## Scatter plot of relative BIC against number of states          ||
 ## Text file containing BIC for each model                        ||
@@ -27,16 +21,17 @@
 ##   SET UP   ##
 ## ========== ##
 
-library(ggplot2)
-
 arguments <- commandArgs(trailingOnly = TRUE)
-config_file_location <- arguments[1]
-likelihoods_file <- arguments[2]
-optimum_states <- as.numeric(arguments[3])
-number_of_observations <- as.numeric(arguments[4])
-output_file_path <- arguments[5]
+renv_environment <- args[1]
+config_file_location <- arguments[2]
+likelihoods_file <- arguments[3]
+optimum_states <- as.numeric(arguments[4])
+number_of_observations <- as.numeric(arguments[5])
+output_file_path <- arguments[6]
 
 source(config_file_location)
+renv::load(renv_environment)
+library(ggplot2)
 
 ## =============== ##
 ##   IMPORT DATA   ##

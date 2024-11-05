@@ -112,6 +112,7 @@ conda deactivate
 conda activate ChromOptimise-R-java
 
 Rscript "${RSCRIPTS_DIR}/HeritabilityPlots.R" \
+    "${REPO_DIR}" \
     <(find "${ld_directory}/heritability" -name "*.results") \
     "${CELL_TYPE}" \
     "${SIGNIFICANCE}" \

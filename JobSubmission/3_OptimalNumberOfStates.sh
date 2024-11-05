@@ -139,6 +139,7 @@ for model_number in "${model_sizes[@]}"; do
     echo "Running SimilarEmissions.R for: ${model_number} states..."
 
     Rscript SimilarEmissions.R \
+        "${REPO_DIR}" \
         "${emissions_file}" \
         "${output_directory}/Euclidean_distances" \
         FALSE
@@ -146,12 +147,14 @@ for model_number in "${model_sizes[@]}"; do
     echo "Running FlankingStates.R for: ${model_number} states..."
 
     Rscript FlankingStates.R \
+        "${REPO_DIR}" \
         "${transitions_file}" \
         "${output_directory}/Flanking_states"
 
     echo "Running IsolationScores.R for: ${model_number} states..."
 
     Rscript IsolationScores.R \
+        "${REPO_DIR}" \
         "${state_assignment_file}" \
         "${output_directory}/Isolation_scores" \
         "${model_number}" \
@@ -161,6 +164,7 @@ for model_number in "${model_sizes[@]}"; do
     echo "Running ContiguousStateLengths.R for: ${model_number} states..."
 
     Rscript ContiguousStateLengths.R \
+        "${REPO_DIR}" \
         "${dense_assignment_file}" \
         "${output_directory}/Contiguous_lengths" \
         "${model_number}" \
@@ -170,6 +174,7 @@ for model_number in "${model_sizes[@]}"; do
     echo "Running RedundantStateChecker.R for: ${model_number} states..."
 
     Rscript RedundantStateChecker.R \
+        "${REPO_DIR}" \
         "${configuration_directory}/Config.R" \
         "${model_number}" \
         "${output_directory}"
@@ -275,6 +280,7 @@ echo "Plotting the estimated log likelihoods of learned models against" \
 "one another..."
 
 Rscript PlotLikelihoods.R \
+    "${REPO_DIR}" \
     "${input_directory}/Likelihood_Values/likelihoods.txt" \
     "${output_directory}"
 
@@ -301,6 +307,7 @@ tr -d ' ')
 
 echo "Processing the Bayesian information critereon of learned models..."
 Rscript CalculateBIC.R \
+    "${REPO_DIR}" \
     "${configuration_directory}/Config.R" \
     "${input_directory}/Likelihood_Values/likelihoods.txt" \
     "${optimum_number_of_states}" \

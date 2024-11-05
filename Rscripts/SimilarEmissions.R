@@ -11,11 +11,6 @@
 ## CONTACT: s.o.fletcher@exeter.ac.uk                             ||
 ## CREATED: February 2022                                         ||
 ## ============================================================== ##
-## INPUTS:                                                        ||
-## $1 -> Location of transition matrix file                       ||
-## $2 -> Directory to place output files into                     ||
-## $3 -> Boolean for if plots are to be made                      ||
-## ============================================================== ##
 ## OUTPUTS:                                                       ||
 ## Text file containing the Euclidean distance between each       ||
 ## possible pair of states in the selected model                  ||
@@ -25,12 +20,14 @@
 ##   SET UP   ##
 ## ========== ##
 
-library(ggplot2)
-
 arguments <- commandArgs(trailingOnly = TRUE)
-emissions_file <- arguments[1]
-output_file_path <- arguments[2]
-plotting_flag <- arguments[3]
+renv_environment <- args[1]
+emissions_file <- arguments[2]
+output_file_path <- arguments[3]
+plotting_flag <- arguments[4]
+
+renv::load(renv_environment)
+library(ggplot2)
 
 ## ================= ##
 ##   LOADING FILES   ##

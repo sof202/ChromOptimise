@@ -11,11 +11,6 @@
 ## CONTACT: s.o.fletcher@exeter.ac.uk                             ||
 ## CREATED: February 2022                                         ||
 ## ============================================================== ##
-## INPUTS:                                                        ||
-## $1 -> Location of transition matrix file                       ||
-## $2 -> Directory to place output files into                     ||
-## $3 -> Boolean for if plots are to be made                      ||
-## ============================================================== ##
 ## OUTPUTS:                                                       ||
 ## Text file containing the Euclidean distance between each       ||
 ## possible pair of states in the selected model                  ||
@@ -26,12 +21,14 @@
 ## ========== ##
 
 arguments <- commandArgs(trailingOnly = TRUE)
-config_file_location <- arguments[1]
-smaller_file <- arguments[2]
-bigger_file <- arguments[3]
-threshold_type <- arguments[4]
+renv_environment <- args[1]
+config_file_location <- arguments[2]
+smaller_file <- arguments[3]
+bigger_file <- arguments[4]
+threshold_type <- arguments[5]
 
 source(config_file_location)
+renv::load(renv_environment)
 
 ## ================= ##
 ##   LOADING FILES   ##

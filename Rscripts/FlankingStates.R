@@ -14,10 +14,6 @@
 ## CONTACT: s.o.fletcher@exeter.ac.uk                             ||
 ## CREATED: February 2022                                         ||
 ## ============================================================== ##
-## INPUTS:                                                        ||
-## $1 -> Location of transition matrix file                       ||
-## $2 -> Directory to place output files into                     ||
-## ============================================================== ##
 ## OUTPUTS:                                                       ||
 ## Text file containing most probable flanking states for each    ||
 ## state in the model.                                            ||
@@ -28,8 +24,11 @@
 ## ========== ##
 
 arguments <- commandArgs(trailingOnly = TRUE)
-transitions_file <- arguments[1]
-output_file_path <- arguments[2]
+renv_environment <- args[1]
+transitions_file <- arguments[2]
+output_file_path <- arguments[3]
+
+renv::load(renv_environment)
 
 ## ================= ##
 ##   LOADING FILES   ##

@@ -12,10 +12,6 @@
 ## CONTACT: s.o.fletcher@exeter.ac.uk                             ||
 ## CREATED: November 2023                                         ||
 ## ============================================================== ##
-## INPUTS:                                                        ||
-## $1 -> Location of likelihoods file                             ||
-## $2 -> Directory to place output files into                     ||
-## ============================================================== ##
 ## OUTPUTS:                                                       ||
 ## Line plot of estimated log likelihoods against the number      ||
 ## of states used.                                                ||
@@ -26,12 +22,13 @@
 ##   SET UP   ##
 ## ========== ##
 
-library(ggplot2)
-
 arguments <- commandArgs(trailingOnly = TRUE)
-likelihoods_file <- arguments[1]
-output_file_path <- arguments[2]
+renv_environment <- args[1]
+likelihoods_file <- arguments[2]
+output_file_path <- arguments[3]
 
+renv::load(renv_environment)
+library(ggplot2)
 
 ## ============== ##
 ##   PROCESSING   ##

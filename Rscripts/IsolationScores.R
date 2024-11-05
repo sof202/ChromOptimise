@@ -13,12 +13,6 @@
 ## CONTACT: s.o.fletcher@exeter.ac.uk                             ||
 ## CREATED: January 2022                                          ||
 ## ============================================================== ##
-## INPUTS:                                                        ||
-## $1 -> State assignments file                                   ||
-## $2 -> Output file path                                         ||
-## $3 -> Size of the model                                        ||
-## $4 -> Sample size for isolation score                          ||
-## ============================================================== ##
 ## OUTPUTS:                                                       ||
 ## Text file containing isolation scores for each state           ||
 ## ============================================================== ##
@@ -27,14 +21,16 @@
 ##   SET UP   ##
 ## ========== ##
 
-library(ggplot2)
-
 arguments <- commandArgs(trailingOnly = TRUE)
-state_assignments_file <- arguments[1]
-output_file_path <- arguments[2]
-model_size <- as.numeric(arguments[3])
-isolation_sample_size <- as.numeric(arguments[4])
-plotting_flag <- arguments[5]
+renv_environment <- args[1]
+state_assignments_file <- arguments[2]
+output_file_path <- arguments[3]
+model_size <- as.numeric(arguments[4])
+isolation_sample_size <- as.numeric(arguments[5])
+plotting_flag <- arguments[6]
+
+renv::load(renv_environment)
+library(ggplot2)
 
 ## =================== ##
 ##   FILE PROCESSING   ##

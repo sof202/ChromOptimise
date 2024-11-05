@@ -10,13 +10,6 @@
 ## CONTACT: s.o.fletcher@exeter.ac.uk                             ||
 ## CREATED: March 2022                                            ||
 ## ============================================================== ##
-## INPUTS:                                                        ||
-## $1 -> baseline annotation file                                 ||
-## $2 -> file of state assignments                                ||
-## $3 -> file of mark assignments                                 ||
-## $4 -> size of the model                                        ||
-## $5 -> output file location                                     ||
-## ============================================================== ##
 ## OUTPUTS:                                                       ||
 ## An annotation file to use with ldsc                            ||
 ## ============================================================== ##
@@ -26,12 +19,15 @@
 ## ========== ##
 
 arguments <- commandArgs(trailingOnly = TRUE)
-baseline_annotation <- arguments[1]
-state_assignments <- arguments[2]
-mark_assignment <- arguments[3]
-model_size <- as.numeric(arguments[4])
-cell_type <- arguments[5]
-output_file_path <- arguments[6]
+renv_environment <- args[1]
+baseline_annotation <- arguments[2]
+state_assignments <- arguments[3]
+mark_assignment <- arguments[4]
+model_size <- as.numeric(arguments[5])
+cell_type <- arguments[6]
+output_file_path <- arguments[7]
+
+renv::load(renv_environment)
 
 ## ================ ##
 ##   FILE LOADING   ##

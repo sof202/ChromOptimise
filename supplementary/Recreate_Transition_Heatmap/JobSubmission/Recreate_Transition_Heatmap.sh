@@ -52,6 +52,7 @@ conda activate ChromOptimise-R-java
 
 Rscript \
     "${RSCRIPTS_DIR}/RecreateTransitionMatrix.R" \
+    "${REPO_DIR}" \
     "${transitions_file}" \
     "${output_directory}"
 
