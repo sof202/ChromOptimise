@@ -28,6 +28,9 @@ conda config --add channels conda-forge
 conda create \
     --name ChromOptimise-R-java \
     --file "${REPO_DIR}/requirements-R-java.txt"
+
+# Compatible version of bedtools with R (>2.27.1) fails to process bed files
+# with genomic positions represented in scientific notation.
 conda create \
     --name ChromOptimise-bedtools \
     --file "${REPO_DIR}/requirements-bedtools.txt"
