@@ -58,21 +58,6 @@ export MAXTIME_3=02:00:00
 export MAXTIME_4=02:30:00
 export MAXTIME_5=03:00:00
 
-## ============ ##
-##   SOFTWARE   ##
-## ============ ##
-
-# Assuming the system you are using uses modules (which is highly common
-# among HPCs in my limited experience), you can specify the modules to load
-# using the variables below
-
-# If your HPC doesn't have a module for these, it is better to remove instances
-# of `module load` commands using either `sed` or the setup script.
-
-BEDTOOLS_MODULE=
-R_MODULE=
-JAVA_MODULE=
-
 ## =============== ##
 ##   DIRECTORIES   ##
 ## =============== ##
@@ -137,8 +122,3 @@ export CHROMHMM_CHROM_SIZES="${CHROMHMM_MAIN_DIR}/CHROMSIZES"
 ## ------------- ##
 
 export LD_SOFTWARE_DIR="path/to/ldsc/main/directory"
-
-# LDSC requires a conda environment to run. This is detailed in LDSC'
-# documentation. If you follow LDSC' setup verbatim, the below should just be
-# 'ldsc' (default)
-export LDSC_ENVIRONMENT="ldsc"

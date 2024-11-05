@@ -61,13 +61,6 @@ your data) and then fill them in using the templates provided. DO NOT CHANGE
 THE NAMES OF THESE FILES.
 5) Run the [`setup`](https://github.com/sof202/ChromOptimise/tree/main/Setup/setup) 
 executable 
-    - The user will be prompted for whether they want to remove lines 
-    beginning with `module` (artefact of HPC system used at UoE)
-        - If your HPC also has a module based system, you may find it useful
-        to use the code structure inside of this script to replace `module load`
-        calls with the appropriate modules on your own system.
-    - The user will also be prompted if they want to remove SLURM directives 
-    that are specific to the UoE HPC.
 
 ## Usage
 After completing ['getting started'](#getting-started), run the master script 

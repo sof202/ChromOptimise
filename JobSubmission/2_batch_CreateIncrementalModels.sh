@@ -134,8 +134,10 @@ fi
 ##    MODEL GENERATION   ##
 ## ===================== ##
 
-module purge
-module load "${JAVA_MODULE}"
+source "${CONDA_SHELL}" || { echo "Could not find conda shell at:
+${CONDA_SHELL}"; exit 1; }
+conda deactivate
+conda activate ChromOptimise-R-java
 
 sequence=$(\
 seq "$starting_number_of_states" "$states_increment" "$ending_number_of_states"\
@@ -183,6 +185,8 @@ for numstates in ${sequence}; do
 
     rm "ChromHMM_output_numstates_${numstates}.txt"
 done
+
+conda deactivate
 
 ## ============ ##
 ##   CLEAN UP   ##

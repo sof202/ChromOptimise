@@ -45,13 +45,16 @@ if [[ $# -ne 3 ]]; then usage; fi
 ##   MAIN   ##
 ## ======== ##
 
-module purge
-module load "${R_MODULE}"
+source "${CONDA_SHELL}" || { echo "Could not find conda shell at:
+${CONDA_SHELL}"; exit 1; }
+conda deactivate
+conda activate ChromOptimise-R-java
 
 Rscript \
     "${RSCRIPTS_DIR}/RecreateTransitionMatrix.R" \
     "${transitions_file}" \
     "${output_directory}"
 
+conda deactivate
 
 finishing_statement 0
