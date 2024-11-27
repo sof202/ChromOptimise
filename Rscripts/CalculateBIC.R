@@ -22,7 +22,7 @@
 ## ========== ##
 
 arguments <- commandArgs(trailingOnly = TRUE)
-renv_environment <- args[1]
+renv_environment <- arguments[1]
 config_file_location <- arguments[2]
 likelihoods_file <- arguments[3]
 optimum_states <- as.numeric(arguments[4])

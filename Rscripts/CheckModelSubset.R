@@ -21,7 +21,7 @@
 ## ========== ##
 
 arguments <- commandArgs(trailingOnly = TRUE)
-renv_environment <- args[1]
+renv_environment <- arguments[1]
 config_file_location <- arguments[2]
 smaller_file <- arguments[3]
 bigger_file <- arguments[4]

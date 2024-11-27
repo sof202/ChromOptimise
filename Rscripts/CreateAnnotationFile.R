@@ -19,7 +19,7 @@
 ## ========== ##
 
 arguments <- commandArgs(trailingOnly = TRUE)
-renv_environment <- args[1]
+renv_environment <- arguments[1]
 baseline_annotation <- arguments[2]
 state_assignments <- arguments[3]
 mark_assignment <- arguments[4]

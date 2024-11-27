@@ -37,7 +37,7 @@
 ## ========== ##
 
 arguments <- commandArgs(trailingOnly = TRUE)
-renv_environment <- args[1]
+renv_environment <- arguments[1]
 config_file_location <- arguments[2]
 model_size <- as.numeric(arguments[3])
 output_file_path <- arguments[4]

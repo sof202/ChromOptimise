@@ -22,7 +22,7 @@
 ## ========== ##
 
 arguments <- commandArgs(trailingOnly = TRUE)
-renv_environment <- args[1]
+renv_environment <- arguments[1]
 state_assignments_file <- arguments[2]
 output_file_path <- arguments[3]
 model_size <- as.numeric(arguments[4])

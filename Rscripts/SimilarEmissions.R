@@ -21,7 +21,7 @@
 ## ========== ##
 
 arguments <- commandArgs(trailingOnly = TRUE)
-renv_environment <- args[1]
+renv_environment <- arguments[1]
 emissions_file <- arguments[2]
 output_file_path <- arguments[3]
 plotting_flag <- arguments[4]

@@ -24,7 +24,7 @@
 ## ========== ##
 
 arguments <- commandArgs(trailingOnly = TRUE)
-renv_environment <- args[1]
+renv_environment <- arguments[1]
 results_file_list <- readLines(arguments[2])
 cell_type <- arguments[3]
 pvalue_threshold <- as.numeric(arguments[4])

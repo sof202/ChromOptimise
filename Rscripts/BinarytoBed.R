@@ -24,7 +24,7 @@
 ## ========== ##
 
 arguments <- commandArgs(trailingOnly = TRUE)
-renv_environment <- args[1]
+renv_environment <- arguments[1]
 binary_file <- arguments[2]
 bin_size <- as.numeric(arguments[3])
 chromosome <- arguments[4]
