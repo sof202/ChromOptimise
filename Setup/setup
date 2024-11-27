@@ -29,18 +29,24 @@ ${CONDA_SHELL}"; exit 1; }
 conda config --add channels bioconda
 conda config --add channels conda-forge
 
-conda create \
-    --name ChromOptimise-R-java \
-    --file "${REPO_DIR}/requirements-R-java.txt"
+if ! conda env list | grep -q "ChromOptimise-R-java"; then
+    conda create \
+        --name ChromOptimise-R-java \
+        --file "${REPO_DIR}/requirements-R-java.txt"
+fi
 
 # Compatible version of bedtools with R (>2.27.1) fails to process bed files
 # with genomic positions represented in scientific notation.
-conda create \
-    --name ChromOptimise-bedtools \
-    --file "${REPO_DIR}/requirements-bedtools.txt"
+if ! conda env list | grep -q "ChromOptimise-bedtools"; then
+    conda create \
+        --name ChromOptimise-bedtools \
+        --file "${REPO_DIR}/requirements-bedtools.txt"
+fi
 
-conda env create \
-    --file "${REPO_DIR}/environment-ldsc.yml"
+if ! conda env list | grep -q "ldsc"; then
+    conda env create \
+        --file "${REPO_DIR}/environment-ldsc.yml"
+fi
 
 ## ======== ##
 ##   RENV   ##
