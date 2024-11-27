@@ -39,9 +39,8 @@ conda create \
     --name ChromOptimise-bedtools \
     --file "${REPO_DIR}/requirements-bedtools.txt"
 
-conda create \
-    --name ldsc \
-    --file "${REPO_DIR}/requirements-ldsc.txt"
+conda env create \
+    --file "${REPO_DIR}/environment-ldsc.yml"
 
 ## ======== ##
 ##   RENV   ##
